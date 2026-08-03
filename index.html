@@ -1,0 +1,2365 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Adis Formy - Databáze a Vyhledávání</title>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <style>
+        :root {
+            --bg-color: #f8fafc;
+            --card-bg: #ffffff;
+            --text-main: #0f172a;
+            --text-muted: #64748b;
+            --border-color: #e2e8f0;
+            --primary: #334155;
+            --row-hover: #f8fafc;
+            --input-bg: #ffffff;
+
+            --success-bg: #f0fdf4;
+            --success-border: #bbf7d0;
+            --success-text: #166534;
+            --success-badge: #22c55e;
+
+            --error-bg: #fef2f2;
+            --error-border: #fecaca;
+            --error-text: #991b1b;
+            --error-badge: #ef4444;
+
+            --warning-badge: #f97316;
+            --maintenance-badge: #facc15;
+        }
+
+        button:focus, input:focus, select:focus, textarea:focus, [tabindex]:focus {
+            outline: none !important;
+        }
+
+        button:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-visible, [tabindex]:focus-visible {
+            outline: none !important;
+            box-shadow: 0 6px 16px -2px rgba(59, 130, 246, 0.6) !important;
+            border-color: #3b82f6 !important;
+            transform: translateY(-1px);
+            transition: all 0.2s ease;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            display: flex;
+            justify-content: center;
+            padding: 1.5rem 1rem;
+            min-height: 100vh;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 900px;
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+        }
+
+        .header-logo {
+            text-align: center;
+            padding: 1.25rem 1rem 0.5rem 1rem;
+            background-color: var(--card-bg);
+            position: relative;
+        }
+
+        .header-logo img#siteLogo {
+            max-height: 46px;
+            width: auto;
+            object-fit: contain;
+            cursor: pointer;
+            transition: transform 0.2s ease, opacity 0.2s ease;
+        }
+
+        .header-logo img#siteLogo:hover {
+            opacity: 0.85;
+            transform: scale(1.02);
+        }
+
+        .header-logo img#siteLogo:active {
+            transform: scale(0.98);
+        }
+
+        .header-buttons-right {
+            position: absolute;
+            top: 0.75rem;
+            right: 0.75rem;
+            display: flex;
+            gap: 0.35rem;
+            z-index: 20;
+        }
+
+        .header-auth-left {
+            position: absolute;
+            top: 0.75rem;
+            left: 0.75rem;
+            z-index: 20;
+        }
+
+        .auth-btn {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            padding: 0.35rem 0.65rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 0.35rem;
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: var(--text-muted);
+            transition: all 0.2s ease;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+        }
+
+        .auth-btn:hover {
+            background-color: var(--border-color);
+            color: var(--text-main);
+            transform: translateY(-1px);
+        }
+
+        .auth-btn.logged-in {
+            background-color: #22c55e !important;
+            border-color: #16a34a !important;
+            color: #ffffff !important;
+            box-shadow: 0 2px 6px rgba(34, 197, 94, 0.3);
+        }
+
+        .auth-btn.logged-in:hover {
+            background-color: #16a34a !important;
+        }
+
+        @media (max-width: 600px) {
+            .auth-btn {
+                padding: 0.35rem !important;
+            }
+            .auth-btn span#authBtnText {
+                display: none !important;
+            }
+        }
+
+        .top-icon-btn {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            padding: 0.3rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s ease;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+        }
+
+        .top-icon-btn:hover {
+            background-color: var(--border-color);
+            transform: translateY(-1px);
+        }
+
+        .top-icon-btn img, 
+        .close-modal-btn img, 
+        .btn-secondary img,
+        .btn-danger img,
+        .auth-btn img,
+        .auth-btn svg,
+        .floating-corner-btn-left img {
+            width: 18px;
+            height: 18px;
+            object-fit: contain;
+            display: block;
+            transition: transform 0.25s ease;
+        }
+
+        .edit-btn, .comment-btn {
+            background: none;
+            border: none;
+            cursor: pointer;
+            width: 34px !important; 
+            height: 34px !important;
+            min-width: 34px !important;
+            min-height: 34px !important;
+            border-radius: 6px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-muted);
+            padding: 0 !important;
+            flex-shrink: 0;
+        }
+
+        .edit-btn img, 
+        .comment-btn img, 
+        .floating-corner-btn img,
+        .floating-corner-btn-left img {
+            width: 18px !important;
+            height: 18px !important;
+            object-fit: contain;
+            display: block;
+            transition: transform 0.25s ease;
+        }
+
+        .edit-btn:hover img,
+        .comment-btn:hover img,
+        .floating-corner-btn:hover img,
+        .floating-corner-btn-left:hover img,
+        .edit-btn:active img,
+        .comment-btn:active img,
+        .floating-corner-btn:active img,
+        .floating-corner-btn-left:active img {
+            transform: rotate(15deg) scale(1.1);
+        }
+
+        .accordion-edit-trigger-btn img {
+            width: 14px;
+            height: 14px;
+            object-fit: contain;
+            display: block;
+            transition: transform 0.25s ease;
+        }
+
+        .tabs {
+            display: flex;
+            border-bottom: 1px solid var(--border-color);
+            background-color: var(--card-bg);
+        }
+
+        .tab-btn {
+            flex: 1;
+            padding: 0.85rem;
+            background: none;
+            border: none;
+            font-size: 0.95rem;
+            font-weight: 600;
+            color: var(--text-muted);
+            cursor: pointer;
+            transition: all 0.2s ease;
+            outline: none;
+        }
+
+        .tab-btn:hover {
+            color: var(--text-main);
+            background-color: var(--row-hover);
+        }
+
+        .tab-btn.active {
+            color: var(--text-main);
+            border-bottom: 2px solid var(--text-main);
+        }
+
+        .content {
+            padding: 1.25rem;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .search-box {
+            margin-bottom: 0.85rem;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 0.8rem 1rem;
+            font-size: 1.1rem;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            outline: none;
+            transition: all 0.2s ease;
+            background-color: var(--input-bg);
+            color: var(--text-main);
+            text-transform: none;
+        }
+
+        .search-input:focus {
+            border-color: var(--text-muted);
+            box-shadow: 0 0 0 3px rgba(100, 116, 139, 0.15);
+        }
+
+        .stats-bar {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            margin-bottom: 0.85rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .customer-filters-wrapper {
+            position: relative;
+            margin-bottom: 1rem;
+            padding-right: 0;
+        }
+
+        .customer-filters {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.4rem;
+            align-items: center;
+            position: relative;
+            flex-direction: row;
+        }
+
+        .filter-chip {
+            padding: 0.3rem 0.65rem;
+            border-radius: 6px;
+            font-size: 0.78rem;
+            font-weight: 600;
+            cursor: pointer;
+            border: 1px solid var(--border-color);
+            transition: transform 0.2s ease, box-shadow 0.2s ease, opacity 0.15s ease, background-color 0.2s ease;
+            user-select: none;
+            -webkit-user-select: none;
+            opacity: 0.85;
+            color: #000000;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.35rem;
+            position: relative;
+            flex-shrink: 0;
+            white-space: nowrap;
+        }
+
+        .filter-chip:hover {
+            opacity: 1;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.06);
+            transform: translateY(-1px);
+        }
+
+        .filter-chip.active {
+            opacity: 1;
+            box-shadow: 0 3px 8px rgba(0, 0, 0, 0.12);
+            border-color: #0f172a;
+            border-width: 1.5px;
+            transform: translateY(-1px);
+        }
+
+        .filter-divider {
+            width: 2px;
+            height: 20px;
+            background-color: #cbd5e1;
+            margin: 0 4px;
+            display: inline-block;
+            vertical-align: middle;
+            flex-shrink: 0;
+        }
+
+        .add-customer-chip {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 28px;
+            height: 28px;
+            border-radius: 6px;
+            border: 1px dashed var(--border-color);
+            background: var(--card-bg);
+            color: var(--text-muted);
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            flex-shrink: 0;
+            margin-left: 0.2rem;
+        }
+
+        .add-customer-chip:hover, .add-customer-chip:active {
+            background-color: var(--row-hover);
+            color: var(--text-main);
+            border-color: var(--text-muted);
+            transform: scale(1.05);
+        }
+
+        .custom-context-menu {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            padding: 0.3rem;
+            min-width: 110px;
+        }
+
+        .context-menu-item {
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+            padding: 0.4rem 0.65rem;
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: var(--error-badge);
+            cursor: pointer;
+            border-radius: 5px;
+            transition: background 0.15s ease;
+        }
+
+        .context-menu-item:hover {
+            background-color: var(--error-bg);
+        }
+
+        .table-container {
+            max-height: 480px;
+            overflow-y: auto;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            position: relative;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            table-layout: fixed;
+        }
+
+        th {
+            background-color: var(--row-hover);
+            color: var(--text-muted);
+            font-weight: 600;
+            font-size: 0.72rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+            padding: 0.75rem 0.6rem;
+        }
+
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 0.6rem;
+            margin-bottom: 1rem;
+        }
+
+        .dash-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 0.65rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.2rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .dash-card.active {
+            box-shadow: 0 0 0 2px var(--text-main);
+        }
+
+        .dash-card-title {
+            font-size: 0.72rem;
+            font-weight: 600;
+            color: var(--text-muted);
+            display: flex;
+            align-items: center;
+            gap: 0.3rem;
+        }
+
+        .dash-card-value {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: var(--text-main);
+        }
+
+        @media (max-width: 600px) {
+            .dashboard-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            .table-container {
+                max-height: 380px;
+            }
+
+            .customer-filters-wrapper {
+                padding-right: 0;
+            }
+
+            .customer-filters {
+                flex-wrap: nowrap !important;
+                overflow-x: auto;
+                scroll-behavior: smooth;
+                -webkit-overflow-scrolling: touch;
+                padding-bottom: 6px;
+                padding-right: 12px;
+                -ms-overflow-style: none;
+                scrollbar-width: none;
+            }
+
+            .customer-filters::-webkit-scrollbar {
+                display: none;
+            }
+        }
+
+        @media (min-width: 601px) {
+            #searchTable th:nth-child(1), #searchTable td:nth-child(1) { width: 35%; text-align: left !important; padding-left: 1.25rem; }
+            #searchTable th:nth-child(2), #searchTable td:nth-child(2) { width: 25%; text-align: center !important; }
+            #searchTable th:nth-child(3), #searchTable td:nth-child(3) { width: 40%; text-align: left !important; padding-left: 82px !important; }
+            #searchTable th { padding: 0.75rem 1.25rem; font-size: 0.75rem; }
+
+            #databaseTableContainer th:nth-child(1), #databaseTableContainer td:nth-child(1) { width: 35%; text-align: left !important; padding-left: 1.25rem; }
+            #databaseTableContainer th:nth-child(2), #databaseTableContainer td:nth-child(2) { width: 25%; text-align: center; }
+            #databaseTableContainer th:nth-child(3), #databaseTableContainer td:nth-child(3) { width: 40%; text-align: left !important; padding-left: 82px !important; }
+            #databaseTableContainer th { padding: 0.75rem 1.25rem; font-size: 0.75rem; }
+
+            #dashboardTableContainer th:nth-child(1), #dashboardTableContainer td:nth-child(1) { width: 35%; text-align: left !important; padding-left: 1.25rem; }
+            #dashboardTableContainer th:nth-child(2), #dashboardTableContainer td:nth-child(2) { width: 25%; text-align: center; }
+            #dashboardTableContainer th:nth-child(3), #dashboardTableContainer td:nth-child(3) { width: 40%; text-align: left !important; padding-left: 82px !important; }
+            #dashboardTableContainer th { padding: 0.75rem 1.25rem; font-size: 0.75rem; }
+        }
+
+        td {
+            padding: 0.65rem 0.6rem;
+            border-bottom: 1px solid var(--border-color);
+            font-size: 0.85rem;
+            vertical-align: top;
+            color: var(--text-main);
+            word-break: break-word;
+        }
+
+        #searchTable td { padding: 0.65rem 1.25rem; }
+        #databaseTableContainer td:nth-child(3), #dashboardTableContainer td:nth-child(3) { padding-right: 1.25rem !important; }
+
+        td.no-data, td.no-data-centered { text-align: center !important; padding: 2.5rem !important; color: var(--text-muted); font-size: 0.95rem; }
+
+        tr { user-select: none; transition: background-color 0.15s ease; }
+        tr:last-child td { border-bottom: none; }
+        tr:hover { background-color: var(--row-hover); }
+
+        tr.row-success {
+            background-color: var(--success-bg) !important;
+        }
+        tr.row-success td {
+            color: var(--success-text) !important;
+            border-color: var(--success-border) !important;
+        }
+
+        tr.row-error {
+            background-color: var(--error-bg) !important;
+        }
+        tr.row-error td {
+            color: var(--error-text) !important;
+            border-color: var(--error-border) !important;
+        }
+
+        .toggle-accordion-btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            border: 1px solid var(--border-color);
+            background: var(--card-bg);
+            color: var(--text-main);
+            font-size: 14px;
+            cursor: pointer;
+            flex-shrink: 0;
+            margin-right: 0.35rem;
+        }
+
+        .toggle-accordion-btn.expanded {
+            background-color: var(--primary);
+            color: var(--card-bg);
+            border-color: var(--primary);
+            transform: rotate(180deg);
+        }
+
+        .accordion-floating-layer {
+            position: absolute;
+            left: 0;
+            right: 0;
+            z-index: 100;
+            pointer-events: none;
+            display: none;
+        }
+
+        .accordion-floating-layer.open { pointer-events: auto; }
+
+        .accordion-anim-wrapper {
+            display: grid;
+            grid-template-rows: 0fr;
+            opacity: 0;
+            transform: translateY(-8px);
+            transition: grid-template-rows 0.47s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.35s ease-out, transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+            overflow: hidden;
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-top: none;
+            border-bottom-left-radius: 8px;
+            border-bottom-right-radius: 8px;
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
+        }
+
+        .accordion-anim-wrapper.open { grid-template-rows: 1fr; opacity: 1; transform: translateY(0); }
+        .accordion-anim-wrapper > div { min-height: 0; }
+
+        .accordion-content {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+            background: var(--card-bg);
+            padding: 0.85rem 1.25rem;
+        }
+
+        .accordion-top-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 0.5rem;
+            margin-bottom: 0.2rem;
+        }
+
+        .accordion-header-title { font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.03em; color: var(--text-muted); }
+
+        .accordion-edit-trigger-btn {
+            background: none;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            padding: 0.25rem 0.6rem;
+            font-size: 0.75rem;
+            cursor: pointer;
+            color: var(--text-muted);
+            display: flex;
+            align-items: center;
+            gap: 0.3rem;
+            background-color: var(--card-bg);
+        }
+
+        .accordion-photo-box { display: flex; align-items: center; gap: 0.75rem; flex-wrap: wrap; }
+        .file-upload-hidden { display: none; }
+
+        .photo-upload-card {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            width: 80px;
+            height: 80px;
+            border: 2px dashed var(--border-color);
+            border-radius: 8px;
+            background: var(--row-hover);
+            cursor: pointer;
+            gap: 2px;
+        }
+
+        .accordion-thumb-wrapper {
+            position: relative;
+            width: 80px;
+            height: 80px;
+            border-radius: 8px;
+            overflow: hidden;
+            border: 1px solid var(--border-color);
+        }
+
+        .accordion-thumb { width: 100%; height: 100%; object-fit: cover; cursor: pointer; display: block; }
+        .accordion-thumb-remove {
+            position: absolute;
+            top: 3px; right: 3px;
+            background: rgba(0, 0, 0, 0.6);
+            color: #ffffff;
+            border: none;
+            border-radius: 50%;
+            width: 18px; height: 18px;
+            font-size: 11px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .mold-cell-content { display: flex; align-items: center; gap: 0.3rem; flex-wrap: wrap; }
+        .product-name-sub { display: flex; align-items: center; gap: 0.35rem; font-size: 0.78rem; color: var(--text-muted); margin-top: 0.2rem; text-transform: capitalize; }
+        
+        .status-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.25rem;
+            padding: 0.1rem 0.35rem;
+            border-radius: 6px;
+            font-size: 0.65rem;
+            border: 1px solid var(--border-color);
+            background: var(--card-bg);
+        }
+
+        .status-dot { width: 6px; height: 6px; border-radius: 50%; display: inline-block; }
+        .dot-green { background-color: var(--success-badge); }
+        .dot-red { background-color: var(--error-badge); }
+        .dot-orange { background-color: var(--warning-badge); }
+        .dot-yellow { background-color: var(--maintenance-badge); }
+
+        .position-cell { display: flex; align-items: center; position: relative; width: 100%; gap: 0.5rem; flex-wrap: wrap; }
+        .position-wrapper { display: flex; flex-direction: column; align-items: flex-start; gap: 0.15rem; }
+        .prev-position-sub { font-size: 0.68rem; color: var(--text-muted); font-style: italic; white-space: nowrap; }
+
+        @media (min-width: 601px) {
+            .action-buttons-group { position: absolute; right: 0; }
+        }
+
+        .action-buttons-group { display: flex; align-items: center; gap: 3px; flex-shrink: 0; }
+
+        .badge-position {
+            font-family: monospace;
+            padding: 0.2rem 0.4rem;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            white-space: nowrap;
+            cursor: pointer;
+            display: inline-block;
+        }
+
+        .pos-mezisklad { background-color: #4b5563 !important; color: #ffffff !important; }
+        .pos-z { background-color: #16a34a !important; color: #ffffff !important; }
+        .pos-c { background-color: #dc2626 !important; color: #ffffff !important; }
+        .pos-m { background-color: #2563eb !important; color: #ffffff !important; }
+        .pos-b { background-color: #ffffff !important; color: #0f172a !important; border: 1px solid #cbd5e1 !important; }
+        .pos-h { background-color: #9a3412 !important; color: #ffffff !important; }
+
+        .comments-section {
+            margin-top: 0.4rem;
+            padding: 0.4rem;
+            background: var(--row-hover);
+            border-radius: 6px;
+            font-size: 0.78rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.25rem;
+            text-align: left;
+            width: 100%;
+        }
+
+        .comment-item { border-bottom: 1px solid var(--border-color); padding-bottom: 0.25rem; display: flex; flex-direction: column; gap: 0.15rem; }
+        .comment-header-row { display: flex; justify-content: space-between; align-items: center; }
+        .comment-meta { font-size: 0.65rem; color: var(--text-muted); display: flex; gap: 0.4rem; text-transform: capitalize; }
+        .delete-comment-btn { background: none; border: none; cursor: pointer; font-size: 0.7rem; color: var(--text-muted); width: 16px; height: 16px; }
+
+        .tag-customer {
+            display: inline-block;
+            font-size: 0.7rem;
+            padding: 0.2rem 0.4rem;
+            border-radius: 5px;
+            text-transform: capitalize;
+            cursor: pointer;
+            border: 1px solid;
+            max-width: 100%;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            color: #000000 !important;
+        }
+
+        .autocomplete-wrapper { position: relative; width: 100%; }
+        .autocomplete-dropdown {
+            display: none;
+            position: absolute;
+            top: 100%; left: 0; right: 0;
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-top: none;
+            border-bottom-left-radius: 8px;
+            border-bottom-right-radius: 8px;
+            max-height: 180px;
+            overflow-y: auto;
+            z-index: 100;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.2);
+            text-align: left;
+        }
+        .autocomplete-item { padding: 0.65rem 1rem; cursor: pointer; font-size: 0.95rem; border-bottom: 1px solid var(--border-color); }
+
+        .custom-color-dropdown-wrapper { position: relative; width: 100%; }
+        .custom-color-btn {
+            width: 100%; height: 42px;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            background: var(--input-bg);
+            cursor: pointer;
+            display: flex; align-items: center; justify-content: space-between;
+            padding: 0 0.75rem;
+        }
+        .custom-color-sample { width: 24px; height: 24px; border-radius: 4px; border: 1px solid var(--border-color); }
+        .custom-color-dropdown {
+            display: none;
+            position: absolute;
+            top: calc(100% + 4px); left: 0; right: 0;
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            max-height: 220px; overflow-y: auto; z-index: 200;
+            padding: 0.35rem; flex-direction: column; gap: 2px;
+        }
+        .custom-color-dropdown.open { display: flex; }
+        .custom-color-option { display: flex; align-items: center; padding: 0.4rem 0.5rem; border-radius: 6px; cursor: pointer; }
+        .custom-color-option-sample { width: 24px; height: 24px; border-radius: 4px; border: 1px solid var(--border-color); }
+
+        .modal-overlay {
+            display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0, 0, 0, 0.5); backdrop-filter: blur(2px); z-index: 1000;
+            justify-content: center; align-items: center; padding: 1rem; overflow-y: auto;
+        }
+        .modal-card {
+            background: var(--card-bg); color: var(--text-main); width: 100%; max-width: 500px; max-height: 85vh;
+            border-radius: 12px; box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.2);
+            display: flex; flex-direction: column; border: 1px solid var(--border-color); margin: auto;
+            overflow: hidden;
+        }
+        .modal-header {
+            padding: 1rem 1.25rem; border-bottom: 1px solid var(--border-color);
+            display: flex; justify-content: space-between; align-items: center; background: var(--row-hover);
+        }
+        .close-modal-btn { background: none; border: none; font-size: 1.25rem; cursor: pointer; color: var(--text-muted); }
+        
+        .modal-body { 
+            padding: 1.25rem; 
+            overflow-y: auto; 
+            max-height: 60vh;
+            flex: 1; 
+            display: flex; 
+            flex-direction: column; 
+            gap: 1rem; 
+            -webkit-overflow-scrolling: touch;
+        }
+
+        .form-group { display: flex; flex-direction: column; gap: 0.35rem; position: relative; }
+        .form-group label { font-size: 0.85rem; color: var(--text-muted); }
+        .form-group input, .form-group select, .form-group textarea {
+            padding: 0.75rem; font-size: 1rem; border: 1px solid var(--border-color); border-radius: 8px;
+            background: var(--input-bg); color: var(--text-main); outline: none;
+            text-transform: none;
+        }
+        .modal-footer {
+            padding: 1rem 1.25rem; border-top: 1px solid var(--border-color);
+            display: flex; justify-content: space-between; align-items: center; background: var(--row-hover);
+        }
+        .btn-primary { background: var(--text-main); color: var(--card-bg); border: none; padding: 0.65rem 1.25rem; border-radius: 8px; cursor: pointer; }
+        .btn-secondary { background: var(--border-color); color: var(--text-main); border: none; padding: 0.65rem 1.25rem; border-radius: 8px; cursor: pointer; }
+        .btn-danger { background: rgba(239, 68, 68, 0.15); color: var(--error-badge); border: 1px solid rgba(239, 68, 68, 0.3); padding: 0.65rem 1.25rem; border-radius: 8px; cursor: pointer; }
+
+        .log-item { padding: 0.75rem; border-bottom: 1px solid var(--border-color); font-size: 0.88rem; display: flex; flex-direction: column; gap: 0.25rem; }
+        .log-meta { display: flex; justify-content: space-between; color: var(--text-muted); font-size: 0.78rem; text-transform: capitalize; }
+        
+        .floating-corner-btn, .floating-corner-btn-left {
+            position: absolute; bottom: 1.25rem; background: var(--card-bg); border: 1px solid var(--border-color);
+            border-radius: 50%; width: 48px; height: 48px; display: flex; align-items: center; justify-content: center;
+            cursor: pointer; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15); z-index: 50;
+        }
+        .floating-corner-btn { right: 1.25rem; }
+        .floating-corner-btn-left { left: 1.25rem; display: none; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="header-logo">
+        <div class="header-auth-left">
+            <button class="auth-btn" id="authCornerBtn" tabindex="0" onclick="handleAuthClick()" title="Přihlášení uživatele">
+                <span id="authBtnIconWrapper">
+                    <img src="icon8.png" alt="Přihlásit" id="authBtnIcon">
+                </span>
+                <span id="authBtnText" style="text-transform: capitalize;">Přihlásit</span>
+            </button>
+        </div>
+
+        <img src="logo.png" alt="Adis Logo" id="siteLogo" tabindex="0" onclick="location.reload()" title="Aktualizovat">
+        
+        <div class="header-buttons-right">
+            <button class="top-icon-btn" tabindex="0" onclick="openAddModal()" title="Přidat formu">
+                <img src="icon3.png" alt="Přidat">
+            </button>
+            <button class="top-icon-btn" tabindex="0" onclick="openLogsModal()" title="Historie">
+                <img src="icon2.png" alt="Historie">
+            </button>
+        </div>
+    </div>
+
+    <div class="tabs">
+        <button id="btn-search" class="tab-btn active" tabindex="0">Vyhledávání</button>
+        <button id="btn-database" class="tab-btn" tabindex="0">Databáze</button>
+        <button id="btn-dashboard" class="tab-btn" tabindex="0">Dashboard</button>
+    </div>
+
+    <div class="content">
+        <div id="tab-search" class="tab-content active">
+            <div class="search-box">
+                <input type="text" id="searchInput" class="search-input" tabindex="0" placeholder="Zadejte číslo formy, výrobu, pozici nebo zákazníka..." oninput="handleSearch()" autocomplete="off" autocapitalization="sentences" autocapitalize="sentences">
+            </div>
+            <div class="stats-bar"><span id="searchStats"></span></div>
+            <div class="table-container" id="searchTableContainer">
+                <table id="searchTable">
+                    <thead><tr><th>Číslo formy</th><th>Zákazník</th><th>Pozice</th></tr></thead>
+                    <tbody id="searchResults"><tr><td colspan="3" class="no-data-centered" style="text-align: center !important;">Začněte psát do pole výše</td></tr></tbody>
+                </table>
+            </div>
+        </div>
+
+        <div id="tab-database" class="tab-content">
+            <div class="customer-filters-wrapper">
+                <div class="customer-filters" id="customerFilters"></div>
+            </div>
+            <div class="stats-bar"><span id="dbStats">Načítání databáze...</span></div>
+            <div class="table-container" id="databaseTableContainer">
+                <table>
+                    <thead><tr><th>Číslo formy</th><th>Zákazník</th><th>Pozice</th></tr></thead>
+                    <tbody id="databaseTable"><tr><td colspan="3" class="no-data">Načítání data z cloudu...</td></tr></tbody>
+                </table>
+            </div>
+        </div>
+
+        <div id="tab-dashboard" class="tab-content">
+            <div class="dashboard-grid">
+                <div class="dash-card active" id="card-all" onclick="filterDashboardStatus('ALL', this)">
+                    <div class="dash-card-title">Formy ke kontrole</div>
+                    <div class="dash-card-value" id="dash-count-active">0</div>
+                </div>
+                <div class="dash-card" id="card-fronte" onclick="filterDashboardStatus('Ve Frontě', this)">
+                    <div class="dash-card-title"><span class="status-dot dot-orange"></span> Ve Frontě</div>
+                    <div class="dash-card-value" id="dash-count-fronte">0</div>
+                </div>
+                <div class="dash-card" id="card-oprave" onclick="filterDashboardStatus('Na opravě', this)">
+                    <div class="dash-card-title"><span class="status-dot dot-red"></span> Na opravě</div>
+                    <div class="dash-card-value" id="dash-count-oprave">0</div>
+                </div>
+                <div class="dash-card" id="card-udrzbe" onclick="filterDashboardStatus('Na údržbě', this)">
+                    <div class="dash-card-title"><span class="status-dot dot-yellow"></span> Na údržbě</div>
+                    <div class="dash-card-value" id="dash-count-udrzbe">0</div>
+                </div>
+            </div>
+            <div class="stats-bar"><span id="dashStats">Přehled forem se staveм...</span></div>
+            <div class="table-container" id="dashboardTableContainer">
+                <table>
+                    <thead><tr><th>Číslo formy</th><th>Zákazník</th><th>Pozice</th></tr></thead>
+                    <tbody id="dashboardTable"><tr><td colspan="3" class="no-data-centered" style="text-align: center !important;">V seznamu zatím nejsou žádné formy ke kontrole</td></tr></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <button class="floating-corner-btn-left" id="trashCornerBtn" tabindex="0" onclick="openTrashModal()" title="Koš / Smazané formy">
+        <img src="icon7.png" alt="Koš">
+    </button>
+    <button class="floating-corner-btn" tabindex="0" onclick="openDirectProdModal()" title="Forma po výrobě (Mezisklad)">
+        <img src="icon6.png" alt="Forma po výrobě">
+    </button>
+</div>
+
+<!-- Кастомное контекстное меню -->
+<div id="customContextMenu" class="custom-context-menu">
+    <div id="contextDeleteOption" class="context-menu-item">
+        <span>✕</span> Smazat
+    </div>
+</div>
+
+<!-- Модальные окна -->
+<div class="modal-overlay" id="loginModal">
+    <div class="modal-card" style="max-width: 360px;">
+        <div class="modal-header"><h3>Přihlášení uživatele</h3><button class="close-modal-btn" onclick="closeLoginModal()">✕</button></div>
+        <div class="modal-body">
+            <div class="form-group"><label>Vaše jméno nebo směnu:</label><input type="text" id="loginUsername" autocomplete="off" autocapitalization="sentences" autocapitalize="sentences" oninput="event.stopPropagation()"></div>
+            <div class="form-group"><label>Heslo:</label><input type="password" id="loginPassword" autocomplete="off" oninput="event.stopPropagation()"></div>
+        </div>
+        <div class="modal-footer"><button class="btn-secondary" onclick="closeLoginModal()">Zrušit</button><button class="btn-primary" onclick="executeLogin()">Přihlásit se</button></div>
+    </div>
+</div>
+
+<div class="modal-overlay" id="logsModal">
+    <div class="modal-card">
+        <div class="modal-header"><h3>Historie přemístění forem</h3><button class="close-modal-btn" onclick="closeLogsModal()">✕</button></div>
+        <div class="modal-body" id="logsList"><div class="no-data">Načítání historie...</div></div>
+        <div class="modal-footer">
+            <button class="btn-secondary" style="background: rgba(239, 68, 68, 0.2); color: var(--error-badge);" onclick="promptClearLogs()">Vyčistit historii</button>
+            <button class="btn-primary" onclick="closeLogsModal()">Zavřít</button>
+        </div>
+    </div>
+</div>
+
+<div class="modal-overlay" id="trashModal">
+    <div class="modal-card" style="max-width: 500px;">
+        <div class="modal-header"><h3>Koš (Smazané formy)</h3><button class="close-modal-btn" onclick="closeTrashModal()">✕</button></div>
+        <div class="modal-body" id="trashList"><div class="no-data">Načítání smazaných forem...</div></div>
+        <div class="modal-footer"><button class="btn-primary" onclick="closeTrashModal()">Zavřít</button></div>
+    </div>
+</div>
+
+<div class="modal-overlay" id="addCustomerModal">
+    <div class="modal-card" style="max-width: 380px;">
+        <div class="modal-header"><h3>Přidat nového zákazníka</h3><button class="close-modal-btn" onclick="closeAddCustomerModal()">✕</button></div>
+        <div class="modal-body">
+            <div class="form-group"><label>Název zákazníka:</label><input type="text" id="newCustomerName" autocomplete="off" autocapitalization="sentences" autocapitalize="sentences"></div>
+            <div class="form-group"><label>Vybrat barvu:</label>
+                <div class="custom-color-dropdown-wrapper" id="customColorWrapper">
+                    <button type="button" class="custom-color-btn" onclick="toggleCustomColorDropdown(event)"><div class="custom-color-sample" id="selectedColorSample" style="background-color: #ffffff;"></div><span class="custom-color-arrow">▼</span></button>
+                    <div class="custom-color-dropdown" id="customColorDropdownList"></div>
+                </div>
+            </div>
+        </div>
+        <div class="modal-footer"><button class="btn-secondary" onclick="closeAddCustomerModal()">Zrušit</button><button class="btn-primary" onclick="submitNewCustomer()">Přidat</button></div>
+    </div>
+</div>
+
+<div class="modal-overlay" id="photoModal">
+    <div class="modal-card" style="max-width: 500px; text-align: center;">
+        <div class="modal-header"><h3 id="photoModalTitle">Fotografie výroby</h3><button class="close-modal-btn" onclick="closePhotoModal()">✕</button></div>
+        <div class="modal-body" style="align-items: center; justify-content: center;"><img id="photoModalImg" src="" alt="Foto" style="max-width: 100%; max-height: 60vh; border-radius: 8px;"></div>
+        <div class="modal-footer"><button class="btn-primary" onclick="closePhotoModal()">Zavřít</button></div>
+    </div>
+</div>
+
+<div class="modal-overlay" id="viewCommentModal">
+    <div class="modal-card" style="max-width: 440px;">
+        <div class="modal-header"><h3 id="viewCommentTitle">Detail poznámky</h3><button class="close-modal-btn" onclick="closeViewCommentModal()">✕</button></div>
+        <div class="modal-body">
+            <div class="form-group">
+                <label id="viewCommentMeta" style="font-size: 0.78rem; color: var(--text-muted);"></label>
+                <div id="viewCommentDisplay" style="padding: 0.75rem; background: var(--row-hover); border: 1px solid var(--border-color); border-radius: 8px; white-space: pre-wrap; cursor: pointer;" onclick="enableCommentEditMode()"></div>
+                <div id="viewCommentEditBlock" style="display: none;"><textarea id="viewCommentTextarea" rows="4" style="width: 100%; padding: 0.75rem; border-radius: 8px;" autocapitalization="sentences" autocapitalize="sentences"></textarea></div>
+            </div>
+        </div>
+        <div class="modal-footer" id="viewCommentFooter"><button class="btn-primary" onclick="closeViewCommentModal()">Zavřít</button></div>
+    </div>
+</div>
+
+<div class="modal-overlay" id="clearLogsModal">
+    <div class="modal-card" style="max-width: 380px;">
+        <div class="modal-header"><h3>Vyčistit historii</h3><button class="close-modal-btn" onclick="closeClearLogsModal()">✕</button></div>
+        <div class="modal-body"><p>Opravdu chcete vyčistit starou historii přemístění forem?</p></div>
+        <div class="modal-footer"><button class="btn-secondary" onclick="closeClearLogsModal()">Zrušit</button><button class="btn-primary" onclick="executeClearLogs()">Potvrdit a vyčistit</button></div>
+    </div>
+</div>
+
+<div class="modal-overlay" id="addModal">
+    <div class="modal-card">
+        <div class="modal-header"><h3>Přidat novou formu</h3><button class="close-modal-btn" onclick="closeAddModal()">✕</button></div>
+        <div class="modal-body">
+            <div class="form-group"><label>Číslo formy (ID):</label><input type="text" id="addMoldId" autocomplete="off" autocapitalization="none" autocapitalize="none"></div>
+            <div class="form-group"><label>Název výroby / dílu (Výroba):</label><input type="text" id="addMoldProductName" autocomplete="off" autocapitalization="sentences" autocapitalize="sentences"></div>
+            <div class="form-group"><label>Zákazník:</label><select id="addMoldCustomer"></select></div>
+            <div class="form-group"><label>Pozice:</label>
+                <div class="autocomplete-wrapper"><input type="text" id="addMoldPosition" class="position-input" autocomplete="off" oninput="onPositionInput(this)" autocapitalization="sentences" autocapitalize="sentences"><div id="addMoldPositionDropdown" class="autocomplete-dropdown"></div></div>
+            </div>
+            <div class="form-group"><label>Stav formy:</label>
+                <select id="addMoldStatus"><option value="">(Bez stavu)</option><option value="Po údržbě">Po údržbě</option><option value="Ve Frontě">Ve Frontě</option><option value="Na opravě">Na opravě</option><option value="Na údržbě">Na údržbě</option></select>
+            </div>
+        </div>
+        <div class="modal-footer"><button class="btn-secondary" onclick="closeAddModal()">Zrušit</button><button id="btnAddSubmit" class="btn-primary" onclick="submitNewMold()">Přidat formu</button></div>
+    </div>
+</div>
+
+<div class="modal-overlay" id="positionModal">
+    <div class="modal-card" style="max-width: 400px;">
+        <div class="modal-header"><h3 id="positionModalTitle">Změnit pozici</h3><button class="close-modal-btn" onclick="closePositionModal()">✕</button></div>
+        <div class="modal-body">
+            <div class="form-group"><label id="positionModalLabel">Pozice:</label>
+                <div class="autocomplete-wrapper"><input type="text" id="modalPositionInput" class="position-input" autocomplete="off" oninput="onPositionInput(this)" autocapitalization="sentences" autocapitalize="sentences"><div id="modalPositionInputDropdown" class="autocomplete-dropdown"></div></div>
+            </div>
+        </div>
+        <div class="modal-footer"><button class="btn-secondary" onclick="closePositionModal()">Zrušit</button><button id="btnPosSubmit" class="btn-primary" onclick="savePositionChange()">Uložit</button></div>
+    </div>
+</div>
+
+<div class="modal-overlay" id="fullEditModal">
+    <div class="modal-card" style="max-width: 420px;">
+        <div class="modal-header"><h3 id="fullEditModalTitle">Upravit formu</h3><button class="close-modal-btn" onclick="closeFullEditModal()">✕</button></div>
+        <div class="modal-body">
+            <div class="form-group"><label>Pozice:</label>
+                <div class="autocomplete-wrapper"><input type="text" id="fullEditPositionInput" class="position-input" autocomplete="off" oninput="onPositionInput(this)" autocapitalization="sentences" autocapitalize="sentences"><div id="fullEditPositionInputDropdown" class="autocomplete-dropdown"></div></div>
+            </div>
+            <div class="form-group"><label>Stav formy:</label>
+                <select id="fullEditStatusSelect" onchange="onStatusSelectChange(this)"><option value="">(Bez stavu)</option><option value="Po údržbě">Po údržbě</option><option value="Ve Frontě">Ve Frontě</option><option value="Na opravě">Na opravě</option><option value="Na údržbě">Na údržbě</option></select>
+            </div>
+            <div class="form-group" style="flex-direction: row; align-items: center; gap: 0.5rem;"><input type="checkbox" id="autoMeziskladCheckbox" style="width: 18px; height: 18px;"><label for="autoMeziskladCheckbox">Přesunout na Mezisklad</label></div>
+        </div>
+        <div class="modal-footer">
+            <button class="btn-danger" onclick="deleteMoldSoft()">Smazat formu</button>
+            <div style="display: flex; gap: 0.5rem;"><button class="btn-secondary" onclick="closeFullEditModal()">Zrušit</button><button id="btnFullEditSubmit" class="btn-primary" onclick="saveFullEditChange()">Uložit</button></div>
+        </div>
+    </div>
+</div>
+
+<div class="modal-overlay" id="commentModal">
+    <div class="modal-card" style="max-width: 420px;">
+        <div class="modal-header"><h3 id="commentModalTitle">Přidat poznámku</h3><button class="close-modal-btn" onclick="closeCommentModal()">✕</button></div>
+        <div class="modal-body"><div class="form-group"><label>Poznámka / Důležitá informace:</label><textarea id="commentText" rows="4" autocapitalization="sentences" autocapitalize="sentences"></textarea></div></div>
+        <div class="modal-footer"><button class="btn-secondary" onclick="closeCommentModal()">Zrušit</button><button id="btnCommentSubmit" class="btn-primary" onclick="submitComment()">Přidat poznámku</button></div>
+    </div>
+</div>
+
+<div class="modal-overlay" id="customerModal">
+    <div class="modal-card" style="max-width: 400px;">
+        <div class="modal-header"><h3>Změnit zákazníka</h3><button class="close-modal-btn" onclick="closeCustomerModal()">✕</button></div>
+        <div class="modal-body"><div class="form-group"><label id="customerModalLabel">Forma:</label><select id="modalCustomerSelect"></select></div></div>
+        <div class="modal-footer"><button class="btn-secondary" onclick="closeCustomerModal()">Zrušit</button><button id="btnCustSubmit" class="btn-primary" onclick="saveCustomerChange()">Uložit</button></div>
+    </div>
+</div>
+
+<div class="modal-overlay" id="directProdModal">
+    <div class="modal-card" style="max-width: 400px;">
+        <div class="modal-header"><h3>Forma po výrobě</h3><button class="close-modal-btn" onclick="closeDirectProdModal()">✕</button></div>
+        <div class="modal-body">
+            <div class="form-group"><label>Číslo formy:</label><input type="text" id="directProdMoldId" autocomplete="off" autocapitalization="none" autocapitalize="none"></div>
+            <div class="form-group"><label>Poznámka / Problémy (nepovinné):</label><textarea id="directProdComment" rows="3" autocapitalization="sentences" autocapitalize="sentences"></textarea></div>
+        </div>
+        <div class="modal-footer"><button class="btn-secondary" onclick="closeDirectProdModal()">Zrušit</button><button id="btnDirectSubmit" class="btn-primary" onclick="executeDirectProductionMove()">Odeslat do meziskladu</button></div>
+    </div>
+</div>
+
+<script>
+    const API_URL = "https://qjoovhagucdcaebgdmbx.supabase.co";
+    const API_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFqb292aGFndWNkY2FlYmdkbWJ4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQ4OTYyMTEsImV4cCI6MjEwMDQ3MjIxMX0.Z-Pey6nbpo5b-RyXkc2cCCV7Uj3-YgbAqZsTUV1kZD0";
+    const MASTER_PASSWORD = "adisadis";
+
+    const supabaseClient = window.supabase.createClient(API_URL, API_KEY);
+    const BASE_SYSTEM_CUSTOMERS = ["Škoda", "Novares", "Witte", "Scherdel", "AFSI", "Adient", "Mubea", "Ideal", "Others"];
+
+    let customersList = [
+        { name: "Škoda", bg: "#ffffff" },
+        { name: "Novares", bg: "#fef08a" },
+        { name: "Witte", bg: "#e2e8f0" },
+        { name: "Scherdel", bg: "#fecdd3" },
+        { name: "AFSI", bg: "#ffedd5" },
+        { name: "Adient", bg: "#93c5fd" },
+        { name: "Mubea", bg: "#60a5fa" },
+        { name: "Ideal", bg: "#f5d0fe" },
+        { name: "Others", bg: "#fdfbf7" }
+    ];
+
+    let rawDatabase = [];
+    let allComments = [];
+    let allLogsMap = {};
+    let expandedMoldsMap = {}; 
+    let editingAccordionMap = {}; 
+    let temporaryFilesMap = {}; 
+    let currentCustomerFilter = 'ALL';
+    let currentDashboardStatusFilter = 'ALL';
+    let selectedPresetColor = "#ffffff";
+    let currentUser = localStorage.getItem('adis_user_name') || null;
+
+    let activeEditMoldId = null;
+    let activeEditOldCust = null;
+    let activeEditOldPos = null;
+    let activeEditOldStatus = null;
+    let activeEditOldProductName = null;
+    let activeCommentMoldId = null;
+    let activeViewCommentId = null;
+    let activeContextMenuTag = null;
+
+    let isSubmittingAction = false;
+    let realtimeDebounceTimer = null;
+    let touchTimer = null;
+
+    const PALETTE_COLORS = [
+        "#ffffff", "#f8fafc", "#cbd5e1", "#64748b", "#1e293b", "#0f172a",
+        "#fdfbf7", "#d7ccc8", "#8d6e63", "#451a03",
+        "#ffe4e6", "#fecdd3", "#fda4af", "#fb7185", "#f43f5e", "#e11d48", "#be123c", "#9f1239",
+        "#ffedd5", "#fed7aa", "#fb923c", "#f97316", "#ea580c", "#c2410c",
+        "#fef9c3", "#fef08a", "#fde047", "#facc15", "#eab308", "#a16207",
+        "#f0fdf4", "#bbf7d0", "#86efac", "#4ade80", "#22c55e", "#16a34a", "#15803d", "#166534",
+        "#e0f2fe", "#bae6fd", "#7dd3fc", "#38bdf8", "#0ea5e9", "#0369a1",
+        "#eff6ff", "#bfdbfe", "#93c5fd", "#60a5fa", "#3b82f6", "#1d4ed8"
+    ];
+
+    const POSSIBLE_POSITIONS = (() => {
+        const positions = ["Mezisklad", "Mezisklad Ctiboř"];
+        const shelves = ['A', 'B', 'C', 'D', 'E'];
+        const colors = ['z', 'c', 'm', 'b', 'h'];
+        for (let num = 1; num <= 99; num++) {
+            for (let i = 0; i < shelves.length; i++) {
+                const shelf = shelves[i];
+                for (let j = 0; j < colors.length; j++) {
+                    positions.push(`${num}${shelf} ${colors[j]}`);
+                }
+            }
+        }
+        return positions;
+    })();
+
+    const GEAR_ICON_HTML = '<img src="icon1.png" alt="Upravit">';
+    const COMMENT_ICON_HTML = '<img src="icon5.png" alt="Poznámka">';
+    const ACCORDION_EDIT_ICON_HTML = '<img src="icon9.png" alt="Upravit">';
+
+    function autoDotPosition(str) {
+        if (!str) return str;
+        return str.trim().replace(/([zcmbzCMBHh])(?!\.)/g, '$1.');
+    }
+
+    document.addEventListener("DOMContentLoaded", () => {
+        updateAuthUI();
+        renderCustomColorDropdownOptions();
+
+        document.getElementById('btn-search').addEventListener('click', () => switchTab('search'));
+        document.getElementById('btn-database').addEventListener('click', () => switchTab('database'));
+        document.getElementById('btn-dashboard').addEventListener('click', () => switchTab('dashboard'));
+
+        document.querySelectorAll('.modal-overlay').forEach(overlay => {
+            overlay.addEventListener('click', (e) => {
+                if (e.target === overlay) {
+                    overlay.style.display = 'none';
+                }
+            });
+        });
+
+        document.addEventListener('click', (e) => {
+            if (!e.target.closest('.autocomplete-wrapper')) {
+                document.querySelectorAll('.autocomplete-dropdown').forEach(d => d.style.display = 'none');
+            }
+            if (!e.target.closest('#customColorWrapper')) {
+                const dd = document.getElementById('customColorDropdownList');
+                if (dd) dd.classList.remove('open');
+            }
+            hideContextMenu();
+        });
+
+        document.getElementById('contextDeleteOption').addEventListener('click', () => {
+            if (activeContextMenuTag) {
+                deleteCustomerTagDirect(activeContextMenuTag);
+                hideContextMenu();
+            }
+        });
+
+        fetchData();
+        setupRealtimeSubscription();
+    });
+
+    function renderCustomColorDropdownOptions() {
+        const listContainer = document.getElementById('customColorDropdownList');
+        if (!listContainer) return;
+        listContainer.innerHTML = PALETTE_COLORS.map(hex => `
+            <div class="custom-color-option" tabindex="0" onclick="selectCustomColor('${hex}')">
+                <div class="custom-color-option-sample" style="background-color: ${hex};"></div>
+            </div>
+        `).join('');
+    }
+
+    function toggleCustomColorDropdown(e) {
+        e.stopPropagation();
+        const dd = document.getElementById('customColorDropdownList');
+        if (dd) dd.classList.toggle('open');
+    }
+
+    function selectCustomColor(hex) {
+        selectedPresetColor = hex;
+        const sample = document.getElementById('selectedColorSample');
+        if (sample) sample.style.backgroundColor = hex;
+        const dd = document.getElementById('customColorDropdownList');
+        if (dd) dd.classList.remove('open');
+    }
+
+    function updateAuthUI() {
+        const authBtn = document.getElementById('authCornerBtn');
+        const iconWrapper = document.getElementById('authBtnIconWrapper');
+        const textSpan = document.getElementById('authBtnText');
+        const userSvgHtml = `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>`;
+        const keyImgHtml = `<img src="icon8.png" alt="Přihlásit">`;
+
+        if (currentUser) {
+            authBtn.classList.add('logged-in');
+            iconWrapper.innerHTML = userSvgHtml;
+            textSpan.textContent = `${currentUser}`;
+            authBtn.title = `Přihlášen jako: ${currentUser} (Klikněte pro odhlášení)`;
+        } else {
+            authBtn.classList.remove('logged-in');
+            iconWrapper.innerHTML = keyImgHtml;
+            textSpan.textContent = 'Přihlásit';
+            authBtn.title = 'Přihlášení uživatele';
+        }
+    }
+
+    async function handleAuthClick() {
+        if (currentUser) {
+            if (confirm(`Chcete se odhlásit z účtu ${currentUser}?`)) {
+                const exitingUser = currentUser;
+
+                // Логируем выход
+                try {
+                    await fetch(`${API_URL}/rest/v1/mold_logs`, {
+                        method: 'POST',
+                        headers: { 
+                            'apikey': API_KEY, 
+                            'Authorization': `Bearer ${API_KEY}`, 
+                            'Content-Type': 'application/json' 
+                        },
+                        body: JSON.stringify({ 
+                            mold_id: 'SYSTEM', 
+                            old_position: 'Přihlášen', 
+                            new_position: 'Odhlášen ze systému', 
+                            user_name: exitingUser 
+                        })
+                    });
+                } catch (e) { 
+                    console.error("Error logging logout event:", e); 
+                }
+
+                currentUser = null;
+                localStorage.removeItem('adis_user_name');
+                updateAuthUI();
+                refreshUI();
+            }
+        } else {
+            openLoginModal();
+        }
+    }
+
+    function openLoginModal() {
+        document.getElementById('loginUsername').value = '';
+        document.getElementById('loginPassword').value = '';
+        document.getElementById('loginModal').style.display = 'flex';
+        setTimeout(() => document.getElementById('loginUsername').focus(), 100);
+    }
+
+    function closeLoginModal() { document.getElementById('loginModal').style.display = 'none'; }
+
+    async function executeLogin() {
+        const username = document.getElementById('loginUsername').value.trim();
+        const password = document.getElementById('loginPassword').value.trim();
+        if (!username) { alert("Zadejte vaše jméno nebo směnu!"); return; }
+        if (password !== MASTER_PASSWORD) { alert("Nesprávné heslo!"); return; }
+
+        currentUser = username;
+        localStorage.setItem('adis_user_name', username);
+        closeLoginModal();
+        updateAuthUI();
+        refreshUI();
+
+        // Логируем вход
+        try {
+            await fetch(`${API_URL}/rest/v1/mold_logs`, {
+                method: 'POST',
+                headers: { 
+                    'apikey': API_KEY, 
+                    'Authorization': `Bearer ${API_KEY}`, 
+                    'Content-Type': 'application/json' 
+                },
+                body: JSON.stringify({ 
+                    mold_id: 'SYSTEM', 
+                    old_position: 'Odhlášen', 
+                    new_position: 'Přihlášen do systému', 
+                    user_name: currentUser 
+                })
+            });
+        } catch (e) { 
+            console.error("Error logging login event:", e); 
+        }
+    }
+
+    function checkAuthOrPrompt() {
+        if (!currentUser) { openLoginModal(); return false; }
+        return true;
+    }
+
+    function updateTrashIconVisibility() {
+        const trashBtn = document.getElementById('trashCornerBtn');
+        const hasDeleted = rawDatabase.some(item => item[4] === true);
+        trashBtn.style.display = hasDeleted ? 'flex' : 'none';
+    }
+
+    function refreshUI() {
+        updateTrashIconVisibility();
+        renderCustomerFilters();
+        renderCustomerSelects();
+        renderFullDatabase();
+        renderDashboard();
+        handleSearch();
+    }
+
+    function setupRealtimeSubscription() {
+        const debouncedFetch = () => {
+            if (realtimeDebounceTimer) clearTimeout(realtimeDebounceTimer);
+            realtimeDebounceTimer = setTimeout(() => {
+                fetchData();
+            }, 500);
+        };
+
+        supabaseClient
+            .channel('public-db-changes')
+            .on('postgres_changes', { event: '*', schema: 'public', table: 'molds' }, debouncedFetch)
+            .on('postgres_changes', { event: '*', schema: 'public', table: 'mold_comments' }, debouncedFetch)
+            .on('postgres_changes', { event: '*', schema: 'public', table: 'mold_logs' }, debouncedFetch)
+            .on('postgres_changes', { event: '*', schema: 'public', table: 'customers' }, debouncedFetch)
+            .subscribe();
+    }
+
+    async function fetchCustomers() {
+        try {
+            const res = await fetch(`${API_URL}/rest/v1/customers?select=*`, {
+                headers: { 'apikey': API_KEY, 'Authorization': `Bearer ${API_KEY}` }
+            });
+            if (res.ok) {
+                const data = await res.json();
+                if (data && data.length > 0) {
+                    let fetchedList = data.map(c => ({ name: c.name, bg: c.bg_color || '#ffffff' }));
+                    
+                    const savedOrderJson = localStorage.getItem('adis_customers_order');
+                    if (savedOrderJson) {
+                        try {
+                            const savedOrder = JSON.parse(savedOrderJson);
+                            fetchedList.sort((a, b) => {
+                                let indexA = savedOrder.indexOf(a.name);
+                                let indexB = savedOrder.indexOf(b.name);
+                                if (indexA === -1) indexA = 999;
+                                if (indexB === -1) indexB = 999;
+                                return indexA - indexB;
+                            });
+                        } catch (err) { console.error(err); }
+                    }
+
+                    const othersObj = fetchedList.find(c => c.name.toLowerCase() === 'others');
+                    let listWithoutOthers = fetchedList.filter(c => c.name.toLowerCase() !== 'others');
+                    if (othersObj) {
+                        listWithoutOthers.push(othersObj);
+                    } else {
+                        listWithoutOthers.push({ name: "Others", bg: "#fdfbf7" });
+                    }
+                    customersList = listWithoutOthers;
+                }
+            }
+        } catch (e) { console.error("Error fetching customers:", e); }
+    }
+
+    function renderCustomerFilters() {
+        const container = document.getElementById('customerFilters');
+        if (!container) return;
+
+        const isAllActive = currentCustomerFilter === 'ALL' ? 'active' : '';
+        let html = `
+            <span class="filter-chip ${isAllActive}" tabindex="0" onclick="filterCustomer('ALL', this)" style="background-color: #ffffff; color: #0f172a; border-color: #cbd5e1; font-weight: normal;">
+                Vše
+            </span>
+            <span class="filter-divider"></span>
+        `;
+
+        const listWithoutOthers = customersList.filter(c => c.name.toLowerCase() !== 'others');
+        const othersObj = customersList.find(c => c.name.toLowerCase() === 'others') || { name: "Others", bg: "#fdfbf7" };
+        const sortedCustomers = [...listWithoutOthers, othersObj];
+
+        sortedCustomers.forEach((c) => {
+            const isActive = currentCustomerFilter === c.name ? 'active' : '';
+            let chipStyle = `background-color: ${c.bg}; color: #000000; border-color: #cbd5e1; display: inline-flex; align-items: center; gap: 0.35rem;`;
+
+            html += `
+                <span class="filter-chip ${isActive}" tabindex="0" style="${chipStyle}"
+                      onclick="filterCustomer('${escapeHtml(c.name)}', this)"
+                      ontouchstart="handleTagTouchStart(event, '${escapeHtml(c.name)}')"
+                      ontouchend="handleTagTouchEnd()"
+                      ontouchmove="handleTagTouchEnd()"
+                      oncontextmenu="handleTagRightClick(event, '${escapeHtml(c.name)}')">
+                    <span>${escapeHtml(c.name)}</span>
+                </span>
+            `;
+        });
+        
+        html += `<button class="add-customer-chip" tabindex="0" onclick="openAddCustomerModal()" title="Přidat nového zákazníka">+</button>`;
+        container.innerHTML = html;
+    }
+
+    function handleTagTouchStart(e, customerName) {
+        if (BASE_SYSTEM_CUSTOMERS.includes(customerName)) return;
+        
+        touchTimer = setTimeout(() => {
+            if (navigator.vibrate) navigator.vibrate(50);
+            
+            activeContextMenuTag = customerName;
+            const menu = document.getElementById('customContextMenu');
+            const touch = e.touches[0] || e.changedTouches[0];
+            
+            menu.style.top = `${touch.clientY}px`;
+            menu.style.left = `${touch.clientX}px`;
+            menu.style.display = 'block';
+        }, 500);
+    }
+
+    function handleTagTouchEnd() {
+        if (touchTimer) clearTimeout(touchTimer);
+    }
+
+    function handleTagRightClick(e, customerName) {
+        e.preventDefault();
+        if (BASE_SYSTEM_CUSTOMERS.includes(customerName)) return;
+        
+        activeContextMenuTag = customerName;
+        const menu = document.getElementById('customContextMenu');
+        menu.style.top = `${e.clientY}px`;
+        menu.style.left = `${e.clientX}px`;
+        menu.style.display = 'block';
+    }
+
+    function hideContextMenu() {
+        const menu = document.getElementById('customContextMenu');
+        if (menu) menu.style.display = 'none';
+        activeContextMenuTag = null;
+    }
+
+    async function deleteCustomerTagDirect(customerName) {
+        if (!checkAuthOrPrompt() || BASE_SYSTEM_CUSTOMERS.includes(customerName)) return;
+
+        customersList = customersList.filter(c => c.name !== customerName);
+        if (currentCustomerFilter === customerName) currentCustomerFilter = 'ALL';
+        
+        const savedOrder = customersList.map(c => c.name);
+        localStorage.setItem('adis_customers_order', JSON.stringify(savedOrder));
+
+        refreshUI();
+
+        try {
+            await fetch(`${API_URL}/rest/v1/customers?name=eq.${encodeURIComponent(customerName)}`, {
+                method: 'DELETE',
+                headers: { 'apikey': API_KEY, 'Authorization': `Bearer ${API_KEY}`, 'Prefer': 'return=minimal' }
+            });
+        } catch (e) { console.error("Error deleting customer:", e); }
+    }
+
+    function renderCustomerSelects() {
+        const addSelect = document.getElementById('addMoldCustomer');
+        if (addSelect) {
+            const currentVal = addSelect.value || 'Others';
+            addSelect.innerHTML = customersList.map(c => `<option value="${escapeHtml(c.name)}" ${c.name === currentVal ? 'selected' : ''}>${escapeHtml(c.name)}</option>`).join('');
+        }
+    }
+
+    function openAddCustomerModal() {
+        if (!checkAuthOrPrompt()) return;
+        document.getElementById('newCustomerName').value = '';
+        selectCustomColor("#ffffff");
+        document.getElementById('addCustomerModal').style.display = 'flex';
+    }
+
+    function closeAddCustomerModal() { document.getElementById('addCustomerModal').style.display = 'none'; }
+
+    async function submitNewCustomer() {
+        if (isSubmittingAction) return;
+        const name = document.getElementById('newCustomerName').value.trim();
+        const bg = selectedPresetColor;
+        if (!name) { alert("Zadejte název zákazníka!"); return; }
+        if (customersList.some(c => c.name.toLowerCase() === name.toLowerCase())) { alert("Tento zákazník již existuje!"); return; }
+
+        isSubmittingAction = true;
+        closeAddCustomerModal();
+        
+        const othersIndex = customersList.findIndex(c => c.name.toLowerCase() === 'others');
+        if (othersIndex !== -1) {
+            customersList.splice(othersIndex, 0, { name, bg });
+        } else {
+            customersList.push({ name, bg });
+        }
+        
+        const savedOrder = customersList.map(c => c.name);
+        localStorage.setItem('adis_customers_order', JSON.stringify(savedOrder));
+
+        refreshUI();
+
+        try {
+            await fetch(`${API_URL}/rest/v1/customers`, {
+                method: 'POST',
+                headers: { 'apikey': API_KEY, 'Authorization': `Bearer ${API_KEY}`, 'Content-Type': 'application/json', 'Prefer': 'return=minimal' },
+                body: JSON.stringify({ name: name, bg_color: bg, text_color: '#000000', border_color: '#cbd5e1' })
+            });
+        } catch (e) { console.error("Error saving customer:", e); }
+        finally { isSubmittingAction = false; }
+    }
+
+    function getPositionBadgeClass(pos) {
+        const p = String(pos || "").trim().toLowerCase();
+        if (p.includes("mezisklad")) return 'badge-position pos-mezisklad';
+        if (p.includes(' z')) return 'badge-position pos-z';
+        if (p.includes(' c')) return 'badge-position pos-c';
+        if (p.includes(' m')) return 'badge-position pos-m';
+        if (p.includes(' b')) return 'badge-position pos-b';
+        if (p.includes(' h')) return 'badge-position pos-h';
+        const lastChar = p.replace('.', '').slice(-1);
+        if (['z', 'c', 'm', 'b', 'h'].includes(lastChar)) return `badge-position pos-${lastChar}`;
+        return 'badge-position pos-mezisklad';
+    }
+
+    function onPositionInput(inputElement) {
+        const query = inputElement.value.trim().toLowerCase();
+        const dropdown = document.getElementById(inputElement.id + 'Dropdown');
+        if (!query) { dropdown.style.display = 'none'; return; }
+        const filtered = POSSIBLE_POSITIONS.filter(pos => pos.toLowerCase().includes(query));
+        if (filtered.length === 0) { dropdown.style.display = 'none'; return; }
+        dropdown.innerHTML = filtered.slice(0, 50).map(item => `<div class="autocomplete-item" tabindex="0" onclick="selectPosition('${inputElement.id}', '${item}')">${item}</div>`).join('');
+        dropdown.style.display = 'block';
+    }
+
+    function selectPosition(inputId, value) {
+        document.getElementById(inputId).value = value;
+        document.getElementById(inputId + 'Dropdown').style.display = 'none';
+    }
+
+    function switchTab(tabName) {
+        ['search', 'database', 'dashboard'].forEach(t => {
+            document.getElementById(`btn-${t}`).classList.toggle('active', t === tabName);
+            document.getElementById(`tab-${t}`).classList.toggle('active', t === tabName);
+        });
+        if (tabName === 'database') renderFullDatabase();
+        if (tabName === 'dashboard') renderDashboard();
+    }
+
+    function extractCleanPosition(str) {
+        if (!str) return null;
+        let match = str.match(/Pozice:\s*([^,(]+)/i);
+        if (match && match[1]) {
+            let val = match[1].trim();
+            if (!val.toLowerCase().includes('mezisklad') && val !== '—') return val;
+        }
+        return null;
+    }
+
+    async function fetchData() {
+        try {
+            await fetchCustomers();
+            const [moldsRes, commentsRes, logsRes] = await Promise.all([
+                fetch(`${API_URL}/rest/v1/molds?select=*`, { headers: { 'apikey': API_KEY, 'Authorization': `Bearer ${API_KEY}` } }),
+                fetch(`${API_URL}/rest/v1/mold_comments?select=*&order=created_at.desc`, { headers: { 'apikey': API_KEY, 'Authorization': `Bearer ${API_KEY}` } }).catch(() => null),
+                fetch(`${API_URL}/rest/v1/mold_logs?select=*&order=created_at.desc`, { headers: { 'apikey': API_KEY, 'Authorization': `Bearer ${API_KEY}` } }).catch(() => null)
+            ]);
+
+            if (!moldsRes.ok) throw new Error("Chyba API");
+            const data = await moldsRes.json();
+            rawDatabase = data.map(item => {
+                let photosArr = [];
+                if (item.photo_url) {
+                    try {
+                        const parsed = JSON.parse(item.photo_url);
+                        photosArr = Array.isArray(parsed) ? parsed : [item.photo_url];
+                    } catch { photosArr = [item.photo_url]; }
+                }
+                return [item.id, item.position || '', item.customer || 'Others', item.status || '', item.is_deleted || false, item.product_name || '', photosArr];
+            });
+
+            if (commentsRes && commentsRes.ok) allComments = await commentsRes.json();
+            allLogsMap = {};
+            if (logsRes && logsRes.ok) {
+                const logs = await logsRes.json();
+                logs.forEach(log => {
+                    const mId = String(log.mold_id);
+                    if (!allLogsMap[mId]) {
+                        const oldP = extractCleanPosition(log.old_position);
+                        const newP = extractCleanPosition(log.new_position);
+                        if (oldP) allLogsMap[mId] = oldP;
+                        else if (newP) allLogsMap[mId] = newP;
+                    }
+                });
+            }
+            refreshUI();
+        } catch (e) { console.error("Fetch error:", e); }
+    }
+
+    function toggleAccordion(moldId) {
+        const floatingLayer = document.getElementById(`accordion-floating-${moldId}`);
+        const wrapper = document.getElementById(`accordion-wrap-${moldId}`);
+        const btn = document.getElementById(`accordion-btn-${moldId}`);
+        const isExpanded = Boolean(expandedMoldsMap[moldId]);
+
+        if (isExpanded) {
+            expandedMoldsMap[moldId] = false;
+            if (btn) btn.classList.remove('expanded');
+            wrapper.classList.remove('open');
+            floatingLayer.classList.remove('open');
+            setTimeout(() => {
+                floatingLayer.style.display = 'none';
+                delete editingAccordionMap[moldId];
+                delete temporaryFilesMap[moldId];
+            }, 470);
+        } else {
+            Object.keys(expandedMoldsMap).forEach(id => {
+                if (expandedMoldsMap[id] && id !== String(moldId)) toggleAccordion(id);
+            });
+            expandedMoldsMap[moldId] = true;
+            if (btn) btn.classList.add('expanded');
+
+            const item = rawDatabase.find(i => String(i[0]) === String(moldId));
+            const contentBox = document.getElementById(`accordion-content-box-${moldId}`);
+            if (item && contentBox) contentBox.innerHTML = renderAccordionInnerContent(item);
+
+            const triggerTr = document.getElementById(`accordion-trigger-${moldId}`);
+            if (triggerTr && floatingLayer) {
+                const tableContainer = triggerTr.closest('.table-container');
+                if (tableContainer) {
+                    floatingLayer.style.width = `${tableContainer.clientWidth}px`;
+                    const containerRect = tableContainer.getBoundingClientRect();
+                    const triggerRect = triggerTr.getBoundingClientRect();
+                    floatingLayer.style.top = `${triggerRect.bottom - containerRect.top + tableContainer.scrollTop}px`;
+                    floatingLayer.style.left = `${triggerRect.left - containerRect.left + tableContainer.scrollLeft}px`;
+                }
+            }
+            floatingLayer.style.display = 'block';
+            requestAnimationFrame(() => {
+                floatingLayer.classList.add('open');
+                wrapper.classList.add('open');
+            });
+        }
+    }
+
+    function toggleAccordionEditMode(moldId) {
+        if (!checkAuthOrPrompt()) return;
+        editingAccordionMap[moldId] = !editingAccordionMap[moldId];
+        if (!editingAccordionMap[moldId]) delete temporaryFilesMap[moldId];
+        const contentDiv = document.getElementById(`accordion-content-box-${moldId}`);
+        const item = rawDatabase.find(i => String(i[0]) === String(moldId));
+        if (contentDiv && item) contentDiv.innerHTML = renderAccordionInnerContent(item);
+    }
+
+    function handleAccordionFileSelect(moldId, inputElement) {
+        if (inputElement.files && inputElement.files.length > 0) {
+            if (!temporaryFilesMap[moldId]) temporaryFilesMap[moldId] = [];
+            const itemIdx = rawDatabase.findIndex(i => String(i[0]) === String(moldId));
+            const existingCount = itemIdx !== -1 ? rawDatabase[itemIdx][6].length : 0;
+            for (let i = 0; i < inputElement.files.length; i++) {
+                if (existingCount + temporaryFilesMap[moldId].length >= 5) { alert("Max 5 fotografií!"); break; }
+                temporaryFilesMap[moldId].push(inputElement.files[i]);
+            }
+            toggleAccordionEditMode(moldId);
+        }
+    }
+
+    function removeTempAccordionFile(moldId, index) {
+        if (temporaryFilesMap[moldId]) {
+            temporaryFilesMap[moldId].splice(index, 1);
+            toggleAccordionEditMode(moldId);
+        }
+    }
+
+    async function saveAccordionDetails(moldId) {
+        if (!checkAuthOrPrompt() || isSubmittingAction) return;
+        const nameInput = document.getElementById(`acc-name-${moldId}`);
+        const newProductName = nameInput ? nameInput.value.trim() : '';
+        const itemIdx = rawDatabase.findIndex(i => String(i[0]) === String(moldId));
+        if (itemIdx === -1) return;
+
+        isSubmittingAction = true;
+        let photosArr = [...rawDatabase[itemIdx][6]];
+        const pendingFiles = temporaryFilesMap[moldId] || [];
+
+        for (let file of pendingFiles) {
+            const fileName = `${moldId}_${Date.now()}_${Math.random().toString(36).substring(2, 7)}.${file.name.split('.').pop()}`;
+            const { error } = await supabaseClient.storage.from('mold-photos').upload(fileName, file, { upsert: true });
+            if (!error) {
+                const { data } = supabaseClient.storage.from('mold-photos').getPublicUrl(fileName);
+                photosArr.push(data.publicUrl);
+            }
+        }
+
+        delete temporaryFilesMap[moldId];
+        delete editingAccordionMap[moldId];
+        rawDatabase[itemIdx][5] = newProductName;
+        rawDatabase[itemIdx][6] = photosArr;
+        refreshUI();
+
+        try {
+            await fetch(`${API_URL}/rest/v1/molds?id=eq.${moldId}`, {
+                method: 'PATCH',
+                headers: { 'apikey': API_KEY, 'Authorization': `Bearer ${API_KEY}`, 'Content-Type': 'application/json', 'Prefer': 'return=minimal' },
+                body: JSON.stringify({ product_name: newProductName, photo_url: photosArr.length > 0 ? JSON.stringify(photosArr) : '' })
+            });
+        } catch (e) { console.error("Error saving accordion:", e); }
+        finally { isSubmittingAction = false; }
+    }
+
+    function openPhotoModal(photoUrl, moldId) {
+        document.getElementById('photoModalTitle').textContent = `Forma #${moldId}`;
+        document.getElementById('photoModalImg').src = photoUrl;
+        document.getElementById('photoModal').style.display = 'flex';
+    }
+
+    function closePhotoModal() { document.getElementById('photoModal').style.display = 'none'; }
+
+    function openCommentModal(moldId) {
+        if (!checkAuthOrPrompt()) return;
+        activeCommentMoldId = moldId;
+        document.getElementById('commentModalTitle').textContent = `Poznámka č. ${moldId}`;
+        document.getElementById('commentText').value = '';
+        document.getElementById('commentModal').style.display = 'flex';
+    }
+
+    function closeCommentModal() { document.getElementById('commentModal').style.display = 'none'; }
+
+    async function submitComment() {
+        if (isSubmittingAction) return;
+        const text = document.getElementById('commentText').value.trim();
+        if (!text) { alert("Zadejte text poznámky!"); return; }
+
+        isSubmittingAction = true;
+        closeCommentModal();
+        allComments.unshift({ id: 'temp-' + Date.now(), mold_id: activeCommentMoldId, user_name: currentUser, comment: text, created_at: new Date().toISOString() });
+        refreshUI();
+
+        try {
+            await fetch(`${API_URL}/rest/v1/mold_comments`, {
+                method: 'POST',
+                headers: { 'apikey': API_KEY, 'Authorization': `Bearer ${API_KEY}`, 'Content-Type': 'application/json', 'Prefer': 'return=minimal' },
+                body: JSON.stringify({ mold_id: activeCommentMoldId, user_name: currentUser, comment: text })
+            });
+        } catch (e) { console.error("Error saving comment:", e); }
+        finally { isSubmittingAction = false; }
+    }
+
+    function editPosition(moldId, currentPos) {
+        if (!checkAuthOrPrompt()) return;
+        activeEditMoldId = moldId;
+        activeEditOldPos = currentPos;
+        document.getElementById('positionModalLabel').textContent = `Forma č. ${moldId} (stávající: ${currentPos}):`;
+        document.getElementById('modalPositionInput').value = currentPos.toLowerCase().includes('mezisklad') && allLogsMap[String(moldId)] ? allLogsMap[String(moldId)] : currentPos;
+        document.getElementById('positionModal').style.display = 'flex';
+    }
+
+    function closePositionModal() { document.getElementById('positionModal').style.display = 'none'; }
+
+    async function savePositionChange() {
+        if (isSubmittingAction) return;
+        const newPos = autoDotPosition(document.getElementById('modalPositionInput').value);
+        if (!newPos) { alert("Zadejte pozici!"); return; }
+        if (newPos === activeEditOldPos) { closePositionModal(); return; }
+
+        isSubmittingAction = true;
+        closePositionModal();
+        const itemIdx = rawDatabase.findIndex(i => String(i[0]) === String(activeEditMoldId));
+        if (itemIdx !== -1) {
+            if (!activeEditOldPos.toLowerCase().includes('mezisklad')) allLogsMap[String(activeEditMoldId)] = activeEditOldPos;
+            rawDatabase[itemIdx][1] = newPos;
+            refreshUI();
+        }
+
+        try {
+            await Promise.all([
+                fetch(`${API_URL}/rest/v1/molds?id=eq.${activeEditMoldId}`, {
+                    method: 'PATCH',
+                    headers: { 'apikey': API_KEY, 'Authorization': `Bearer ${API_KEY}`, 'Content-Type': 'application/json', 'Prefer': 'return=minimal' },
+                    body: JSON.stringify({ position: newPos })
+                }),
+                fetch(`${API_URL}/rest/v1/mold_logs`, {
+                    method: 'POST',
+                    headers: { 'apikey': API_KEY, 'Authorization': `Bearer ${API_KEY}`, 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ mold_id: activeEditMoldId, old_position: `Pozice: ${activeEditOldPos}`, new_position: `Pozice: ${newPos}`, user_name: currentUser })
+                })
+            ]);
+        } catch (e) { console.error("Error updating position:", e); }
+        finally { isSubmittingAction = false; }
+    }
+
+    function openDirectProdModal() {
+        if (!checkAuthOrPrompt()) return;
+        document.getElementById('directProdMoldId').value = '';
+        document.getElementById('directProdComment').value = '';
+        document.getElementById('directProdModal').style.display = 'flex';
+    }
+
+    function closeDirectProdModal() { document.getElementById('directProdModal').style.display = 'none'; }
+
+    async function executeDirectProductionMove() {
+        if (isSubmittingAction) return;
+        const moldId = document.getElementById('directProdMoldId').value.trim();
+        const commentText = document.getElementById('directProdComment').value.trim();
+        if (!moldId) { alert("Zadejte číslo formy!"); return; }
+
+        isSubmittingAction = true;
+        const existing = rawDatabase.find(i => String(i[0]) === moldId);
+        const oldPos = existing ? existing[1] : 'Neznámá';
+        closeDirectProdModal();
+
+        if (existing) {
+            if (!oldPos.toLowerCase().includes('mezisklad')) allLogsMap[String(moldId)] = oldPos;
+            existing[1] = 'Mezisklad'; existing[3] = 'Ve Frontě';
+        }
+        refreshUI();
+
+        try {
+            await fetch(`${API_URL}/rest/v1/molds?id=eq.${moldId}`, {
+                method: 'PATCH',
+                headers: { 'apikey': API_KEY, 'Authorization': `Bearer ${API_KEY}`, 'Content-Type': 'application/json', 'Prefer': 'return=minimal' },
+                body: JSON.stringify({ position: 'Mezisklad', status: 'Ve Frontě' })
+            });
+            await fetch(`${API_URL}/rest/v1/mold_logs`, {
+                method: 'POST',
+                headers: { 'apikey': API_KEY, 'Authorization': `Bearer ${API_KEY}`, 'Content-Type': 'application/json' },
+                body: JSON.stringify({ mold_id: moldId, old_position: `Pozice: ${oldPos}`, new_position: `Pozice: Mezisklad, Stav: Ve Frontě`, user_name: currentUser })
+            });
+            if (commentText) {
+                await fetch(`${API_URL}/rest/v1/mold_comments`, {
+                    method: 'POST',
+                    headers: { 'apikey': API_KEY, 'Authorization': `Bearer ${API_KEY}`, 'Content-Type': 'application/json', 'Prefer': 'return=minimal' },
+                    body: JSON.stringify({ mold_id: moldId, user_name: currentUser, comment: commentText })
+                });
+            }
+        } catch (e) { console.error(e); }
+        finally { isSubmittingAction = false; }
+    }
+
+    function onStatusSelectChange(selectElem) {
+        document.getElementById('autoMeziskladCheckbox').checked = ['Ve Frontě', 'Na opravě', 'Na údržbě'].includes(selectElem.value);
+    }
+
+    function openFullEdit(moldId, currentPos, currentStatus, currentProductName) {
+        if (!checkAuthOrPrompt()) return;
+        activeEditMoldId = moldId;
+        activeEditOldPos = currentPos;
+        document.getElementById('fullEditPositionInput').value = currentPos.toLowerCase().includes('mezisklad') && allLogsMap[String(moldId)] ? allLogsMap[String(moldId)] : currentPos;
+        document.getElementById('fullEditStatusSelect').value = currentStatus || '';
+        document.getElementById('autoMeziskladCheckbox').checked = ['Ve Frontě', 'Na opravě', 'Na údržbě'].includes(currentStatus);
+        document.getElementById('fullEditModal').style.display = 'flex';
+    }
+
+    function closeFullEditModal() { document.getElementById('fullEditModal').style.display = 'none'; }
+
+    async function saveFullEditChange() {
+        if (isSubmittingAction) return;
+        let newPos = autoDotPosition(document.getElementById('fullEditPositionInput').value);
+        const newStatus = document.getElementById('fullEditStatusSelect').value;
+        if (document.getElementById('autoMeziskladCheckbox').checked) newPos = 'Mezisklad';
+
+        isSubmittingAction = true;
+        closeFullEditModal();
+        const itemIdx = rawDatabase.findIndex(i => String(i[0]) === String(activeEditMoldId));
+        if (itemIdx !== -1) {
+            rawDatabase[itemIdx][1] = newPos;
+            rawDatabase[itemIdx][3] = newStatus;
+            refreshUI();
+        }
+
+        try {
+            await Promise.all([
+                fetch(`${API_URL}/rest/v1/molds?id=eq.${activeEditMoldId}`, {
+                    method: 'PATCH',
+                    headers: { 'apikey': API_KEY, 'Authorization': `Bearer ${API_KEY}`, 'Content-Type': 'application/json', 'Prefer': 'return=minimal' },
+                    body: JSON.stringify({ position: newPos, status: newStatus })
+                }),
+                fetch(`${API_URL}/rest/v1/mold_logs`, {
+                    method: 'POST',
+                    headers: { 'apikey': API_KEY, 'Authorization': `Bearer ${API_KEY}`, 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ mold_id: activeEditMoldId, old_position: `Úprava formy`, new_position: `Pozice: ${newPos}, Stav: ${newStatus || 'žádný'}`, user_name: currentUser })
+                })
+            ]);
+        } catch (e) { console.error(e); }
+        finally { isSubmittingAction = false; }
+    }
+
+    async function deleteMoldSoft() {
+        if (!confirm(`Opravdu přesunout formu #${activeEditMoldId} do koše?`) || isSubmittingAction) return;
+        isSubmittingAction = true;
+        closeFullEditModal();
+
+        const itemIdx = rawDatabase.findIndex(i => String(i[0]) === String(activeEditMoldId));
+        if (itemIdx !== -1) { rawDatabase[itemIdx][4] = true; refreshUI(); }
+
+        try {
+            await Promise.all([
+                fetch(`${API_URL}/rest/v1/molds?id=eq.${activeEditMoldId}`, {
+                    method: 'PATCH',
+                    headers: { 'apikey': API_KEY, 'Authorization': `Bearer ${API_KEY}`, 'Content-Type': 'application/json', 'Prefer': 'return=minimal' },
+                    body: JSON.stringify({ is_deleted: true })
+                }),
+                fetch(`${API_URL}/rest/v1/mold_logs`, {
+                    method: 'POST',
+                    headers: { 'apikey': API_KEY, 'Authorization': `Bearer ${API_KEY}`, 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ mold_id: activeEditMoldId, old_position: `Aktivní`, new_position: `Koš`, user_name: currentUser })
+                })
+            ]);
+        } catch (e) { console.error(e); }
+        finally { isSubmittingAction = false; }
+    }
+
+    async function restoreMold(moldId) {
+        if (!checkAuthOrPrompt() || isSubmittingAction) return;
+        isSubmittingAction = true;
+        const itemIdx = rawDatabase.findIndex(i => String(i[0]) === String(moldId));
+        if (itemIdx !== -1) { rawDatabase[itemIdx][4] = false; refreshUI(); }
+        openTrashModal();
+
+        try {
+            await Promise.all([
+                fetch(`${API_URL}/rest/v1/molds?id=eq.${moldId}`, {
+                    method: 'PATCH',
+                    headers: { 'apikey': API_KEY, 'Authorization': `Bearer ${API_KEY}`, 'Content-Type': 'application/json', 'Prefer': 'return=minimal' },
+                    body: JSON.stringify({ is_deleted: false })
+                }),
+                fetch(`${API_URL}/rest/v1/mold_logs`, {
+                    method: 'POST',
+                    headers: { 'apikey': API_KEY, 'Authorization': `Bearer ${API_KEY}`, 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ mold_id: moldId, old_position: `Koš`, new_position: `Obnovena`, user_name: currentUser })
+                })
+            ]);
+        } catch (e) { console.error(e); }
+        finally { isSubmittingAction = false; }
+    }
+
+    function openTrashModal() {
+        document.getElementById('trashModal').style.display = 'flex';
+        const list = document.getElementById('trashList');
+        const deleted = rawDatabase.filter(item => item[4] === true);
+        if (deleted.length === 0) { list.innerHTML = `<div class="no-data">Koš je prázdný</div>`; return; }
+        list.innerHTML = deleted.map(item => `
+            <div class="log-item" style="flex-direction: row; justify-content: space-between; align-items: center;">
+                <div><strong>Forma #${escapeHtml(item[0])}</strong> (${escapeHtml(item[2])}, ${escapeHtml(item[1])})</div>
+                <button class="btn-primary" style="padding: 0.35rem 0.75rem; font-size: 0.8rem;" onclick="restoreMold('${escapeHtml(item[0])}')">Obnovit</button>
+            </div>
+        `).join('');
+    }
+
+    function closeTrashModal() { document.getElementById('trashModal').style.display = 'none'; }
+
+    function openAddModal() {
+        if (!checkAuthOrPrompt()) return;
+        document.getElementById('addMoldId').value = '';
+        document.getElementById('addMoldProductName').value = '';
+        document.getElementById('addMoldPosition').value = 'Mezisklad';
+        document.getElementById('addMoldStatus').value = '';
+        renderCustomerSelects();
+        document.getElementById('addModal').style.display = 'flex';
+    }
+
+    function closeAddModal() { document.getElementById('addModal').style.display = 'none'; }
+
+    async function submitNewMold() {
+        if (isSubmittingAction) return;
+        const id = document.getElementById('addMoldId').value.trim();
+        const productName = document.getElementById('addMoldProductName').value.trim();
+        const customer = document.getElementById('addMoldCustomer').value;
+        const position = autoDotPosition(document.getElementById('addMoldPosition').value);
+        const status = document.getElementById('addMoldStatus').value;
+
+        if (!id || !position) { alert("Vyplňte povinná pole!"); return; }
+        if (rawDatabase.some(i => String(i[0]) === id)) { alert(`Forma ${id} již existuje!`); return; }
+
+        isSubmittingAction = true;
+        closeAddModal();
+        rawDatabase.push([id, position, customer, status, false, productName, []]);
+        refreshUI();
+
+        try {
+            await fetch(`${API_URL}/rest/v1/molds`, {
+                method: 'POST',
+                headers: { 'apikey': API_KEY, 'Authorization': `Bearer ${API_KEY}`, 'Content-Type': 'application/json', 'Prefer': 'return=minimal' },
+                body: JSON.stringify({ id: id, customer: customer, position: position, status: status, product_name: productName, is_deleted: false })
+            });
+            await fetch(`${API_URL}/rest/v1/mold_logs`, {
+                method: 'POST',
+                headers: { 'apikey': API_KEY, 'Authorization': `Bearer ${API_KEY}`, 'Content-Type': 'application/json' },
+                body: JSON.stringify({ mold_id: id, old_position: 'Nová forma', new_position: `${position}`, user_name: `${currentUser}` })
+            });
+        } catch (e) { alert("Chyba: " + e.message); fetchData(); }
+        finally { isSubmittingAction = false; }
+    }
+
+    async function openLogsModal() {
+        document.getElementById('logsModal').style.display = 'flex';
+        const list = document.getElementById('logsList');
+        list.innerHTML = `<div class="no-data">Načítání historie...</div>`;
+        try {
+            const res = await fetch(`${API_URL}/rest/v1/mold_logs?select=*&order=created_at.desc&limit=100`, { headers: { 'apikey': API_KEY, 'Authorization': `Bearer ${API_KEY}` } });
+            const logs = await res.json();
+            if (logs.length === 0) { list.innerHTML = `<div class="no-data">Zatím žádná historie</div>`; return; }
+            list.innerHTML = logs.map(log => `
+                <div class="log-item">
+                    <div>Forma <strong>#${escapeHtml(log.mold_id)}</strong>: <span style="text-decoration: line-through; opacity: 0.6;">${escapeHtml(log.old_position || '—')}</span> &rarr; <strong>${escapeHtml(log.new_position)}</strong></div>
+                    <div class="log-meta"><span>${escapeHtml(log.user_name || 'Neznámý')}</span><span>${new Date(log.created_at).toLocaleString('cs-CZ')}</span></div>
+                </div>
+            `).join('');
+        } catch (e) { list.innerHTML = `<div class="no-data" style="color:var(--error-text)">Chyba načítání</div>`; }
+    }
+
+    function closeLogsModal() { document.getElementById('logsModal').style.display = 'none'; }
+    function promptClearLogs() { if (checkAuthOrPrompt()) document.getElementById('clearLogsModal').style.display = 'flex'; }
+    function closeClearLogsModal() { document.getElementById('clearLogsModal').style.display = 'none'; }
+
+    async function executeClearLogs() {
+        if (isSubmittingAction) return;
+        isSubmittingAction = true;
+        closeClearLogsModal();
+        try {
+            await fetch(`${API_URL}/rest/v1/mold_logs?mold_id=neq.NULL`, {
+                method: 'DELETE',
+                headers: { 
+                    'apikey': API_KEY, 
+                    'Authorization': `Bearer ${API_KEY}`,
+                    'Prefer': 'return=minimal'
+                }
+            });
+            
+            await fetch(`${API_URL}/rest/v1/mold_logs`, {
+                method: 'POST',
+                headers: { 'apikey': API_KEY, 'Authorization': `Bearer ${API_KEY}`, 'Content-Type': 'application/json' },
+                body: JSON.stringify({ mold_id: 'SYSTEM', old_position: 'Historie', new_position: 'Vyčištěna', user_name: currentUser })
+            });
+
+            alert("Historie byla úspěšně vyčištěna.");
+            openLogsModal();
+        } catch (e) { alert("Chyba při mazání: " + e.message); }
+        finally { isSubmittingAction = false; }
+    }
+
+    function getCustomerStyle(cust) {
+        const found = customersList.find(c => c.name.toLowerCase() === String(cust || "").toLowerCase());
+        return found ? `background-color: ${found.bg}; color: #000000; border-color: #cbd5e1;` : `background-color: #fdfbf7; color: #000000; border-color: #e7e5e4;`;
+    }
+
+    function renderStatusPill(status) {
+        if (!status) return '';
+        const s = String(status).toLowerCase();
+        let dot = 'dot-red';
+        if (s.includes('po údržbě') || s.includes('po udrzbe')) dot = 'dot-green';
+        else if (s.includes('ve frontě') || s.includes('ve fronte')) dot = 'dot-orange';
+        else if (s.includes('na údržbě') || s.includes('na udrzbe')) dot = 'dot-yellow';
+        return `<span class="status-pill"><span class="status-dot ${dot}"></span>${escapeHtml(status)}</span>`;
+    }
+
+    function renderPositionCellHtml(num, pos, status, productName) {
+        const badgeClass = getPositionBadgeClass(pos);
+        const prev = allLogsMap[String(num)];
+        const sub = pos.toLowerCase().includes('mezisklad') && prev ? `<span class="prev-position-sub">(Původně: ${escapeHtml(prev)})</span>` : '';
+        return `
+            <div class="position-cell">
+                <div class="position-wrapper">
+                    <span class="${badgeClass}" tabindex="0" onclick="editPosition('${escapeHtml(num)}', '${escapeHtml(pos)}')">${escapeHtml(pos)}</span>
+                    ${sub}
+                </div>
+                <div class="action-buttons-group">
+                    <button class="comment-btn" onclick="openCommentModal('${escapeHtml(num)}')">${COMMENT_ICON_HTML}</button>
+                    <button class="edit-btn" onclick="openFullEdit('${escapeHtml(num)}', '${escapeHtml(pos)}', '${escapeHtml(status || '')}', '${escapeHtml(productName || '')}')">${GEAR_ICON_HTML}</button>
+                </div>
+            </div>
+        `;
+    }
+
+    function renderAccordionInnerContent(item) {
+        const [num, pos, cust, status, isDel, productName, photosArr] = item;
+        const isEditing = Boolean(editingAccordionMap[num]);
+
+        if (!isEditing) {
+            const photosHtml = photosArr.length > 0 ? photosArr.map(url => `
+                <div class="accordion-thumb-wrapper"><img src="${escapeHtml(url)}" class="accordion-thumb" onclick="openPhotoModal('${escapeHtml(url)}', '${escapeHtml(num)}')"></div>
+            `).join('') : `<span style="font-size: 0.8rem; color: var(--text-muted);">Žádné fotografie</span>`;
+
+            return `
+                <div class="accordion-top-bar">
+                    <div class="accordion-header-title">Detail formy</div>
+                    <button class="accordion-edit-trigger-btn" onclick="toggleAccordionEditMode('${escapeHtml(num)}')">${ACCORDION_EDIT_ICON_HTML} Upravit</button>
+                </div>
+                <div style="font-size: 0.9rem; text-transform: capitalize;"><strong>Název výroby:</strong> ${productName ? escapeHtml(productName) : '<span style="color:var(--text-muted)">Nezadán</span>'}</div>
+                <div><div class="accordion-header-title" style="margin-bottom: 0.3rem;">Fotografie (${photosArr.length}/5):</div><div class="accordion-photo-box">${photosHtml}</div></div>
+            `;
+        } else {
+            const existingThumbs = photosArr.map((url, idx) => `
+                <div class="accordion-thumb-wrapper"><img src="${escapeHtml(url)}" class="accordion-thumb"><button type="button" class="accordion-thumb-remove" onclick="removeExistingAccordionPhoto('${escapeHtml(num)}', ${idx})">&times;</button></div>
+            `).join('');
+
+            const pending = temporaryFilesMap[num] || [];
+            const pendingThumbs = pending.map((file, idx) => `
+                <div class="accordion-thumb-wrapper" style="border-color: #3b82f6;"><img src="${URL.createObjectURL(file)}" class="accordion-thumb"><button type="button" class="accordion-thumb-remove" onclick="removeTempAccordionFile('${escapeHtml(num)}', ${idx})">&times;</button></div>
+            `).join('');
+
+            const uploadCard = (photosArr.length + pending.length < 5) ? `
+                <input type="file" id="acc-file-${escapeHtml(num)}" accept="image/*" multiple class="file-upload-hidden" onchange="handleAccordionFileSelect('${escapeHtml(num)}', this)">
+                <label for="acc-file-${escapeHtml(num)}" class="photo-upload-card"><span style="font-size:24px; color:var(--text-muted)">+</span><span style="font-size:0.65rem; color:var(--text-muted)">Přidat foto</span></label>
+            ` : '';
+
+            return `
+                <div class="accordion-top-bar">
+                    <div class="accordion-header-title" style="color: #3b82f6; font-weight: bold;">Režim úprav</div>
+                    <button class="accordion-edit-trigger-btn" onclick="toggleAccordionEditMode('${escapeHtml(num)}')">✕ Zrušit</button>
+                </div>
+                <div><div class="accordion-header-title">Název výroby:</div><input type="text" id="acc-name-${escapeHtml(num)}" value="${escapeHtml(productName || '')}" style="width:150px; padding:0.4rem; border-radius:6px; border:1px solid var(--border-color);" autocapitalization="sentences" autocapitalize="sentences"></div>
+                <div><div class="accordion-header-title">Fotografie:</div><div class="accordion-photo-box">${existingThumbs}${pendingThumbs}${uploadCard}</div></div>
+                <div style="text-align: right;"><button class="btn-primary" style="padding: 0.4rem 0.85rem; font-size: 0.8rem;" onclick="saveAccordionDetails('${escapeHtml(num)}')">Uložit změny</button></div>
+            `;
+        }
+    }
+
+    async function removeExistingAccordionPhoto(moldId, index) {
+        if (!confirm("Smazat fotografii?")) return;
+        const itemIdx = rawDatabase.findIndex(i => String(i[0]) === String(moldId));
+        if (itemIdx === -1) return;
+        rawDatabase[itemIdx][6].splice(index, 1);
+        toggleAccordionEditMode(moldId);
+        try {
+            await fetch(`${API_URL}/rest/v1/molds?id=eq.${moldId}`, {
+                method: 'PATCH',
+                headers: { 'apikey': API_KEY, 'Authorization': `Bearer ${API_KEY}`, 'Content-Type': 'application/json', 'Prefer': 'return=minimal' },
+                body: JSON.stringify({ photo_url: rawDatabase[itemIdx][6].length > 0 ? JSON.stringify(rawDatabase[itemIdx][6]) : '' })
+            });
+        } catch (e) { console.error(e); }
+    }
+
+    function renderTableRow(item, extraRowClass = '') {
+        const [num, pos, cust, status, isDel, productName, photosArr] = item;
+        const custStyle = getCustomerStyle(cust);
+        const isExpanded = Boolean(expandedMoldsMap[num]);
+        const productSub = productName ? `<span class="product-name-sub">↳ ${escapeHtml(productName)}</span>` : '';
+
+        const comments = allComments.filter(c => String(c.mold_id) === String(num));
+        const commentsHtml = comments.length > 0 ? `<div class="comments-section">${comments.map(c => `
+            <div class="comment-item">
+                <div class="comment-header-row"><div class="comment-meta"><span>${escapeHtml(c.user_name)}</span><span>${new Date(c.created_at).toLocaleString('cs-CZ', {hour:'2-digit', minute:'2-digit'})}</span></div></div>
+                <div>${escapeHtml(c.comment)}</div>
+            </div>
+        `).join('')}</div>` : '';
+
+        return `
+            <tr id="accordion-trigger-${escapeHtml(num)}" class="${extraRowClass}">
+                <td>
+                    <div class="mold-cell-content">
+                        <button id="accordion-btn-${escapeHtml(num)}" class="toggle-accordion-btn ${isExpanded ? 'expanded' : ''}" onclick="toggleAccordion('${escapeHtml(num)}')">${isExpanded ? '−' : '+'}</button>
+                        <strong>${escapeHtml(num)}</strong> ${renderStatusPill(status)}
+                    </div>
+                    ${productSub}${commentsHtml}
+                </td>
+                <td><span class="tag-customer" style="${custStyle}" onclick="editCustomer('${escapeHtml(num)}', '${escapeHtml(cust)}')">${escapeHtml(cust)}</span></td>
+                <td>${renderPositionCellHtml(num, pos, status, productName)}</td>
+            </tr>
+            <tr style="display: none;"><td colspan="3"></td></tr>
+        `;
+    }
+
+    function renderFloatingAccordions(activeMoldsList) {
+        return activeMoldsList.map(item => {
+            const isExpanded = Boolean(expandedMoldsMap[item[0]]);
+            return `
+                <div id="accordion-floating-${escapeHtml(item[0])}" class="accordion-floating-layer ${isExpanded ? 'open' : ''}" style="${isExpanded ? 'display: block;' : 'display: none;'}">
+                    <div id="accordion-wrap-${escapeHtml(item[0])}" class="accordion-anim-wrapper ${isExpanded ? 'open' : ''}">
+                        <div class="accordion-content" id="accordion-content-box-${escapeHtml(item[0])}">
+                            ${isExpanded ? renderAccordionInnerContent(item) : ''}
+                        </div>
+                    </div>
+                </div>
+            `;
+        }).join('');
+    }
+
+    function filterCustomer(cust) { currentCustomerFilter = cust; renderCustomerFilters(); renderFullDatabase(); }
+    function filterDashboardStatus(status, element) {
+        currentDashboardStatusFilter = status;
+        document.querySelectorAll('.dash-card').forEach(c => c.classList.remove('active'));
+        element.classList.add('active');
+        renderDashboard();
+    }
+
+    function renderFullDatabase() {
+        const tbody = document.getElementById('databaseTable'), stats = document.getElementById('dbStats'), container = document.getElementById('databaseTableContainer');
+        container.querySelectorAll('.accordion-floating-layer').forEach(el => el.remove());
+        const active = rawDatabase.filter(i => !i[4]);
+        if (active.length === 0) { tbody.innerHTML = `<tr><td colspan="3" class="no-data">Žádná data</td></tr>`; stats.textContent = '0 položek'; return; }
+
+        let filtered = currentCustomerFilter === 'ALL' ? active : active.filter(i => i[2].toLowerCase() === currentCustomerFilter.toLowerCase());
+        filtered.sort((a, b) => parseInt(a[0], 10) - parseInt(b[0], 10));
+
+        stats.textContent = `Zobrazeno: ${filtered.length}`;
+        tbody.innerHTML = filtered.map(i => renderTableRow(i)).join('');
+        container.insertAdjacentHTML('beforeend', renderFloatingAccordions(filtered));
+    }
+
+    function renderDashboard() {
+        const tbody = document.getElementById('dashboardTable'), stats = document.getElementById('dashStats'), container = document.getElementById('dashboardTableContainer');
+        container.querySelectorAll('.accordion-floating-layer').forEach(el => el.remove());
+        const active = rawDatabase.filter(i => !i[4]);
+        const withStatus = active.filter(i => { const s = (i[3] || '').toLowerCase(); return s && !s.includes('po údržbě'); });
+
+        let fFronte = 0, fOprave = 0, fUdrzbe = 0;
+        withStatus.forEach(i => {
+            const s = (i[3] || '').toLowerCase();
+            if (s.includes('frontě')) fFronte++;
+            if (s.includes('opravě')) fOprave++;
+            if (s.includes('údržbě')) fUdrzbe++;
+        });
+        document.getElementById('dash-count-active').textContent = withStatus.length;
+        document.getElementById('dash-count-fronte').textContent = fFronte;
+        document.getElementById('dash-count-oprave').textContent = fOprave;
+        document.getElementById('dash-count-udrzbe').textContent = fUdrzbe;
+
+        let filtered = currentDashboardStatusFilter === 'ALL' ? withStatus : withStatus.filter(i => (i[3] || '').toLowerCase().includes(currentDashboardStatusFilter.toLowerCase()));
+        filtered.sort((a, b) => parseInt(a[0], 10) - parseInt(b[0], 10));
+
+        stats.textContent = `Zobrazeno: ${filtered.length}`;
+        tbody.innerHTML = filtered.length > 0 ? filtered.map(i => renderTableRow(i)).join('') : `<tr><td colspan="3" class="no-data-centered" style="text-align: center !important;">V seznamu zatím nejsou žádné formy ke kontrole</td></tr>`;
+        container.insertAdjacentHTML('beforeend', renderFloatingAccordions(filtered));
+    }
+
+    function handleSearch() {
+        const q = document.getElementById('searchInput').value.trim().toLowerCase();
+        const tbody = document.getElementById('searchResults'), stats = document.getElementById('searchStats'), container = document.getElementById('searchTableContainer');
+        container.querySelectorAll('.accordion-floating-layer').forEach(el => el.remove());
+
+        if (!q) { 
+            tbody.innerHTML = `<tr><td colspan="3" class="no-data-centered" style="text-align: center !important;">Začněte psát do pole výše</td></tr>`; 
+            stats.textContent = ''; 
+            container.style.maxHeight = '';
+            container.style.overflowY = '';
+            return; 
+        }
+        
+        const active = rawDatabase.filter(i => !i[4]);
+        let res = active.filter(i => String(i[0]).toLowerCase().includes(q) || String(i[1]).toLowerCase().includes(q) || String(i[2]).toLowerCase().includes(q) || String(i[5] || '').toLowerCase().includes(q));
+
+        const exactMatch = res.find(i => String(i[0]).toLowerCase() === q);
+        if (exactMatch) {
+            res = [exactMatch];
+        }
+
+        res.sort((a, b) => parseInt(a[0], 10) - parseInt(b[0], 10));
+
+        stats.textContent = `Nalezeno: ${res.length}`;
+        
+        if (res.length > 0) {
+            tbody.innerHTML = res.map(i => renderTableRow(i, String(i[0]).toLowerCase() === q ? 'row-success' : '')).join('');
+        } else {
+            tbody.innerHTML = `<tr class="row-error"><td colspan="3" class="no-data-centered" style="text-align: center !important;">Forma není v databázi</td></tr>`;
+        }
+        
+        container.insertAdjacentHTML('beforeend', renderFloatingAccordions(res));
+
+        if (res.length > 0 && res.length <= 2) {
+            container.style.maxHeight = 'none';
+            container.style.overflowY = 'visible';
+        } else {
+            container.style.maxHeight = '';
+            container.style.overflowY = '';
+        }
+    }
+
+    function editCustomer(moldId, currentCust) {
+        if (!checkAuthOrPrompt()) return;
+        activeEditMoldId = moldId;
+        document.getElementById('customerModalLabel').textContent = `Forma č. ${moldId} (${currentCust}):`;
+        document.getElementById('modalCustomerSelect').innerHTML = customersList.map(c => `<option value="${escapeHtml(c.name)}" ${c.name === currentCust ? 'selected' : ''}>${escapeHtml(c.name)}</option>`).join('');
+        document.getElementById('customerModal').style.display = 'flex';
+    }
+    function closeCustomerModal() { document.getElementById('customerModal').style.display = 'none'; }
+
+    async function saveCustomerChange() {
+        if (isSubmittingAction) return;
+        const newCust = document.getElementById('modalCustomerSelect').value;
+        isSubmittingAction = true;
+        closeCustomerModal();
+        const item = rawDatabase.find(i => String(i[0]) === String(activeEditMoldId));
+        if (item) { item[2] = newCust; refreshUI(); }
+        try {
+            await fetch(`${API_URL}/rest/v1/molds?id=eq.${activeEditMoldId}`, {
+                method: 'PATCH',
+                headers: { 'apikey': API_KEY, 'Authorization': `Bearer ${API_KEY}`, 'Content-Type': 'application/json', 'Prefer': 'return=minimal' },
+                body: JSON.stringify({ customer: newCust })
+            });
+        } catch (e) { console.error(e); }
+        finally { isSubmittingAction = false; }
+    }
+
+    function escapeHtml(str) {
+        return String(str).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
+    }
+</script>
+</body>
+</html>
