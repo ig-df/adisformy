@@ -1196,9 +1196,16 @@
     const COMMENT_ICON_HTML = '<img src="icon5.png" alt="Poznámka">';
     const ACCORDION_EDIT_ICON_HTML = '<img src="icon9.png" alt="Upravit">';
 
+    // Исправленная функция: игнорирует Mezisklad и расставляет точки только в конце позиций стеллажей
     function autoDotPosition(str) {
         if (!str) return str;
-        return str.trim().replace(/([zcmbzCMBHh])(?!\.)/g, '$1.');
+        let trimmed = str.trim();
+        
+        if (trimmed.toLowerCase().includes('mezisklad')) {
+            return trimmed;
+        }
+        
+        return trimmed.replace(/\s+([zcmbzCMBHh])(?!\.)$/i, ' $1.');
     }
 
     document.addEventListener("DOMContentLoaded", () => {
@@ -1288,7 +1295,6 @@
             if (confirm(`Chcete se odhlásit z účtu ${currentUser}?`)) {
                 const exitingUser = currentUser;
 
-                // Логируем выход
                 try {
                     await fetch(`${API_URL}/rest/v1/mold_logs`, {
                         method: 'POST',
@@ -1339,7 +1345,6 @@
         updateAuthUI();
         refreshUI();
 
-        // Логируем вход
         try {
             await fetch(`${API_URL}/rest/v1/mold_logs`, {
                 method: 'POST',
