@@ -944,7 +944,7 @@
                     <div class="dash-card-value" id="dash-count-udrzbe">0</div>
                 </div>
             </div>
-            <div class="stats-bar"><span id="dashStats">Přehled forem se staveм...</span></div>
+            <div class="stats-bar"><span id="dashStats">Přehled forem se stavem...</span></div>
             <div class="table-container" id="dashboardTableContainer">
                 <table>
                     <thead><tr><th>Číslo formy</th><th>Zákazník</th><th>Pozice</th></tr></thead>
@@ -996,7 +996,10 @@
     <div class="modal-card" style="max-width: 500px;">
         <div class="modal-header"><h3>Koš (Smazané formy)</h3><button class="close-modal-btn" onclick="closeTrashModal()">✕</button></div>
         <div class="modal-body" id="trashList"><div class="no-data">Načítání smazaných forem...</div></div>
-        <div class="modal-footer"><button class="btn-primary" onclick="closeTrashModal()">Zavřít</button></div>
+        <div class="modal-footer" style="display: flex; justify-content: space-between; align-items: center;">
+            <button class="btn-danger" onclick="emptyTrash()">Vyčistit koš</button>
+            <button class="btn-primary" onclick="closeTrashModal()">Zavřít</button>
+        </div>
     </div>
 </div>
 
@@ -1177,9 +1180,10 @@
         "#eff6ff", "#bfdbfe", "#93c5fd", "#60a5fa", "#3b82f6", "#1d4ed8"
     ];
 
+    // Расширены полки до букв F и G для всех регуляров
     const POSSIBLE_POSITIONS = (() => {
         const positions = ["Mezisklad", "Mezisklad Ctiboř"];
-        const shelves = ['A', 'B', 'C', 'D', 'E'];
+        const shelves = ['A', 'B', 'C', 'D', 'E', 'F', 'G'];
         const colors = ['z', 'c', 'm', 'b', 'h'];
         for (let num = 1; num <= 99; num++) {
             for (let i = 0; i < shelves.length; i++) {
@@ -1196,7 +1200,6 @@
     const COMMENT_ICON_HTML = '<img src="icon5.png" alt="Poznámka">';
     const ACCORDION_EDIT_ICON_HTML = '<img src="icon9.png" alt="Upravit">';
 
-    // Исправленная функция: игнорирует Mezisklad и расставляет точки только в конце позиций стеллажей
     function autoDotPosition(str) {
         if (!str) return str;
         let trimmed = str.trim();
@@ -2019,6 +2022,53 @@
 
     function closeTrashModal() { document.getElementById('trashModal').style.display = 'none'; }
 
+    // Полное удаление списанных фантомных форм из Supabase
+    async function emptyTrash() {
+        if (!checkAuthOrPrompt()) return;
+        
+        const deletedMolds = rawDatabase.filter(item => item[4] === true);
+        if (deletedMolds.length === 0) {
+            alert("Koš je již prázdný!");
+            return;
+        }
+
+        if (!confirm(`Opravdu chcete trvale smazat všech ${deletedMolds.length} forem z koše? Tato akce je nevratná!`)) {
+            return;
+        }
+
+        if (isSubmittingAction) return;
+        isSubmittingAction = true;
+
+        try {
+            const res = await fetch(`${API_URL}/rest/v1/molds?is_deleted=eq.true`, {
+                method: 'DELETE',
+                headers: { 
+                    'apikey': API_KEY, 
+                    'Authorization': `Bearer ${API_KEY}`,
+                    'Prefer': 'return=minimal'
+                }
+            });
+
+            if (!res.ok) throw new Error("Chyba při mazání z databáze");
+
+            await fetch(`${API_URL}/rest/v1/mold_logs`, {
+                method: 'POST',
+                headers: { 'apikey': API_KEY, 'Authorization': `Bearer ${API_KEY}`, 'Content-Type': 'application/json' },
+                body: JSON.stringify({ mold_id: 'SYSTEM', old_position: 'Koš', new_position: 'Trvale vyčištěn', user_name: currentUser })
+            });
+
+            rawDatabase = rawDatabase.filter(item => item[4] !== true);
+            
+            alert("Koš byl úspěšně vyčištěn!");
+            closeTrashModal();
+            refreshUI();
+        } catch (e) {
+            alert("Chyba: " + e.message);
+        } finally {
+            isSubmittingAction = false;
+        }
+    }
+
     function openAddModal() {
         if (!checkAuthOrPrompt()) return;
         document.getElementById('addMoldId').value = '';
@@ -2258,12 +2308,17 @@
         const tbody = document.getElementById('databaseTable'), stats = document.getElementById('dbStats'), container = document.getElementById('databaseTableContainer');
         container.querySelectorAll('.accordion-floating-layer').forEach(el => el.remove());
         const active = rawDatabase.filter(i => !i[4]);
-        if (active.length === 0) { tbody.innerHTML = `<tr><td colspan="3" class="no-data">Žádná data</td></tr>`; stats.textContent = '0 položek'; return; }
+        if (active.length === 0) { tbody.innerHTML = `<tr><td colspan="3" class="no-data">Žádná data</td></tr>`; stats.textContent = 'Celkem aktivních forem: 0'; return; }
 
         let filtered = currentCustomerFilter === 'ALL' ? active : active.filter(i => i[2].toLowerCase() === currentCustomerFilter.toLowerCase());
         filtered.sort((a, b) => parseInt(a[0], 10) - parseInt(b[0], 10));
 
-        stats.textContent = `Zobrazeno: ${filtered.length}`;
+        if (currentCustomerFilter === 'ALL') {
+            stats.textContent = `Celkem aktivních forem: ${active.length}`;
+        } else {
+            stats.textContent = `Zobrazeno: ${filtered.length} z ${active.length}`;
+        }
+
         tbody.innerHTML = filtered.map(i => renderTableRow(i)).join('');
         container.insertAdjacentHTML('beforeend', renderFloatingAccordions(filtered));
     }
