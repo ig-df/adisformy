@@ -1,6 +1,15 @@
 <!DOCTYPE html>
 <html lang="cs">
 <head>
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-XZYF6MB88T"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+
+      gtag('config', 'G-XZYF6MB88T');
+    </script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Adis Formy - Databáze a Vyhledávání</title>
@@ -1180,7 +1189,6 @@
         "#eff6ff", "#bfdbfe", "#93c5fd", "#60a5fa", "#3b82f6", "#1d4ed8"
     ];
 
-    // Расширены полки до букв F и G для всех регуляров
     const POSSIBLE_POSITIONS = (() => {
         const positions = ["Mezisklad", "Mezisklad Ctiboř"];
         const shelves = ['A', 'B', 'C', 'D', 'E', 'F', 'G'];
@@ -2022,7 +2030,6 @@
 
     function closeTrashModal() { document.getElementById('trashModal').style.display = 'none'; }
 
-    // Полное удаление списанных фантомных форм из Supabase
     async function emptyTrash() {
         if (!checkAuthOrPrompt()) return;
         
