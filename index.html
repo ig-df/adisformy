@@ -406,15 +406,15 @@
             border-radius: 8px;
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
             padding: 0.3rem;
-            min-width: 110px;
+            min-width: 160px;
         }
 
         .context-menu-item {
             display: flex;
             align-items: center;
             gap: 0.4rem;
-            padding: 0.4rem 0.65rem;
-            font-size: 0.8rem;
+            padding: 0.5rem 0.65rem;
+            font-size: 0.82rem;
             font-weight: 600;
             color: var(--error-badge);
             cursor: pointer;
@@ -456,8 +456,8 @@
 
         .dashboard-grid {
             display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 0.6rem;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 0.5rem;
             margin-bottom: 1rem;
         }
 
@@ -465,12 +465,14 @@
             background: var(--card-bg);
             border: 1px solid var(--border-color);
             border-radius: 8px;
-            padding: 0.65rem;
+            padding: 0.5rem 0.6rem;
             display: flex;
             flex-direction: column;
+            justify-content: center;
             gap: 0.2rem;
             cursor: pointer;
             transition: all 0.2s ease;
+            min-height: 62px;
         }
 
         .dash-card.active {
@@ -478,16 +480,17 @@
         }
 
         .dash-card-title {
-            font-size: 0.72rem;
+            font-size: 0.68rem;
             font-weight: 600;
             color: var(--text-muted);
             display: flex;
             align-items: center;
-            gap: 0.3rem;
+            gap: 0.25rem;
+            line-height: 1.15;
         }
 
         .dash-card-value {
-            font-size: 1.3rem;
+            font-size: 1.15rem;
             font-weight: 700;
             color: var(--text-main);
         }
@@ -495,6 +498,9 @@
         @media (max-width: 600px) {
             .dashboard-grid {
                 grid-template-columns: repeat(2, 1fr);
+            }
+            .dash-card-main {
+                grid-column: 1 / span 2;
             }
             .table-container {
                 max-height: 380px;
@@ -712,7 +718,7 @@
             background: var(--card-bg);
         }
 
-        .status-dot { width: 6px; height: 6px; border-radius: 50%; display: inline-block; }
+        .status-dot { width: 6px; height: 6px; border-radius: 50%; display: inline-block; flex-shrink: 0; }
         .dot-green { background-color: var(--success-badge); }
         .dot-red { background-color: var(--error-badge); }
         .dot-orange { background-color: var(--warning-badge); }
@@ -745,23 +751,126 @@
         .pos-b { background-color: #ffffff !important; color: #0f172a !important; border: 1px solid #cbd5e1 !important; }
         .pos-h { background-color: #9a3412 !important; color: #ffffff !important; }
 
+        /* Карточка комментария */
         .comments-section {
-            margin-top: 0.4rem;
-            padding: 0.4rem;
-            background: var(--row-hover);
-            border-radius: 6px;
-            font-size: 0.78rem;
+            margin-top: 0.5rem;
             display: flex;
             flex-direction: column;
-            gap: 0.25rem;
+            gap: 0.4rem;
             text-align: left;
             width: 100%;
         }
 
-        .comment-item { border-bottom: 1px solid var(--border-color); padding-bottom: 0.25rem; display: flex; flex-direction: column; gap: 0.15rem; }
-        .comment-header-row { display: flex; justify-content: space-between; align-items: center; }
-        .comment-meta { font-size: 0.65rem; color: var(--text-muted); display: flex; gap: 0.4rem; text-transform: capitalize; }
-        .delete-comment-btn { background: none; border: none; cursor: pointer; font-size: 0.7rem; color: var(--text-muted); width: 16px; height: 16px; }
+        .comment-item { 
+            background: #ffffff;
+            border: 1px solid #cbd5e1;
+            border-radius: 8px;
+            padding: 0.5rem 0.65rem;
+            display: flex; 
+            flex-direction: column; 
+            gap: 0.25rem; 
+            cursor: pointer;
+            transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+            position: relative;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+        }
+
+        .comment-item:hover {
+            border-color: #94a3b8;
+            background-color: #f8fafc;
+            box-shadow: 0 4px 10px rgba(100, 116, 139, 0.12);
+            transform: translateY(-1.5px);
+        }
+
+        .comment-header-row { 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+        }
+
+        .comment-meta { 
+            font-size: 0.68rem; 
+            font-weight: 600;
+            color: var(--text-muted); 
+            display: flex; 
+            align-items: center;
+            gap: 0.4rem; 
+            text-transform: capitalize; 
+        }
+
+        /* Уменьшенная компактная иконка стрелочек */
+        .comment-expand-hint {
+            margin-left: auto;
+            margin-right: 0.15rem;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 15px;
+            height: 15px;
+            color: #94a3b8;
+            user-select: none;
+            transition: color 0.2s ease;
+        }
+
+        .comment-expand-hint svg {
+            width: 10px;
+            height: 10px;
+            display: block;
+        }
+
+        .comment-expand-hint .arrow-corner-tr,
+        .comment-expand-hint .arrow-corner-bl {
+            transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .comment-item:hover .comment-expand-hint {
+            color: #3b82f6;
+        }
+
+        /* Более сдержанный и аккуратный микро-сдвиг */
+        .comment-item:hover .comment-expand-hint .arrow-corner-tr {
+            transform: translate(1px, -1px);
+        }
+
+        .comment-item:hover .comment-expand-hint .arrow-corner-bl {
+            transform: translate(-1px, 1px);
+        }
+
+        /* Компактная аккуратная кнопка ✕ */
+        .delete-comment-btn { 
+            background: none; 
+            border: none; 
+            cursor: pointer; 
+            font-size: 0.7rem; 
+            color: var(--text-muted); 
+            width: 15px; 
+            height: 15px; 
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 3px;
+            transition: all 0.15s ease;
+            line-height: 1;
+        }
+
+        .delete-comment-btn:hover {
+            color: var(--error-badge);
+            background-color: var(--error-bg);
+        }
+
+        .comment-text-full, .comment-text-faded {
+            font-size: 0.8rem;
+            color: var(--text-main);
+            line-height: 1.35;
+            word-break: break-word;
+        }
+
+        .comment-text-faded {
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
 
         .tag-customer {
             display: inline-block;
@@ -936,21 +1045,29 @@
 
         <div id="tab-dashboard" class="tab-content">
             <div class="dashboard-grid">
-                <div class="dash-card active" id="card-all" onclick="filterDashboardStatus('ALL', this)">
+                <div class="dash-card dash-card-main active" id="card-all" onclick="filterDashboardStatus('ALL', this)">
                     <div class="dash-card-title">Formy ke kontrole</div>
                     <div class="dash-card-value" id="dash-count-active">0</div>
                 </div>
-                <div class="dash-card" id="card-fronte" onclick="filterDashboardStatus('Ve Frontě', this)">
-                    <div class="dash-card-title"><span class="status-dot dot-orange"></span> Ve Frontě</div>
-                    <div class="dash-card-value" id="dash-count-fronte">0</div>
+
+                <div class="dash-card" id="card-fronte-udrzbu" onclick="filterDashboardStatus('Ve frontě na údržbu', this)">
+                    <div class="dash-card-title"><span class="status-dot dot-orange"></span> Ve frontě na údržbu</div>
+                    <div class="dash-card-value" id="dash-count-fronte-udrzbu">0</div>
                 </div>
-                <div class="dash-card" id="card-oprave" onclick="filterDashboardStatus('Na opravě', this)">
-                    <div class="dash-card-title"><span class="status-dot dot-red"></span> Na opravě</div>
-                    <div class="dash-card-value" id="dash-count-oprave">0</div>
+
+                <div class="dash-card" id="card-fronte-opravu" onclick="filterDashboardStatus('Ve frontě na opravu', this)">
+                    <div class="dash-card-title"><span class="status-dot dot-red"></span> Ve frontě na opravu</div>
+                    <div class="dash-card-value" id="dash-count-fronte-opravu">0</div>
                 </div>
+
                 <div class="dash-card" id="card-udrzbe" onclick="filterDashboardStatus('Na údržbě', this)">
                     <div class="dash-card-title"><span class="status-dot dot-yellow"></span> Na údržbě</div>
                     <div class="dash-card-value" id="dash-count-udrzbe">0</div>
+                </div>
+
+                <div class="dash-card" id="card-oprave-pryc" onclick="filterDashboardStatus('Na opravě / pryč', this)">
+                    <div class="dash-card-title"><span class="status-dot dot-red"></span> Na opravě / pryč</div>
+                    <div class="dash-card-value" id="dash-count-oprave-pryc">0</div>
                 </div>
             </div>
             <div class="stats-bar"><span id="dashStats">Přehled forem se stavem...</span></div>
@@ -974,7 +1091,7 @@
 <!-- Кастомное контекстное меню -->
 <div id="customContextMenu" class="custom-context-menu">
     <div id="contextDeleteOption" class="context-menu-item">
-        <span>✕</span> Smazat
+        <span>✕</span> <span id="contextMenuText">Smazat</span>
     </div>
 </div>
 
@@ -1030,23 +1147,26 @@
 
 <div class="modal-overlay" id="photoModal">
     <div class="modal-card" style="max-width: 500px; text-align: center;">
-        <div class="modal-header"><h3 id="photoModalTitle">Fotografie výroby</h3><button class="close-modal-btn" onclick="closePhotoModal()">✕</button></div>
+        <div class="modal-header"><h3 id="photoModalTitle">Fotografie</h3><button class="close-modal-btn" onclick="closePhotoModal()">✕</button></div>
         <div class="modal-body" style="align-items: center; justify-content: center;"><img id="photoModalImg" src="" alt="Foto" style="max-width: 100%; max-height: 60vh; border-radius: 8px;"></div>
         <div class="modal-footer"><button class="btn-primary" onclick="closePhotoModal()">Zavřít</button></div>
     </div>
 </div>
 
 <div class="modal-overlay" id="viewCommentModal">
-    <div class="modal-card" style="max-width: 440px;">
+    <div class="modal-card" style="max-width: 460px;">
         <div class="modal-header"><h3 id="viewCommentTitle">Detail poznámky</h3><button class="close-modal-btn" onclick="closeViewCommentModal()">✕</button></div>
         <div class="modal-body">
             <div class="form-group">
                 <label id="viewCommentMeta" style="font-size: 0.78rem; color: var(--text-muted);"></label>
-                <div id="viewCommentDisplay" style="padding: 0.75rem; background: var(--row-hover); border: 1px solid var(--border-color); border-radius: 8px; white-space: pre-wrap; cursor: pointer;" onclick="enableCommentEditMode()"></div>
-                <div id="viewCommentEditBlock" style="display: none;"><textarea id="viewCommentTextarea" rows="4" style="width: 100%; padding: 0.75rem; border-radius: 8px;" autocapitalization="sentences" autocapitalize="sentences"></textarea></div>
+                <div id="viewCommentDisplay" style="padding: 0.85rem; background: var(--row-hover); border: 1px solid var(--border-color); border-radius: 8px; white-space: pre-wrap; font-size: 0.95rem; color: var(--text-main);"></div>
+                <div id="viewCommentPhotosBox" style="margin-top: 0.75rem; display: none;">
+                    <label style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 0.35rem; display: block;">Fotografie závady:</label>
+                    <div id="viewCommentPhotosContainer" class="accordion-photo-box"></div>
+                </div>
             </div>
         </div>
-        <div class="modal-footer" id="viewCommentFooter"><button class="btn-primary" onclick="closeViewCommentModal()">Zavřít</button></div>
+        <div class="modal-footer"><button class="btn-primary" onclick="closeViewCommentModal()">Zavřít</button></div>
     </div>
 </div>
 
@@ -1069,7 +1189,14 @@
                 <div class="autocomplete-wrapper"><input type="text" id="addMoldPosition" class="position-input" autocomplete="off" oninput="onPositionInput(this)" autocapitalization="sentences" autocapitalize="sentences"><div id="addMoldPositionDropdown" class="autocomplete-dropdown"></div></div>
             </div>
             <div class="form-group"><label>Stav formy:</label>
-                <select id="addMoldStatus"><option value="">(Bez stavu)</option><option value="Po údržbě">Po údržbě</option><option value="Ve Frontě">Ve Frontě</option><option value="Na opravě">Na opravě</option><option value="Na údržbě">Na údržbě</option></select>
+                <select id="addMoldStatus">
+                    <option value="">(Bez stavu)</option>
+                    <option value="Po údržbě">Po údržbě</option>
+                    <option value="Ve frontě na údržbu">Ve frontě na údržbu</option>
+                    <option value="Ve frontě na opravu">Ve frontě na opravu</option>
+                    <option value="Na údržbě">Na údržbě</option>
+                    <option value="Na opravě / pryč">Na opravě / pryč</option>
+                </select>
             </div>
         </div>
         <div class="modal-footer"><button class="btn-secondary" onclick="closeAddModal()">Zrušit</button><button id="btnAddSubmit" class="btn-primary" onclick="submitNewMold()">Přidat formu</button></div>
@@ -1096,12 +1223,18 @@
                 <div class="autocomplete-wrapper"><input type="text" id="fullEditPositionInput" class="position-input" autocomplete="off" oninput="onPositionInput(this)" autocapitalization="sentences" autocapitalize="sentences"><div id="fullEditPositionInputDropdown" class="autocomplete-dropdown"></div></div>
             </div>
             <div class="form-group"><label>Stav formy:</label>
-                <select id="fullEditStatusSelect" onchange="onStatusSelectChange(this)"><option value="">(Bez stavu)</option><option value="Po údržbě">Po údržbě</option><option value="Ve Frontě">Ve Frontě</option><option value="Na opravě">Na opravě</option><option value="Na údržbě">Na údržbě</option></select>
+                <select id="fullEditStatusSelect" onchange="onStatusSelectChange(this)">
+                    <option value="">(Bez stavu)</option>
+                    <option value="Po údržbě">Po údržbě</option>
+                    <option value="Ve frontě na údržbu">Ve frontě na údržbu</option>
+                    <option value="Ve frontě na opravu">Ve frontě na opravu</option>
+                    <option value="Na údržbě">Na údržbě</option>
+                    <option value="Na opravě / pryč">Na opravě / pryč</option>
+                </select>
             </div>
             <div class="form-group" style="flex-direction: row; align-items: center; gap: 0.5rem;"><input type="checkbox" id="autoMeziskladCheckbox" style="width: 18px; height: 18px;"><label for="autoMeziskladCheckbox">Přesunout na Mezisklad</label></div>
         </div>
-        <div class="modal-footer">
-            <button class="btn-danger" onclick="deleteMoldSoft()">Smazat formu</button>
+        <div class="modal-footer" style="justify-content: flex-end;">
             <div style="display: flex; gap: 0.5rem;"><button class="btn-secondary" onclick="closeFullEditModal()">Zrušit</button><button id="btnFullEditSubmit" class="btn-primary" onclick="saveFullEditChange()">Uložit</button></div>
         </div>
     </div>
@@ -1124,11 +1257,32 @@
 </div>
 
 <div class="modal-overlay" id="directProdModal">
-    <div class="modal-card" style="max-width: 400px;">
+    <div class="modal-card" style="max-width: 440px;">
         <div class="modal-header"><h3>Forma po výrobě</h3><button class="close-modal-btn" onclick="closeDirectProdModal()">✕</button></div>
         <div class="modal-body">
             <div class="form-group"><label>Číslo formy:</label><input type="text" id="directProdMoldId" autocomplete="off" autocapitalization="none" autocapitalize="none"></div>
-            <div class="form-group"><label>Poznámka / Problémy (nepovinné):</label><textarea id="directProdComment" rows="3" autocapitalization="sentences" autocapitalize="sentences"></textarea></div>
+            
+            <div class="form-group">
+                <label>Požadovaný stav:</label>
+                <select id="directProdStatus">
+                    <option value="Ve frontě na údržbu">Ve frontě na údržbu</option>
+                    <option value="Ve frontě na opravu">Ve frontě na opravu</option>
+                </select>
+            </div>
+
+            <div class="form-group"><label>Poznámka / Problémy (nepovinné):</label><textarea id="directProdComment" rows="3" autocapitalization="sentences" autocapitalize="sentences" placeholder="Popište vzniklý problém..."></textarea></div>
+
+            <div class="form-group">
+                <label>Fotografie závady (max 2 fotky):</label>
+                <div class="accordion-photo-box" id="directProdPhotoBox">
+                    <input type="file" id="directProdFileInput" accept="image/*" multiple class="file-upload-hidden" onchange="handleDirectProdFiles(this)">
+                    <label for="directProdFileInput" class="photo-upload-card" id="directProdUploadBtn">
+                        <span style="font-size:24px; color:var(--text-muted)">+</span>
+                        <span style="font-size:0.65rem; color:var(--text-muted)">Přidat foto</span>
+                    </label>
+                    <div id="directProdThumbsContainer" style="display: flex; gap: 0.5rem; flex-wrap: wrap;"></div>
+                </div>
+            </div>
         </div>
         <div class="modal-footer"><button class="btn-secondary" onclick="closeDirectProdModal()">Zrušit</button><button id="btnDirectSubmit" class="btn-primary" onclick="executeDirectProductionMove()">Odeslat do meziskladu</button></div>
     </div>
@@ -1160,6 +1314,7 @@
     let expandedMoldsMap = {}; 
     let editingAccordionMap = {}; 
     let temporaryFilesMap = {}; 
+    let directProdPendingFiles = [];
     let currentCustomerFilter = 'ALL';
     let currentDashboardStatusFilter = 'ALL';
     let selectedPresetColor = "#ffffff";
@@ -1171,8 +1326,9 @@
     let activeEditOldStatus = null;
     let activeEditOldProductName = null;
     let activeCommentMoldId = null;
-    let activeViewCommentId = null;
+    
     let activeContextMenuTag = null;
+    let activeContextMenuMoldId = null;
 
     let isSubmittingAction = false;
     let realtimeDebounceTimer = null;
@@ -1211,11 +1367,7 @@
     function autoDotPosition(str) {
         if (!str) return str;
         let trimmed = str.trim();
-        
-        if (trimmed.toLowerCase().includes('mezisklad')) {
-            return trimmed;
-        }
-        
+        if (trimmed.toLowerCase().includes('mezisklad')) return trimmed;
         return trimmed.replace(/\s+([zcmbzCMBHh])(?!\.)$/i, ' $1.');
     }
 
@@ -1249,6 +1401,9 @@
         document.getElementById('contextDeleteOption').addEventListener('click', () => {
             if (activeContextMenuTag) {
                 deleteCustomerTagDirect(activeContextMenuTag);
+                hideContextMenu();
+            } else if (activeContextMenuMoldId) {
+                deleteMoldSoftDirect(activeContextMenuMoldId);
                 hideContextMenu();
             }
         });
@@ -1493,6 +1648,9 @@
             if (navigator.vibrate) navigator.vibrate(50);
             
             activeContextMenuTag = customerName;
+            activeContextMenuMoldId = null;
+            document.getElementById('contextMenuText').textContent = 'Smazat zákazníka';
+            
             const menu = document.getElementById('customContextMenu');
             const touch = e.touches[0] || e.changedTouches[0];
             
@@ -1511,6 +1669,39 @@
         if (BASE_SYSTEM_CUSTOMERS.includes(customerName)) return;
         
         activeContextMenuTag = customerName;
+        activeContextMenuMoldId = null;
+        document.getElementById('contextMenuText').textContent = 'Smazat zákazníka';
+
+        const menu = document.getElementById('customContextMenu');
+        menu.style.top = `${e.clientY}px`;
+        menu.style.left = `${e.clientX}px`;
+        menu.style.display = 'block';
+    }
+
+    function handleMoldRowTouchStart(e, moldId) {
+        touchTimer = setTimeout(() => {
+            if (navigator.vibrate) navigator.vibrate(50);
+            
+            activeContextMenuMoldId = moldId;
+            activeContextMenuTag = null;
+            document.getElementById('contextMenuText').textContent = `Přesunout #${moldId} do koše`;
+
+            const menu = document.getElementById('customContextMenu');
+            const touch = e.touches[0] || e.changedTouches[0];
+            
+            menu.style.top = `${touch.clientY}px`;
+            menu.style.left = `${touch.clientX}px`;
+            menu.style.display = 'block';
+        }, 500);
+    }
+
+    function handleMoldRowRightClick(e, moldId) {
+        e.preventDefault();
+        
+        activeContextMenuMoldId = moldId;
+        activeContextMenuTag = null;
+        document.getElementById('contextMenuText').textContent = `Přesunout #${moldId} do koše`;
+
         const menu = document.getElementById('customContextMenu');
         menu.style.top = `${e.clientY}px`;
         menu.style.left = `${e.clientX}px`;
@@ -1521,6 +1712,7 @@
         const menu = document.getElementById('customContextMenu');
         if (menu) menu.style.display = 'none';
         activeContextMenuTag = null;
+        activeContextMenuMoldId = null;
     }
 
     async function deleteCustomerTagDirect(customerName) {
@@ -1540,6 +1732,51 @@
                 headers: { 'apikey': API_KEY, 'Authorization': `Bearer ${API_KEY}`, 'Prefer': 'return=minimal' }
             });
         } catch (e) { console.error("Error deleting customer:", e); }
+    }
+
+    async function deleteMoldSoftDirect(moldId) {
+        if (!checkAuthOrPrompt() || isSubmittingAction) return;
+        if (!confirm(`Opravdu přesunout formu #${moldId} do koše?`)) return;
+
+        isSubmittingAction = true;
+        const itemIdx = rawDatabase.findIndex(i => String(i[0]) === String(moldId));
+        if (itemIdx !== -1) { rawDatabase[itemIdx][4] = true; refreshUI(); }
+
+        try {
+            await Promise.all([
+                fetch(`${API_URL}/rest/v1/molds?id=eq.${moldId}`, {
+                    method: 'PATCH',
+                    headers: { 'apikey': API_KEY, 'Authorization': `Bearer ${API_KEY}`, 'Content-Type': 'application/json', 'Prefer': 'return=minimal' },
+                    body: JSON.stringify({ is_deleted: true })
+                }),
+                fetch(`${API_URL}/rest/v1/mold_logs`, {
+                    method: 'POST',
+                    headers: { 'apikey': API_KEY, 'Authorization': `Bearer ${API_KEY}`, 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ mold_id: moldId, old_position: `Aktivní`, new_position: `Koš (Kontekstní menu)`, user_name: currentUser })
+                })
+            ]);
+        } catch (e) { console.error(e); }
+        finally { isSubmittingAction = false; }
+    }
+
+    async function deleteComment(commentId) {
+        if (!checkAuthOrPrompt() || isSubmittingAction) return;
+        if (!confirm("Opravdu chcete smazat tuto poznámku a její fotky zprávy?")) return;
+
+        isSubmittingAction = true;
+        allComments = allComments.filter(c => String(c.id) !== String(commentId));
+        refreshUI();
+
+        try {
+            await fetch(`${API_URL}/rest/v1/mold_comments?id=eq.${commentId}`, {
+                method: 'DELETE',
+                headers: { 'apikey': API_KEY, 'Authorization': `Bearer ${API_KEY}`, 'Prefer': 'return=minimal' }
+            });
+        } catch (e) {
+            console.error("Error deleting comment:", e);
+        } finally {
+            isSubmittingAction = false;
+        }
     }
 
     function renderCustomerSelects() {
@@ -1827,6 +2064,40 @@
         finally { isSubmittingAction = false; }
     }
 
+    function openViewCommentModal(commentId) {
+        const commentObj = allComments.find(c => String(c.id) === String(commentId));
+        if (!commentObj) return;
+
+        document.getElementById('viewCommentTitle').textContent = `Detail poznámky #${commentObj.mold_id}`;
+        document.getElementById('viewCommentMeta').textContent = `Autor: ${commentObj.user_name || 'Neznámý'} | ${new Date(commentObj.created_at).toLocaleString('cs-CZ')}`;
+        document.getElementById('viewCommentDisplay').textContent = commentObj.comment;
+
+        const photosBox = document.getElementById('viewCommentPhotosBox');
+        const photosContainer = document.getElementById('viewCommentPhotosContainer');
+
+        let photosArr = [];
+        if (commentObj.photo_urls) {
+            try {
+                photosArr = typeof commentObj.photo_urls === 'string' ? JSON.parse(commentObj.photo_urls) : commentObj.photo_urls;
+            } catch { photosArr = [commentObj.photo_urls]; }
+        }
+
+        if (photosArr && photosArr.length > 0) {
+            photosContainer.innerHTML = photosArr.map(url => `
+                <div class="accordion-thumb-wrapper"><img src="${escapeHtml(url)}" class="accordion-thumb" onclick="openPhotoModal('${escapeHtml(url)}', '${escapeHtml(commentObj.mold_id)}')"></div>
+            `).join('');
+            photosBox.style.display = 'block';
+        } else {
+            photosBox.style.display = 'none';
+        }
+
+        document.getElementById('viewCommentModal').style.display = 'flex';
+    }
+
+    function closeViewCommentModal() {
+        document.getElementById('viewCommentModal').style.display = 'none';
+    }
+
     function editPosition(moldId, currentPos) {
         if (!checkAuthOrPrompt()) return;
         activeEditMoldId = moldId;
@@ -1873,16 +2144,54 @@
     function openDirectProdModal() {
         if (!checkAuthOrPrompt()) return;
         document.getElementById('directProdMoldId').value = '';
+        document.getElementById('directProdStatus').value = 'Ve frontě na údržbu';
         document.getElementById('directProdComment').value = '';
+        directProdPendingFiles = [];
+        renderDirectProdThumbs();
         document.getElementById('directProdModal').style.display = 'flex';
     }
 
     function closeDirectProdModal() { document.getElementById('directProdModal').style.display = 'none'; }
 
+    function handleDirectProdFiles(inputElement) {
+        if (inputElement.files && inputElement.files.length > 0) {
+            for (let i = 0; i < inputElement.files.length; i++) {
+                if (directProdPendingFiles.length >= 2) {
+                    alert("Můžete připojit maximálně 2 fotografie!");
+                    break;
+                }
+                directProdPendingFiles.push(inputElement.files[i]);
+            }
+            renderDirectProdThumbs();
+        }
+    }
+
+    function removeDirectProdFile(index) {
+        directProdPendingFiles.splice(index, 1);
+        renderDirectProdThumbs();
+    }
+
+    function renderDirectProdThumbs() {
+        const container = document.getElementById('directProdThumbsContainer');
+        const uploadBtn = document.getElementById('directProdUploadBtn');
+        if (!container) return;
+
+        container.innerHTML = directProdPendingFiles.map((file, idx) => `
+            <div class="accordion-thumb-wrapper" style="border-color: #3b82f6;">
+                <img src="${URL.createObjectURL(file)}" class="accordion-thumb">
+                <button type="button" class="accordion-thumb-remove" onclick="removeDirectProdFile(${idx})">&times;</button>
+            </div>
+        `).join('');
+
+        if (uploadBtn) uploadBtn.style.display = directProdPendingFiles.length >= 2 ? 'none' : 'flex';
+    }
+
     async function executeDirectProductionMove() {
         if (isSubmittingAction) return;
         const moldId = document.getElementById('directProdMoldId').value.trim();
+        const selectedStatus = document.getElementById('directProdStatus').value;
         const commentText = document.getElementById('directProdComment').value.trim();
+
         if (!moldId) { alert("Zadejte číslo formy!"); return; }
 
         isSubmittingAction = true;
@@ -1892,34 +2201,53 @@
 
         if (existing) {
             if (!oldPos.toLowerCase().includes('mezisklad')) allLogsMap[String(moldId)] = oldPos;
-            existing[1] = 'Mezisklad'; existing[3] = 'Ve Frontě';
+            existing[1] = 'Mezisklad'; 
+            existing[3] = selectedStatus;
         }
+
+        let uploadedPhotoUrls = [];
+        for (let file of directProdPendingFiles) {
+            const fileName = `defect_${moldId}_${Date.now()}_${Math.random().toString(36).substring(2, 7)}.${file.name.split('.').pop()}`;
+            const { error } = await supabaseClient.storage.from('mold-photos').upload(fileName, file, { upsert: true });
+            if (!error) {
+                const { data } = supabaseClient.storage.from('mold-photos').getPublicUrl(fileName);
+                uploadedPhotoUrls.push(data.publicUrl);
+            }
+        }
+
         refreshUI();
 
         try {
             await fetch(`${API_URL}/rest/v1/molds?id=eq.${moldId}`, {
                 method: 'PATCH',
                 headers: { 'apikey': API_KEY, 'Authorization': `Bearer ${API_KEY}`, 'Content-Type': 'application/json', 'Prefer': 'return=minimal' },
-                body: JSON.stringify({ position: 'Mezisklad', status: 'Ve Frontě' })
+                body: JSON.stringify({ position: 'Mezisklad', status: selectedStatus })
             });
+
             await fetch(`${API_URL}/rest/v1/mold_logs`, {
                 method: 'POST',
                 headers: { 'apikey': API_KEY, 'Authorization': `Bearer ${API_KEY}`, 'Content-Type': 'application/json' },
-                body: JSON.stringify({ mold_id: moldId, old_position: `Pozice: ${oldPos}`, new_position: `Pozice: Mezisklad, Stav: Ve Frontě`, user_name: currentUser })
+                body: JSON.stringify({ mold_id: moldId, old_position: `Pozice: ${oldPos}`, new_position: `Pozice: Mezisklad, Stav: ${selectedStatus}`, user_name: currentUser })
             });
-            if (commentText) {
+
+            if (commentText || uploadedPhotoUrls.length > 0) {
                 await fetch(`${API_URL}/rest/v1/mold_comments`, {
                     method: 'POST',
                     headers: { 'apikey': API_KEY, 'Authorization': `Bearer ${API_KEY}`, 'Content-Type': 'application/json', 'Prefer': 'return=minimal' },
-                    body: JSON.stringify({ mold_id: moldId, user_name: currentUser, comment: commentText })
+                    body: JSON.stringify({ 
+                        mold_id: moldId, 
+                        user_name: currentUser, 
+                        comment: commentText || 'Odesláno z výroby', 
+                        photo_urls: uploadedPhotoUrls.length > 0 ? JSON.stringify(uploadedPhotoUrls) : null 
+                    })
                 });
             }
-        } catch (e) { console.error(e); }
+        } catch (e) { console.error("Error submitting production move:", e); }
         finally { isSubmittingAction = false; }
     }
 
     function onStatusSelectChange(selectElem) {
-        document.getElementById('autoMeziskladCheckbox').checked = ['Ve Frontě', 'Na opravě', 'Na údržbě'].includes(selectElem.value);
+        document.getElementById('autoMeziskladCheckbox').checked = ['Ve frontě na údržbu', 'Ve frontě na opravu', 'Na údržbě', 'Na opravě / pryč'].includes(selectElem.value);
     }
 
     function openFullEdit(moldId, currentPos, currentStatus, currentProductName) {
@@ -1928,7 +2256,7 @@
         activeEditOldPos = currentPos;
         document.getElementById('fullEditPositionInput').value = currentPos.toLowerCase().includes('mezisklad') && allLogsMap[String(moldId)] ? allLogsMap[String(moldId)] : currentPos;
         document.getElementById('fullEditStatusSelect').value = currentStatus || '';
-        document.getElementById('autoMeziskladCheckbox').checked = ['Ve Frontě', 'Na opravě', 'Na údržbě'].includes(currentStatus);
+        document.getElementById('autoMeziskladCheckbox').checked = ['Ve frontě na údržbu', 'Ve frontě na opravu', 'Na údržbě', 'Na opravě / pryč'].includes(currentStatus);
         document.getElementById('fullEditModal').style.display = 'flex';
     }
 
@@ -1960,31 +2288,6 @@
                     method: 'POST',
                     headers: { 'apikey': API_KEY, 'Authorization': `Bearer ${API_KEY}`, 'Content-Type': 'application/json' },
                     body: JSON.stringify({ mold_id: activeEditMoldId, old_position: `Úprava formy`, new_position: `Pozice: ${newPos}, Stav: ${newStatus || 'žádný'}`, user_name: currentUser })
-                })
-            ]);
-        } catch (e) { console.error(e); }
-        finally { isSubmittingAction = false; }
-    }
-
-    async function deleteMoldSoft() {
-        if (!confirm(`Opravdu přesunout formu #${activeEditMoldId} do koše?`) || isSubmittingAction) return;
-        isSubmittingAction = true;
-        closeFullEditModal();
-
-        const itemIdx = rawDatabase.findIndex(i => String(i[0]) === String(activeEditMoldId));
-        if (itemIdx !== -1) { rawDatabase[itemIdx][4] = true; refreshUI(); }
-
-        try {
-            await Promise.all([
-                fetch(`${API_URL}/rest/v1/molds?id=eq.${activeEditMoldId}`, {
-                    method: 'PATCH',
-                    headers: { 'apikey': API_KEY, 'Authorization': `Bearer ${API_KEY}`, 'Content-Type': 'application/json', 'Prefer': 'return=minimal' },
-                    body: JSON.stringify({ is_deleted: true })
-                }),
-                fetch(`${API_URL}/rest/v1/mold_logs`, {
-                    method: 'POST',
-                    headers: { 'apikey': API_KEY, 'Authorization': `Bearer ${API_KEY}`, 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ mold_id: activeEditMoldId, old_position: `Aktivní`, new_position: `Koš`, user_name: currentUser })
                 })
             ]);
         } catch (e) { console.error(e); }
@@ -2176,8 +2479,10 @@
         const s = String(status).toLowerCase();
         let dot = 'dot-red';
         if (s.includes('po údržbě') || s.includes('po udrzbe')) dot = 'dot-green';
-        else if (s.includes('ve frontě') || s.includes('ve fronte')) dot = 'dot-orange';
+        else if (s.includes('frontě na údržbu') || s.includes('fronte na udrzbu')) dot = 'dot-orange';
+        else if (s.includes('frontě na opravu') || s.includes('fronte na opravu')) dot = 'dot-red';
         else if (s.includes('na údržbě') || s.includes('na udrzbe')) dot = 'dot-yellow';
+        else if (s.includes('na opravě') || s.includes('na oprave')) dot = 'dot-red';
         return `<span class="status-pill"><span class="status-dot ${dot}"></span>${escapeHtml(status)}</span>`;
     }
 
@@ -2258,22 +2563,49 @@
         } catch (e) { console.error(e); }
     }
 
-    function renderTableRow(item, extraRowClass = '') {
+    function renderTableRow(item, extraRowClass = '', enableContextMenu = false) {
         const [num, pos, cust, status, isDel, productName, photosArr] = item;
         const custStyle = getCustomerStyle(cust);
         const isExpanded = Boolean(expandedMoldsMap[num]);
         const productSub = productName ? `<span class="product-name-sub">↳ ${escapeHtml(productName)}</span>` : '';
 
         const comments = allComments.filter(c => String(c.mold_id) === String(num));
-        const commentsHtml = comments.length > 0 ? `<div class="comments-section">${comments.map(c => `
-            <div class="comment-item">
-                <div class="comment-header-row"><div class="comment-meta"><span>${escapeHtml(c.user_name)}</span><span>${new Date(c.created_at).toLocaleString('cs-CZ', {hour:'2-digit', minute:'2-digit'})}</span></div></div>
-                <div>${escapeHtml(c.comment)}</div>
-            </div>
-        `).join('')}</div>` : '';
+        const commentsHtml = comments.length > 0 ? `<div class="comments-section">${comments.map(c => {
+            const hasPhotos = c.photo_urls && (Array.isArray(c.photo_urls) ? c.photo_urls.length > 0 : String(c.photo_urls).length > 2);
+            const photoBadge = hasPhotos ? ` 📷` : '';
+            
+            const isLongText = (c.comment || '').length > 90 || (c.comment || '').includes('\n');
+            const textClass = isLongText ? 'comment-text-faded' : 'comment-text-full';
+
+            return `
+                <div class="comment-item" onclick="openViewCommentModal('${c.id}')" title="Klikněte pro detail">
+                    <div class="comment-header-row">
+                        <div class="comment-meta">
+                            <span>${escapeHtml(c.user_name)}</span>
+                            <span>${new Date(c.created_at).toLocaleString('cs-CZ', {hour:'2-digit', minute:'2-digit'})}${photoBadge}</span>
+                        </div>
+                        <span class="comment-expand-hint" title="Otevřít detail">
+                            <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path class="arrow-corner-tr" d="M9 3h4v4" />
+                                <path class="arrow-corner-bl" d="M7 13H3v-4" />
+                            </svg>
+                        </span>
+                        <button class="delete-comment-btn" onclick="event.stopPropagation(); deleteComment('${c.id}')" title="Smazat poznámku">✕</button>
+                    </div>
+                    <div class="${textClass}">${escapeHtml(c.comment)}</div>
+                </div>
+            `;
+        }).join('')}</div>` : '';
+
+        const contextAttrs = enableContextMenu ? `
+            ontouchstart="handleMoldRowTouchStart(event, '${escapeHtml(num)}')"
+            ontouchend="handleTagTouchEnd()"
+            ontouchmove="handleTagTouchEnd()"
+            oncontextmenu="handleMoldRowRightClick(event, '${escapeHtml(num)}')"
+        ` : '';
 
         return `
-            <tr id="accordion-trigger-${escapeHtml(num)}" class="${extraRowClass}">
+            <tr id="accordion-trigger-${escapeHtml(num)}" class="${extraRowClass}" ${contextAttrs}>
                 <td>
                     <div class="mold-cell-content">
                         <button id="accordion-btn-${escapeHtml(num)}" class="toggle-accordion-btn ${isExpanded ? 'expanded' : ''}" onclick="toggleAccordion('${escapeHtml(num)}')">${isExpanded ? '−' : '+'}</button>
@@ -2304,6 +2636,7 @@
     }
 
     function filterCustomer(cust) { currentCustomerFilter = cust; renderCustomerFilters(); renderFullDatabase(); }
+    
     function filterDashboardStatus(status, element) {
         currentDashboardStatusFilter = status;
         document.querySelectorAll('.dash-card').forEach(c => c.classList.remove('active'));
@@ -2326,7 +2659,7 @@
             stats.textContent = `Zobrazeno: ${filtered.length} z ${active.length}`;
         }
 
-        tbody.innerHTML = filtered.map(i => renderTableRow(i)).join('');
+        tbody.innerHTML = filtered.map(i => renderTableRow(i, '', true)).join('');
         container.insertAdjacentHTML('beforeend', renderFloatingAccordions(filtered));
     }
 
@@ -2336,23 +2669,26 @@
         const active = rawDatabase.filter(i => !i[4]);
         const withStatus = active.filter(i => { const s = (i[3] || '').toLowerCase(); return s && !s.includes('po údržbě'); });
 
-        let fFronte = 0, fOprave = 0, fUdrzbe = 0;
+        let fFronteUdrzbu = 0, fFronteOpravu = 0, fUdrzbe = 0, fOpravePryc = 0;
         withStatus.forEach(i => {
             const s = (i[3] || '').toLowerCase();
-            if (s.includes('frontě')) fFronte++;
-            if (s.includes('opravě')) fOprave++;
-            if (s.includes('údržbě')) fUdrzbe++;
+            if (s.includes('frontě na údržbu') || s.includes('fronte na udrzbu')) fFronteUdrzbu++;
+            else if (s.includes('frontě na opravu') || s.includes('fronte na opravu')) fFronteOpravu++;
+            else if (s.includes('na údržbě') || s.includes('na udrzbe')) fUdrzbe++;
+            else if (s.includes('na opravě') || s.includes('na oprave')) fOpravePryc++;
         });
+
         document.getElementById('dash-count-active').textContent = withStatus.length;
-        document.getElementById('dash-count-fronte').textContent = fFronte;
-        document.getElementById('dash-count-oprave').textContent = fOprave;
+        document.getElementById('dash-count-fronte-udrzbu').textContent = fFronteUdrzbu;
+        document.getElementById('dash-count-fronte-opravu').textContent = fFronteOpravu;
         document.getElementById('dash-count-udrzbe').textContent = fUdrzbe;
+        document.getElementById('dash-count-oprave-pryc').textContent = fOpravePryc;
 
         let filtered = currentDashboardStatusFilter === 'ALL' ? withStatus : withStatus.filter(i => (i[3] || '').toLowerCase().includes(currentDashboardStatusFilter.toLowerCase()));
         filtered.sort((a, b) => parseInt(a[0], 10) - parseInt(b[0], 10));
 
         stats.textContent = `Zobrazeno: ${filtered.length}`;
-        tbody.innerHTML = filtered.length > 0 ? filtered.map(i => renderTableRow(i)).join('') : `<tr><td colspan="3" class="no-data-centered" style="text-align: center !important;">V seznamu zatím nejsou žádné formy ke kontrole</td></tr>`;
+        tbody.innerHTML = filtered.length > 0 ? filtered.map(i => renderTableRow(i, '', false)).join('') : `<tr><td colspan="3" class="no-data-centered" style="text-align: center !important;">V seznamu zatím nejsou žádné formy ke kontrole</td></tr>`;
         container.insertAdjacentHTML('beforeend', renderFloatingAccordions(filtered));
     }
 
@@ -2382,7 +2718,7 @@
         stats.textContent = `Nalezeno: ${res.length}`;
         
         if (res.length > 0) {
-            tbody.innerHTML = res.map(i => renderTableRow(i, String(i[0]).toLowerCase() === q ? 'row-success' : '')).join('');
+            tbody.innerHTML = res.map(i => renderTableRow(i, String(i[0]).toLowerCase() === q ? 'row-success' : '', false)).join('');
         } else {
             tbody.innerHTML = `<tr class="row-error"><td colspan="3" class="no-data-centered" style="text-align: center !important;">Forma není v databázi</td></tr>`;
         }
