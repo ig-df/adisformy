@@ -63,13 +63,13 @@
             color: var(--text-main);
             display: flex;
             justify-content: center;
-            padding: 1.5rem 1rem;
+            padding: 1rem 0.5rem;
             min-height: 100vh;
         }
 
         .container {
             width: 100%;
-            max-width: 900px;
+            max-width: 960px;
             background: var(--card-bg);
             border: 1px solid var(--border-color);
             border-radius: 12px;
@@ -154,6 +154,12 @@
         }
 
         @media (max-width: 600px) {
+            body {
+                padding: 0.5rem 0.2rem;
+            }
+            .content {
+                padding: 0.75rem 0.5rem !important;
+            }
             .auth-btn {
                 padding: 0.35rem !important;
             }
@@ -241,10 +247,12 @@
             transition: transform 0.25s ease;
         }
 
+        /* --- ВКЛАДКИ И АНИМАЦИИ --- */
         .tabs {
             display: flex;
             border-bottom: 1px solid var(--border-color);
             background-color: var(--card-bg);
+            position: relative;
         }
 
         .tab-btn {
@@ -252,12 +260,14 @@
             padding: 0.85rem;
             background: none;
             border: none;
+            border-bottom: 2px solid transparent;
             font-size: 0.95rem;
             font-weight: 600;
             color: var(--text-muted);
             cursor: pointer;
-            transition: all 0.2s ease;
+            transition: color 0.15s ease, border-color 0.15s ease;
             outline: none;
+            position: relative;
         }
 
         .tab-btn:hover {
@@ -265,21 +275,36 @@
             background-color: var(--row-hover);
         }
 
+        .tab-btn:active {
+            transform: scale(0.98);
+        }
+
         .tab-btn.active {
             color: var(--text-main);
-            border-bottom: 2px solid var(--text-main);
+            border-bottom-color: var(--text-main);
         }
 
         .content {
             padding: 1.25rem;
+            position: relative;
+            overflow: hidden;
         }
 
         .tab-content {
             display: none;
+            opacity: 0;
+            transform: translateY(6px);
+            transition: opacity 0.18s ease-out, transform 0.18s ease-out;
+            will-change: opacity, transform;
         }
 
         .tab-content.active {
             display: block;
+        }
+
+        .tab-content.visible {
+            opacity: 1;
+            transform: translateY(0);
         }
 
         .search-box {
@@ -406,7 +431,7 @@
             border-radius: 8px;
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
             padding: 0.3rem;
-            min-width: 160px;
+            min-width: 170px;
         }
 
         .context-menu-item {
@@ -427,12 +452,13 @@
         }
 
         .table-container {
-            max-height: 480px;
+            max-height: 520px;
             overflow-y: auto;
             border: 1px solid var(--border-color);
             border-radius: 8px;
             position: relative;
             -webkit-overflow-scrolling: touch;
+            transition: min-height 0.47s cubic-bezier(0.16, 1, 0.3, 1);
         }
 
         table {
@@ -503,7 +529,7 @@
                 grid-column: 1 / span 2;
             }
             .table-container {
-                max-height: 380px;
+                max-height: 420px;
             }
 
             .customer-filters-wrapper {
@@ -524,27 +550,31 @@
             .customer-filters::-webkit-scrollbar {
                 display: none;
             }
+
+            th:nth-child(1), td:nth-child(1) { width: 48% !important; }
+            th:nth-child(2), td:nth-child(2) { width: 20% !important; }
+            th:nth-child(3), td:nth-child(3) { width: 32% !important; }
         }
 
         @media (min-width: 601px) {
-            #searchTable th:nth-child(1), #searchTable td:nth-child(1) { width: 35%; text-align: left !important; padding-left: 1.25rem; }
-            #searchTable th:nth-child(2), #searchTable td:nth-child(2) { width: 25%; text-align: center !important; }
-            #searchTable th:nth-child(3), #searchTable td:nth-child(3) { width: 40%; text-align: left !important; padding-left: 82px !important; }
+            #searchTable th:nth-child(1), #searchTable td:nth-child(1) { width: 45%; text-align: left !important; padding-left: 1.25rem; }
+            #searchTable th:nth-child(2), #searchTable td:nth-child(2) { width: 20%; text-align: center !important; }
+            #searchTable th:nth-child(3), #searchTable td:nth-child(3) { width: 35%; text-align: left !important; padding-left: 60px !important; }
             #searchTable th { padding: 0.75rem 1.25rem; font-size: 0.75rem; }
 
-            #databaseTableContainer th:nth-child(1), #databaseTableContainer td:nth-child(1) { width: 35%; text-align: left !important; padding-left: 1.25rem; }
-            #databaseTableContainer th:nth-child(2), #databaseTableContainer td:nth-child(2) { width: 25%; text-align: center; }
-            #databaseTableContainer th:nth-child(3), #databaseTableContainer td:nth-child(3) { width: 40%; text-align: left !important; padding-left: 82px !important; }
+            #databaseTableContainer th:nth-child(1), #databaseTableContainer td:nth-child(1) { width: 45%; text-align: left !important; padding-left: 1.25rem; }
+            #databaseTableContainer th:nth-child(2), #databaseTableContainer td:nth-child(2) { width: 20%; text-align: center; }
+            #databaseTableContainer th:nth-child(3), #databaseTableContainer td:nth-child(3) { width: 35%; text-align: left !important; padding-left: 60px !important; }
             #databaseTableContainer th { padding: 0.75rem 1.25rem; font-size: 0.75rem; }
 
-            #dashboardTableContainer th:nth-child(1), #dashboardTableContainer td:nth-child(1) { width: 35%; text-align: left !important; padding-left: 1.25rem; }
-            #dashboardTableContainer th:nth-child(2), #dashboardTableContainer td:nth-child(2) { width: 25%; text-align: center; }
-            #dashboardTableContainer th:nth-child(3), #dashboardTableContainer td:nth-child(3) { width: 40%; text-align: left !important; padding-left: 82px !important; }
+            #dashboardTableContainer th:nth-child(1), #dashboardTableContainer td:nth-child(1) { width: 45%; text-align: left !important; padding-left: 1.25rem; }
+            #dashboardTableContainer th:nth-child(2), #dashboardTableContainer td:nth-child(2) { width: 20%; text-align: center; }
+            #dashboardTableContainer th:nth-child(3), #dashboardTableContainer td:nth-child(3) { width: 35%; text-align: left !important; padding-left: 60px !important; }
             #dashboardTableContainer th { padding: 0.75rem 1.25rem; font-size: 0.75rem; }
         }
 
         td {
-            padding: 0.65rem 0.6rem;
+            padding: 0.65rem 0.5rem;
             border-bottom: 1px solid var(--border-color);
             font-size: 0.85rem;
             vertical-align: top;
@@ -704,8 +734,8 @@
             justify-content: center;
         }
 
-        .mold-cell-content { display: flex; align-items: center; gap: 0.3rem; flex-wrap: wrap; }
-        .product-name-sub { display: flex; align-items: center; gap: 0.35rem; font-size: 0.78rem; color: var(--text-muted); margin-top: 0.2rem; text-transform: capitalize; }
+        .mold-cell-content { display: flex; align-items: center; gap: 0.35rem; flex-wrap: wrap; }
+        .product-name-sub { display: flex; align-items: center; gap: 0.35rem; font-size: 0.78rem; color: var(--text-muted); margin-top: 0.35rem; text-transform: capitalize; }
         
         .status-pill {
             display: inline-flex;
@@ -716,6 +746,7 @@
             font-size: 0.65rem;
             border: 1px solid var(--border-color);
             background: var(--card-bg);
+            margin-left: 0.2rem;
         }
 
         .status-dot { width: 6px; height: 6px; border-radius: 50%; display: inline-block; flex-shrink: 0; }
@@ -751,57 +782,53 @@
         .pos-b { background-color: #ffffff !important; color: #0f172a !important; border: 1px solid #cbd5e1 !important; }
         .pos-h { background-color: #9a3412 !important; color: #ffffff !important; }
 
-        /* Карточка комментария */
         .comments-section {
-            margin-top: 0.5rem;
+            margin-top: 0.45rem;
             display: flex;
             flex-direction: column;
-            gap: 0.4rem;
+            gap: 0.35rem;
             text-align: left;
             width: 100%;
         }
 
         .comment-item { 
-            background: #ffffff;
-            border: 1px solid #cbd5e1;
-            border-radius: 8px;
-            padding: 0.5rem 0.65rem;
+            background: rgba(241, 245, 249, 0.65);
+            border-left: 3px solid #cbd5e1;
+            border-radius: 6px;
+            padding: 0.35rem 0.5rem;
             display: flex; 
             flex-direction: column; 
-            gap: 0.25rem; 
+            gap: 0.2rem; 
             cursor: pointer;
-            transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+            transition: all 0.15s ease;
             position: relative;
-            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
         }
 
         .comment-item:hover {
-            border-color: #94a3b8;
-            background-color: #f8fafc;
-            box-shadow: 0 4px 10px rgba(100, 116, 139, 0.12);
-            transform: translateY(-1.5px);
+            background-color: rgba(226, 232, 240, 0.85);
+            border-left-color: #3b82f6;
         }
 
         .comment-header-row { 
             display: flex; 
             justify-content: space-between; 
             align-items: center; 
+            gap: 0.35rem;
         }
 
         .comment-meta { 
-            font-size: 0.68rem; 
+            font-size: 0.65rem; 
             font-weight: 600;
             color: var(--text-muted); 
             display: flex; 
             align-items: center;
-            gap: 0.4rem; 
+            gap: 0.35rem; 
             text-transform: capitalize; 
+            flex-wrap: wrap;
         }
 
-        /* Уменьшенная компактная иконка стрелочек */
         .comment-expand-hint {
             margin-left: auto;
-            margin-right: 0.15rem;
             display: inline-flex;
             align-items: center;
             justify-content: center;
@@ -810,6 +837,7 @@
             color: #94a3b8;
             user-select: none;
             transition: color 0.2s ease;
+            flex-shrink: 0;
         }
 
         .comment-expand-hint svg {
@@ -827,42 +855,20 @@
             color: #3b82f6;
         }
 
-        /* Более сдержанный и аккуратный микро-сдвиг */
         .comment-item:hover .comment-expand-hint .arrow-corner-tr {
-            transform: translate(1px, -1px);
+            transform: translate(1.5px, -1.5px);
         }
 
         .comment-item:hover .comment-expand-hint .arrow-corner-bl {
-            transform: translate(-1px, 1px);
-        }
-
-        /* Компактная аккуратная кнопка ✕ */
-        .delete-comment-btn { 
-            background: none; 
-            border: none; 
-            cursor: pointer; 
-            font-size: 0.7rem; 
-            color: var(--text-muted); 
-            width: 15px; 
-            height: 15px; 
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            border-radius: 3px;
-            transition: all 0.15s ease;
-            line-height: 1;
-        }
-
-        .delete-comment-btn:hover {
-            color: var(--error-badge);
-            background-color: var(--error-bg);
+            transform: translate(-1.5px, 1.5px);
         }
 
         .comment-text-full, .comment-text-faded {
-            font-size: 0.8rem;
+            font-size: 0.76rem;
             color: var(--text-main);
-            line-height: 1.35;
+            line-height: 1.32;
             word-break: break-word;
+            white-space: pre-wrap;
         }
 
         .comment-text-faded {
@@ -934,6 +940,9 @@
             display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0;
             background: rgba(0, 0, 0, 0.5); backdrop-filter: blur(2px); z-index: 1000;
             justify-content: center; align-items: center; padding: 1rem; overflow-y: auto;
+        }
+        #photoModal {
+            z-index: 2000 !important;
         }
         .modal-card {
             background: var(--card-bg); color: var(--text-main); width: 100%; max-width: 500px; max-height: 85vh;
@@ -1017,7 +1026,7 @@
     </div>
 
     <div class="content">
-        <div id="tab-search" class="tab-content active">
+        <div id="tab-search" class="tab-content active visible">
             <div class="search-box">
                 <input type="text" id="searchInput" class="search-input" tabindex="0" placeholder="Zadejte číslo formy, výrobu, pozici nebo zákazníka..." oninput="handleSearch()" autocomplete="off" autocapitalization="sentences" autocapitalize="sentences">
             </div>
@@ -1088,14 +1097,12 @@
     </button>
 </div>
 
-<!-- Кастомное контекстное меню -->
 <div id="customContextMenu" class="custom-context-menu">
     <div id="contextDeleteOption" class="context-menu-item">
         <span>✕</span> <span id="contextMenuText">Smazat</span>
     </div>
 </div>
 
-<!-- Модальные окна -->
 <div class="modal-overlay" id="loginModal">
     <div class="modal-card" style="max-width: 360px;">
         <div class="modal-header"><h3>Přihlášení uživatele</h3><button class="close-modal-btn" onclick="closeLoginModal()">✕</button></div>
@@ -1159,14 +1166,17 @@
         <div class="modal-body">
             <div class="form-group">
                 <label id="viewCommentMeta" style="font-size: 0.78rem; color: var(--text-muted);"></label>
-                <div id="viewCommentDisplay" style="padding: 0.85rem; background: var(--row-hover); border: 1px solid var(--border-color); border-radius: 8px; white-space: pre-wrap; font-size: 0.95rem; color: var(--text-main);"></div>
+                <div id="viewCommentDisplay" style="padding: 0.85rem; background: var(--row-hover); border: 1px solid var(--border-color); border-radius: 8px; white-space: pre-wrap; font-size: 0.88rem; color: var(--text-main);"></div>
                 <div id="viewCommentPhotosBox" style="margin-top: 0.75rem; display: none;">
                     <label style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 0.35rem; display: block;">Fotografie závady:</label>
                     <div id="viewCommentPhotosContainer" class="accordion-photo-box"></div>
                 </div>
             </div>
         </div>
-        <div class="modal-footer"><button class="btn-primary" onclick="closeViewCommentModal()">Zavřít</button></div>
+        <div class="modal-footer" style="display: flex; justify-content: space-between; align-items: center;">
+            <button class="btn-danger" id="viewCommentDeleteBtn" onclick="executeViewCommentDelete()">Smazat poznámku</button>
+            <button class="btn-primary" onclick="closeViewCommentModal()">Zavřít</button>
+        </div>
     </div>
 </div>
 
@@ -1329,6 +1339,8 @@
     
     let activeContextMenuTag = null;
     let activeContextMenuMoldId = null;
+    let activeContextMenuCommentId = null;
+    let activeViewCommentId = null;
 
     let isSubmittingAction = false;
     let realtimeDebounceTimer = null;
@@ -1401,11 +1413,12 @@
         document.getElementById('contextDeleteOption').addEventListener('click', () => {
             if (activeContextMenuTag) {
                 deleteCustomerTagDirect(activeContextMenuTag);
-                hideContextMenu();
             } else if (activeContextMenuMoldId) {
                 deleteMoldSoftDirect(activeContextMenuMoldId);
-                hideContextMenu();
+            } else if (activeContextMenuCommentId) {
+                deleteComment(activeContextMenuCommentId);
             }
+            hideContextMenu();
         });
 
         fetchData();
@@ -1649,6 +1662,7 @@
             
             activeContextMenuTag = customerName;
             activeContextMenuMoldId = null;
+            activeContextMenuCommentId = null;
             document.getElementById('contextMenuText').textContent = 'Smazat zákazníka';
             
             const menu = document.getElementById('customContextMenu');
@@ -1670,6 +1684,7 @@
         
         activeContextMenuTag = customerName;
         activeContextMenuMoldId = null;
+        activeContextMenuCommentId = null;
         document.getElementById('contextMenuText').textContent = 'Smazat zákazníka';
 
         const menu = document.getElementById('customContextMenu');
@@ -1684,6 +1699,7 @@
             
             activeContextMenuMoldId = moldId;
             activeContextMenuTag = null;
+            activeContextMenuCommentId = null;
             document.getElementById('contextMenuText').textContent = `Přesunout #${moldId} do koše`;
 
             const menu = document.getElementById('customContextMenu');
@@ -1700,7 +1716,42 @@
         
         activeContextMenuMoldId = moldId;
         activeContextMenuTag = null;
+        activeContextMenuCommentId = null;
         document.getElementById('contextMenuText').textContent = `Přesunout #${moldId} do koše`;
+
+        const menu = document.getElementById('customContextMenu');
+        menu.style.top = `${e.clientY}px`;
+        menu.style.left = `${e.clientX}px`;
+        menu.style.display = 'block';
+    }
+
+    function handleCommentTouchStart(e, commentId) {
+        e.stopPropagation();
+        touchTimer = setTimeout(() => {
+            if (navigator.vibrate) navigator.vibrate(50);
+            
+            activeContextMenuCommentId = commentId;
+            activeContextMenuTag = null;
+            activeContextMenuMoldId = null;
+            document.getElementById('contextMenuText').textContent = `Smazat poznámku`;
+
+            const menu = document.getElementById('customContextMenu');
+            const touch = e.touches[0] || e.changedTouches[0];
+            
+            menu.style.top = `${touch.clientY}px`;
+            menu.style.left = `${touch.clientX}px`;
+            menu.style.display = 'block';
+        }, 500);
+    }
+
+    function handleCommentRightClick(e, commentId) {
+        e.preventDefault();
+        e.stopPropagation();
+        
+        activeContextMenuCommentId = commentId;
+        activeContextMenuTag = null;
+        activeContextMenuMoldId = null;
+        document.getElementById('contextMenuText').textContent = `Smazat poznámku`;
 
         const menu = document.getElementById('customContextMenu');
         menu.style.top = `${e.clientY}px`;
@@ -1713,6 +1764,7 @@
         if (menu) menu.style.display = 'none';
         activeContextMenuTag = null;
         activeContextMenuMoldId = null;
+        activeContextMenuCommentId = null;
     }
 
     async function deleteCustomerTagDirect(customerName) {
@@ -1761,21 +1813,66 @@
 
     async function deleteComment(commentId) {
         if (!checkAuthOrPrompt() || isSubmittingAction) return;
-        if (!confirm("Opravdu chcete smazat tuto poznámku a její fotky zprávy?")) return;
+        
+        const cObj = allComments.find(c => String(c.id) === String(commentId));
+        const moldId = cObj ? cObj.mold_id : 'Neznámá';
+
+        if (!confirm("Opravdu chcete trvale smazat tuto poznámku?")) return;
 
         isSubmittingAction = true;
+
+        if (cObj && cObj.photo_urls) {
+            let photoUrls = [];
+            if (Array.isArray(cObj.photo_urls)) {
+                photoUrls = cObj.photo_urls;
+            } else if (typeof cObj.photo_urls === 'string') {
+                try {
+                    const parsed = JSON.parse(cObj.photo_urls);
+                    photoUrls = Array.isArray(parsed) ? parsed : [cObj.photo_urls];
+                } catch { photoUrls = [cObj.photo_urls]; }
+            }
+
+            const filesToRemove = photoUrls.map(url => {
+                const parts = url.split('/mold-photos/');
+                return parts.length > 1 ? parts[1] : null;
+            }).filter(Boolean);
+
+            if (filesToRemove.length > 0) {
+                try {
+                    await supabaseClient.storage.from('mold-photos').remove(filesToRemove);
+                } catch (err) {
+                    console.error("Error removing photos from storage:", err);
+                }
+            }
+        }
+
         allComments = allComments.filter(c => String(c.id) !== String(commentId));
         refreshUI();
 
         try {
-            await fetch(`${API_URL}/rest/v1/mold_comments?id=eq.${commentId}`, {
-                method: 'DELETE',
-                headers: { 'apikey': API_KEY, 'Authorization': `Bearer ${API_KEY}`, 'Prefer': 'return=minimal' }
-            });
+            await Promise.all([
+                fetch(`${API_URL}/rest/v1/mold_comments?id=eq.${commentId}`, {
+                    method: 'DELETE',
+                    headers: { 'apikey': API_KEY, 'Authorization': `Bearer ${API_KEY}`, 'Prefer': 'return=minimal' }
+                }),
+                fetch(`${API_URL}/rest/v1/mold_logs`, {
+                    method: 'POST',
+                    headers: { 'apikey': API_KEY, 'Authorization': `Bearer ${API_KEY}`, 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ mold_id: moldId, old_position: `Poznámka`, new_position: `Poznámka smazána`, user_name: currentUser })
+                })
+            ]);
         } catch (e) {
             console.error("Error deleting comment:", e);
         } finally {
             isSubmittingAction = false;
+        }
+    }
+
+    function executeViewCommentDelete() {
+        if (activeViewCommentId) {
+            const targetId = activeViewCommentId;
+            closeViewCommentModal();
+            deleteComment(targetId);
         }
     }
 
@@ -1856,13 +1953,36 @@
         document.getElementById(inputId + 'Dropdown').style.display = 'none';
     }
 
+    /* --- МГНОВЕННОЕ ПЕРЕКЛЮЧЕНИЕ ВКЛАДОК БЕЗ БЛОКИРОВКИ --- */
     function switchTab(tabName) {
-        ['search', 'database', 'dashboard'].forEach(t => {
+        const tabs = ['search', 'database', 'dashboard'];
+        const currentActive = tabs.find(t => document.getElementById(`tab-${t}`).classList.contains('active'));
+        
+        if (currentActive === tabName) return;
+
+        tabs.forEach(t => {
             document.getElementById(`btn-${t}`).classList.toggle('active', t === tabName);
-            document.getElementById(`tab-${t}`).classList.toggle('active', t === tabName);
         });
-        if (tabName === 'database') renderFullDatabase();
-        if (tabName === 'dashboard') renderDashboard();
+
+        const activeContent = document.getElementById(`tab-${currentActive}`);
+        const nextContent = document.getElementById(`tab-${tabName}`);
+
+        if (activeContent) {
+            activeContent.classList.remove('visible');
+            activeContent.classList.remove('active');
+        }
+
+        if (nextContent) {
+            nextContent.classList.add('active');
+            requestAnimationFrame(() => {
+                nextContent.classList.add('visible');
+            });
+
+            setTimeout(() => {
+                if (tabName === 'database') renderFullDatabase();
+                if (tabName === 'dashboard') renderDashboard();
+            }, 0);
+        }
     }
 
     function extractCleanPosition(str) {
@@ -1897,7 +2017,29 @@
                 return [item.id, item.position || '', item.customer || 'Others', item.status || '', item.is_deleted || false, item.product_name || '', photosArr];
             });
 
-            if (commentsRes && commentsRes.ok) allComments = await commentsRes.json();
+            if (commentsRes && commentsRes.ok) {
+                const loadedComments = await commentsRes.json();
+                allComments = loadedComments.map(c => {
+                    let parsedPhotoUrls = [];
+                    if (c.photo_urls) {
+                        if (Array.isArray(c.photo_urls)) {
+                            parsedPhotoUrls = c.photo_urls;
+                        } else if (typeof c.photo_urls === 'string') {
+                            try {
+                                const parsed = JSON.parse(c.photo_urls);
+                                parsedPhotoUrls = Array.isArray(parsed) ? parsed : [c.photo_urls];
+                            } catch {
+                                parsedPhotoUrls = [c.photo_urls];
+                            }
+                        }
+                    }
+                    return {
+                        ...c,
+                        photo_urls: parsedPhotoUrls
+                    };
+                });
+            }
+
             allLogsMap = {};
             if (logsRes && logsRes.ok) {
                 const logs = await logsRes.json();
@@ -1916,21 +2058,33 @@
     }
 
     function toggleAccordion(moldId) {
-        const floatingLayer = document.getElementById(`accordion-floating-${moldId}`);
-        const wrapper = document.getElementById(`accordion-wrap-${moldId}`);
+        let floatingLayer = document.getElementById(`accordion-floating-${moldId}`);
         const btn = document.getElementById(`accordion-btn-${moldId}`);
         const isExpanded = Boolean(expandedMoldsMap[moldId]);
 
         if (isExpanded) {
             expandedMoldsMap[moldId] = false;
             if (btn) btn.classList.remove('expanded');
-            wrapper.classList.remove('open');
-            floatingLayer.classList.remove('open');
-            setTimeout(() => {
-                floatingLayer.style.display = 'none';
-                delete editingAccordionMap[moldId];
-                delete temporaryFilesMap[moldId];
-            }, 470);
+            
+            if (floatingLayer) {
+                const wrapper = document.getElementById(`accordion-wrap-${moldId}`);
+                const tableContainer = floatingLayer.closest('.table-container');
+
+                if (wrapper) wrapper.classList.remove('open');
+                floatingLayer.classList.remove('open');
+
+                // СРАЗУ же запускаем плавное сжатие контейнера в момент клика
+                if (tableContainer) {
+                    tableContainer.style.minHeight = '';
+                }
+                
+                // Удаляем элемент из DOM только после полного завершения анимаций
+                setTimeout(() => {
+                    floatingLayer.remove();
+                    delete editingAccordionMap[moldId];
+                    delete temporaryFilesMap[moldId];
+                }, 470);
+            }
         } else {
             Object.keys(expandedMoldsMap).forEach(id => {
                 if (expandedMoldsMap[id] && id !== String(moldId)) toggleAccordion(id);
@@ -1939,25 +2093,47 @@
             if (btn) btn.classList.add('expanded');
 
             const item = rawDatabase.find(i => String(i[0]) === String(moldId));
-            const contentBox = document.getElementById(`accordion-content-box-${moldId}`);
-            if (item && contentBox) contentBox.innerHTML = renderAccordionInnerContent(item);
-
             const triggerTr = document.getElementById(`accordion-trigger-${moldId}`);
-            if (triggerTr && floatingLayer) {
+            
+            if (item && triggerTr) {
                 const tableContainer = triggerTr.closest('.table-container');
-                if (tableContainer) {
-                    floatingLayer.style.width = `${tableContainer.clientWidth}px`;
-                    const containerRect = tableContainer.getBoundingClientRect();
-                    const triggerRect = triggerTr.getBoundingClientRect();
-                    floatingLayer.style.top = `${triggerRect.bottom - containerRect.top + tableContainer.scrollTop}px`;
-                    floatingLayer.style.left = `${triggerRect.left - containerRect.left + tableContainer.scrollLeft}px`;
+                
+                if (!floatingLayer) {
+                    const html = `
+                        <div id="accordion-floating-${escapeHtml(item[0])}" class="accordion-floating-layer" style="z-index: 500;">
+                            <div id="accordion-wrap-${escapeHtml(item[0])}" class="accordion-anim-wrapper">
+                                <div class="accordion-content" id="accordion-content-box-${escapeHtml(item[0])}">
+                                    ${renderAccordionInnerContent(item)}
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                    tableContainer.insertAdjacentHTML('beforeend', html);
+                    floatingLayer = document.getElementById(`accordion-floating-${item[0]}`);
                 }
+
+                if (tableContainer && floatingLayer) {
+                    floatingLayer.style.width = `${tableContainer.clientWidth}px`;
+                    
+                    const topPos = triggerTr.offsetTop + triggerTr.offsetHeight;
+                    const leftPos = triggerTr.offsetLeft;
+
+                    floatingLayer.style.top = `${topPos}px`;
+                    floatingLayer.style.left = `${leftPos}px`;
+
+                    const requiredHeight = topPos + 240;
+                    if (tableContainer.clientHeight < requiredHeight) {
+                        tableContainer.style.minHeight = `${requiredHeight}px`;
+                    }
+                }
+
+                floatingLayer.style.display = 'block';
+                requestAnimationFrame(() => {
+                    floatingLayer.classList.add('open');
+                    const wrapper = document.getElementById(`accordion-wrap-${item[0]}`);
+                    if (wrapper) wrapper.classList.add('open');
+                });
             }
-            floatingLayer.style.display = 'block';
-            requestAnimationFrame(() => {
-                floatingLayer.classList.add('open');
-                wrapper.classList.add('open');
-            });
         }
     }
 
@@ -2051,23 +2227,40 @@
 
         isSubmittingAction = true;
         closeCommentModal();
-        allComments.unshift({ id: 'temp-' + Date.now(), mold_id: activeCommentMoldId, user_name: currentUser, comment: text, created_at: new Date().toISOString() });
-        refreshUI();
 
         try {
-            await fetch(`${API_URL}/rest/v1/mold_comments`, {
+            const res = await fetch(`${API_URL}/rest/v1/mold_comments`, {
                 method: 'POST',
-                headers: { 'apikey': API_KEY, 'Authorization': `Bearer ${API_KEY}`, 'Content-Type': 'application/json', 'Prefer': 'return=minimal' },
-                body: JSON.stringify({ mold_id: activeCommentMoldId, user_name: currentUser, comment: text })
+                headers: { 
+                    'apikey': API_KEY, 
+                    'Authorization': `Bearer ${API_KEY}`, 
+                    'Content-Type': 'application/json',
+                    'Prefer': 'return=representation'
+                },
+                body: JSON.stringify({ mold_id: activeCommentMoldId, user_name: currentUser, comment: text, photo_urls: "[]" })
             });
-        } catch (e) { console.error("Error saving comment:", e); }
-        finally { isSubmittingAction = false; }
+
+            if (res.ok) {
+                const insertedData = await res.json();
+                if (insertedData && insertedData.length > 0) {
+                    allComments.unshift(insertedData[0]);
+                }
+            } else {
+                console.error("Failed to insert comment:", await res.text());
+            }
+        } catch (e) { 
+            console.error("Error saving comment:", e); 
+        } finally { 
+            isSubmittingAction = false; 
+            refreshUI();
+        }
     }
 
     function openViewCommentModal(commentId) {
         const commentObj = allComments.find(c => String(c.id) === String(commentId));
         if (!commentObj) return;
 
+        activeViewCommentId = commentId;
         document.getElementById('viewCommentTitle').textContent = `Detail poznámky #${commentObj.mold_id}`;
         document.getElementById('viewCommentMeta').textContent = `Autor: ${commentObj.user_name || 'Neznámý'} | ${new Date(commentObj.created_at).toLocaleString('cs-CZ')}`;
         document.getElementById('viewCommentDisplay').textContent = commentObj.comment;
@@ -2096,6 +2289,7 @@
 
     function closeViewCommentModal() {
         document.getElementById('viewCommentModal').style.display = 'none';
+        activeViewCommentId = null;
     }
 
     function editPosition(moldId, currentPos) {
@@ -2215,8 +2409,6 @@
             }
         }
 
-        refreshUI();
-
         try {
             await fetch(`${API_URL}/rest/v1/molds?id=eq.${moldId}`, {
                 method: 'PATCH',
@@ -2231,19 +2423,39 @@
             });
 
             if (commentText || uploadedPhotoUrls.length > 0) {
-                await fetch(`${API_URL}/rest/v1/mold_comments`, {
+                const resComm = await fetch(`${API_URL}/rest/v1/mold_comments`, {
                     method: 'POST',
-                    headers: { 'apikey': API_KEY, 'Authorization': `Bearer ${API_KEY}`, 'Content-Type': 'application/json', 'Prefer': 'return=minimal' },
+                    headers: { 
+                        'apikey': API_KEY, 
+                        'Authorization': `Bearer ${API_KEY}`, 
+                        'Content-Type': 'application/json', 
+                        'Prefer': 'return=representation' 
+                    },
                     body: JSON.stringify({ 
                         mold_id: moldId, 
                         user_name: currentUser, 
                         comment: commentText || 'Odesláno z výroby', 
-                        photo_urls: uploadedPhotoUrls.length > 0 ? JSON.stringify(uploadedPhotoUrls) : null 
+                        photo_urls: JSON.stringify(uploadedPhotoUrls)
                     })
                 });
+
+                if (resComm.ok) {
+                    const inserted = await resComm.json();
+                    if (inserted && inserted.length > 0) {
+                        const newC = inserted[0];
+                        newC.photo_urls = uploadedPhotoUrls;
+                        allComments.unshift(newC);
+                    }
+                } else {
+                    console.error("Chyba uložení komentáře do Supabase:", await resComm.text());
+                }
             }
-        } catch (e) { console.error("Error submitting production move:", e); }
-        finally { isSubmittingAction = false; }
+        } catch (e) { 
+            console.error("Error submitting production move:", e); 
+        } finally { 
+            isSubmittingAction = false; 
+            refreshUI();
+        }
     }
 
     function onStatusSelectChange(selectElem) {
@@ -2548,22 +2760,7 @@
         }
     }
 
-    async function removeExistingAccordionPhoto(moldId, index) {
-        if (!confirm("Smazat fotografii?")) return;
-        const itemIdx = rawDatabase.findIndex(i => String(i[0]) === String(moldId));
-        if (itemIdx === -1) return;
-        rawDatabase[itemIdx][6].splice(index, 1);
-        toggleAccordionEditMode(moldId);
-        try {
-            await fetch(`${API_URL}/rest/v1/molds?id=eq.${moldId}`, {
-                method: 'PATCH',
-                headers: { 'apikey': API_KEY, 'Authorization': `Bearer ${API_KEY}`, 'Content-Type': 'application/json', 'Prefer': 'return=minimal' },
-                body: JSON.stringify({ photo_url: rawDatabase[itemIdx][6].length > 0 ? JSON.stringify(rawDatabase[itemIdx][6]) : '' })
-            });
-        } catch (e) { console.error(e); }
-    }
-
-    function renderTableRow(item, extraRowClass = '', enableContextMenu = false) {
+    function renderTableRow(item, extraRowClass = '', enableContextMenu = false, showPlusBtn = true) {
         const [num, pos, cust, status, isDel, productName, photosArr] = item;
         const custStyle = getCustomerStyle(cust);
         const isExpanded = Boolean(expandedMoldsMap[num]);
@@ -2578,7 +2775,13 @@
             const textClass = isLongText ? 'comment-text-faded' : 'comment-text-full';
 
             return `
-                <div class="comment-item" onclick="openViewCommentModal('${c.id}')" title="Klikněte pro detail">
+                <div class="comment-item" 
+                     onclick="openViewCommentModal('${c.id}')" 
+                     ontouchstart="handleCommentTouchStart(event, '${c.id}')"
+                     ontouchend="handleTagTouchEnd()"
+                     ontouchmove="handleTagTouchEnd()"
+                     oncontextmenu="handleCommentRightClick(event, '${c.id}')"
+                     title="Klikněte pro detail, dlouhým stiskem smažete">
                     <div class="comment-header-row">
                         <div class="comment-meta">
                             <span>${escapeHtml(c.user_name)}</span>
@@ -2590,7 +2793,6 @@
                                 <path class="arrow-corner-bl" d="M7 13H3v-4" />
                             </svg>
                         </span>
-                        <button class="delete-comment-btn" onclick="event.stopPropagation(); deleteComment('${c.id}')" title="Smazat poznámku">✕</button>
                     </div>
                     <div class="${textClass}">${escapeHtml(c.comment)}</div>
                 </div>
@@ -2604,11 +2806,15 @@
             oncontextmenu="handleMoldRowRightClick(event, '${escapeHtml(num)}')"
         ` : '';
 
+        const plusBtnHtml = showPlusBtn ? `
+            <button id="accordion-btn-${escapeHtml(num)}" class="toggle-accordion-btn ${isExpanded ? 'expanded' : ''}" onclick="toggleAccordion('${escapeHtml(num)}')">${isExpanded ? '−' : '+'}</button>
+        ` : '';
+
         return `
             <tr id="accordion-trigger-${escapeHtml(num)}" class="${extraRowClass}" ${contextAttrs}>
                 <td>
                     <div class="mold-cell-content">
-                        <button id="accordion-btn-${escapeHtml(num)}" class="toggle-accordion-btn ${isExpanded ? 'expanded' : ''}" onclick="toggleAccordion('${escapeHtml(num)}')">${isExpanded ? '−' : '+'}</button>
+                        ${plusBtnHtml}
                         <strong>${escapeHtml(num)}</strong> ${renderStatusPill(status)}
                     </div>
                     ${productSub}${commentsHtml}
@@ -2620,21 +2826,6 @@
         `;
     }
 
-    function renderFloatingAccordions(activeMoldsList) {
-        return activeMoldsList.map(item => {
-            const isExpanded = Boolean(expandedMoldsMap[item[0]]);
-            return `
-                <div id="accordion-floating-${escapeHtml(item[0])}" class="accordion-floating-layer ${isExpanded ? 'open' : ''}" style="${isExpanded ? 'display: block;' : 'display: none;'}">
-                    <div id="accordion-wrap-${escapeHtml(item[0])}" class="accordion-anim-wrapper ${isExpanded ? 'open' : ''}">
-                        <div class="accordion-content" id="accordion-content-box-${escapeHtml(item[0])}">
-                            ${isExpanded ? renderAccordionInnerContent(item) : ''}
-                        </div>
-                    </div>
-                </div>
-            `;
-        }).join('');
-    }
-
     function filterCustomer(cust) { currentCustomerFilter = cust; renderCustomerFilters(); renderFullDatabase(); }
     
     function filterDashboardStatus(status, element) {
@@ -2644,9 +2835,11 @@
         renderDashboard();
     }
 
+    /* --- ПОПОРЦИОННЫЙ РЕНДЕРИНГ БАЗЫ (Chunking) --- */
     function renderFullDatabase() {
         const tbody = document.getElementById('databaseTable'), stats = document.getElementById('dbStats'), container = document.getElementById('databaseTableContainer');
         container.querySelectorAll('.accordion-floating-layer').forEach(el => el.remove());
+        container.style.minHeight = '';
         const active = rawDatabase.filter(i => !i[4]);
         if (active.length === 0) { tbody.innerHTML = `<tr><td colspan="3" class="no-data">Žádná data</td></tr>`; stats.textContent = 'Celkem aktivních forem: 0'; return; }
 
@@ -2659,13 +2852,28 @@
             stats.textContent = `Zobrazeno: ${filtered.length} z ${active.length}`;
         }
 
-        tbody.innerHTML = filtered.map(i => renderTableRow(i, '', true)).join('');
-        container.insertAdjacentHTML('beforeend', renderFloatingAccordions(filtered));
+        const CHUNK_SIZE = 40;
+        const firstChunk = filtered.slice(0, CHUNK_SIZE);
+        tbody.innerHTML = firstChunk.map(i => renderTableRow(i, '', true, true)).join('');
+
+        if (filtered.length > CHUNK_SIZE) {
+            let currentIndex = CHUNK_SIZE;
+            function renderNextChunk() {
+                if (currentIndex >= filtered.length) return;
+                const nextChunk = filtered.slice(currentIndex, currentIndex + CHUNK_SIZE);
+                const html = nextChunk.map(i => renderTableRow(i, '', true, true)).join('');
+                tbody.insertAdjacentHTML('beforeend', html);
+                currentIndex += CHUNK_SIZE;
+                requestAnimationFrame(renderNextChunk);
+            }
+            requestAnimationFrame(renderNextChunk);
+        }
     }
 
     function renderDashboard() {
         const tbody = document.getElementById('dashboardTable'), stats = document.getElementById('dashStats'), container = document.getElementById('dashboardTableContainer');
         container.querySelectorAll('.accordion-floating-layer').forEach(el => el.remove());
+        container.style.minHeight = '';
         const active = rawDatabase.filter(i => !i[4]);
         const withStatus = active.filter(i => { const s = (i[3] || '').toLowerCase(); return s && !s.includes('po údržbě'); });
 
@@ -2688,20 +2896,18 @@
         filtered.sort((a, b) => parseInt(a[0], 10) - parseInt(b[0], 10));
 
         stats.textContent = `Zobrazeno: ${filtered.length}`;
-        tbody.innerHTML = filtered.length > 0 ? filtered.map(i => renderTableRow(i, '', false)).join('') : `<tr><td colspan="3" class="no-data-centered" style="text-align: center !important;">V seznamu zatím nejsou žádné formy ke kontrole</td></tr>`;
-        container.insertAdjacentHTML('beforeend', renderFloatingAccordions(filtered));
+        tbody.innerHTML = filtered.length > 0 ? filtered.map(i => renderTableRow(i, '', true, false)).join('') : `<tr><td colspan="3" class="no-data-centered" style="text-align: center !important;">V seznamu zatím nejsou žádné formy ke kontrole</td></tr>`;
     }
 
     function handleSearch() {
         const q = document.getElementById('searchInput').value.trim().toLowerCase();
         const tbody = document.getElementById('searchResults'), stats = document.getElementById('searchStats'), container = document.getElementById('searchTableContainer');
         container.querySelectorAll('.accordion-floating-layer').forEach(el => el.remove());
+        container.style.minHeight = '';
 
         if (!q) { 
             tbody.innerHTML = `<tr><td colspan="3" class="no-data-centered" style="text-align: center !important;">Začněte psát do pole výše</td></tr>`; 
             stats.textContent = ''; 
-            container.style.maxHeight = '';
-            container.style.overflowY = '';
             return; 
         }
         
@@ -2718,19 +2924,9 @@
         stats.textContent = `Nalezeno: ${res.length}`;
         
         if (res.length > 0) {
-            tbody.innerHTML = res.map(i => renderTableRow(i, String(i[0]).toLowerCase() === q ? 'row-success' : '', false)).join('');
+            tbody.innerHTML = res.map(i => renderTableRow(i, String(i[0]).toLowerCase() === q ? 'row-success' : '', true, true)).join('');
         } else {
             tbody.innerHTML = `<tr class="row-error"><td colspan="3" class="no-data-centered" style="text-align: center !important;">Forma není v databázi</td></tr>`;
-        }
-        
-        container.insertAdjacentHTML('beforeend', renderFloatingAccordions(res));
-
-        if (res.length > 0 && res.length <= 2) {
-            container.style.maxHeight = 'none';
-            container.style.overflowY = 'visible';
-        } else {
-            container.style.maxHeight = '';
-            container.style.overflowY = '';
         }
     }
 
