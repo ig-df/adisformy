@@ -15,10 +15,11 @@
     <title>Adis Formy - Databáze a Vyhledávání</title>
     
     <!-- Favicon & Mobile App Integration -->
-    <link rel="icon" type="image/png" href="favicon.png">
-    <link rel="icon" type="image/png" sizes="192x192" href="favicon.png">
-    <link rel="icon" type="image/png" sizes="512x512" href="favicon.png">
-    <link rel="apple-touch-icon" sizes="180x180" href="favicon.png">
+    <link rel="manifest" href="manifest.json">
+    <link rel="icon" type="image/png" href="favicon.png?v=2">
+    <link rel="icon" type="image/png" sizes="192x192" href="favicon.png?v=2">
+    <link rel="icon" type="image/png" sizes="512x512" href="favicon.png?v=2">
+    <link rel="apple-touch-icon" sizes="180x180" href="favicon.png?v=2">
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-title" content="Adis Formy">
 
@@ -2697,7 +2698,7 @@
         const s = String(status).toLowerCase();
         let dot = 'dot-red';
         if (s.includes('po údržbě') || s.includes('po udrzbe')) dot = 'dot-green';
-        else if (s.includes('frontě na údržbu') || s.includes('fronte na udrzbu')) dot = 'dot-orange';
+        else if (s.includes('frontě na údržbu') || s.includes('fronte na udrzbe')) dot = 'dot-orange';
         else if (s.includes('frontě na opravu') || s.includes('fronte na opravu')) dot = 'dot-red';
         else if (s.includes('na údržbě') || s.includes('na udrzbe')) dot = 'dot-yellow';
         else if (s.includes('na opravě') || s.includes('na oprave')) dot = 'dot-red';
