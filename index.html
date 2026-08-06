@@ -14,9 +14,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Adis Formy - Databáze a Vyhledávání</title>
     
-    <!-- Favicon Integration -->
+    <!-- Favicon & Mobile App Integration -->
     <link rel="icon" type="image/png" href="favicon.png">
-    <link rel="apple-touch-icon" href="favicon.png">
+    <link rel="icon" type="image/png" sizes="192x192" href="favicon.png">
+    <link rel="icon" type="image/png" sizes="512x512" href="favicon.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="favicon.png">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-title" content="Adis Formy">
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
@@ -535,7 +539,6 @@
             th:nth-child(2), td:nth-child(2) { width: 30% !important; text-align: center !important; }
             th:nth-child(3), td:nth-child(3) { width: 32% !important; text-align: right !important; }
 
-            /* Выравнивание колонки Pozice и компактные кнопки строго под плашкой */
             .position-cell { 
                 display: flex !important;
                 flex-direction: column !important;
@@ -1367,7 +1370,6 @@
         document.getElementById('btn-database').addEventListener('click', () => switchTab('database'));
         document.getElementById('btn-dashboard').addEventListener('click', () => switchTab('dashboard'));
 
-        // Dismiss keyboard immediately on Enter keypress
         const searchInput = document.getElementById('searchInput');
         if (searchInput) {
             searchInput.addEventListener('keydown', function(e) {
@@ -2888,7 +2890,7 @@
         let fFronteUdrzbu = 0, fFronteOpravu = 0, fUdrzbe = 0, fOpravePryc = 0;
         withStatus.forEach(i => {
             const s = (i[3] || '').toLowerCase();
-            if (s.includes('frontě na údržbu') || s.includes('fronte na udrzbu')) fFronteUdrzbu++;
+            if (s.includes('frontě na údržbu') || s.includes('fronte na udrzbe')) fFronteUdrzbu++;
             else if (s.includes('frontě na opravu') || s.includes('fronte na opravu')) fFronteOpravu++;
             else if (s.includes('na údržbě') || s.includes('na udrzbe')) fUdrzbe++;
             else if (s.includes('na opravě') || s.includes('na oprave')) fOpravePryc++;
@@ -2937,7 +2939,6 @@
             tbody.innerHTML = `<tr class="row-error"><td colspan="3" class="no-data-centered" style="text-align: center !important;">Forma není v databázi</td></tr>`;
         }
 
-        // Auto-blur keyboard after 500ms when typing
         if (searchDebounceTimer) clearTimeout(searchDebounceTimer);
         searchDebounceTimer = setTimeout(() => {
             const searchInput = document.getElementById('searchInput');
