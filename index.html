@@ -13,6 +13,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Adis Formy - Databáze a Vyhledávání</title>
+    
+    <!-- Favicon Integration -->
+    <link rel="icon" type="image/png" href="favicon.png">
+    <link rel="apple-touch-icon" href="favicon.png">
+
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
         :root {
@@ -526,9 +531,45 @@
             }
             .customer-filters::-webkit-scrollbar { display: none; }
             #searchTable td, #databaseTableContainer td, #dashboardTableContainer td { padding: 0.65rem 0.25rem !important; }
-            th:nth-child(1), td:nth-child(1) { width: 38% !important; }
+            th:nth-child(1), td:nth-child(1) { width: 38% !important; text-align: left !important; }
             th:nth-child(2), td:nth-child(2) { width: 30% !important; text-align: center !important; }
-            th:nth-child(3), td:nth-child(3) { width: 32% !important; }
+            th:nth-child(3), td:nth-child(3) { width: 32% !important; text-align: right !important; }
+
+            /* Выравнивание колонки Pozice и компактные кнопки строго под плашкой */
+            .position-cell { 
+                display: flex !important;
+                flex-direction: column !important;
+                align-items: flex-end !important;
+                justify-content: flex-start !important;
+                gap: 0.25rem !important;
+            }
+
+            .position-wrapper { 
+                align-items: flex-end !important; 
+                text-align: right !important; 
+            }
+
+            .action-buttons-group { 
+                display: flex !important;
+                justify-content: flex-end !important; 
+                align-items: center !important;
+                gap: 1px !important;
+                margin-top: 0.15rem !important;
+            }
+
+            .action-buttons-group .edit-btn, 
+            .action-buttons-group .comment-btn {
+                width: 26px !important;
+                height: 26px !important;
+                min-width: 26px !important;
+                min-height: 26px !important;
+            }
+
+            .action-buttons-group .edit-btn img, 
+            .action-buttons-group .comment-btn img {
+                width: 15px !important;
+                height: 15px !important;
+            }
         }
 
         @media (min-width: 601px) {
@@ -1279,6 +1320,7 @@
     let isSubmittingAction = false;
     let realtimeDebounceTimer = null;
     let touchTimer = null;
+    let searchDebounceTimer = null;
 
     const PALETTE_COLORS = [
         "#ffffff", "#f8fafc", "#cbd5e1", "#64748b", "#1e293b", "#0f172a",
@@ -1324,6 +1366,17 @@
         document.getElementById('btn-search').addEventListener('click', () => switchTab('search'));
         document.getElementById('btn-database').addEventListener('click', () => switchTab('database'));
         document.getElementById('btn-dashboard').addEventListener('click', () => switchTab('dashboard'));
+
+        // Dismiss keyboard immediately on Enter keypress
+        const searchInput = document.getElementById('searchInput');
+        if (searchInput) {
+            searchInput.addEventListener('keydown', function(e) {
+                if (e.key === 'Enter') {
+                    if (searchDebounceTimer) clearTimeout(searchDebounceTimer);
+                    this.blur();
+                }
+            });
+        }
 
         document.querySelectorAll('.modal-overlay').forEach(overlay => {
             overlay.addEventListener('click', (e) => {
@@ -2883,6 +2936,15 @@
         } else {
             tbody.innerHTML = `<tr class="row-error"><td colspan="3" class="no-data-centered" style="text-align: center !important;">Forma není v databázi</td></tr>`;
         }
+
+        // Auto-blur keyboard after 500ms when typing
+        if (searchDebounceTimer) clearTimeout(searchDebounceTimer);
+        searchDebounceTimer = setTimeout(() => {
+            const searchInput = document.getElementById('searchInput');
+            if (searchInput && document.activeElement === searchInput) {
+                searchInput.blur();
+            }
+        }, 500);
     }
 
     function editCustomer(moldId, currentCust, isAlt = false) {
