@@ -153,21 +153,6 @@
             background-color: #16a34a !important;
         }
 
-        @media (max-width: 600px) {
-            body {
-                padding: 0.5rem 0.2rem;
-            }
-            .content {
-                padding: 0.75rem 0.5rem !important;
-            }
-            .auth-btn {
-                padding: 0.35rem !important;
-            }
-            .auth-btn span#authBtnText {
-                display: none !important;
-            }
-        }
-
         .top-icon-btn {
             background: var(--card-bg);
             border: 1px solid var(--border-color);
@@ -247,7 +232,6 @@
             transition: transform 0.25s ease;
         }
 
-        /* --- ВКЛАДКИ И АНИМАЦИИ --- */
         .tabs {
             display: flex;
             border-bottom: 1px solid var(--border-color);
@@ -522,20 +506,14 @@
         }
 
         @media (max-width: 600px) {
-            .dashboard-grid {
-                grid-template-columns: repeat(2, 1fr);
-            }
-            .dash-card-main {
-                grid-column: 1 / span 2;
-            }
-            .table-container {
-                max-height: 420px;
-            }
-
-            .customer-filters-wrapper {
-                padding-right: 0;
-            }
-
+            body { padding: 0.5rem 0.2rem; }
+            .content { padding: 0.75rem 0.5rem !important; }
+            .auth-btn { padding: 0.35rem !important; }
+            .auth-btn span#authBtnText { display: none !important; }
+            .dashboard-grid { grid-template-columns: repeat(2, 1fr); }
+            .dash-card-main { grid-column: 1 / span 2; }
+            .table-container { max-height: 420px; }
+            .customer-filters-wrapper { padding-right: 0; }
             .customer-filters {
                 flex-wrap: nowrap !important;
                 overflow-x: auto;
@@ -546,31 +524,24 @@
                 -ms-overflow-style: none;
                 scrollbar-width: none;
             }
-
-            .customer-filters::-webkit-scrollbar {
-                display: none;
-            }
-
-            th:nth-child(1), td:nth-child(1) { width: 48% !important; }
-            th:nth-child(2), td:nth-child(2) { width: 20% !important; }
+            .customer-filters::-webkit-scrollbar { display: none; }
+            #searchTable td, #databaseTableContainer td, #dashboardTableContainer td { padding: 0.65rem 0.25rem !important; }
+            th:nth-child(1), td:nth-child(1) { width: 38% !important; }
+            th:nth-child(2), td:nth-child(2) { width: 30% !important; text-align: center !important; }
             th:nth-child(3), td:nth-child(3) { width: 32% !important; }
         }
 
         @media (min-width: 601px) {
-            #searchTable th:nth-child(1), #searchTable td:nth-child(1) { width: 45%; text-align: left !important; padding-left: 1.25rem; }
-            #searchTable th:nth-child(2), #searchTable td:nth-child(2) { width: 20%; text-align: center !important; }
-            #searchTable th:nth-child(3), #searchTable td:nth-child(3) { width: 35%; text-align: left !important; padding-left: 60px !important; }
-            #searchTable th { padding: 0.75rem 1.25rem; font-size: 0.75rem; }
-
-            #databaseTableContainer th:nth-child(1), #databaseTableContainer td:nth-child(1) { width: 45%; text-align: left !important; padding-left: 1.25rem; }
-            #databaseTableContainer th:nth-child(2), #databaseTableContainer td:nth-child(2) { width: 20%; text-align: center; }
-            #databaseTableContainer th:nth-child(3), #databaseTableContainer td:nth-child(3) { width: 35%; text-align: left !important; padding-left: 60px !important; }
-            #databaseTableContainer th { padding: 0.75rem 1.25rem; font-size: 0.75rem; }
-
-            #dashboardTableContainer th:nth-child(1), #dashboardTableContainer td:nth-child(1) { width: 45%; text-align: left !important; padding-left: 1.25rem; }
-            #dashboardTableContainer th:nth-child(2), #dashboardTableContainer td:nth-child(2) { width: 20%; text-align: center; }
-            #dashboardTableContainer th:nth-child(3), #dashboardTableContainer td:nth-child(3) { width: 35%; text-align: left !important; padding-left: 60px !important; }
-            #dashboardTableContainer th { padding: 0.75rem 1.25rem; font-size: 0.75rem; }
+            th { text-align: center !important; padding: 0.75rem 1rem; font-size: 0.75rem; }
+            th:nth-child(1), td:nth-child(1) { width: 36% !important; text-align: center !important; position: relative; }
+            th:nth-child(2), td:nth-child(2) { width: 28% !important; text-align: center !important; }
+            th:nth-child(3), td:nth-child(3) { width: 36% !important; text-align: center !important; }
+            td { padding: 0.75rem 0.8rem; }
+            .mold-cell-content { justify-content: center !important; position: relative; }
+            .toggle-accordion-btn { position: absolute; left: 0.75rem; margin-right: 0; }
+            .product-name-sub { justify-content: center !important; }
+            .position-cell { justify-content: center !important; }
+            .action-buttons-group { position: absolute; right: 0.75rem; }
         }
 
         td {
@@ -582,30 +553,17 @@
             word-break: break-word;
         }
 
-        #searchTable td { padding: 0.65rem 1.25rem; }
-        #databaseTableContainer td:nth-child(3), #dashboardTableContainer td:nth-child(3) { padding-right: 1.25rem !important; }
-
         td.no-data, td.no-data-centered { text-align: center !important; padding: 2.5rem !important; color: var(--text-muted); font-size: 0.95rem; }
 
         tr { user-select: none; transition: background-color 0.15s ease; }
         tr:last-child td { border-bottom: none; }
         tr:hover { background-color: var(--row-hover); }
 
-        tr.row-success {
-            background-color: var(--success-bg) !important;
-        }
-        tr.row-success td {
-            color: var(--success-text) !important;
-            border-color: var(--success-border) !important;
-        }
+        tr.row-success { background-color: var(--success-bg) !important; }
+        tr.row-success td { color: var(--success-text) !important; border-color: var(--success-border) !important; }
 
-        tr.row-error {
-            background-color: var(--error-bg) !important;
-        }
-        tr.row-error td {
-            color: var(--error-text) !important;
-            border-color: var(--error-border) !important;
-        }
+        tr.row-error { background-color: var(--error-bg) !important; }
+        tr.row-error td { color: var(--error-text) !important; border-color: var(--error-border) !important; }
 
         .toggle-accordion-btn {
             display: inline-flex;
@@ -756,12 +714,8 @@
         .dot-yellow { background-color: var(--maintenance-badge); }
 
         .position-cell { display: flex; align-items: center; position: relative; width: 100%; gap: 0.5rem; flex-wrap: wrap; }
-        .position-wrapper { display: flex; flex-direction: column; align-items: flex-start; gap: 0.15rem; }
+        .position-wrapper { display: flex; flex-direction: column; align-items: center; gap: 0.15rem; }
         .prev-position-sub { font-size: 0.68rem; color: var(--text-muted); font-style: italic; white-space: nowrap; }
-
-        @media (min-width: 601px) {
-            .action-buttons-group { position: absolute; right: 0; }
-        }
 
         .action-buttons-group { display: flex; align-items: center; gap: 3px; flex-shrink: 0; }
 
@@ -846,23 +800,6 @@
             display: block;
         }
 
-        .comment-expand-hint .arrow-corner-tr,
-        .comment-expand-hint .arrow-corner-bl {
-            transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1);
-        }
-
-        .comment-item:hover .comment-expand-hint {
-            color: #3b82f6;
-        }
-
-        .comment-item:hover .comment-expand-hint .arrow-corner-tr {
-            transform: translate(1.5px, -1.5px);
-        }
-
-        .comment-item:hover .comment-expand-hint .arrow-corner-bl {
-            transform: translate(-1.5px, 1.5px);
-        }
-
         .comment-text-full, .comment-text-faded {
             font-size: 0.76rem;
             color: var(--text-main);
@@ -880,15 +817,13 @@
 
         .tag-customer {
             display: inline-block;
-            font-size: 0.7rem;
+            font-size: 0.72rem;
             padding: 0.2rem 0.4rem;
             border-radius: 5px;
             text-transform: capitalize;
             cursor: pointer;
             border: 1px solid;
             max-width: 100%;
-            overflow: hidden;
-            text-overflow: ellipsis;
             white-space: nowrap;
             color: #000000 !important;
         }
@@ -941,9 +876,7 @@
             background: rgba(0, 0, 0, 0.5); backdrop-filter: blur(2px); z-index: 1000;
             justify-content: center; align-items: center; padding: 1rem; overflow-y: auto;
         }
-        #photoModal {
-            z-index: 2000 !important;
-        }
+        #photoModal { z-index: 2000 !important; }
         .modal-card {
             background: var(--card-bg); color: var(--text-main); width: 100%; max-width: 500px; max-height: 85vh;
             border-radius: 12px; box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.2);
@@ -1335,6 +1268,7 @@
     let activeEditOldPos = null;
     let activeEditOldStatus = null;
     let activeEditOldProductName = null;
+    let activeEditIsAlt = false;
     let activeCommentMoldId = null;
     
     let activeContextMenuTag = null;
@@ -1953,7 +1887,6 @@
         document.getElementById(inputId + 'Dropdown').style.display = 'none';
     }
 
-    /* --- МГНОВЕННОЕ ПЕРЕКЛЮЧЕНИЕ ВКЛАДОК БЕЗ БЛОКИРОВКИ --- */
     function switchTab(tabName) {
         const tabs = ['search', 'database', 'dashboard'];
         const currentActive = tabs.find(t => document.getElementById(`tab-${t}`).classList.contains('active'));
@@ -2014,7 +1947,7 @@
                         photosArr = Array.isArray(parsed) ? parsed : [item.photo_url];
                     } catch { photosArr = [item.photo_url]; }
                 }
-                return [item.id, item.position || '', item.customer || 'Others', item.status || '', item.is_deleted || false, item.product_name || '', photosArr];
+                return [item.id, item.position || '', item.customer || 'Others', item.status || '', item.is_deleted || false, item.product_name || '', photosArr, item.alt_customer || '', item.alt_position || ''];
             });
 
             if (commentsRes && commentsRes.ok) {
@@ -2033,10 +1966,7 @@
                             }
                         }
                     }
-                    return {
-                        ...c,
-                        photo_urls: parsedPhotoUrls
-                    };
+                    return { ...c, photo_urls: parsedPhotoUrls };
                 });
             }
 
@@ -2057,28 +1987,41 @@
         } catch (e) { console.error("Fetch error:", e); }
     }
 
-    function toggleAccordion(moldId) {
-        let floatingLayer = document.getElementById(`accordion-floating-${moldId}`);
-        const btn = document.getElementById(`accordion-btn-${moldId}`);
-        const isExpanded = Boolean(expandedMoldsMap[moldId]);
+    function getExpandedDatabase(db) {
+        let expanded = [];
+        db.forEach(item => {
+            expanded.push([
+                item[0], item[1], item[2], item[3], item[4], item[5], item[6], item[7] || '', item[8] || '', false
+            ]);
+            if (item[8] && String(item[8]).trim()) {
+                expanded.push([
+                    item[0], item[8], item[7] || item[2], item[3], item[4], item[5], item[6], item[7] || '', item[8] || '', true
+                ]);
+            }
+        });
+        return expanded;
+    }
+
+    function toggleAccordion(rowKey, moldId) {
+        let floatingLayer = document.getElementById(`accordion-floating-${rowKey}`);
+        const btn = document.getElementById(`accordion-btn-${rowKey}`);
+        const isExpanded = Boolean(expandedMoldsMap[rowKey]);
 
         if (isExpanded) {
-            expandedMoldsMap[moldId] = false;
+            expandedMoldsMap[rowKey] = false;
             if (btn) btn.classList.remove('expanded');
             
             if (floatingLayer) {
-                const wrapper = document.getElementById(`accordion-wrap-${moldId}`);
+                const wrapper = document.getElementById(`accordion-wrap-${rowKey}`);
                 const tableContainer = floatingLayer.closest('.table-container');
 
                 if (wrapper) wrapper.classList.remove('open');
                 floatingLayer.classList.remove('open');
 
-                // СРАЗУ же запускаем плавное сжатие контейнера в момент клика
                 if (tableContainer) {
                     tableContainer.style.minHeight = '';
                 }
                 
-                // Удаляем элемент из DOM только после полного завершения анимаций
                 setTimeout(() => {
                     floatingLayer.remove();
                     delete editingAccordionMap[moldId];
@@ -2087,29 +2030,29 @@
             }
         } else {
             Object.keys(expandedMoldsMap).forEach(id => {
-                if (expandedMoldsMap[id] && id !== String(moldId)) toggleAccordion(id);
+                if (expandedMoldsMap[id] && id !== String(rowKey)) toggleAccordion(id, id.split('_')[0]);
             });
-            expandedMoldsMap[moldId] = true;
+            expandedMoldsMap[rowKey] = true;
             if (btn) btn.classList.add('expanded');
 
             const item = rawDatabase.find(i => String(i[0]) === String(moldId));
-            const triggerTr = document.getElementById(`accordion-trigger-${moldId}`);
+            const triggerTr = document.getElementById(`accordion-trigger-${rowKey}`);
             
             if (item && triggerTr) {
                 const tableContainer = triggerTr.closest('.table-container');
                 
                 if (!floatingLayer) {
                     const html = `
-                        <div id="accordion-floating-${escapeHtml(item[0])}" class="accordion-floating-layer" style="z-index: 500;">
-                            <div id="accordion-wrap-${escapeHtml(item[0])}" class="accordion-anim-wrapper">
-                                <div class="accordion-content" id="accordion-content-box-${escapeHtml(item[0])}">
+                        <div id="accordion-floating-${escapeHtml(rowKey)}" class="accordion-floating-layer" style="z-index: 500;">
+                            <div id="accordion-wrap-${escapeHtml(rowKey)}" class="accordion-anim-wrapper">
+                                <div class="accordion-content" id="accordion-content-box-${escapeHtml(moldId)}">
                                     ${renderAccordionInnerContent(item)}
                                 </div>
                             </div>
                         </div>
                     `;
                     tableContainer.insertAdjacentHTML('beforeend', html);
-                    floatingLayer = document.getElementById(`accordion-floating-${item[0]}`);
+                    floatingLayer = document.getElementById(`accordion-floating-${rowKey}`);
                 }
 
                 if (tableContainer && floatingLayer) {
@@ -2130,7 +2073,7 @@
                 floatingLayer.style.display = 'block';
                 requestAnimationFrame(() => {
                     floatingLayer.classList.add('open');
-                    const wrapper = document.getElementById(`accordion-wrap-${item[0]}`);
+                    const wrapper = document.getElementById(`accordion-wrap-${rowKey}`);
                     if (wrapper) wrapper.classList.add('open');
                 });
             }
@@ -2245,8 +2188,6 @@
                 if (insertedData && insertedData.length > 0) {
                     allComments.unshift(insertedData[0]);
                 }
-            } else {
-                console.error("Failed to insert comment:", await res.text());
             }
         } catch (e) { 
             console.error("Error saving comment:", e); 
@@ -2292,11 +2233,12 @@
         activeViewCommentId = null;
     }
 
-    function editPosition(moldId, currentPos) {
+    function editPosition(moldId, currentPos, isAlt = false) {
         if (!checkAuthOrPrompt()) return;
         activeEditMoldId = moldId;
         activeEditOldPos = currentPos;
-        document.getElementById('positionModalLabel').textContent = `Forma č. ${moldId} (stávající: ${currentPos}):`;
+        activeEditIsAlt = isAlt;
+        document.getElementById('positionModalLabel').textContent = `Forma č. ${moldId} (${isAlt ? '2. pozice' : 'stávající'}: ${currentPos}):`;
         document.getElementById('modalPositionInput').value = currentPos.toLowerCase().includes('mezisklad') && allLogsMap[String(moldId)] ? allLogsMap[String(moldId)] : currentPos;
         document.getElementById('positionModal').style.display = 'flex';
     }
@@ -2313,22 +2255,27 @@
         closePositionModal();
         const itemIdx = rawDatabase.findIndex(i => String(i[0]) === String(activeEditMoldId));
         if (itemIdx !== -1) {
-            if (!activeEditOldPos.toLowerCase().includes('mezisklad')) allLogsMap[String(activeEditMoldId)] = activeEditOldPos;
-            rawDatabase[itemIdx][1] = newPos;
+            if (activeEditIsAlt) {
+                rawDatabase[itemIdx][8] = newPos;
+            } else {
+                if (!activeEditOldPos.toLowerCase().includes('mezisklad')) allLogsMap[String(activeEditMoldId)] = activeEditOldPos;
+                rawDatabase[itemIdx][1] = newPos;
+            }
             refreshUI();
         }
 
         try {
+            const updateBody = activeEditIsAlt ? { alt_position: newPos } : { position: newPos };
             await Promise.all([
                 fetch(`${API_URL}/rest/v1/molds?id=eq.${activeEditMoldId}`, {
                     method: 'PATCH',
                     headers: { 'apikey': API_KEY, 'Authorization': `Bearer ${API_KEY}`, 'Content-Type': 'application/json', 'Prefer': 'return=minimal' },
-                    body: JSON.stringify({ position: newPos })
+                    body: JSON.stringify(updateBody)
                 }),
                 fetch(`${API_URL}/rest/v1/mold_logs`, {
                     method: 'POST',
                     headers: { 'apikey': API_KEY, 'Authorization': `Bearer ${API_KEY}`, 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ mold_id: activeEditMoldId, old_position: `Pozice: ${activeEditOldPos}`, new_position: `Pozice: ${newPos}`, user_name: currentUser })
+                    body: JSON.stringify({ mold_id: activeEditMoldId, old_position: `Pozice: ${activeEditOldPos}`, new_position: `Pozice (${activeEditIsAlt ? '2. poz' : 'Hlavní'}): ${newPos}`, user_name: currentUser })
                 })
             ]);
         } catch (e) { console.error("Error updating position:", e); }
@@ -2446,8 +2393,6 @@
                         newC.photo_urls = uploadedPhotoUrls;
                         allComments.unshift(newC);
                     }
-                } else {
-                    console.error("Chyba uložení komentáře do Supabase:", await resComm.text());
                 }
             }
         } catch (e) { 
@@ -2462,10 +2407,11 @@
         document.getElementById('autoMeziskladCheckbox').checked = ['Ve frontě na údržbu', 'Ve frontě na opravu', 'Na údržbě', 'Na opravě / pryč'].includes(selectElem.value);
     }
 
-    function openFullEdit(moldId, currentPos, currentStatus, currentProductName) {
+    function openFullEdit(moldId, currentPos, currentStatus, currentProductName, isAlt = false) {
         if (!checkAuthOrPrompt()) return;
         activeEditMoldId = moldId;
         activeEditOldPos = currentPos;
+        activeEditIsAlt = isAlt;
         document.getElementById('fullEditPositionInput').value = currentPos.toLowerCase().includes('mezisklad') && allLogsMap[String(moldId)] ? allLogsMap[String(moldId)] : currentPos;
         document.getElementById('fullEditStatusSelect').value = currentStatus || '';
         document.getElementById('autoMeziskladCheckbox').checked = ['Ve frontě na údržbu', 'Ve frontě na opravu', 'Na údržbě', 'Na opravě / pryč'].includes(currentStatus);
@@ -2484,17 +2430,22 @@
         closeFullEditModal();
         const itemIdx = rawDatabase.findIndex(i => String(i[0]) === String(activeEditMoldId));
         if (itemIdx !== -1) {
-            rawDatabase[itemIdx][1] = newPos;
+            if (activeEditIsAlt) {
+                rawDatabase[itemIdx][8] = newPos;
+            } else {
+                rawDatabase[itemIdx][1] = newPos;
+            }
             rawDatabase[itemIdx][3] = newStatus;
             refreshUI();
         }
 
         try {
+            const updateBody = activeEditIsAlt ? { alt_position: newPos, status: newStatus } : { position: newPos, status: newStatus };
             await Promise.all([
                 fetch(`${API_URL}/rest/v1/molds?id=eq.${activeEditMoldId}`, {
                     method: 'PATCH',
                     headers: { 'apikey': API_KEY, 'Authorization': `Bearer ${API_KEY}`, 'Content-Type': 'application/json', 'Prefer': 'return=minimal' },
-                    body: JSON.stringify({ position: newPos, status: newStatus })
+                    body: JSON.stringify(updateBody)
                 }),
                 fetch(`${API_URL}/rest/v1/mold_logs`, {
                     method: 'POST',
@@ -2616,7 +2567,7 @@
 
         isSubmittingAction = true;
         closeAddModal();
-        rawDatabase.push([id, position, customer, status, false, productName, []]);
+        rawDatabase.push([id, position, customer, status, false, productName, [], '', '']);
         refreshUI();
 
         try {
@@ -2698,19 +2649,19 @@
         return `<span class="status-pill"><span class="status-dot ${dot}"></span>${escapeHtml(status)}</span>`;
     }
 
-    function renderPositionCellHtml(num, pos, status, productName) {
+    function renderPositionCellHtml(num, pos, status, productName, isAlt = false) {
         const badgeClass = getPositionBadgeClass(pos);
         const prev = allLogsMap[String(num)];
         const sub = pos.toLowerCase().includes('mezisklad') && prev ? `<span class="prev-position-sub">(Původně: ${escapeHtml(prev)})</span>` : '';
         return `
             <div class="position-cell">
                 <div class="position-wrapper">
-                    <span class="${badgeClass}" tabindex="0" onclick="editPosition('${escapeHtml(num)}', '${escapeHtml(pos)}')">${escapeHtml(pos)}</span>
+                    <span class="${badgeClass}" tabindex="0" onclick="editPosition('${escapeHtml(num)}', '${escapeHtml(pos)}', ${isAlt})">${escapeHtml(pos)}</span>
                     ${sub}
                 </div>
                 <div class="action-buttons-group">
                     <button class="comment-btn" onclick="openCommentModal('${escapeHtml(num)}')">${COMMENT_ICON_HTML}</button>
-                    <button class="edit-btn" onclick="openFullEdit('${escapeHtml(num)}', '${escapeHtml(pos)}', '${escapeHtml(status || '')}', '${escapeHtml(productName || '')}')">${GEAR_ICON_HTML}</button>
+                    <button class="edit-btn" onclick="openFullEdit('${escapeHtml(num)}', '${escapeHtml(pos)}', '${escapeHtml(status || '')}', '${escapeHtml(productName || '')}', ${isAlt})">${GEAR_ICON_HTML}</button>
                 </div>
             </div>
         `;
@@ -2761,10 +2712,13 @@
     }
 
     function renderTableRow(item, extraRowClass = '', enableContextMenu = false, showPlusBtn = true) {
-        const [num, pos, cust, status, isDel, productName, photosArr] = item;
+        const [num, pos, cust, status, isDel, productName, photosArr, altCust, altPos, isAlt] = item;
         const custStyle = getCustomerStyle(cust);
-        const isExpanded = Boolean(expandedMoldsMap[num]);
-        const productSub = productName ? `<span class="product-name-sub">↳ ${escapeHtml(productName)}</span>` : '';
+        const rowKey = isAlt ? `${num}_alt` : `${num}`;
+        const isExpanded = Boolean(expandedMoldsMap[rowKey]);
+        
+        const altSub = isAlt ? `<div class="product-name-sub" style="color:#d97706; font-weight:600;">↳ 2. pozice</div>` : '';
+        const productSub = productName ? `<div class="product-name-sub">↳ ${escapeHtml(productName)}</div>` : '';
 
         const comments = allComments.filter(c => String(c.mold_id) === String(num));
         const commentsHtml = comments.length > 0 ? `<div class="comments-section">${comments.map(c => {
@@ -2807,20 +2761,22 @@
         ` : '';
 
         const plusBtnHtml = showPlusBtn ? `
-            <button id="accordion-btn-${escapeHtml(num)}" class="toggle-accordion-btn ${isExpanded ? 'expanded' : ''}" onclick="toggleAccordion('${escapeHtml(num)}')">${isExpanded ? '−' : '+'}</button>
+            <button id="accordion-btn-${escapeHtml(rowKey)}" class="toggle-accordion-btn ${isExpanded ? 'expanded' : ''}" onclick="toggleAccordion('${escapeHtml(rowKey)}', '${escapeHtml(num)}')">${isExpanded ? '−' : '+'}</button>
         ` : '';
 
         return `
-            <tr id="accordion-trigger-${escapeHtml(num)}" class="${extraRowClass}" ${contextAttrs}>
+            <tr id="accordion-trigger-${escapeHtml(rowKey)}" class="${extraRowClass}" ${contextAttrs}>
                 <td>
                     <div class="mold-cell-content">
                         ${plusBtnHtml}
                         <strong>${escapeHtml(num)}</strong> ${renderStatusPill(status)}
                     </div>
-                    ${productSub}${commentsHtml}
+                    ${altSub}
+                    ${productSub}
+                    ${commentsHtml}
                 </td>
-                <td><span class="tag-customer" style="${custStyle}" onclick="editCustomer('${escapeHtml(num)}', '${escapeHtml(cust)}')">${escapeHtml(cust)}</span></td>
-                <td>${renderPositionCellHtml(num, pos, status, productName)}</td>
+                <td><span class="tag-customer" style="${custStyle}" onclick="editCustomer('${escapeHtml(num)}', '${escapeHtml(cust)}', ${Boolean(isAlt)})">${escapeHtml(cust)}</span></td>
+                <td>${renderPositionCellHtml(num, pos, status, productName, Boolean(isAlt))}</td>
             </tr>
             <tr style="display: none;"><td colspan="3"></td></tr>
         `;
@@ -2835,12 +2791,11 @@
         renderDashboard();
     }
 
-    /* --- ПОПОРЦИОННЫЙ РЕНДЕРИНГ БАЗЫ (Chunking) --- */
     function renderFullDatabase() {
         const tbody = document.getElementById('databaseTable'), stats = document.getElementById('dbStats'), container = document.getElementById('databaseTableContainer');
         container.querySelectorAll('.accordion-floating-layer').forEach(el => el.remove());
         container.style.minHeight = '';
-        const active = rawDatabase.filter(i => !i[4]);
+        const active = getExpandedDatabase(rawDatabase).filter(i => !i[4]);
         if (active.length === 0) { tbody.innerHTML = `<tr><td colspan="3" class="no-data">Žádná data</td></tr>`; stats.textContent = 'Celkem aktivních forem: 0'; return; }
 
         let filtered = currentCustomerFilter === 'ALL' ? active : active.filter(i => i[2].toLowerCase() === currentCustomerFilter.toLowerCase());
@@ -2874,7 +2829,7 @@
         const tbody = document.getElementById('dashboardTable'), stats = document.getElementById('dashStats'), container = document.getElementById('dashboardTableContainer');
         container.querySelectorAll('.accordion-floating-layer').forEach(el => el.remove());
         container.style.minHeight = '';
-        const active = rawDatabase.filter(i => !i[4]);
+        const active = getExpandedDatabase(rawDatabase).filter(i => !i[4]);
         const withStatus = active.filter(i => { const s = (i[3] || '').toLowerCase(); return s && !s.includes('po údržbě'); });
 
         let fFronteUdrzbu = 0, fFronteOpravu = 0, fUdrzbe = 0, fOpravePryc = 0;
@@ -2896,7 +2851,7 @@
         filtered.sort((a, b) => parseInt(a[0], 10) - parseInt(b[0], 10));
 
         stats.textContent = `Zobrazeno: ${filtered.length}`;
-        tbody.innerHTML = filtered.length > 0 ? filtered.map(i => renderTableRow(i, '', true, false)).join('') : `<tr><td colspan="3" class="no-data-centered" style="text-align: center !important;">V seznamu zatím nejsou žádné formy ke kontrole</td></tr>`;
+        tbody.innerHTML = filtered.length > 0 ? filtered.map(i => renderTableRow(i, '', true, true)).join('') : `<tr><td colspan="3" class="no-data-centered" style="text-align: center !important;">V seznamu zatím nejsou žádné formy ke kontrole</td></tr>`;
     }
 
     function handleSearch() {
@@ -2911,12 +2866,12 @@
             return; 
         }
         
-        const active = rawDatabase.filter(i => !i[4]);
+        const active = getExpandedDatabase(rawDatabase).filter(i => !i[4]);
         let res = active.filter(i => String(i[0]).toLowerCase().includes(q) || String(i[1]).toLowerCase().includes(q) || String(i[2]).toLowerCase().includes(q) || String(i[5] || '').toLowerCase().includes(q));
 
-        const exactMatch = res.find(i => String(i[0]).toLowerCase() === q);
-        if (exactMatch) {
-            res = [exactMatch];
+        const exactMatches = res.filter(i => String(i[0]).toLowerCase() === q);
+        if (exactMatches.length > 0) {
+            res = exactMatches;
         }
 
         res.sort((a, b) => parseInt(a[0], 10) - parseInt(b[0], 10));
@@ -2930,10 +2885,11 @@
         }
     }
 
-    function editCustomer(moldId, currentCust) {
+    function editCustomer(moldId, currentCust, isAlt = false) {
         if (!checkAuthOrPrompt()) return;
         activeEditMoldId = moldId;
-        document.getElementById('customerModalLabel').textContent = `Forma č. ${moldId} (${currentCust}):`;
+        activeEditIsAlt = isAlt;
+        document.getElementById('customerModalLabel').textContent = `Forma č. ${moldId} (${isAlt ? '2. pozice' : 'stávající'}: ${currentCust}):`;
         document.getElementById('modalCustomerSelect').innerHTML = customersList.map(c => `<option value="${escapeHtml(c.name)}" ${c.name === currentCust ? 'selected' : ''}>${escapeHtml(c.name)}</option>`).join('');
         document.getElementById('customerModal').style.display = 'flex';
     }
@@ -2945,12 +2901,20 @@
         isSubmittingAction = true;
         closeCustomerModal();
         const item = rawDatabase.find(i => String(i[0]) === String(activeEditMoldId));
-        if (item) { item[2] = newCust; refreshUI(); }
+        if (item) {
+            if (activeEditIsAlt) {
+                item[7] = newCust;
+            } else {
+                item[2] = newCust;
+            }
+            refreshUI();
+        }
         try {
+            const updateBody = activeEditIsAlt ? { alt_customer: newCust } : { customer: newCust };
             await fetch(`${API_URL}/rest/v1/molds?id=eq.${activeEditMoldId}`, {
                 method: 'PATCH',
                 headers: { 'apikey': API_KEY, 'Authorization': `Bearer ${API_KEY}`, 'Content-Type': 'application/json', 'Prefer': 'return=minimal' },
-                body: JSON.stringify({ customer: newCust })
+                body: JSON.stringify(updateBody)
             });
         } catch (e) { console.error(e); }
         finally { isSubmittingAction = false; }
