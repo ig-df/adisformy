@@ -66,6 +66,7 @@
             margin: 0;
             padding: 0;
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            -webkit-tap-highlight-color: transparent;
         }
 
         body {
@@ -75,6 +76,42 @@
             justify-content: center;
             padding: 1rem 0.5rem;
             min-height: 100vh;
+        }
+
+        /* Pull-to-Refresh Indicator */
+        .ptr-indicator {
+            position: fixed;
+            top: -50px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 38px;
+            height: 38px;
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 50%;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.12);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+            transition: top 0.2s ease, transform 0.2s ease, opacity 0.2s ease;
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .ptr-indicator svg {
+            width: 20px;
+            height: 20px;
+            color: var(--text-main);
+            transition: transform 0.2s ease;
+        }
+
+        .ptr-indicator.refreshing svg {
+            animation: ptr-spin 0.8s linear infinite;
+        }
+
+        @keyframes ptr-spin {
+            100% { transform: rotate(360deg); }
         }
 
         .container {
@@ -90,11 +127,23 @@
             position: relative;
         }
 
+        button, .filter-chip, .dash-card, .badge-position, tr, .tag-customer, .add-customer-chip, .top-icon-btn, .auth-btn, .comment-item, .edit-btn, .comment-btn, .floating-corner-btn, .floating-corner-btn-left, .mold-clickable-id {
+            user-select: none;
+            -webkit-user-select: none;
+            transition: transform 0.2s ease, opacity 0.2s ease, background-color 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        button:active, .filter-chip:active, .dash-card:active, .badge-position:active, .tag-customer:active, .top-icon-btn:active, .auth-btn:active, .floating-corner-btn:active, .floating-corner-btn-left:active, .is-touched {
+            transform: scale(0.95) !important;
+            opacity: 0.85 !important;
+        }
+
         .header-logo {
             text-align: center;
             padding: 1.25rem 1rem 0.5rem 1rem;
             background-color: var(--card-bg);
             position: relative;
+            flex-shrink: 0;
         }
 
         .header-logo img#siteLogo {
@@ -247,6 +296,7 @@
             border-bottom: 1px solid var(--border-color);
             background-color: var(--card-bg);
             position: relative;
+            flex-shrink: 0;
         }
 
         .tab-btn {
@@ -282,6 +332,7 @@
             padding: 1.25rem;
             position: relative;
             overflow: hidden;
+            flex: 1;
         }
 
         .tab-content {
@@ -457,12 +508,13 @@
 
         table {
             width: 100%;
-            border-collapse: collapse;
+            border-collapse: separate;
+            border-spacing: 0;
             table-layout: fixed;
         }
 
         th {
-            background-color: var(--row-hover);
+            background-color: #f8fafc !important;
             color: var(--text-muted);
             font-weight: 600;
             font-size: 0.72rem;
@@ -470,8 +522,9 @@
             letter-spacing: 0.05em;
             position: sticky;
             top: 0;
-            z-index: 10;
+            z-index: 20;
             padding: 0.75rem 0.6rem;
+            border-bottom: 1px solid var(--border-color);
         }
 
         .dashboard-grid {
@@ -596,19 +649,18 @@
             vertical-align: top;
             color: var(--text-main);
             word-break: break-word;
+            background-color: var(--card-bg);
         }
 
         td.no-data, td.no-data-centered { text-align: center !important; padding: 2.5rem !important; color: var(--text-muted); font-size: 0.95rem; }
 
         tr { user-select: none; transition: background-color 0.15s ease; }
         tr:last-child td { border-bottom: none; }
-        tr:hover { background-color: var(--row-hover); }
+        tr:hover td { background-color: var(--row-hover); }
 
-        tr.row-success { background-color: var(--success-bg) !important; }
-        tr.row-success td { color: var(--success-text) !important; border-color: var(--success-border) !important; }
+        tr.row-success td { background-color: var(--success-bg) !important; color: var(--success-text) !important; border-color: var(--success-border) !important; }
 
-        tr.row-error { background-color: var(--error-bg) !important; }
-        tr.row-error td { color: var(--error-text) !important; border-color: var(--error-border) !important; }
+        tr.row-error td { background-color: var(--error-bg) !important; color: var(--error-text) !important; border-color: var(--error-border) !important; }
 
         .toggle-accordion-btn {
             display: inline-flex;
@@ -840,8 +892,8 @@
         }
 
         .comment-expand-hint svg {
-            width: 10px;
-            height: 10px;
+            width: 100%;
+            height: 100%;
             display: block;
         }
 
@@ -973,6 +1025,13 @@
     </style>
 </head>
 <body>
+
+<div id="ptrIndicator" class="ptr-indicator">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M23 4v6h-6"></path>
+        <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"></path>
+    </svg>
+</div>
 
 <div class="container">
     <div class="header-logo">
@@ -1280,6 +1339,15 @@
     const API_URL = "https://qjoovhagucdcaebgdmbx.supabase.co";
     const API_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFqb292aGFndWNkY2FlYmdkbWJ4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQ4OTYyMTEsImV4cCI6MjEwMDQ3MjIxMX0.Z-Pey6nbpo5b-RyXkc2cCCV7Uj3-YgbAqZsTUV1kZD0";
     const MASTER_PASSWORD = "adisadis";
+    const KEYBOARD_BLUR_DELAY = 800; // Таймаут скрытия клавиатуры (0.8 сек)
+
+    function triggerHapticFeedback(pattern = [15]) {
+        if ('vibrate' in navigator) {
+            try {
+                navigator.vibrate(pattern);
+            } catch (e) {}
+        }
+    }
 
     const supabaseClient = window.supabase.createClient(API_URL, API_KEY);
     const BASE_SYSTEM_CUSTOMERS = ["Škoda", "Novares", "Witte", "Scherdel", "AFSI", "Adient", "Mubea", "Ideal", "Others"];
@@ -1363,9 +1431,98 @@
         return trimmed.replace(/\s+([zcmbzCMBHh])(?!\.)$/i, ' $1.');
     }
 
+    /* PULL TO REFRESH IMPLEMENTATION */
+    function initPullToRefresh() {
+        let ptrStartY = 0;
+        let ptrCurrentY = 0;
+        let isPtrActive = false;
+        let hasVibrated = false;
+        const PTR_THRESHOLD = 90;
+        const ptrIndicator = document.getElementById('ptrIndicator');
+
+        if (!ptrIndicator) return;
+
+        window.addEventListener('touchstart', (e) => {
+            if (window.scrollY === 0) {
+                ptrStartY = e.touches[0].clientY;
+                isPtrActive = true;
+                hasVibrated = false;
+            }
+        }, { passive: true });
+
+        window.addEventListener('touchmove', (e) => {
+            if (!isPtrActive || window.scrollY > 0) return;
+            ptrCurrentY = e.touches[0].clientY;
+            const distance = ptrCurrentY - ptrStartY;
+
+            if (distance > 0) {
+                const pullProgress = Math.min(distance, PTR_THRESHOLD + 20);
+                ptrIndicator.style.opacity = Math.min(distance / PTR_THRESHOLD, 1);
+                ptrIndicator.style.top = `${Math.min(pullProgress - 40, 25)}px`;
+                ptrIndicator.querySelector('svg').style.transform = `rotate(${distance * 2}deg)`;
+
+                if (distance >= PTR_THRESHOLD && !hasVibrated) {
+                    triggerHapticFeedback([22]);
+                    hasVibrated = true;
+                }
+            }
+        }, { passive: true });
+
+        window.addEventListener('touchend', async () => {
+            if (!isPtrActive) return;
+            const distance = ptrCurrentY - ptrStartY;
+
+            if (distance >= PTR_THRESHOLD && window.scrollY === 0) {
+                ptrIndicator.classList.add('refreshing');
+                ptrIndicator.style.top = '20px';
+                ptrIndicator.style.opacity = '1';
+
+                try {
+                    await fetchData();
+                    triggerHapticFeedback([12, 40, 12]);
+                } catch (err) {
+                    console.error("PTR Refresh error:", err);
+                } finally {
+                    setTimeout(() => {
+                        ptrIndicator.classList.remove('refreshing');
+                        ptrIndicator.style.top = '-50px';
+                        ptrIndicator.style.opacity = '0';
+                    }, 400);
+                }
+            } else {
+                ptrIndicator.style.top = '-50px';
+                ptrIndicator.style.opacity = '0';
+            }
+
+            isPtrActive = false;
+            ptrStartY = 0;
+            ptrCurrentY = 0;
+        });
+    }
+
     document.addEventListener("DOMContentLoaded", () => {
+        const handleDirectTouchStart = (e) => {
+            const target = e.target.closest('button, .tab-btn, .filter-chip, .dash-card, .badge-position, .tag-customer, .add-customer-chip, .top-icon-btn, .auth-btn, .comment-item, .toggle-accordion-btn, .edit-btn, .comment-btn, .floating-corner-btn, .floating-corner-btn-left, .mold-clickable-id');
+            if (target) {
+                triggerHapticFeedback([18]);
+                if (!target.classList.contains('tab-btn')) {
+                    target.classList.add('is-touched');
+                }
+            }
+        };
+
+        document.addEventListener('pointerdown', handleDirectTouchStart, { passive: true });
+
+        const clearTouchState = () => {
+            document.querySelectorAll('.is-touched').forEach(el => el.classList.remove('is-touched'));
+        };
+
+        document.addEventListener('pointerup', clearTouchState, { passive: true });
+        document.addEventListener('pointercancel', clearTouchState, { passive: true });
+
         updateAuthUI();
         renderCustomColorDropdownOptions();
+        initPullToRefresh();
 
         document.getElementById('btn-search').addEventListener('click', () => switchTab('search'));
         document.getElementById('btn-database').addEventListener('click', () => switchTab('database'));
@@ -1401,6 +1558,7 @@
         });
 
         document.getElementById('contextDeleteOption').addEventListener('click', () => {
+            triggerHapticFeedback([20]);
             if (activeContextMenuTag) {
                 deleteCustomerTagDirect(activeContextMenuTag);
             } else if (activeContextMenuMoldId) {
@@ -1427,11 +1585,13 @@
 
     function toggleCustomColorDropdown(e) {
         e.stopPropagation();
+        triggerHapticFeedback([12]);
         const dd = document.getElementById('customColorDropdownList');
         if (dd) dd.classList.toggle('open');
     }
 
     function selectCustomColor(hex) {
+        triggerHapticFeedback([12]);
         selectedPresetColor = hex;
         const sample = document.getElementById('selectedColorSample');
         if (sample) sample.style.backgroundColor = hex;
@@ -1460,6 +1620,7 @@
     }
 
     async function handleAuthClick() {
+        triggerHapticFeedback([18]);
         if (currentUser) {
             if (confirm(`Chcete se odhlásit z účtu ${currentUser}?`)) {
                 const exitingUser = currentUser;
@@ -1494,6 +1655,7 @@
     }
 
     function openLoginModal() {
+        triggerHapticFeedback([12]);
         document.getElementById('loginUsername').value = '';
         document.getElementById('loginPassword').value = '';
         document.getElementById('loginModal').style.display = 'flex';
@@ -1503,6 +1665,7 @@
     function closeLoginModal() { document.getElementById('loginModal').style.display = 'none'; }
 
     async function executeLogin() {
+        triggerHapticFeedback([18]);
         const username = document.getElementById('loginUsername').value.trim();
         const password = document.getElementById('loginPassword').value.trim();
         if (!username) { alert("Zadejte vaše jméno nebo směnu!"); return; }
@@ -1648,7 +1811,7 @@
         if (BASE_SYSTEM_CUSTOMERS.includes(customerName)) return;
         
         touchTimer = setTimeout(() => {
-            if (navigator.vibrate) navigator.vibrate(50);
+            triggerHapticFeedback([40]);
             
             activeContextMenuTag = customerName;
             activeContextMenuMoldId = null;
@@ -1672,6 +1835,7 @@
         e.preventDefault();
         if (BASE_SYSTEM_CUSTOMERS.includes(customerName)) return;
         
+        triggerHapticFeedback([20]);
         activeContextMenuTag = customerName;
         activeContextMenuMoldId = null;
         activeContextMenuCommentId = null;
@@ -1685,7 +1849,7 @@
 
     function handleMoldRowTouchStart(e, moldId) {
         touchTimer = setTimeout(() => {
-            if (navigator.vibrate) navigator.vibrate(50);
+            triggerHapticFeedback([45]);
             
             activeContextMenuMoldId = moldId;
             activeContextMenuTag = null;
@@ -1703,6 +1867,7 @@
 
     function handleMoldRowRightClick(e, moldId) {
         e.preventDefault();
+        triggerHapticFeedback([20]);
         
         activeContextMenuMoldId = moldId;
         activeContextMenuTag = null;
@@ -1718,7 +1883,7 @@
     function handleCommentTouchStart(e, commentId) {
         e.stopPropagation();
         touchTimer = setTimeout(() => {
-            if (navigator.vibrate) navigator.vibrate(50);
+            triggerHapticFeedback([35]);
             
             activeContextMenuCommentId = commentId;
             activeContextMenuTag = null;
@@ -1737,6 +1902,7 @@
     function handleCommentRightClick(e, commentId) {
         e.preventDefault();
         e.stopPropagation();
+        triggerHapticFeedback([20]);
         
         activeContextMenuCommentId = commentId;
         activeContextMenuTag = null;
@@ -1939,6 +2105,7 @@
     }
 
     function selectPosition(inputId, value) {
+        triggerHapticFeedback([12]);
         document.getElementById(inputId).value = value;
         document.getElementById(inputId + 'Dropdown').style.display = 'none';
     }
@@ -2147,6 +2314,7 @@
 
     function handleAccordionFileSelect(moldId, inputElement) {
         if (inputElement.files && inputElement.files.length > 0) {
+            triggerHapticFeedback([12]);
             if (!temporaryFilesMap[moldId]) temporaryFilesMap[moldId] = [];
             const itemIdx = rawDatabase.findIndex(i => String(i[0]) === String(moldId));
             const existingCount = itemIdx !== -1 ? rawDatabase[itemIdx][6].length : 0;
@@ -2159,6 +2327,7 @@
     }
 
     function removeTempAccordionFile(moldId, index) {
+        triggerHapticFeedback([12]);
         if (temporaryFilesMap[moldId]) {
             temporaryFilesMap[moldId].splice(index, 1);
             toggleAccordionEditMode(moldId);
@@ -2166,6 +2335,7 @@
     }
 
     async function saveAccordionDetails(moldId) {
+        triggerHapticFeedback([18]);
         if (!checkAuthOrPrompt() || isSubmittingAction) return;
         const nameInput = document.getElementById(`acc-name-${moldId}`);
         const newProductName = nameInput ? nameInput.value.trim() : '';
@@ -2202,6 +2372,7 @@
     }
 
     function openPhotoModal(photoUrl, moldId) {
+        triggerHapticFeedback([12]);
         document.getElementById('photoModalTitle').textContent = `Forma #${moldId}`;
         document.getElementById('photoModalImg').src = photoUrl;
         document.getElementById('photoModal').style.display = 'flex';
@@ -2220,6 +2391,7 @@
     function closeCommentModal() { document.getElementById('commentModal').style.display = 'none'; }
 
     async function submitComment() {
+        triggerHapticFeedback([18]);
         if (isSubmittingAction) return;
         const text = document.getElementById('commentText').value.trim();
         if (!text) { alert("Zadejte text poznámky!"); return; }
@@ -2302,6 +2474,7 @@
     function closePositionModal() { document.getElementById('positionModal').style.display = 'none'; }
 
     async function savePositionChange() {
+        triggerHapticFeedback([18]);
         if (isSubmittingAction) return;
         const newPos = autoDotPosition(document.getElementById('modalPositionInput').value);
         if (!newPos) { alert("Zadejte pozici!"); return; }
@@ -2352,6 +2525,7 @@
 
     function handleDirectProdFiles(inputElement) {
         if (inputElement.files && inputElement.files.length > 0) {
+            triggerHapticFeedback([12]);
             for (let i = 0; i < inputElement.files.length; i++) {
                 if (directProdPendingFiles.length >= 2) {
                     alert("Můžete připojit maximálně 2 fotografie!");
@@ -2364,6 +2538,7 @@
     }
 
     function removeDirectProdFile(index) {
+        triggerHapticFeedback([12]);
         directProdPendingFiles.splice(index, 1);
         renderDirectProdThumbs();
     }
@@ -2384,6 +2559,7 @@
     }
 
     async function executeDirectProductionMove() {
+        triggerHapticFeedback([22]);
         if (isSubmittingAction) return;
         const moldId = document.getElementById('directProdMoldId').value.trim();
         const selectedStatus = document.getElementById('directProdStatus').value;
@@ -2477,6 +2653,7 @@
     function closeFullEditModal() { document.getElementById('fullEditModal').style.display = 'none'; }
 
     async function saveFullEditChange() {
+        triggerHapticFeedback([18]);
         if (isSubmittingAction) return;
         let newPos = autoDotPosition(document.getElementById('fullEditPositionInput').value);
         const newStatus = document.getElementById('fullEditStatusSelect').value;
@@ -2514,6 +2691,7 @@
     }
 
     async function restoreMold(moldId) {
+        triggerHapticFeedback([18]);
         if (!checkAuthOrPrompt() || isSubmittingAction) return;
         isSubmittingAction = true;
         const itemIdx = rawDatabase.findIndex(i => String(i[0]) === String(moldId));
@@ -2611,6 +2789,7 @@
     function closeAddModal() { document.getElementById('addModal').style.display = 'none'; }
 
     async function submitNewMold() {
+        triggerHapticFeedback([18]);
         if (isSubmittingAction) return;
         const id = document.getElementById('addMoldId').value.trim();
         const productName = document.getElementById('addMoldProductName').value.trim();
@@ -2946,7 +3125,7 @@
             if (searchInput && document.activeElement === searchInput) {
                 searchInput.blur();
             }
-        }, 500);
+        }, KEYBOARD_BLUR_DELAY);
     }
 
     function editCustomer(moldId, currentCust, isAlt = false) {
