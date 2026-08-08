@@ -764,6 +764,32 @@
             gap: 2px;
         }
 
+        .navodka-card-box {
+            border: 1px dashed #3b82f6;
+            background: #eff6ff;
+            border-radius: 8px;
+            padding: 0.65rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 0.5rem;
+        }
+
+        .navodka-btn-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.35rem;
+            background: #2563eb;
+            color: #ffffff;
+            padding: 0.45rem 0.75rem;
+            border-radius: 6px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            border: none;
+            cursor: pointer;
+            box-shadow: 0 1px 3px rgba(37, 99, 235, 0.3);
+        }
+
         .accordion-thumb-wrapper {
             position: relative;
             width: 80px;
@@ -973,7 +999,7 @@
             background: rgba(0, 0, 0, 0.5); backdrop-filter: blur(2px); z-index: 1000;
             justify-content: center; align-items: center; padding: 1rem; overflow-y: auto;
         }
-        #photoModal { z-index: 2000 !important; }
+        #photoModal, #pdfModal { z-index: 2000 !important; }
         .modal-card {
             background: var(--card-bg); color: var(--text-main); width: 100%; max-width: 500px; max-height: 85vh;
             border-radius: 12px; box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.2);
@@ -1197,6 +1223,22 @@
     </div>
 </div>
 
+<!-- Modal pro vnitřní prohlížení PDF Návodek -->
+<div class="modal-overlay" id="pdfModal">
+    <div class="modal-card" style="max-width: 850px; width: 95%; height: 85vh;">
+        <div class="modal-header">
+            <h3 id="pdfModalTitle">Návodka k výrobě (PDF)</h3>
+            <button class="close-modal-btn" onclick="closePdfModal()">✕</button>
+        </div>
+        <div class="modal-body" style="padding: 0; flex: 1; overflow: hidden;">
+            <iframe id="pdfFrame" src="" style="width:100%; height:100%; border:none;"></iframe>
+        </div>
+        <div class="modal-footer">
+            <button class="btn-primary" onclick="closePdfModal()">Zavřít</button>
+        </div>
+    </div>
+</div>
+
 <div class="modal-overlay" id="viewCommentModal">
     <div class="modal-card" style="max-width: 460px;">
         <div class="modal-header"><h3 id="viewCommentTitle">Detail poznámky</h3><button class="close-modal-btn" onclick="closeViewCommentModal()">✕</button></div>
@@ -1339,7 +1381,7 @@
     const API_URL = "https://qjoovhagucdcaebgdmbx.supabase.co";
     const API_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFqb292aGFndWNkY2FlYmdkbWJ4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQ4OTYyMTEsImV4cCI6MjEwMDQ3MjIxMX0.Z-Pey6nbpo5b-RyXkc2cCCV7Uj3-YgbAqZsTUV1kZD0";
     const MASTER_PASSWORD = "adisadis";
-    const KEYBOARD_BLUR_DELAY = 800; // Таймаут скрытия клавиатуры (0.8 сек)
+    const KEYBOARD_BLUR_DELAY = 800;
 
     function triggerHapticFeedback(pattern = [15]) {
         if ('vibrate' in navigator) {
@@ -1370,6 +1412,7 @@
     let expandedMoldsMap = {}; 
     let editingAccordionMap = {}; 
     let temporaryFilesMap = {}; 
+    let temporaryNavodkaMap = {};
     let directProdPendingFiles = [];
     let currentCustomerFilter = 'ALL';
     let currentDashboardStatusFilter = 'ALL';
@@ -2170,7 +2213,18 @@
                         photosArr = Array.isArray(parsed) ? parsed : [item.photo_url];
                     } catch { photosArr = [item.photo_url]; }
                 }
-                return [item.id, item.position || '', item.customer || 'Others', item.status || '', item.is_deleted || false, item.product_name || '', photosArr, item.alt_customer || '', item.alt_position || ''];
+                return [
+                    item.id, 
+                    item.position || '', 
+                    item.customer || 'Others', 
+                    item.status || '', 
+                    item.is_deleted || false, 
+                    item.product_name || '', 
+                    photosArr, 
+                    item.alt_customer || '', 
+                    item.alt_position || '',
+                    item.navodka_url || ''
+                ];
             });
 
             if (commentsRes && commentsRes.ok) {
@@ -2214,11 +2268,11 @@
         let expanded = [];
         db.forEach(item => {
             expanded.push([
-                item[0], item[1], item[2], item[3], item[4], item[5], item[6], item[7] || '', item[8] || '', false
+                item[0], item[1], item[2], item[3], item[4], item[5], item[6], item[7] || '', item[8] || '', item[9] || '', false
             ]);
             if (item[8] && String(item[8]).trim()) {
                 expanded.push([
-                    item[0], item[8], item[7] || item[2], item[3], item[4], item[5], item[6], item[7] || '', item[8] || '', true
+                    item[0], item[8], item[7] || item[2], item[3], item[4], item[5], item[6], item[7] || '', item[8] || '', item[9] || '', true
                 ]);
             }
         });
@@ -2249,6 +2303,7 @@
                     floatingLayer.remove();
                     delete editingAccordionMap[moldId];
                     delete temporaryFilesMap[moldId];
+                    delete temporaryNavodkaMap[moldId];
                 }, 470);
             }
         } else {
@@ -2287,7 +2342,7 @@
                     floatingLayer.style.top = `${topPos}px`;
                     floatingLayer.style.left = `${leftPos}px`;
 
-                    const requiredHeight = topPos + 240;
+                    const requiredHeight = topPos + 280;
                     if (tableContainer.clientHeight < requiredHeight) {
                         tableContainer.style.minHeight = `${requiredHeight}px`;
                     }
@@ -2306,7 +2361,10 @@
     function toggleAccordionEditMode(moldId) {
         if (!checkAuthOrPrompt()) return;
         editingAccordionMap[moldId] = !editingAccordionMap[moldId];
-        if (!editingAccordionMap[moldId]) delete temporaryFilesMap[moldId];
+        if (!editingAccordionMap[moldId]) {
+            delete temporaryFilesMap[moldId];
+            delete temporaryNavodkaMap[moldId];
+        }
         const contentDiv = document.getElementById(`accordion-content-box-${moldId}`);
         const item = rawDatabase.find(i => String(i[0]) === String(moldId));
         if (contentDiv && item) contentDiv.innerHTML = renderAccordionInnerContent(item);
@@ -2326,12 +2384,36 @@
         }
     }
 
+    function handleNavodkaFileSelect(moldId, inputElement) {
+        if (inputElement.files && inputElement.files.length > 0) {
+            triggerHapticFeedback([12]);
+            temporaryNavodkaMap[moldId] = inputElement.files[0];
+            toggleAccordionEditMode(moldId);
+        }
+    }
+
     function removeTempAccordionFile(moldId, index) {
         triggerHapticFeedback([12]);
         if (temporaryFilesMap[moldId]) {
             temporaryFilesMap[moldId].splice(index, 1);
             toggleAccordionEditMode(moldId);
         }
+    }
+
+    function removeExistingNavodka(moldId) {
+        triggerHapticFeedback([12]);
+        const itemIdx = rawDatabase.findIndex(i => String(i[0]) === String(moldId));
+        if (itemIdx !== -1) {
+            rawDatabase[itemIdx][9] = '';
+            delete temporaryNavodkaMap[moldId];
+            toggleAccordionEditMode(moldId);
+        }
+    }
+
+    function removeTempNavodka(moldId) {
+        triggerHapticFeedback([12]);
+        delete temporaryNavodkaMap[moldId];
+        toggleAccordionEditMode(moldId);
     }
 
     async function saveAccordionDetails(moldId) {
@@ -2355,17 +2437,35 @@
             }
         }
 
+        let navodkaUrl = rawDatabase[itemIdx][9] || '';
+        if (temporaryNavodkaMap[moldId]) {
+            const file = temporaryNavodkaMap[moldId];
+            const fileName = `navodka_${moldId}_${Date.now()}.${file.name.split('.').pop()}`;
+            const { error } = await supabaseClient.storage.from('mold-photos').upload(fileName, file, { upsert: true });
+            if (!error) {
+                const { data } = supabaseClient.storage.from('mold-photos').getPublicUrl(fileName);
+                navodkaUrl = data.publicUrl;
+            }
+        }
+
         delete temporaryFilesMap[moldId];
+        delete temporaryNavodkaMap[moldId];
         delete editingAccordionMap[moldId];
+
         rawDatabase[itemIdx][5] = newProductName;
         rawDatabase[itemIdx][6] = photosArr;
+        rawDatabase[itemIdx][9] = navodkaUrl;
         refreshUI();
 
         try {
             await fetch(`${API_URL}/rest/v1/molds?id=eq.${moldId}`, {
                 method: 'PATCH',
                 headers: { 'apikey': API_KEY, 'Authorization': `Bearer ${API_KEY}`, 'Content-Type': 'application/json', 'Prefer': 'return=minimal' },
-                body: JSON.stringify({ product_name: newProductName, photo_url: photosArr.length > 0 ? JSON.stringify(photosArr) : '' })
+                body: JSON.stringify({ 
+                    product_name: newProductName, 
+                    photo_url: photosArr.length > 0 ? JSON.stringify(photosArr) : '',
+                    navodka_url: navodkaUrl
+                })
             });
         } catch (e) { console.error("Error saving accordion:", e); }
         finally { isSubmittingAction = false; }
@@ -2379,6 +2479,19 @@
     }
 
     function closePhotoModal() { document.getElementById('photoModal').style.display = 'none'; }
+
+    /* Funkce pro vnitřní prohlížení PDF Návodek v aplikaci */
+    function openPdfModal(pdfUrl, moldId) {
+        triggerHapticFeedback([12]);
+        document.getElementById('pdfModalTitle').textContent = `Návodka — Forma #${moldId}`;
+        document.getElementById('pdfFrame').src = pdfUrl;
+        document.getElementById('pdfModal').style.display = 'flex';
+    }
+
+    function closePdfModal() {
+        document.getElementById('pdfModal').style.display = 'none';
+        document.getElementById('pdfFrame').src = '';
+    }
 
     function openCommentModal(moldId) {
         if (!checkAuthOrPrompt()) return;
@@ -2802,14 +2915,14 @@
 
         isSubmittingAction = true;
         closeAddModal();
-        rawDatabase.push([id, position, customer, status, false, productName, [], '', '']);
+        rawDatabase.push([id, position, customer, status, false, productName, [], '', '', '']);
         refreshUI();
 
         try {
             await fetch(`${API_URL}/rest/v1/molds`, {
                 method: 'POST',
                 headers: { 'apikey': API_KEY, 'Authorization': `Bearer ${API_KEY}`, 'Content-Type': 'application/json', 'Prefer': 'return=minimal' },
-                body: JSON.stringify({ id: id, customer: customer, position: position, status: status, product_name: productName, is_deleted: false })
+                body: JSON.stringify({ id: id, customer: customer, position: position, status: status, product_name: productName, is_deleted: false, navodka_url: '' })
             });
             await fetch(`${API_URL}/rest/v1/mold_logs`, {
                 method: 'POST',
@@ -2903,7 +3016,7 @@
     }
 
     function renderAccordionInnerContent(item) {
-        const [num, pos, cust, status, isDel, productName, photosArr] = item;
+        const [num, pos, cust, status, isDel, productName, photosArr, altCust, altPos, navodkaUrl] = item;
         const isEditing = Boolean(editingAccordionMap[num]);
 
         if (!isEditing) {
@@ -2911,13 +3024,40 @@
                 <div class="accordion-thumb-wrapper"><img src="${escapeHtml(url)}" class="accordion-thumb" onclick="openPhotoModal('${escapeHtml(url)}', '${escapeHtml(num)}')"></div>
             `).join('') : `<span style="font-size: 0.8rem; color: var(--text-muted);">Žádné fotografie</span>`;
 
+            let navodkaBlockHtml = `<span style="font-size: 0.8rem; color: var(--text-muted);">Není přiložena</span>`;
+            if (navodkaUrl) {
+                const isPdf = navodkaUrl.toLowerCase().endsWith('.pdf');
+                if (isPdf) {
+                    navodkaBlockHtml = `
+                        <button type="button" class="navodka-btn-link" onclick="openPdfModal('${escapeHtml(navodkaUrl)}', '${escapeHtml(num)}')">
+                            📄 Otevřít Návodku (PDF)
+                        </button>
+                    `;
+                } else {
+                    navodkaBlockHtml = `
+                        <div class="accordion-thumb-wrapper" style="border-color: #2563eb;">
+                            <img src="${escapeHtml(navodkaUrl)}" class="accordion-thumb" onclick="openPhotoModal('${escapeHtml(navodkaUrl)}', 'Návodka #${escapeHtml(num)}')">
+                        </div>
+                    `;
+                }
+            }
+
             return `
                 <div class="accordion-top-bar">
                     <div class="accordion-header-title">Detail formy</div>
                     <button class="accordion-edit-trigger-btn" onclick="toggleAccordionEditMode('${escapeHtml(num)}')">${ACCORDION_EDIT_ICON_HTML} Upravit</button>
                 </div>
                 <div style="font-size: 0.9rem; text-transform: capitalize;"><strong>Název výroby:</strong> ${productName ? escapeHtml(productName) : '<span style="color:var(--text-muted)">Nezadán</span>'}</div>
-                <div><div class="accordion-header-title" style="margin-bottom: 0.3rem;">Fotografie (${photosArr.length}/5):</div><div class="accordion-photo-box">${photosHtml}</div></div>
+                
+                <div>
+                    <div class="accordion-header-title" style="margin-bottom: 0.3rem; color:#2563eb;">Návodka k výrobě:</div>
+                    <div class="navodka-card-box">${navodkaBlockHtml}</div>
+                </div>
+
+                <div>
+                    <div class="accordion-header-title" style="margin-bottom: 0.3rem;">Fotografie formy (${photosArr.length}/5):</div>
+                    <div class="accordion-photo-box">${photosHtml}</div>
+                </div>
             `;
         } else {
             const existingThumbs = photosArr.map((url, idx) => `
@@ -2934,20 +3074,54 @@
                 <label for="acc-file-${escapeHtml(num)}" class="photo-upload-card"><span style="font-size:24px; color:var(--text-muted)">+</span><span style="font-size:0.65rem; color:var(--text-muted)">Přidat foto</span></label>
             ` : '';
 
+            // Navodka Edit Mode
+            let navodkaEditContent = '';
+            if (temporaryNavodkaMap[num]) {
+                const tempFile = temporaryNavodkaMap[num];
+                navodkaEditContent = `
+                    <div class="navodka-card-box">
+                        <span style="font-size:0.8rem; font-weight:600;">${escapeHtml(tempFile.name)} (Nová)</span>
+                        <button type="button" class="btn-danger" style="padding:0.25rem 0.5rem; font-size:0.75rem;" onclick="removeTempNavodka('${escapeHtml(num)}')">✕</button>
+                    </div>
+                `;
+            } else if (navodkaUrl) {
+                const isPdf = navodkaUrl.toLowerCase().endsWith('.pdf');
+                navodkaEditContent = `
+                    <div class="navodka-card-box">
+                        <span style="font-size:0.8rem; font-weight:600;">${isPdf ? '📄 Soubor Návodky (PDF)' : '🖼️ Obrázek Návodky'}</span>
+                        <button type="button" class="btn-danger" style="padding:0.25rem 0.5rem; font-size:0.75rem;" onclick="removeExistingNavodka('${escapeHtml(num)}')">Smazat</button>
+                    </div>
+                `;
+            } else {
+                navodkaEditContent = `
+                    <input type="file" id="navodka-file-${escapeHtml(num)}" accept="image/*,.pdf" class="file-upload-hidden" onchange="handleNavodkaFileSelect('${escapeHtml(num)}', this)">
+                    <label for="navodka-file-${escapeHtml(num)}" class="navodka-btn-link" style="cursor:pointer; background:#475569;">
+                        + Nahrát Návodku (PDF / Obrázek)
+                    </label>
+                `;
+            }
+
             return `
                 <div class="accordion-top-bar">
                     <div class="accordion-header-title" style="color: #3b82f6; font-weight: bold;">Režim úprav</div>
                     <button class="accordion-edit-trigger-btn" onclick="toggleAccordionEditMode('${escapeHtml(num)}')">✕ Zrušit</button>
                 </div>
-                <div><div class="accordion-header-title">Název výroby:</div><input type="text" id="acc-name-${escapeHtml(num)}" value="${escapeHtml(productName || '')}" style="width:150px; padding:0.4rem; border-radius:6px; border:1px solid var(--border-color);" autocapitalization="sentences" autocapitalize="sentences"></div>
-                <div><div class="accordion-header-title">Fotografie:</div><div class="accordion-photo-box">${existingThumbs}${pendingThumbs}${uploadCard}</div></div>
+                <div><div class="accordion-header-title">Název výroby:</div><input type="text" id="acc-name-${escapeHtml(num)}" value="${escapeHtml(productName || '')}" style="width:100%; max-width:260px; padding:0.4rem; border-radius:6px; border:1px solid var(--border-color);" autocapitalization="sentences" autocapitalize="sentences"></div>
+                
+                <div>
+                    <div class="accordion-header-title" style="color:#2563eb;">Návodka k výrobě:</div>
+                    <div style="margin-top: 0.35rem;">${navodkaEditContent}</div>
+                </div>
+
+                <div><div class="accordion-header-title">Fotografie formy:</div><div class="accordion-photo-box">${existingThumbs}${pendingThumbs}${uploadCard}</div></div>
+                
                 <div style="text-align: right;"><button class="btn-primary" style="padding: 0.4rem 0.85rem; font-size: 0.8rem;" onclick="saveAccordionDetails('${escapeHtml(num)}')">Uložit změny</button></div>
             `;
         }
     }
 
     function renderTableRow(item, extraRowClass = '', enableContextMenu = false, showPlusBtn = true) {
-        const [num, pos, cust, status, isDel, productName, photosArr, altCust, altPos, isAlt] = item;
+        const [num, pos, cust, status, isDel, productName, photosArr, altCust, altPos, navodkaUrl, isAlt] = item;
         const custStyle = getCustomerStyle(cust);
         const rowKey = isAlt ? `${num}_alt` : `${num}`;
         const isExpanded = Boolean(expandedMoldsMap[rowKey]);
