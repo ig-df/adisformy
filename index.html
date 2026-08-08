@@ -627,6 +627,14 @@
                 width: 15px !important;
                 height: 15px !important;
             }
+
+            .floating-corner-btn, 
+            .floating-corner-btn-left {
+                bottom: 4.5rem !important;
+                width: 44px !important;
+                height: 44px !important;
+                z-index: 90 !important;
+            }
         }
 
         @media (min-width: 601px) {
@@ -2308,7 +2316,7 @@
             }
         } else {
             Object.keys(expandedMoldsMap).forEach(id => {
-                if (expandedMoldsMap[id] && id !== String(rowKey)) toggleAccordion(id, id.split('_')[0]);
+                if (expandedMoldsMap[id] && id !== String(rowKey)) toggleAccordion(id, id.split('_').pop());
             });
             expandedMoldsMap[rowKey] = true;
             if (btn) btn.classList.add('expanded');
@@ -3120,10 +3128,11 @@
         }
     }
 
-    function renderTableRow(item, extraRowClass = '', enableContextMenu = false, showPlusBtn = true) {
+    function renderTableRow(item, extraRowClass = '', enableContextMenu = false, showPlusBtn = true, prefixKey = '') {
         const [num, pos, cust, status, isDel, productName, photosArr, altCust, altPos, navodkaUrl, isAlt] = item;
         const custStyle = getCustomerStyle(cust);
-        const rowKey = isAlt ? `${num}_alt` : `${num}`;
+        const baseKey = isAlt ? `${num}_alt` : `${num}`;
+        const rowKey = prefixKey ? `${prefixKey}_${baseKey}` : baseKey;
         const isExpanded = Boolean(expandedMoldsMap[rowKey]);
         
         const altSub = isAlt ? `<div class="product-name-sub" style="color:#d97706; font-weight:600;">↳ 2. pozice</div>` : '';
@@ -3218,14 +3227,14 @@
 
         const CHUNK_SIZE = 40;
         const firstChunk = filtered.slice(0, CHUNK_SIZE);
-        tbody.innerHTML = firstChunk.map(i => renderTableRow(i, '', true, true)).join('');
+        tbody.innerHTML = firstChunk.map(i => renderTableRow(i, '', true, true, 'db')).join('');
 
         if (filtered.length > CHUNK_SIZE) {
             let currentIndex = CHUNK_SIZE;
             function renderNextChunk() {
                 if (currentIndex >= filtered.length) return;
                 const nextChunk = filtered.slice(currentIndex, currentIndex + CHUNK_SIZE);
-                const html = nextChunk.map(i => renderTableRow(i, '', true, true)).join('');
+                const html = nextChunk.map(i => renderTableRow(i, '', true, true, 'db')).join('');
                 tbody.insertAdjacentHTML('beforeend', html);
                 currentIndex += CHUNK_SIZE;
                 requestAnimationFrame(renderNextChunk);
@@ -3252,7 +3261,7 @@
 
         document.getElementById('dash-count-active').textContent = withStatus.length;
         document.getElementById('dash-count-fronte-udrzbu').textContent = fFronteUdrzbu;
-        document.getElementById('dash-count-fronte-opravu').textContent = fFronteOpravu;
+        document.getElementById('dash-count-fronte-opravu').textContent = fOpravePryc ? fOpravePryc : fFronteOpravu;
         document.getElementById('dash-count-udrzbe').textContent = fUdrzbe;
         document.getElementById('dash-count-oprave-pryc').textContent = fOpravePryc;
 
@@ -3260,7 +3269,7 @@
         filtered.sort((a, b) => parseInt(a[0], 10) - parseInt(b[0], 10));
 
         stats.textContent = `Zobrazeno: ${filtered.length}`;
-        tbody.innerHTML = filtered.length > 0 ? filtered.map(i => renderTableRow(i, '', true, true)).join('') : `<tr><td colspan="3" class="no-data-centered" style="text-align: center !important;">V seznamu zatím nejsou žádné formy ke kontrole</td></tr>`;
+        tbody.innerHTML = filtered.length > 0 ? filtered.map(i => renderTableRow(i, '', true, true, 'dash')).join('') : `<tr><td colspan="3" class="no-data-centered" style="text-align: center !important;">V seznamu zatím nejsou žádné formy ke kontrole</td></tr>`;
     }
 
     function handleSearch() {
@@ -3288,7 +3297,7 @@
         stats.textContent = `Nalezeno: ${res.length}`;
         
         if (res.length > 0) {
-            tbody.innerHTML = res.map(i => renderTableRow(i, String(i[0]).toLowerCase() === q ? 'row-success' : '', true, true)).join('');
+            tbody.innerHTML = res.map(i => renderTableRow(i, String(i[0]).toLowerCase() === q ? 'row-success' : '', true, true, 'search')).join('');
         } else {
             tbody.innerHTML = `<tr class="row-error"><td colspan="3" class="no-data-centered" style="text-align: center !important;">Forma není v databázi</td></tr>`;
         }
