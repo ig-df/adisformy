@@ -244,6 +244,7 @@
         .btn-danger img,
         .auth-btn img,
         .auth-btn svg,
+        .floating-corner-btn img,
         .floating-corner-btn-left img {
             width: 18px;
             height: 18px;
@@ -689,14 +690,6 @@
             .action-buttons-group .comment-btn img {
                 width: 15px !important;
                 height: 15px !important;
-            }
-
-            .floating-corner-btn, 
-            .floating-corner-btn-left {
-                bottom: 1.25rem !important;
-                width: 44px !important;
-                height: 44px !important;
-                z-index: 90 !important;
             }
         }
 
@@ -1195,12 +1188,38 @@
         .log-meta { display: flex; justify-content: space-between; color: var(--text-muted); font-size: 0.78rem; text-transform: capitalize; }
         
         .floating-corner-btn, .floating-corner-btn-left {
-            position: absolute; bottom: 1.25rem; background: var(--card-bg); border: 1px solid var(--border-color);
-            border-radius: 50%; width: 48px; height: 48px; display: flex; align-items: center; justify-content: center;
-            cursor: pointer; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15); z-index: 50;
+            background: var(--card-bg); 
+            border: 1px solid var(--border-color);
+            border-radius: 50%; 
+            width: 48px; 
+            height: 48px; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center;
+            cursor: pointer; 
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15); 
+            z-index: 999;
         }
-        .floating-corner-btn { right: 1.25rem; }
-        .floating-corner-btn-left { left: 1.25rem; display: none; }
+
+        /* Для ПК версии — располагаем кнопки внутри углов контейнера, чтобы они не обрезались */
+        @media (min-width: 601px) {
+            .floating-corner-btn { position: absolute; bottom: 1.25rem; right: 1.25rem; }
+            .floating-corner-btn-left { position: absolute; bottom: 1.25rem; left: 1.25rem; }
+        }
+
+        /* Для мобильной версии и приложения — фиксируем поверх экрана */
+        @media (max-width: 600px) {
+            .floating-corner-btn { 
+                position: fixed !important; 
+                right: 1.25rem !important; 
+                bottom: max(1.25rem, env(safe-area-inset-bottom, 1.25rem)) !important; 
+            }
+            .floating-corner-btn-left { 
+                position: fixed !important; 
+                left: 1.25rem !important; 
+                bottom: max(1.25rem, env(safe-area-inset-bottom, 1.25rem)) !important; 
+            }
+        }
     </style>
 </head>
 <body>
@@ -1299,7 +1318,7 @@
         </div>
     </div>
 
-    <button class="floating-corner-btn-left" id="trashCornerBtn" tabindex="0" onclick="openTrashModal()" title="Koš / Smazané formy">
+    <button class="floating-corner-btn-left" id="trashCornerBtn" tabindex="0" onclick="openTrashModal()" title="Koš / Smazané formy" style="display: none;">
         <img src="icon7.png" alt="Koš">
     </button>
     <button class="floating-corner-btn" tabindex="0" onclick="openDirectProdModal()" title="Forma po výrobě (Mezisklad)">
