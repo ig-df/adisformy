@@ -627,15 +627,48 @@
             color: var(--text-main);
         }
 
+        /* Адаптивка строго для мобильных (<= 600px) */
         @media (max-width: 600px) {
-            body { padding: 0.5rem 0.2rem; }
-            .content { padding: 0.75rem 0.5rem !important; }
-            .tab-content { top: 0.75rem; left: 0.5rem; right: 0.5rem; }
+            html, body {
+                height: 100vh;
+                overflow: hidden;
+                padding: 0;
+            }
+            body {
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            }
+            .container {
+                height: 100%;
+                max-height: 100vh;
+                border-radius: 0;
+                border: none;
+            }
+            .content { 
+                padding: 0.75rem 0.5rem !important; 
+                display: flex;
+                flex-direction: column;
+                flex: 1;
+                overflow: hidden;
+            }
+            .tab-content { 
+                position: absolute; 
+                top: 0.75rem; 
+                left: 0.5rem; 
+                right: 0.5rem; 
+                bottom: 0.75rem;
+                display: flex;
+                flex-direction: column;
+            }
+            .table-container {
+                flex: 1;
+                max-height: none !important;
+            }
             .auth-btn { padding: 0.35rem !important; }
             .auth-btn span#authBtnText { display: none !important; }
             .dashboard-grid { grid-template-columns: repeat(2, 1fr); }
             .dash-card-main { grid-column: 1 / span 2; }
-            .table-container { max-height: 420px; }
             .customer-filters-wrapper { padding-right: 0; }
             .customer-filters {
                 flex-wrap: nowrap !important;
@@ -690,7 +723,7 @@
 
             .floating-corner-btn, 
             .floating-corner-btn-left {
-                bottom: 4.5rem !important;
+                bottom: 1.25rem !important;
                 width: 44px !important;
                 height: 44px !important;
                 z-index: 90 !important;
@@ -1689,17 +1722,38 @@
         if (!ptrIndicator) return;
 
         window.addEventListener('touchstart', (e) => {
-            if (window.scrollY === 0) {
+            const activeTableContainer = document.querySelector('.tab-content.active .table-container');
+            const isAtTop = window.scrollY === 0 && (!activeTableContainer || activeTableContainer.scrollTop === 0);
+
+            if (isAtTop && !e.target.closest('.modal-card, .customer-filters')) {
                 ptrStartY = e.touches[0].clientY;
                 isPtrActive = true;
                 hasVibrated = false;
+            } else {
+                isPtrActive = false;
             }
         }, { passive: true });
 
         window.addEventListener('touchmove', (e) => {
-            if (!isPtrActive || window.scrollY > 0) return;
+            if (!isPtrActive) return;
+
+            const activeTableContainer = document.querySelector('.tab-content.active .table-container');
+            if (window.scrollY > 0 || (activeTableContainer && activeTableContainer.scrollTop > 0)) {
+                isPtrActive = false;
+                ptrIndicator.style.top = '-50px';
+                ptrIndicator.style.opacity = '0';
+                return;
+            }
+
             ptrCurrentY = e.touches[0].clientY;
             const distance = ptrCurrentY - ptrStartY;
+
+            if (distance < 0) {
+                isPtrActive = false;
+                ptrIndicator.style.top = '-50px';
+                ptrIndicator.style.opacity = '0';
+                return;
+            }
 
             if (distance > 0) {
                 const pullProgress = Math.min(distance, PTR_THRESHOLD + 20);
@@ -1718,7 +1772,10 @@
             if (!isPtrActive) return;
             const distance = ptrCurrentY - ptrStartY;
 
-            if (distance >= PTR_THRESHOLD && window.scrollY === 0) {
+            const activeTableContainer = document.querySelector('.tab-content.active .table-container');
+            const isAtTop = window.scrollY === 0 && (!activeTableContainer || activeTableContainer.scrollTop === 0);
+
+            if (distance >= PTR_THRESHOLD && isAtTop) {
                 ptrIndicator.classList.add('refreshing');
                 ptrIndicator.style.top = '20px';
                 ptrIndicator.style.opacity = '1';
