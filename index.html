@@ -78,6 +78,48 @@
             min-height: 100vh;
         }
 
+        /* Светлый Toast Notification */
+        .toast-notification {
+            position: fixed;
+            bottom: 28px;
+            left: 50%;
+            transform: translateX(-50%) translateY(80px);
+            background: #ffffff;
+            color: #0f172a;
+            padding: 0.7rem 1.25rem;
+            border-radius: 10px;
+            font-size: 0.88rem;
+            font-weight: 600;
+            border: 1px solid var(--border-color);
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.05);
+            z-index: 9999;
+            opacity: 0;
+            transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.3s ease;
+            pointer-events: none;
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+        }
+
+        .toast-notification::before {
+            content: '';
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background-color: #22c55e;
+            flex-shrink: 0;
+        }
+
+        .toast-notification.toast-error::before {
+            background-color: #ef4444;
+        }
+
+        .toast-notification.show {
+            transform: translateX(-50%) translateY(0);
+            opacity: 1;
+        }
+
         /* Pull-to-Refresh Indicator */
         .ptr-indicator {
             position: fixed;
@@ -134,8 +176,10 @@
         }
 
         button:active, .filter-chip:active, .dash-card:active, .badge-position:active, .tag-customer:active, .top-icon-btn:active, .auth-btn:active, .floating-corner-btn:active, .floating-corner-btn-left:active, .is-touched {
-            transform: scale(0.95) !important;
-            opacity: 0.85 !important;
+            transform: scale(0.91) translateY(1px) !important;
+            opacity: 0.75 !important;
+            filter: brightness(0.92);
+            transition: transform 0.06s cubic-bezier(0, 0, 0.2, 1), opacity 0.06s ease !important;
         }
 
         .header-logo {
@@ -299,33 +343,43 @@
             flex-shrink: 0;
         }
 
+        .tab-indicator {
+            position: absolute;
+            bottom: 0;
+            height: 2.5px;
+            background: #0f172a;
+            border-radius: 2px 2px 0 0;
+            will-change: left, width;
+            transform: translateZ(0);
+            backface-visibility: hidden;
+            transition: left 0.32s cubic-bezier(0.2, 0.8, 0.2, 1), width 0.32s cubic-bezier(0.2, 0.8, 0.2, 1);
+            z-index: 10;
+        }
+
         .tab-btn {
             flex: 1;
             padding: 0.85rem;
-            background: none;
+            background: transparent;
             border: none;
-            border-bottom: 2px solid transparent;
             font-size: 0.95rem;
-            font-weight: 600;
+            font-weight: 500;
             color: var(--text-muted);
             cursor: pointer;
-            transition: color 0.15s ease, border-color 0.15s ease;
             outline: none;
             position: relative;
+            z-index: 2;
+            transition: color 0.2s ease;
         }
 
         .tab-btn:hover {
             color: var(--text-main);
-            background-color: var(--row-hover);
-        }
-
-        .tab-btn:active {
-            transform: scale(0.98);
         }
 
         .tab-btn.active {
             color: var(--text-main);
-            border-bottom-color: var(--text-main);
+            font-weight: 600;
+            background: transparent;
+            box-shadow: none;
         }
 
         .content {
@@ -333,23 +387,28 @@
             position: relative;
             overflow: hidden;
             flex: 1;
+            min-height: 580px;
         }
 
+        /* Анимация переезда (Slide) + visibility для мгновенного переключения без лагов */
         .tab-content {
-            display: none;
+            position: absolute;
+            top: 1.25rem;
+            left: 1.25rem;
+            right: 1.25rem;
             opacity: 0;
-            transform: translateY(6px);
-            transition: opacity 0.18s ease-out, transform 0.18s ease-out;
+            visibility: hidden;
+            pointer-events: none;
+            transform: translateX(35px);
             will-change: opacity, transform;
+            transition: opacity 0.22s ease-in-out, transform 0.22s cubic-bezier(0.16, 1, 0.3, 1);
         }
 
         .tab-content.active {
-            display: block;
-        }
-
-        .tab-content.visible {
+            visibility: visible;
+            pointer-events: auto;
             opacity: 1;
-            transform: translateY(0);
+            transform: translateX(0);
         }
 
         .search-box {
@@ -571,6 +630,7 @@
         @media (max-width: 600px) {
             body { padding: 0.5rem 0.2rem; }
             .content { padding: 0.75rem 0.5rem !important; }
+            .tab-content { top: 0.75rem; left: 0.5rem; right: 0.5rem; }
             .auth-btn { padding: 0.35rem !important; }
             .auth-btn span#authBtnText { display: none !important; }
             .dashboard-grid { grid-template-columns: repeat(2, 1fr); }
@@ -662,12 +722,29 @@
 
         td.no-data, td.no-data-centered { text-align: center !important; padding: 2.5rem !important; color: var(--text-muted); font-size: 0.95rem; }
 
-        tr { user-select: none; transition: background-color 0.15s ease; }
+        tbody tr {
+            user-select: none;
+            transition: background-color 0.15s ease, transform 0.3s ease, opacity 0.3s ease;
+        }
+        
         tr:last-child td { border-bottom: none; }
         tr:hover td { background-color: var(--row-hover); }
 
-        tr.row-success td { background-color: var(--success-bg) !important; color: var(--success-text) !important; border-color: var(--success-border) !important; }
+        tr.row-adding {
+            animation: fadeInRow 0.35s ease-out forwards;
+        }
 
+        tr.row-deleting {
+            transform: translateX(-100%);
+            opacity: 0 !important;
+        }
+
+        @keyframes fadeInRow {
+            from { opacity: 0; transform: translateY(-8px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        tr.row-success td { background-color: var(--success-bg) !important; color: var(--success-text) !important; border-color: var(--success-border) !important; }
         tr.row-error td { background-color: var(--error-bg) !important; color: var(--error-text) !important; border-color: var(--error-border) !important; }
 
         .toggle-accordion-btn {
@@ -840,9 +917,27 @@
 
         .status-dot { width: 6px; height: 6px; border-radius: 50%; display: inline-block; flex-shrink: 0; }
         .dot-green { background-color: var(--success-badge); }
-        .dot-red { background-color: var(--error-badge); }
-        .dot-orange { background-color: var(--warning-badge); }
+        .dot-red { 
+            background-color: var(--error-badge); 
+            animation: status-pulse-red 2s infinite ease-in-out;
+        }
+        .dot-orange { 
+            background-color: var(--warning-badge); 
+            animation: status-pulse-orange 2.5s infinite ease-in-out;
+        }
         .dot-yellow { background-color: var(--maintenance-badge); }
+
+        @keyframes status-pulse-red {
+            0% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7); }
+            70% { box-shadow: 0 0 0 6px rgba(239, 68, 68, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); }
+        }
+
+        @keyframes status-pulse-orange {
+            0% { box-shadow: 0 0 0 0 rgba(249, 115, 22, 0.7); }
+            70% { box-shadow: 0 0 0 6px rgba(249, 115, 22, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(249, 115, 22, 0); }
+        }
 
         .position-cell { display: flex; align-items: center; position: relative; width: 100%; gap: 0.5rem; flex-wrap: wrap; }
         .position-wrapper { display: flex; flex-direction: column; align-items: center; gap: 0.15rem; }
@@ -925,11 +1020,7 @@
             flex-shrink: 0;
         }
 
-        .comment-expand-hint svg {
-            width: 100%;
-            height: 100%;
-            display: block;
-        }
+        .comment-expand-hint svg { width: 100%; height: 100%; display: block; }
 
         .comment-text-full, .comment-text-faded {
             font-size: 0.76rem;
@@ -1002,18 +1093,50 @@
         .custom-color-option { display: flex; align-items: center; padding: 0.4rem 0.5rem; border-radius: 6px; cursor: pointer; }
         .custom-color-option-sample { width: 24px; height: 24px; border-radius: 4px; border: 1px solid var(--border-color); }
 
+        /* Модальные окна с быстрой задержкой */
         .modal-overlay {
-            display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0;
-            background: rgba(0, 0, 0, 0.5); backdrop-filter: blur(2px); z-index: 1000;
-            justify-content: center; align-items: center; padding: 1rem; overflow-y: auto;
+            display: none; 
+            position: fixed; 
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0, 0, 0, 0.55); 
+            backdrop-filter: blur(4px); 
+            z-index: 1000;
+            justify-content: center; 
+            align-items: center; 
+            padding: 1rem; 
+            overflow-y: auto;
+            opacity: 0;
+            transition: opacity 0.18s cubic-bezier(0.16, 1, 0.3, 1);
+            will-change: opacity;
         }
+
+        .modal-overlay.active { opacity: 1; }
         #photoModal, #pdfModal { z-index: 2000 !important; }
+
         .modal-card {
-            background: var(--card-bg); color: var(--text-main); width: 100%; max-width: 500px; max-height: 85vh;
-            border-radius: 12px; box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.2);
-            display: flex; flex-direction: column; border: 1px solid var(--border-color); margin: auto;
+            background: var(--card-bg); 
+            color: var(--text-main); 
+            width: 100%; 
+            max-width: 500px; 
+            max-height: 85vh;
+            border-radius: 14px; 
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.35);
+            display: flex; 
+            flex-direction: column; 
+            border: 1px solid var(--border-color); 
+            margin: auto;
             overflow: hidden;
+            transform: scale(0.88);
+            opacity: 0;
+            transition: transform 0.2s cubic-bezier(0.34, 1.2, 0.64, 1), opacity 0.15s ease-out;
+            will-change: transform, opacity;
         }
+
+        .modal-overlay.active .modal-card {
+            transform: scale(1);
+            opacity: 1;
+        }
+
         .modal-header {
             padding: 1rem 1.25rem; border-bottom: 1px solid var(--border-color);
             display: flex; justify-content: space-between; align-items: center; background: var(--row-hover);
@@ -1094,10 +1217,11 @@
         <button id="btn-search" class="tab-btn active" tabindex="0">Vyhledávání</button>
         <button id="btn-database" class="tab-btn" tabindex="0">Databáze</button>
         <button id="btn-dashboard" class="tab-btn" tabindex="0">Dashboard</button>
+        <div id="tabIndicator" class="tab-indicator"></div>
     </div>
 
     <div class="content">
-        <div id="tab-search" class="tab-content active visible">
+        <div id="tab-search" class="tab-content active">
             <div class="search-box">
                 <input type="text" id="searchInput" class="search-input" tabindex="0" placeholder="Zadejte číslo formy, výrobu, pozici nebo zákazníka..." oninput="handleSearch()" autocomplete="off" autocapitalization="sentences" autocapitalize="sentences">
             </div>
@@ -1231,7 +1355,6 @@
     </div>
 </div>
 
-<!-- Modal pro vnitřní prohlížení PDF Návodek -->
 <div class="modal-overlay" id="pdfModal">
     <div class="modal-card" style="max-width: 850px; width: 95%; height: 85vh;">
         <div class="modal-header">
@@ -1393,10 +1516,64 @@
 
     function triggerHapticFeedback(pattern = [15]) {
         if ('vibrate' in navigator) {
-            try {
-                navigator.vibrate(pattern);
-            } catch (e) {}
+            try { navigator.vibrate(pattern); } catch (e) {}
         }
+    }
+
+    let toastTimer = null;
+    function showToast(message, isError = false) {
+        let toast = document.getElementById('toastNotification');
+        if (!toast) {
+            toast = document.createElement('div');
+            toast.id = 'toastNotification';
+            toast.className = 'toast-notification';
+            document.body.appendChild(toast);
+        }
+
+        toast.textContent = message;
+        if (isError) {
+            toast.classList.add('toast-error');
+        } else {
+            toast.classList.remove('toast-error');
+        }
+        
+        if (toastTimer) clearTimeout(toastTimer);
+
+        requestAnimationFrame(() => {
+            toast.classList.add('show');
+        });
+
+        toastTimer = setTimeout(() => {
+            toast.classList.remove('show');
+        }, 2600);
+    }
+
+    /* Ускоренное открытие модальных окон (уменьшена пауза до 12мс) */
+    function showModalAnimated(modalId) {
+        const modal = document.getElementById(modalId);
+        if (!modal) return;
+
+        if (document.activeElement) {
+            document.activeElement.blur();
+        }
+
+        modal.style.display = 'flex';
+        
+        setTimeout(() => {
+            requestAnimationFrame(() => {
+                modal.classList.add('active');
+            });
+        }, 12);
+    }
+
+    function hideModalAnimated(modalId) {
+        const modal = document.getElementById(modalId);
+        if (!modal) return;
+
+        modal.classList.remove('active');
+        setTimeout(() => {
+            modal.style.display = 'none';
+        }, 180);
     }
 
     const supabaseClient = window.supabase.createClient(API_URL, API_KEY);
@@ -1444,6 +1621,7 @@
     let realtimeDebounceTimer = null;
     let touchTimer = null;
     let searchDebounceTimer = null;
+    let isTabTransitioning = false;
 
     const PALETTE_COLORS = [
         "#ffffff", "#f8fafc", "#cbd5e1", "#64748b", "#1e293b", "#0f172a",
@@ -1482,7 +1660,6 @@
         return trimmed.replace(/\s+([zcmbzCMBHh])(?!\.)$/i, ' $1.');
     }
 
-    /* PULL TO REFRESH IMPLEMENTATION */
     function initPullToRefresh() {
         let ptrStartY = 0;
         let ptrCurrentY = 0;
@@ -1531,6 +1708,7 @@
                 try {
                     await fetchData();
                     triggerHapticFeedback([12, 40, 12]);
+                    showToast("Data byla obnovena");
                 } catch (err) {
                     console.error("PTR Refresh error:", err);
                 } finally {
@@ -1592,7 +1770,7 @@
         document.querySelectorAll('.modal-overlay').forEach(overlay => {
             overlay.addEventListener('click', (e) => {
                 if (e.target === overlay) {
-                    overlay.style.display = 'none';
+                    hideModalAnimated(overlay.id);
                 }
             });
         });
@@ -1620,9 +1798,21 @@
             hideContextMenu();
         });
 
+        updateTabIndicator();
+        window.addEventListener('resize', updateTabIndicator);
+
         fetchData();
         setupRealtimeSubscription();
     });
+
+    function updateTabIndicator() {
+        const activeBtn = document.querySelector('.tab-btn.active');
+        const indicator = document.getElementById('tabIndicator');
+        if (activeBtn && indicator) {
+            indicator.style.left = `${activeBtn.offsetLeft}px`;
+            indicator.style.width = `${activeBtn.offsetWidth}px`;
+        }
+    }
 
     function renderCustomColorDropdownOptions() {
         const listContainer = document.getElementById('customColorDropdownList');
@@ -1699,6 +1889,7 @@
                 localStorage.removeItem('adis_user_name');
                 updateAuthUI();
                 refreshUI();
+                showToast("Byli jste odhlášen");
             }
         } else {
             openLoginModal();
@@ -1709,11 +1900,11 @@
         triggerHapticFeedback([12]);
         document.getElementById('loginUsername').value = '';
         document.getElementById('loginPassword').value = '';
-        document.getElementById('loginModal').style.display = 'flex';
+        showModalAnimated('loginModal');
         setTimeout(() => document.getElementById('loginUsername').focus(), 100);
     }
 
-    function closeLoginModal() { document.getElementById('loginModal').style.display = 'none'; }
+    function closeLoginModal() { hideModalAnimated('loginModal'); }
 
     async function executeLogin() {
         triggerHapticFeedback([18]);
@@ -1727,6 +1918,7 @@
         closeLoginModal();
         updateAuthUI();
         refreshUI();
+        showToast(`Přihlášen: ${currentUser}`);
 
         try {
             await fetch(`${API_URL}/rest/v1/mold_logs`, {
@@ -1770,6 +1962,7 @@
 
     function setupRealtimeSubscription() {
         const debouncedFetch = () => {
+            if (isSubmittingAction) return; 
             if (realtimeDebounceTimer) clearTimeout(realtimeDebounceTimer);
             realtimeDebounceTimer = setTimeout(() => {
                 fetchData();
@@ -1905,7 +2098,7 @@
             activeContextMenuMoldId = moldId;
             activeContextMenuTag = null;
             activeContextMenuCommentId = null;
-            document.getElementById('contextMenuText').textContent = `Přesunout #${moldId} do koše`;
+            document.getElementById('contextMenuText').textContent = `Přesunout ${moldId} do koše`;
 
             const menu = document.getElementById('customContextMenu');
             const touch = e.touches[0] || e.changedTouches[0];
@@ -1923,7 +2116,7 @@
         activeContextMenuMoldId = moldId;
         activeContextMenuTag = null;
         activeContextMenuCommentId = null;
-        document.getElementById('contextMenuText').textContent = `Přesunout #${moldId} do koše`;
+        document.getElementById('contextMenuText').textContent = `Přesunout ${moldId} do koše`;
 
         const menu = document.getElementById('customContextMenu');
         menu.style.top = `${e.clientY}px`;
@@ -1984,6 +2177,7 @@
         localStorage.setItem('adis_customers_order', JSON.stringify(savedOrder));
 
         refreshUI();
+        showToast(`Zákazník ${customerName} byl smazán`);
 
         try {
             await fetch(`${API_URL}/rest/v1/customers?name=eq.${encodeURIComponent(customerName)}`, {
@@ -1995,27 +2189,34 @@
 
     async function deleteMoldSoftDirect(moldId) {
         if (!checkAuthOrPrompt() || isSubmittingAction) return;
-        if (!confirm(`Opravdu přesunout formu #${moldId} do koše?`)) return;
+        if (!confirm(`Opravdu přesunout formu ${moldId} do koše?`)) return;
 
         isSubmittingAction = true;
-        const itemIdx = rawDatabase.findIndex(i => String(i[0]) === String(moldId));
-        if (itemIdx !== -1) { rawDatabase[itemIdx][4] = true; refreshUI(); }
+        
+        const trs = document.querySelectorAll(`[id*="${moldId}"]`);
+        trs.forEach(tr => tr.classList.add('row-deleting'));
 
-        try {
-            await Promise.all([
-                fetch(`${API_URL}/rest/v1/molds?id=eq.${moldId}`, {
-                    method: 'PATCH',
-                    headers: { 'apikey': API_KEY, 'Authorization': `Bearer ${API_KEY}`, 'Content-Type': 'application/json', 'Prefer': 'return=minimal' },
-                    body: JSON.stringify({ is_deleted: true })
-                }),
-                fetch(`${API_URL}/rest/v1/mold_logs`, {
-                    method: 'POST',
-                    headers: { 'apikey': API_KEY, 'Authorization': `Bearer ${API_KEY}`, 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ mold_id: moldId, old_position: `Aktivní`, new_position: `Koš (Kontekstní menu)`, user_name: currentUser })
-                })
-            ]);
-        } catch (e) { console.error(e); }
-        finally { isSubmittingAction = false; }
+        setTimeout(async () => {
+            const itemIdx = rawDatabase.findIndex(i => String(i[0]) === String(moldId));
+            if (itemIdx !== -1) { rawDatabase[itemIdx][4] = true; refreshUI(); }
+            showToast(`Forma ${moldId} přesunuta do koše`);
+
+            try {
+                await Promise.all([
+                    fetch(`${API_URL}/rest/v1/molds?id=eq.${moldId}`, {
+                        method: 'PATCH',
+                        headers: { 'apikey': API_KEY, 'Authorization': `Bearer ${API_KEY}`, 'Content-Type': 'application/json', 'Prefer': 'return=minimal' },
+                        body: JSON.stringify({ is_deleted: true })
+                    }),
+                    fetch(`${API_URL}/rest/v1/mold_logs`, {
+                        method: 'POST',
+                        headers: { 'apikey': API_KEY, 'Authorization': `Bearer ${API_KEY}`, 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ mold_id: moldId, old_position: `Aktivní`, new_position: `Koš (Kontekstní menu)`, user_name: currentUser })
+                    })
+                ]);
+            } catch (e) { console.error(e); }
+            finally { isSubmittingAction = false; }
+        }, 280);
     }
 
     async function deleteComment(commentId) {
@@ -2055,6 +2256,7 @@
 
         allComments = allComments.filter(c => String(c.id) !== String(commentId));
         refreshUI();
+        showToast("Poznámka byla smazána");
 
         try {
             await Promise.all([
@@ -2095,10 +2297,10 @@
         if (!checkAuthOrPrompt()) return;
         document.getElementById('newCustomerName').value = '';
         selectCustomColor("#ffffff");
-        document.getElementById('addCustomerModal').style.display = 'flex';
+        showModalAnimated('addCustomerModal');
     }
 
-    function closeAddCustomerModal() { document.getElementById('addCustomerModal').style.display = 'none'; }
+    function closeAddCustomerModal() { hideModalAnimated('addCustomerModal'); }
 
     async function submitNewCustomer() {
         if (isSubmittingAction) return;
@@ -2121,6 +2323,7 @@
         localStorage.setItem('adis_customers_order', JSON.stringify(savedOrder));
 
         refreshUI();
+        showToast(`Zákazník ${name} byl přidán`);
 
         try {
             await fetch(`${API_URL}/rest/v1/customers`, {
@@ -2161,34 +2364,33 @@
         document.getElementById(inputId + 'Dropdown').style.display = 'none';
     }
 
+    /* Переключение вкладок с плавной анимацией скольжения (Slide) */
     function switchTab(tabName) {
         const tabs = ['search', 'database', 'dashboard'];
         const currentActive = tabs.find(t => document.getElementById(`tab-${t}`).classList.contains('active'));
         
-        if (currentActive === tabName) return;
+        if (currentActive === tabName || isTabTransitioning) return;
+        isTabTransitioning = true;
 
         tabs.forEach(t => {
             document.getElementById(`btn-${t}`).classList.toggle('active', t === tabName);
         });
 
+        updateTabIndicator();
+
         const activeContent = document.getElementById(`tab-${currentActive}`);
         const nextContent = document.getElementById(`tab-${tabName}`);
 
         if (activeContent) {
-            activeContent.classList.remove('visible');
             activeContent.classList.remove('active');
         }
 
         if (nextContent) {
             nextContent.classList.add('active');
-            requestAnimationFrame(() => {
-                nextContent.classList.add('visible');
-            });
 
             setTimeout(() => {
-                if (tabName === 'database') renderFullDatabase();
-                if (tabName === 'dashboard') renderDashboard();
-            }, 0);
+                isTabTransitioning = false;
+            }, 220);
         }
     }
 
@@ -2262,9 +2464,9 @@
                     const mId = String(log.mold_id);
                     if (!allLogsMap[mId]) {
                         const oldP = extractCleanPosition(log.old_position);
-                        const newP = extractCleanPosition(log.new_position);
-                        if (oldP) allLogsMap[mId] = oldP;
-                        else if (newP) allLogsMap[mId] = newP;
+                        if (oldP && !oldP.toLowerCase().includes('mezisklad')) {
+                            allLogsMap[mId] = oldP;
+                        }
                     }
                 });
             }
@@ -2464,6 +2666,7 @@
         rawDatabase[itemIdx][6] = photosArr;
         rawDatabase[itemIdx][9] = navodkaUrl;
         refreshUI();
+        showToast(`Detail formy ${moldId} byl uložen`);
 
         try {
             await fetch(`${API_URL}/rest/v1/molds?id=eq.${moldId}`, {
@@ -2481,24 +2684,25 @@
 
     function openPhotoModal(photoUrl, moldId) {
         triggerHapticFeedback([12]);
-        document.getElementById('photoModalTitle').textContent = `Forma #${moldId}`;
+        document.getElementById('photoModalTitle').textContent = `Forma ${moldId}`;
         document.getElementById('photoModalImg').src = photoUrl;
-        document.getElementById('photoModal').style.display = 'flex';
+        showModalAnimated('photoModal');
     }
 
-    function closePhotoModal() { document.getElementById('photoModal').style.display = 'none'; }
+    function closePhotoModal() { hideModalAnimated('photoModal'); }
 
-    /* Funkce pro vnitřní prohlížení PDF Návodek v aplikaci */
     function openPdfModal(pdfUrl, moldId) {
         triggerHapticFeedback([12]);
-        document.getElementById('pdfModalTitle').textContent = `Návodka — Forma #${moldId}`;
+        document.getElementById('pdfModalTitle').textContent = `Návodka — Forma ${moldId}`;
         document.getElementById('pdfFrame').src = pdfUrl;
-        document.getElementById('pdfModal').style.display = 'flex';
+        showModalAnimated('pdfModal');
     }
 
     function closePdfModal() {
-        document.getElementById('pdfModal').style.display = 'none';
-        document.getElementById('pdfFrame').src = '';
+        hideModalAnimated('pdfModal');
+        setTimeout(() => {
+            document.getElementById('pdfFrame').src = '';
+        }, 220);
     }
 
     function openCommentModal(moldId) {
@@ -2506,10 +2710,10 @@
         activeCommentMoldId = moldId;
         document.getElementById('commentModalTitle').textContent = `Poznámka č. ${moldId}`;
         document.getElementById('commentText').value = '';
-        document.getElementById('commentModal').style.display = 'flex';
+        showModalAnimated('commentModal');
     }
 
-    function closeCommentModal() { document.getElementById('commentModal').style.display = 'none'; }
+    function closeCommentModal() { hideModalAnimated('commentModal'); }
 
     async function submitComment() {
         triggerHapticFeedback([18]);
@@ -2538,6 +2742,7 @@
                     allComments.unshift(insertedData[0]);
                 }
             }
+            showToast(`Poznámka k formě ${activeCommentMoldId} byla přidána`);
         } catch (e) { 
             console.error("Error saving comment:", e); 
         } finally { 
@@ -2551,7 +2756,7 @@
         if (!commentObj) return;
 
         activeViewCommentId = commentId;
-        document.getElementById('viewCommentTitle').textContent = `Detail poznámky #${commentObj.mold_id}`;
+        document.getElementById('viewCommentTitle').textContent = `Detail poznámky ${commentObj.mold_id}`;
         document.getElementById('viewCommentMeta').textContent = `Autor: ${commentObj.user_name || 'Neznámý'} | ${new Date(commentObj.created_at).toLocaleString('cs-CZ')}`;
         document.getElementById('viewCommentDisplay').textContent = commentObj.comment;
 
@@ -2574,11 +2779,11 @@
             photosBox.style.display = 'none';
         }
 
-        document.getElementById('viewCommentModal').style.display = 'flex';
+        showModalAnimated('viewCommentModal');
     }
 
     function closeViewCommentModal() {
-        document.getElementById('viewCommentModal').style.display = 'none';
+        hideModalAnimated('viewCommentModal');
         activeViewCommentId = null;
     }
 
@@ -2587,12 +2792,18 @@
         activeEditMoldId = moldId;
         activeEditOldPos = currentPos;
         activeEditIsAlt = isAlt;
+        
+        let fallbackPos = currentPos;
+        if (currentPos.toLowerCase().includes('mezisklad')) {
+            fallbackPos = allLogsMap[String(moldId)] || '';
+        }
+
         document.getElementById('positionModalLabel').textContent = `Forma č. ${moldId} (${isAlt ? '2. pozice' : 'stávající'}: ${currentPos}):`;
-        document.getElementById('modalPositionInput').value = currentPos.toLowerCase().includes('mezisklad') && allLogsMap[String(moldId)] ? allLogsMap[String(moldId)] : currentPos;
-        document.getElementById('positionModal').style.display = 'flex';
+        document.getElementById('modalPositionInput').value = fallbackPos;
+        showModalAnimated('positionModal');
     }
 
-    function closePositionModal() { document.getElementById('positionModal').style.display = 'none'; }
+    function closePositionModal() { hideModalAnimated('positionModal'); }
 
     async function savePositionChange() {
         triggerHapticFeedback([18]);
@@ -2608,11 +2819,14 @@
             if (activeEditIsAlt) {
                 rawDatabase[itemIdx][8] = newPos;
             } else {
-                if (!activeEditOldPos.toLowerCase().includes('mezisklad')) allLogsMap[String(activeEditMoldId)] = activeEditOldPos;
+                if (!activeEditOldPos.toLowerCase().includes('mezisklad')) {
+                    allLogsMap[String(activeEditMoldId)] = activeEditOldPos;
+                }
                 rawDatabase[itemIdx][1] = newPos;
             }
             refreshUI();
         }
+        showToast(`Pozice změněna na ${newPos}`);
 
         try {
             const updateBody = activeEditIsAlt ? { alt_position: newPos } : { position: newPos };
@@ -2629,7 +2843,9 @@
                 })
             ]);
         } catch (e) { console.error("Error updating position:", e); }
-        finally { isSubmittingAction = false; }
+        finally { 
+            setTimeout(() => { isSubmittingAction = false; }, 800);
+        }
     }
 
     function openDirectProdModal() {
@@ -2639,10 +2855,10 @@
         document.getElementById('directProdComment').value = '';
         directProdPendingFiles = [];
         renderDirectProdThumbs();
-        document.getElementById('directProdModal').style.display = 'flex';
+        showModalAnimated('directProdModal');
     }
 
-    function closeDirectProdModal() { document.getElementById('directProdModal').style.display = 'none'; }
+    function closeDirectProdModal() { hideModalAnimated('directProdModal'); }
 
     function handleDirectProdFiles(inputElement) {
         if (inputElement.files && inputElement.files.length > 0) {
@@ -2694,10 +2910,14 @@
         closeDirectProdModal();
 
         if (existing) {
-            if (!oldPos.toLowerCase().includes('mezisklad')) allLogsMap[String(moldId)] = oldPos;
+            if (oldPos && !oldPos.toLowerCase().includes('mezisklad')) {
+                allLogsMap[String(moldId)] = oldPos;
+            }
             existing[1] = 'Mezisklad'; 
             existing[3] = selectedStatus;
         }
+
+        showToast(`Forma ${moldId} přesunuta na Mezisklad`);
 
         let uploadedPhotoUrls = [];
         for (let file of directProdPendingFiles) {
@@ -2751,7 +2971,7 @@
         } catch (e) { 
             console.error("Error submitting production move:", e); 
         } finally { 
-            isSubmittingAction = false; 
+            setTimeout(() => { isSubmittingAction = false; }, 800);
             refreshUI();
         }
     }
@@ -2765,20 +2985,33 @@
         activeEditMoldId = moldId;
         activeEditOldPos = currentPos;
         activeEditIsAlt = isAlt;
-        document.getElementById('fullEditPositionInput').value = currentPos.toLowerCase().includes('mezisklad') && allLogsMap[String(moldId)] ? allLogsMap[String(moldId)] : currentPos;
+
+        let fallbackPos = currentPos;
+        if (currentPos.toLowerCase().includes('mezisklad')) {
+            fallbackPos = allLogsMap[String(moldId)] || '';
+        }
+
+        document.getElementById('fullEditPositionInput').value = fallbackPos;
         document.getElementById('fullEditStatusSelect').value = currentStatus || '';
         document.getElementById('autoMeziskladCheckbox').checked = ['Ve frontě na údržbu', 'Ve frontě na opravu', 'Na údržbě', 'Na opravě / pryč'].includes(currentStatus);
-        document.getElementById('fullEditModal').style.display = 'flex';
+        showModalAnimated('fullEditModal');
     }
 
-    function closeFullEditModal() { document.getElementById('fullEditModal').style.display = 'none'; }
+    function closeFullEditModal() { hideModalAnimated('fullEditModal'); }
 
     async function saveFullEditChange() {
         triggerHapticFeedback([18]);
         if (isSubmittingAction) return;
         let newPos = autoDotPosition(document.getElementById('fullEditPositionInput').value);
         const newStatus = document.getElementById('fullEditStatusSelect').value;
-        if (document.getElementById('autoMeziskladCheckbox').checked) newPos = 'Mezisklad';
+        const autoMezisklad = document.getElementById('autoMeziskladCheckbox').checked;
+
+        if (autoMezisklad) {
+            if (activeEditOldPos && !activeEditOldPos.toLowerCase().includes('mezisklad')) {
+                allLogsMap[String(activeEditMoldId)] = activeEditOldPos;
+            }
+            newPos = 'Mezisklad';
+        }
 
         isSubmittingAction = true;
         closeFullEditModal();
@@ -2792,6 +3025,7 @@
             rawDatabase[itemIdx][3] = newStatus;
             refreshUI();
         }
+        showToast(`Forma ${activeEditMoldId} byla upravena`);
 
         try {
             const updateBody = activeEditIsAlt ? { alt_position: newPos, status: newStatus } : { position: newPos, status: newStatus };
@@ -2804,11 +3038,13 @@
                 fetch(`${API_URL}/rest/v1/mold_logs`, {
                     method: 'POST',
                     headers: { 'apikey': API_KEY, 'Authorization': `Bearer ${API_KEY}`, 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ mold_id: activeEditMoldId, old_position: `Úprava formy`, new_position: `Pozice: ${newPos}, Stav: ${newStatus || 'žádný'}`, user_name: currentUser })
+                    body: JSON.stringify({ mold_id: activeEditMoldId, old_position: `Úprava formy (Původně: ${activeEditOldPos})`, new_position: `Pozice: ${newPos}, Stav: ${newStatus || 'žádný'}`, user_name: currentUser })
                 })
             ]);
         } catch (e) { console.error(e); }
-        finally { isSubmittingAction = false; }
+        finally { 
+            setTimeout(() => { isSubmittingAction = false; }, 800);
+        }
     }
 
     async function restoreMold(moldId) {
@@ -2818,6 +3054,7 @@
         const itemIdx = rawDatabase.findIndex(i => String(i[0]) === String(moldId));
         if (itemIdx !== -1) { rawDatabase[itemIdx][4] = false; refreshUI(); }
         openTrashModal();
+        showToast(`Forma ${moldId} byla obnovena`);
 
         try {
             await Promise.all([
@@ -2833,23 +3070,25 @@
                 })
             ]);
         } catch (e) { console.error(e); }
-        finally { isSubmittingAction = false; }
+        finally { 
+            setTimeout(() => { isSubmittingAction = false; }, 800);
+        }
     }
 
     function openTrashModal() {
-        document.getElementById('trashModal').style.display = 'flex';
+        showModalAnimated('trashModal');
         const list = document.getElementById('trashList');
         const deleted = rawDatabase.filter(item => item[4] === true);
         if (deleted.length === 0) { list.innerHTML = `<div class="no-data">Koš je prázdný</div>`; return; }
         list.innerHTML = deleted.map(item => `
             <div class="log-item" style="flex-direction: row; justify-content: space-between; align-items: center;">
-                <div><strong>Forma #${escapeHtml(item[0])}</strong> (${escapeHtml(item[2])}, ${escapeHtml(item[1])})</div>
+                <div><strong>Forma ${escapeHtml(item[0])}</strong> (${escapeHtml(item[2])}, ${escapeHtml(item[1])})</div>
                 <button class="btn-primary" style="padding: 0.35rem 0.75rem; font-size: 0.8rem;" onclick="restoreMold('${escapeHtml(item[0])}')">Obnovit</button>
             </div>
         `).join('');
     }
 
-    function closeTrashModal() { document.getElementById('trashModal').style.display = 'none'; }
+    function closeTrashModal() { hideModalAnimated('trashModal'); }
 
     async function emptyTrash() {
         if (!checkAuthOrPrompt()) return;
@@ -2887,13 +3126,13 @@
 
             rawDatabase = rawDatabase.filter(item => item[4] !== true);
             
-            alert("Koš byl úspěšně vyčištěn!");
+            showToast("Koš byl vyčištěn");
             closeTrashModal();
             refreshUI();
         } catch (e) {
             alert("Chyba: " + e.message);
         } finally {
-            isSubmittingAction = false;
+            setTimeout(() => { isSubmittingAction = false; }, 800);
         }
     }
 
@@ -2904,10 +3143,10 @@
         document.getElementById('addMoldPosition').value = 'Mezisklad';
         document.getElementById('addMoldStatus').value = '';
         renderCustomerSelects();
-        document.getElementById('addModal').style.display = 'flex';
+        showModalAnimated('addModal');
     }
 
-    function closeAddModal() { document.getElementById('addModal').style.display = 'none'; }
+    function closeAddModal() { hideModalAnimated('addModal'); }
 
     async function submitNewMold() {
         triggerHapticFeedback([18]);
@@ -2925,6 +3164,7 @@
         closeAddModal();
         rawDatabase.push([id, position, customer, status, false, productName, [], '', '', '']);
         refreshUI();
+        showToast(`Forma ${id} byla vytvořena`);
 
         try {
             await fetch(`${API_URL}/rest/v1/molds`, {
@@ -2938,11 +3178,13 @@
                 body: JSON.stringify({ mold_id: id, old_position: 'Nová forma', new_position: `${position}`, user_name: `${currentUser}` })
             });
         } catch (e) { alert("Chyba: " + e.message); fetchData(); }
-        finally { isSubmittingAction = false; }
+        finally { 
+            setTimeout(() => { isSubmittingAction = false; }, 800);
+        }
     }
 
     async function openLogsModal() {
-        document.getElementById('logsModal').style.display = 'flex';
+        showModalAnimated('logsModal');
         const list = document.getElementById('logsList');
         list.innerHTML = `<div class="no-data">Načítání historie...</div>`;
         try {
@@ -2951,16 +3193,16 @@
             if (logs.length === 0) { list.innerHTML = `<div class="no-data">Zatím žádná historie</div>`; return; }
             list.innerHTML = logs.map(log => `
                 <div class="log-item">
-                    <div>Forma <strong>#${escapeHtml(log.mold_id)}</strong>: <span style="text-decoration: line-through; opacity: 0.6;">${escapeHtml(log.old_position || '—')}</span> &rarr; <strong>${escapeHtml(log.new_position)}</strong></div>
+                    <div>Forma <strong>${escapeHtml(log.mold_id)}</strong>: <span style="text-decoration: line-through; opacity: 0.6;">${escapeHtml(log.old_position || '—')}</span> &rarr; <strong>${escapeHtml(log.new_position)}</strong></div>
                     <div class="log-meta"><span>${escapeHtml(log.user_name || 'Neznámý')}</span><span>${new Date(log.created_at).toLocaleString('cs-CZ')}</span></div>
                 </div>
             `).join('');
         } catch (e) { list.innerHTML = `<div class="no-data" style="color:var(--error-text)">Chyba načítání</div>`; }
     }
 
-    function closeLogsModal() { document.getElementById('logsModal').style.display = 'none'; }
-    function promptClearLogs() { if (checkAuthOrPrompt()) document.getElementById('clearLogsModal').style.display = 'flex'; }
-    function closeClearLogsModal() { document.getElementById('clearLogsModal').style.display = 'none'; }
+    function closeLogsModal() { hideModalAnimated('logsModal'); }
+    function promptClearLogs() { if (checkAuthOrPrompt()) showModalAnimated('clearLogsModal'); }
+    function closeClearLogsModal() { hideModalAnimated('clearLogsModal'); }
 
     async function executeClearLogs() {
         if (isSubmittingAction) return;
@@ -2982,10 +3224,12 @@
                 body: JSON.stringify({ mold_id: 'SYSTEM', old_position: 'Historie', new_position: 'Vyčištěna', user_name: currentUser })
             });
 
-            alert("Historie byla úspěšně vyčištěna.");
+            showToast("Historie byla vyčištěna");
             openLogsModal();
         } catch (e) { alert("Chyba při mazání: " + e.message); }
-        finally { isSubmittingAction = false; }
+        finally { 
+            setTimeout(() => { isSubmittingAction = false; }, 800);
+        }
     }
 
     function getCustomerStyle(cust) {
@@ -3044,7 +3288,7 @@
                 } else {
                     navodkaBlockHtml = `
                         <div class="accordion-thumb-wrapper" style="border-color: #2563eb;">
-                            <img src="${escapeHtml(navodkaUrl)}" class="accordion-thumb" onclick="openPhotoModal('${escapeHtml(navodkaUrl)}', 'Návodka #${escapeHtml(num)}')">
+                            <img src="${escapeHtml(navodkaUrl)}" class="accordion-thumb" onclick="openPhotoModal('${escapeHtml(navodkaUrl)}', 'Návodka ${escapeHtml(num)}')">
                         </div>
                     `;
                 }
@@ -3082,7 +3326,6 @@
                 <label for="acc-file-${escapeHtml(num)}" class="photo-upload-card"><span style="font-size:24px; color:var(--text-muted)">+</span><span style="font-size:0.65rem; color:var(--text-muted)">Přidat foto</span></label>
             ` : '';
 
-            // Navodka Edit Mode
             let navodkaEditContent = '';
             if (temporaryNavodkaMap[num]) {
                 const tempFile = temporaryNavodkaMap[num];
@@ -3183,7 +3426,7 @@
         ` : '';
 
         return `
-            <tr id="accordion-trigger-${escapeHtml(rowKey)}" class="${extraRowClass}" ${contextAttrs}>
+            <tr id="accordion-trigger-${escapeHtml(rowKey)}" class="row-adding ${extraRowClass}" ${contextAttrs}>
                 <td>
                     <div class="mold-cell-content">
                         ${plusBtnHtml}
@@ -3225,22 +3468,7 @@
             stats.textContent = `Zobrazeno: ${filtered.length} z ${active.length}`;
         }
 
-        const CHUNK_SIZE = 40;
-        const firstChunk = filtered.slice(0, CHUNK_SIZE);
-        tbody.innerHTML = firstChunk.map(i => renderTableRow(i, '', true, true, 'db')).join('');
-
-        if (filtered.length > CHUNK_SIZE) {
-            let currentIndex = CHUNK_SIZE;
-            function renderNextChunk() {
-                if (currentIndex >= filtered.length) return;
-                const nextChunk = filtered.slice(currentIndex, currentIndex + CHUNK_SIZE);
-                const html = nextChunk.map(i => renderTableRow(i, '', true, true, 'db')).join('');
-                tbody.insertAdjacentHTML('beforeend', html);
-                currentIndex += CHUNK_SIZE;
-                requestAnimationFrame(renderNextChunk);
-            }
-            requestAnimationFrame(renderNextChunk);
-        }
+        tbody.innerHTML = filtered.map(i => renderTableRow(i, '', true, true, 'db')).join('');
     }
 
     function renderDashboard() {
@@ -3314,12 +3542,13 @@
     function editCustomer(moldId, currentCust, isAlt = false) {
         if (!checkAuthOrPrompt()) return;
         activeEditMoldId = moldId;
+        activeEditOldPos = currentCust;
         activeEditIsAlt = isAlt;
         document.getElementById('customerModalLabel').textContent = `Forma č. ${moldId} (${isAlt ? '2. pozice' : 'stávající'}: ${currentCust}):`;
         document.getElementById('modalCustomerSelect').innerHTML = customersList.map(c => `<option value="${escapeHtml(c.name)}" ${c.name === currentCust ? 'selected' : ''}>${escapeHtml(c.name)}</option>`).join('');
-        document.getElementById('customerModal').style.display = 'flex';
+        showModalAnimated('customerModal');
     }
-    function closeCustomerModal() { document.getElementById('customerModal').style.display = 'none'; }
+    function closeCustomerModal() { hideModalAnimated('customerModal'); }
 
     async function saveCustomerChange() {
         if (isSubmittingAction) return;
@@ -3335,6 +3564,8 @@
             }
             refreshUI();
         }
+        showToast(`Zákazník byl změněn na ${newCust}`);
+
         try {
             const updateBody = activeEditIsAlt ? { alt_customer: newCust } : { customer: newCust };
             await fetch(`${API_URL}/rest/v1/molds?id=eq.${activeEditMoldId}`, {
@@ -3343,7 +3574,9 @@
                 body: JSON.stringify(updateBody)
             });
         } catch (e) { console.error(e); }
-        finally { isSubmittingAction = false; }
+        finally { 
+            setTimeout(() => { isSubmittingAction = false; }, 800);
+        }
     }
 
     function escapeHtml(str) {
