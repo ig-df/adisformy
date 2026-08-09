@@ -1609,7 +1609,6 @@
 
     let rawDatabase = [];
     let allComments = [];
-    let allLogsMap = {};
     let expandedMoldsMap = {}; 
     let editingAccordionMap = {}; 
     let temporaryFilesMap = {}; 
@@ -2354,23 +2353,12 @@
         }
     }
 
-    function extractCleanPosition(str) {
-        if (!str) return null;
-        let match = str.match(/Pozice:\s*([^,(]+)/i);
-        if (match && match[1]) {
-            let val = match[1].trim();
-            if (!val.toLowerCase().includes('mezisklad') && val !== '—') return val;
-        }
-        return null;
-    }
-
     async function fetchData() {
         try {
             await fetchCustomers();
-            const [moldsRes, commentsRes, logsRes] = await Promise.all([
+            const [moldsRes, commentsRes] = await Promise.all([
                 fetch(`${API_URL}/rest/v1/molds?select=*`, { headers: { 'apikey': API_KEY, 'Authorization': `Bearer ${API_KEY}` } }),
-                fetch(`${API_URL}/rest/v1/mold_comments?select=*&order=created_at.desc`, { headers: { 'apikey': API_KEY, 'Authorization': `Bearer ${API_KEY}` } }).catch(() => null),
-                fetch(`${API_URL}/rest/v1/mold_logs?select=*&order=created_at.desc`, { headers: { 'apikey': API_KEY, 'Authorization': `Bearer ${API_KEY}` } }).catch(() => null)
+                fetch(`${API_URL}/rest/v1/mold_comments?select=*&order=created_at.desc`, { headers: { 'apikey': API_KEY, 'Authorization': `Bearer ${API_KEY}` } }).catch(() => null)
             ]);
 
             if (!moldsRes.ok) throw new Error("Chyba API");
@@ -2384,16 +2372,17 @@
                     } catch { photosArr = [item.photo_url]; }
                 }
                 return [
-                    item.id, 
-                    item.position || '', 
-                    item.customer || 'Others', 
-                    item.status || '', 
-                    item.is_deleted || false, 
-                    item.product_name || '', 
-                    photosArr, 
-                    item.alt_customer || '', 
-                    item.alt_position || '',
-                    item.navodka_url || ''
+                    item.id,                                 // 0: id
+                    item.position || '',                     // 1: position
+                    item.customer || 'Others',               // 2: customer
+                    item.status || '',                       // 3: status
+                    item.is_deleted || false,                // 4: is_deleted
+                    item.product_name || '',                 // 5: product_name
+                    photosArr,                               // 6: photosArr
+                    item.alt_customer || '',                 // 7: alt_customer
+                    item.alt_position || '',                 // 8: alt_position
+                    item.navodka_url || '',                  // 9: navodka_url
+                    item.previous_position || ''             // 10: previous_position
                 ];
             });
 
@@ -2417,19 +2406,6 @@
                 });
             }
 
-            allLogsMap = {};
-            if (logsRes && logsRes.ok) {
-                const logs = await logsRes.json();
-                logs.forEach(log => {
-                    const mId = String(log.mold_id);
-                    if (!allLogsMap[mId]) {
-                        const oldP = extractCleanPosition(log.old_position);
-                        if (oldP && !oldP.toLowerCase().includes('mezisklad')) {
-                            allLogsMap[mId] = oldP;
-                        }
-                    }
-                });
-            }
             refreshUI();
         } catch (e) { console.error("Fetch error:", e); }
     }
@@ -2438,11 +2414,11 @@
         let expanded = [];
         db.forEach(item => {
             expanded.push([
-                item[0], item[1], item[2], item[3], item[4], item[5], item[6], item[7] || '', item[8] || '', item[9] || '', false
+                item[0], item[1], item[2], item[3], item[4], item[5], item[6], item[7] || '', item[8] || '', item[9] || '', item[10] || '', false
             ]);
             if (item[8] && String(item[8]).trim()) {
                 expanded.push([
-                    item[0], item[8], item[7] || item[2], item[3], item[4], item[5], item[6], item[7] || '', item[8] || '', item[9] || '', true
+                    item[0], item[8], item[7] || item[2], item[3], item[4], item[5], item[6], item[7] || '', item[8] || '', item[9] || '', item[10] || '', true
                 ]);
             }
         });
@@ -2755,7 +2731,8 @@
         
         let fallbackPos = currentPos;
         if (currentPos.toLowerCase().includes('mezisklad')) {
-            fallbackPos = allLogsMap[String(moldId)] || '';
+            const itm = rawDatabase.find(i => String(i[0]) === String(moldId));
+            fallbackPos = (itm && itm[10]) ? itm[10] : '';
         }
 
         document.getElementById('positionModalLabel').textContent = `Forma č. ${moldId} (${isAlt ? '2. pozice' : 'stávající'}: ${currentPos}):`;
@@ -2775,21 +2752,30 @@
         isSubmittingAction = true;
         closePositionModal();
         const itemIdx = rawDatabase.findIndex(i => String(i[0]) === String(activeEditMoldId));
+        
+        let updateBody = {};
         if (itemIdx !== -1) {
             if (activeEditIsAlt) {
                 rawDatabase[itemIdx][8] = newPos;
+                updateBody = { alt_position: newPos };
             } else {
-                if (!activeEditOldPos.toLowerCase().includes('mezisklad')) {
-                    allLogsMap[String(activeEditMoldId)] = activeEditOldPos;
+                let prevPosToSave = rawDatabase[itemIdx][10];
+                if (newPos.toLowerCase().includes('mezisklad')) {
+                    if (!activeEditOldPos.toLowerCase().includes('mezisklad')) {
+                        prevPosToSave = activeEditOldPos;
+                    }
+                } else {
+                    prevPosToSave = '';
                 }
                 rawDatabase[itemIdx][1] = newPos;
+                rawDatabase[itemIdx][10] = prevPosToSave;
+                updateBody = { position: newPos, previous_position: prevPosToSave };
             }
             refreshUI();
         }
         showToast(`Pozice změněna na ${newPos}`);
 
         try {
-            const updateBody = activeEditIsAlt ? { alt_position: newPos } : { position: newPos };
             await Promise.all([
                 fetch(`${API_URL}/rest/v1/molds?id=eq.${activeEditMoldId}`, {
                     method: 'PATCH',
@@ -2869,12 +2855,15 @@
         const oldPos = existing ? existing[1] : 'Neznámá';
         closeDirectProdModal();
 
+        let prevPosToSave = existing ? existing[10] : '';
+        if (oldPos && !oldPos.toLowerCase().includes('mezisklad')) {
+            prevPosToSave = oldPos;
+        }
+
         if (existing) {
-            if (oldPos && !oldPos.toLowerCase().includes('mezisklad')) {
-                allLogsMap[String(moldId)] = oldPos;
-            }
             existing[1] = 'Mezisklad'; 
             existing[3] = selectedStatus;
+            existing[10] = prevPosToSave;
         }
 
         showToast(`Forma ${moldId} přesunuta na Mezisklad`);
@@ -2893,7 +2882,7 @@
             await fetch(`${API_URL}/rest/v1/molds?id=eq.${moldId}`, {
                 method: 'PATCH',
                 headers: { 'apikey': API_KEY, 'Authorization': `Bearer ${API_KEY}`, 'Content-Type': 'application/json', 'Prefer': 'return=minimal' },
-                body: JSON.stringify({ position: 'Mezisklad', status: selectedStatus })
+                body: JSON.stringify({ position: 'Mezisklad', status: selectedStatus, previous_position: prevPosToSave })
             });
 
             await fetch(`${API_URL}/rest/v1/mold_logs`, {
@@ -2948,7 +2937,8 @@
 
         let fallbackPos = currentPos;
         if (currentPos.toLowerCase().includes('mezisklad')) {
-            fallbackPos = allLogsMap[String(moldId)] || '';
+            const itm = rawDatabase.find(i => String(i[0]) === String(moldId));
+            fallbackPos = (itm && itm[10]) ? itm[10] : '';
         }
 
         document.getElementById('fullEditPositionInput').value = fallbackPos;
@@ -2966,29 +2956,40 @@
         const newStatus = document.getElementById('fullEditStatusSelect').value;
         const autoMezisklad = document.getElementById('autoMeziskladCheckbox').checked;
 
+        const itemIdx = rawDatabase.findIndex(i => String(i[0]) === String(activeEditMoldId));
+        let prevPosToSave = itemIdx !== -1 ? rawDatabase[itemIdx][10] : '';
+
         if (autoMezisklad) {
             if (activeEditOldPos && !activeEditOldPos.toLowerCase().includes('mezisklad')) {
-                allLogsMap[String(activeEditMoldId)] = activeEditOldPos;
+                prevPosToSave = activeEditOldPos;
             }
             newPos = 'Mezisklad';
+        } else {
+            if (!newPos.toLowerCase().includes('mezisklad')) {
+                prevPosToSave = '';
+            }
         }
 
         isSubmittingAction = true;
         closeFullEditModal();
-        const itemIdx = rawDatabase.findIndex(i => String(i[0]) === String(activeEditMoldId));
+        
+        let updateBody = {};
         if (itemIdx !== -1) {
             if (activeEditIsAlt) {
                 rawDatabase[itemIdx][8] = newPos;
+                rawDatabase[itemIdx][3] = newStatus;
+                updateBody = { alt_position: newPos, status: newStatus };
             } else {
                 rawDatabase[itemIdx][1] = newPos;
+                rawDatabase[itemIdx][3] = newStatus;
+                rawDatabase[itemIdx][10] = prevPosToSave;
+                updateBody = { position: newPos, status: newStatus, previous_position: prevPosToSave };
             }
-            rawDatabase[itemIdx][3] = newStatus;
             refreshUI();
         }
         showToast(`Forma ${activeEditMoldId} byla upravena`);
 
         try {
-            const updateBody = activeEditIsAlt ? { alt_position: newPos, status: newStatus } : { position: newPos, status: newStatus };
             await Promise.all([
                 fetch(`${API_URL}/rest/v1/molds?id=eq.${activeEditMoldId}`, {
                     method: 'PATCH',
@@ -3122,7 +3123,7 @@
 
         isSubmittingAction = true;
         closeAddModal();
-        rawDatabase.push([id, position, customer, status, false, productName, [], '', '', '']);
+        rawDatabase.push([id, position, customer, status, false, productName, [], '', '', '', '']);
         refreshUI();
         showToast(`Forma ${id} byla vytvořena`);
 
@@ -3130,7 +3131,7 @@
             await fetch(`${API_URL}/rest/v1/molds`, {
                 method: 'POST',
                 headers: { 'apikey': API_KEY, 'Authorization': `Bearer ${API_KEY}`, 'Content-Type': 'application/json', 'Prefer': 'return=minimal' },
-                body: JSON.stringify({ id: id, customer: customer, position: position, status: status, product_name: productName, is_deleted: false, navodka_url: '' })
+                body: JSON.stringify({ id: id, customer: customer, position: position, status: status, product_name: productName, is_deleted: false, navodka_url: '', previous_position: '' })
             });
             await fetch(`${API_URL}/rest/v1/mold_logs`, {
                 method: 'POST',
@@ -3209,10 +3210,9 @@
         return `<span class="status-pill"><span class="status-dot ${dot}"></span>${escapeHtml(status)}</span>`;
     }
 
-    function renderPositionCellHtml(num, pos, status, productName, isAlt = false) {
+    function renderPositionCellHtml(num, pos, status, productName, prevPos = '', isAlt = false) {
         const badgeClass = getPositionBadgeClass(pos);
-        const prev = allLogsMap[String(num)];
-        const sub = pos.toLowerCase().includes('mezisklad') && prev ? `<span class="prev-position-sub">(Původně: ${escapeHtml(prev)})</span>` : '';
+        const sub = pos.toLowerCase().includes('mezisklad') && prevPos ? `<span class="prev-position-sub">(Původně: ${escapeHtml(prevPos)})</span>` : '';
         return `
             <div class="position-cell">
                 <div class="position-wrapper">
@@ -3228,7 +3228,7 @@
     }
 
     function renderAccordionInnerContent(item) {
-        const [num, pos, cust, status, isDel, productName, photosArr, altCust, altPos, navodkaUrl] = item;
+        const [num, pos, cust, status, isDel, productName, photosArr, altCust, altPos, navodkaUrl, prevPos] = item;
         const isEditing = Boolean(editingAccordionMap[num]);
 
         if (!isEditing) {
@@ -3332,7 +3332,7 @@
     }
 
     function renderTableRow(item, extraRowClass = '', enableContextMenu = false, showPlusBtn = true, prefixKey = '') {
-        const [num, pos, cust, status, isDel, productName, photosArr, altCust, altPos, navodkaUrl, isAlt] = item;
+        const [num, pos, cust, status, isDel, productName, photosArr, altCust, altPos, navodkaUrl, prevPos, isAlt] = item;
         const custStyle = getCustomerStyle(cust);
         const baseKey = isAlt ? `${num}_alt` : `${num}`;
         const rowKey = prefixKey ? `${prefixKey}_${baseKey}` : baseKey;
@@ -3391,7 +3391,7 @@
                     ${commentsHtml}
                 </td>
                 <td><span class="tag-customer" style="${custStyle}" onclick="editCustomer('${escapeHtml(num)}', '${escapeHtml(cust)}', ${Boolean(isAlt)})">${escapeHtml(cust)}</span></td>
-                <td>${renderPositionCellHtml(num, pos, status, productName, Boolean(isAlt))}</td>
+                <td>${renderPositionCellHtml(num, pos, status, productName, prevPos, Boolean(isAlt))}</td>
             </tr>
             <tr style="display: none;"><td colspan="3"></td></tr>
         `;
