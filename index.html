@@ -388,6 +388,8 @@
             overflow: hidden;
             flex: 1;
             min-height: 580px;
+            display: flex;
+            flex-direction: column;
         }
 
         /* Анимация переезда (Slide) + visibility для мгновенного переключения без лагов */
@@ -396,12 +398,15 @@
             top: 1.25rem;
             left: 1.25rem;
             right: 1.25rem;
+            bottom: 1.25rem;
             opacity: 0;
             visibility: hidden;
             pointer-events: none;
             transform: translateX(35px);
             will-change: opacity, transform;
             transition: opacity 0.22s ease-in-out, transform 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+            display: flex;
+            flex-direction: column;
         }
 
         .tab-content.active {
@@ -556,6 +561,7 @@
         }
 
         .table-container {
+            flex: 1;
             max-height: 520px;
             overflow-y: auto;
             border: 1px solid var(--border-color);
@@ -1326,7 +1332,7 @@
                     <div class="dash-card-value" id="dash-count-oprave-pryc">0</div>
                 </div>
             </div>
-            <div class="stats-bar"><span id="dashStats">Přehled forem se stavem...</span></div>
+            <div class="stats-bar"><span id="dashStats">Přehled forem se staveм...</span></div>
             <div class="table-container" id="dashboardTableContainer">
                 <table>
                     <thead><tr><th>Číslo formy</th><th>Zákazník</th><th>Pozice</th></tr></thead>
@@ -1804,6 +1810,7 @@
         });
     }
 
+    /* === ИСПРАВЛЕННЫЙ СЕРВИС СВАЙПОВ (РАБОТАЕТ НА ВСЕЙ ОБЛАСТИ ВКЛАДОК КРОМЕ ПОЛЕЙ ВВОДА И СКРОЛЛОВ ТЕГОВ) === */
     function initSwipeNavigation() {
         const swipeArea = document.getElementById('swipeContentArea');
         if (!swipeArea) return;
@@ -1813,7 +1820,8 @@
         const tabsOrder = ['search', 'database', 'dashboard'];
 
         swipeArea.addEventListener('touchstart', (e) => {
-            if (e.target.closest('input, textarea, select, .table-container')) return;
+            // Разрешаем свайпы везде внутри активной вкладки, кроме полей ввода и панели тегов, у которых свой горизонтальный скролл
+            if (e.target.closest('input, textarea, select, .customer-filters')) return;
             startX = e.touches[0].clientX;
             startY = e.touches[0].clientY;
         }, { passive: true });
@@ -1826,7 +1834,8 @@
             const diffX = endX - startX;
             const diffY = endY - startY;
 
-            if (Math.abs(diffX) > 70 && Math.abs(diffX) > Math.abs(diffY) * 1.5) {
+            // Если движение больше по горизонтали (чем по вертикали) и больше 60px — переключаем вкладку
+            if (Math.abs(diffX) > 60 && Math.abs(diffX) > Math.abs(diffY) * 1.5) {
                 const currentActive = tabsOrder.find(t => document.getElementById(`tab-${t}`).classList.contains('active'));
                 const currentIndex = tabsOrder.indexOf(currentActive);
 
