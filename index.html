@@ -78,7 +78,7 @@
             min-height: 100vh;
         }
 
-        /* Светлый Toast Notification */
+        /* Toast Notification */
         .toast-notification {
             position: fixed;
             bottom: 28px;
@@ -133,13 +133,13 @@
             position: relative;
         }
 
-        button, .filter-chip, .dash-card, .badge-position, tr, .tag-customer, .add-customer-chip, .top-icon-btn, .auth-btn, .comment-item, .edit-btn, .comment-btn, .floating-corner-btn, .floating-corner-btn-left, .mold-clickable-id {
+        button, .filter-chip, .dash-card, .badge-position, tr, .tag-customer, .add-customer-chip, .top-icon-btn, .auth-btn, .superuser-badge-btn, .comment-item, .edit-btn, .comment-btn, .floating-corner-btn, .floating-corner-btn-left, .mold-clickable-id {
             user-select: none;
             -webkit-user-select: none;
             transition: transform 0.2s ease, opacity 0.2s ease, background-color 0.2s ease, box-shadow 0.2s ease;
         }
 
-        button:active, .filter-chip:active, .dash-card:active, .badge-position:active, .tag-customer:active, .top-icon-btn:active, .auth-btn:active, .floating-corner-btn:active, .floating-corner-btn-left:active, .is-touched {
+        button:active, .filter-chip:active, .dash-card:active, .badge-position:active, .tag-customer:active, .top-icon-btn:active, .auth-btn:active, .superuser-badge-btn:active, .floating-corner-btn:active, .floating-corner-btn-left:active, .is-touched {
             transform: scale(0.91) translateY(1px) !important;
             opacity: 0.75 !important;
             filter: brightness(0.92);
@@ -176,7 +176,7 @@
             top: 0.75rem;
             right: 0.75rem;
             display: flex;
-            gap: 0.35rem;
+            gap: 0.4rem;
             z-index: 20;
         }
 
@@ -184,19 +184,23 @@
             position: absolute;
             top: 0.75rem;
             left: 0.75rem;
+            display: flex;
+            gap: 0.4rem;
+            align-items: center;
             z-index: 20;
         }
 
         .auth-btn {
             background: var(--card-bg);
             border: 1px solid var(--border-color);
-            border-radius: 6px;
-            padding: 0.35rem 0.65rem;
+            border-radius: 8px;
+            padding: 0.45rem 0.8rem;
+            height: 36px;
             cursor: pointer;
             display: flex;
             align-items: center;
-            gap: 0.35rem;
-            font-size: 0.8rem;
+            gap: 0.4rem;
+            font-size: 0.85rem;
             font-weight: 600;
             color: var(--text-muted);
             transition: all 0.2s ease;
@@ -220,17 +224,50 @@
             background-color: #16a34a !important;
         }
 
+        .superuser-badge-btn {
+            background-color: #ef4444;
+            border: 1px solid #dc2626;
+            border-radius: 8px;
+            width: 36px;
+            height: 36px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: 0 2px 6px rgba(239, 68, 68, 0.4);
+            animation: superuser-pulse 2s infinite ease-in-out;
+        }
+
+        .superuser-badge-btn:hover {
+            background-color: #dc2626;
+            transform: translateY(-1px);
+        }
+
+        .superuser-badge-btn svg {
+            width: 18px;
+            height: 18px;
+            stroke: #ffffff;
+        }
+
+        @keyframes superuser-pulse {
+            0% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7); }
+            70% { box-shadow: 0 0 0 6px rgba(239, 68, 68, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); }
+        }
+
         .top-icon-btn {
             background: var(--card-bg);
             border: 1px solid var(--border-color);
-            border-radius: 6px;
-            padding: 0.3rem;
+            border-radius: 8px;
+            padding: 0.35rem;
             cursor: pointer;
             display: flex;
             align-items: center;
             justify-content: center;
             transition: all 0.2s ease;
             box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+            width: 36px;
+            height: 36px;
         }
 
         .top-icon-btn:hover {
@@ -246,8 +283,8 @@
         .auth-btn svg,
         .floating-corner-btn img,
         .floating-corner-btn-left img {
-            width: 18px;
-            height: 18px;
+            width: 17px;
+            height: 17px;
             object-fit: contain;
             display: block;
             transition: transform 0.25s ease;
@@ -257,25 +294,30 @@
             background: none;
             border: none;
             cursor: pointer;
-            width: 34px !important; 
-            height: 34px !important;
-            min-width: 34px !important;
-            min-height: 34px !important;
-            border-radius: 6px;
+            width: 36px !important; 
+            height: 36px !important;
+            min-width: 36px !important;
+            min-height: 36px !important;
+            border-radius: 8px;
             display: inline-flex;
             align-items: center;
             justify-content: center;
             color: var(--text-muted);
             padding: 0 !important;
             flex-shrink: 0;
+            transition: background-color 0.2s ease;
+        }
+
+        .edit-btn:hover, .comment-btn:hover {
+            background-color: var(--border-color);
         }
 
         .edit-btn img, 
         .comment-btn img, 
         .floating-corner-btn img,
         .floating-corner-btn-left img {
-            width: 18px !important;
-            height: 18px !important;
+            width: 17px !important;
+            height: 17px !important;
             object-fit: contain;
             display: block;
             transition: transform 0.25s ease;
@@ -284,17 +326,13 @@
         .edit-btn:hover img,
         .comment-btn:hover img,
         .floating-corner-btn:hover img,
-        .floating-corner-btn-left:hover img,
-        .edit-btn:active img,
-        .comment-btn:active img,
-        .floating-corner-btn:active img,
-        .floating-corner-btn-left:active img {
-            transform: rotate(15deg) scale(1.1);
+        .floating-corner-btn-left:hover img {
+            transform: scale(1.1);
         }
 
         .accordion-edit-trigger-btn img {
-            width: 14px;
-            height: 14px;
+            width: 15px;
+            height: 15px;
             object-fit: contain;
             display: block;
             transition: transform 0.25s ease;
@@ -357,7 +395,6 @@
             flex-direction: column;
         }
 
-        /* Анимация переезда (Slide) + visibility для мгновенного переключения без лагов */
         .tab-content {
             position: absolute;
             top: 1.25rem;
@@ -428,9 +465,9 @@
         }
 
         .filter-chip {
-            padding: 0.3rem 0.65rem;
-            border-radius: 6px;
-            font-size: 0.78rem;
+            padding: 0.35rem 0.75rem;
+            border-radius: 8px;
+            font-size: 0.8rem;
             font-weight: 600;
             cursor: pointer;
             border: 1px solid var(--border-color);
@@ -475,13 +512,13 @@
             display: inline-flex;
             align-items: center;
             justify-content: center;
-            width: 28px;
-            height: 28px;
-            border-radius: 6px;
+            width: 32px;
+            height: 32px;
+            border-radius: 8px;
             border: 1px dashed var(--border-color);
             background: var(--card-bg);
             color: var(--text-muted);
-            font-size: 16px;
+            font-size: 18px;
             font-weight: bold;
             cursor: pointer;
             transition: all 0.2s ease;
@@ -598,7 +635,6 @@
             color: var(--text-main);
         }
 
-        /* Адаптивка строго для мобильных (<= 600px) */
         @media (max-width: 600px) {
             html, body {
                 height: 100vh;
@@ -636,7 +672,10 @@
                 flex: 1;
                 max-height: none !important;
             }
-            .auth-btn { padding: 0.35rem !important; }
+            .auth-btn { 
+                padding: 0.35rem 0.5rem !important; 
+                height: 36px !important;
+            }
             .auth-btn span#authBtnText { display: none !important; }
             .dashboard-grid { grid-template-columns: repeat(2, 1fr); }
             .dash-card-main { grid-column: 1 / span 2; }
@@ -680,16 +719,16 @@
 
             .action-buttons-group .edit-btn, 
             .action-buttons-group .comment-btn {
-                width: 26px !important;
-                height: 26px !important;
-                min-width: 26px !important;
-                min-height: 26px !important;
+                width: 28px !important;
+                height: 28px !important;
+                min-width: 28px !important;
+                min-height: 28px !important;
             }
 
             .action-buttons-group .edit-btn img, 
             .action-buttons-group .comment-btn img {
-                width: 15px !important;
-                height: 15px !important;
+                width: 16px !important;
+                height: 16px !important;
             }
         }
 
@@ -747,8 +786,8 @@
             display: inline-flex;
             align-items: center;
             justify-content: center;
-            width: 24px;
-            height: 24px;
+            width: 26px;
+            height: 26px;
             border-radius: 50%;
             border: 1px solid var(--border-color);
             background: var(--card-bg);
@@ -757,6 +796,7 @@
             cursor: pointer;
             flex-shrink: 0;
             margin-right: 0.35rem;
+            transition: transform 0.25s ease, background-color 0.2s ease;
         }
 
         .toggle-accordion-btn.expanded {
@@ -817,15 +857,21 @@
         .accordion-edit-trigger-btn {
             background: none;
             border: 1px solid var(--border-color);
-            border-radius: 6px;
-            padding: 0.25rem 0.6rem;
-            font-size: 0.75rem;
+            border-radius: 8px;
+            padding: 0.35rem 0.7rem;
+            font-size: 0.78rem;
             cursor: pointer;
             color: var(--text-muted);
             display: flex;
             align-items: center;
-            gap: 0.3rem;
+            gap: 0.35rem;
             background-color: var(--card-bg);
+            transition: all 0.2s ease;
+        }
+
+        .accordion-edit-trigger-btn:hover {
+            background-color: var(--border-color);
+            color: var(--text-main);
         }
 
         .accordion-photo-box { display: flex; align-items: center; gap: 0.75rem; flex-wrap: wrap; }
@@ -843,6 +889,11 @@
             background: var(--row-hover);
             cursor: pointer;
             gap: 2px;
+            transition: all 0.2s ease;
+        }
+        .photo-upload-card:hover {
+            border-color: var(--text-muted);
+            transform: scale(1.02);
         }
 
         .navodka-card-box {
@@ -862,13 +913,18 @@
             gap: 0.35rem;
             background: #2563eb;
             color: #ffffff;
-            padding: 0.45rem 0.75rem;
-            border-radius: 6px;
-            font-size: 0.8rem;
+            padding: 0.5rem 0.85rem;
+            border-radius: 8px;
+            font-size: 0.82rem;
             font-weight: 600;
             border: none;
             cursor: pointer;
             box-shadow: 0 1px 3px rgba(37, 99, 235, 0.3);
+            transition: transform 0.2s ease, background-color 0.2s ease;
+        }
+        .navodka-btn-link:hover {
+            background-color: #1d4ed8;
+            transform: translateY(-1px);
         }
 
         .accordion-thumb-wrapper {
@@ -913,61 +969,29 @@
 
         .status-dot { width: 6px; height: 6px; border-radius: 50%; display: inline-block; flex-shrink: 0; }
         
-        .dot-green { 
-            background-color: var(--success-badge); 
-            animation: status-pulse-green 2.5s infinite ease-in-out;
-        }
-        .dot-red { 
-            background-color: var(--error-badge); 
-            animation: status-pulse-red 2s infinite ease-in-out;
-        }
-        .dot-orange { 
-            background-color: var(--warning-badge); 
-            animation: status-pulse-orange 2.5s infinite ease-in-out;
-        }
-        .dot-yellow { 
-            background-color: var(--maintenance-badge); 
-            animation: status-pulse-yellow 2.5s infinite ease-in-out;
-        }
-
-        @keyframes status-pulse-green {
-            0% { box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.6); }
-            70% { box-shadow: 0 0 0 5px rgba(34, 197, 94, 0); }
-            100% { box-shadow: 0 0 0 0 rgba(34, 197, 94, 0); }
-        }
-
-        @keyframes status-pulse-red {
-            0% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7); }
-            70% { box-shadow: 0 0 0 6px rgba(239, 68, 68, 0); }
-            100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); }
-        }
-
-        @keyframes status-pulse-orange {
-            0% { box-shadow: 0 0 0 0 rgba(249, 115, 22, 0.7); }
-            70% { box-shadow: 0 0 0 6px rgba(249, 115, 22, 0); }
-            100% { box-shadow: 0 0 0 0 rgba(249, 115, 22, 0); }
-        }
-
-        @keyframes status-pulse-yellow {
-            0% { box-shadow: 0 0 0 0 rgba(250, 204, 21, 0.7); }
-            70% { box-shadow: 0 0 0 5px rgba(250, 204, 21, 0); }
-            100% { box-shadow: 0 0 0 0 rgba(250, 204, 21, 0); }
-        }
+        .dot-green { background-color: var(--success-badge); }
+        .dot-red { background-color: var(--error-badge); }
+        .dot-orange { background-color: var(--warning-badge); }
+        .dot-yellow { background-color: var(--maintenance-badge); }
 
         .position-cell { display: flex; align-items: center; position: relative; width: 100%; gap: 0.5rem; flex-wrap: wrap; }
         .position-wrapper { display: flex; flex-direction: column; align-items: center; gap: 0.15rem; }
         .prev-position-sub { font-size: 0.68rem; color: var(--text-muted); font-style: italic; white-space: nowrap; }
 
-        .action-buttons-group { display: flex; align-items: center; gap: 3px; flex-shrink: 0; }
+        .action-buttons-group { display: flex; align-items: center; gap: 4px; flex-shrink: 0; }
 
         .badge-position {
             font-family: monospace;
-            padding: 0.2rem 0.4rem;
-            border-radius: 4px;
+            padding: 0.25rem 0.5rem;
+            border-radius: 6px;
             font-size: 0.8rem;
             white-space: nowrap;
             cursor: pointer;
             display: inline-block;
+            transition: transform 0.15s ease;
+        }
+        .badge-position:hover {
+            transform: scale(1.03);
         }
 
         .pos-mezisklad { background-color: #4b5563 !important; color: #ffffff !important; }
@@ -1054,15 +1078,19 @@
 
         .tag-customer {
             display: inline-block;
-            font-size: 0.72rem;
-            padding: 0.2rem 0.4rem;
-            border-radius: 5px;
+            font-size: 0.78rem;
+            padding: 0.25rem 0.5rem;
+            border-radius: 6px;
             text-transform: capitalize;
             cursor: pointer;
             border: 1px solid;
             max-width: 100%;
             white-space: nowrap;
             color: #000000 !important;
+            transition: transform 0.15s ease;
+        }
+        .tag-customer:hover {
+            transform: scale(1.03);
         }
 
         .autocomplete-wrapper { position: relative; width: 100%; }
@@ -1108,7 +1136,7 @@
         .custom-color-option { display: flex; align-items: center; padding: 0.4rem 0.5rem; border-radius: 6px; cursor: pointer; }
         .custom-color-option-sample { width: 24px; height: 24px; border-radius: 4px; border: 1px solid var(--border-color); }
 
-        /* Модальные окна с быстрой задержкой */
+        /* Модальные окна с плавной анимацией */
         .modal-overlay {
             display: none; 
             position: fixed; 
@@ -1121,7 +1149,7 @@
             padding: 1rem; 
             overflow-y: auto;
             opacity: 0;
-            transition: opacity 0.18s cubic-bezier(0.16, 1, 0.3, 1);
+            transition: opacity 0.22s cubic-bezier(0.16, 1, 0.3, 1);
             will-change: opacity;
         }
 
@@ -1132,7 +1160,7 @@
             background: var(--card-bg); 
             color: var(--text-main); 
             width: 100%; 
-            max-width: 500px; 
+            max-width: 520px; 
             max-height: 85vh;
             border-radius: 14px; 
             box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.35);
@@ -1141,14 +1169,14 @@
             border: 1px solid var(--border-color); 
             margin: auto;
             overflow: hidden;
-            transform: scale(0.88);
+            transform: scale(0.92) translateY(10px);
             opacity: 0;
-            transition: transform 0.2s cubic-bezier(0.34, 1.2, 0.64, 1), opacity 0.15s ease-out;
+            transition: transform 0.25s cubic-bezier(0.34, 1.1, 0.64, 1), opacity 0.2s ease-out;
             will-change: transform, opacity;
         }
 
         .modal-overlay.active .modal-card {
-            transform: scale(1);
+            transform: scale(1) translateY(0);
             opacity: 1;
         }
 
@@ -1156,12 +1184,13 @@
             padding: 1rem 1.25rem; border-bottom: 1px solid var(--border-color);
             display: flex; justify-content: space-between; align-items: center; background: var(--row-hover);
         }
-        .close-modal-btn { background: none; border: none; font-size: 1.25rem; cursor: pointer; color: var(--text-muted); }
+        .close-modal-btn { background: none; border: none; font-size: 1.25rem; cursor: pointer; color: var(--text-muted); padding: 4px; border-radius: 6px; transition: background 0.2s ease; }
+        .close-modal-btn:hover { background-color: var(--border-color); color: var(--text-main); }
         
         .modal-body { 
             padding: 1.25rem; 
             overflow-y: auto; 
-            max-height: 60vh;
+            max-height: 65vh;
             flex: 1; 
             display: flex; 
             flex-direction: column; 
@@ -1175,14 +1204,22 @@
             padding: 0.75rem; font-size: 1rem; border: 1px solid var(--border-color); border-radius: 8px;
             background: var(--input-bg); color: var(--text-main); outline: none;
             text-transform: none;
+            transition: border-color 0.2s ease, box-shadow 0.2s ease;
+        }
+        .form-group input:focus, .form-group select:focus, .form-group textarea:focus {
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
         }
         .modal-footer {
-            padding: 1rem 1.25rem; border-top: 1px solid var(--border-color);
+            padding: 1.25rem 1.25rem; border-top: 1px solid var(--border-color);
             display: flex; justify-content: space-between; align-items: center; background: var(--row-hover);
         }
-        .btn-primary { background: var(--text-main); color: var(--card-bg); border: none; padding: 0.65rem 1.25rem; border-radius: 8px; cursor: pointer; }
-        .btn-secondary { background: var(--border-color); color: var(--text-main); border: none; padding: 0.65rem 1.25rem; border-radius: 8px; cursor: pointer; }
-        .btn-danger { background: rgba(239, 68, 68, 0.15); color: var(--error-badge); border: 1px solid rgba(239, 68, 68, 0.3); padding: 0.65rem 1.25rem; border-radius: 8px; cursor: pointer; }
+        .btn-primary { background: var(--text-main); color: var(--card-bg); border: none; padding: 0.7rem 1.35rem; border-radius: 8px; cursor: pointer; font-weight: 600; font-size: 0.9rem; transition: opacity 0.2s ease, transform 0.15s ease; }
+        .btn-primary:hover { opacity: 0.9; transform: translateY(-1px); }
+        .btn-secondary { background: var(--border-color); color: var(--text-main); border: none; padding: 0.7rem 1.35rem; border-radius: 8px; cursor: pointer; font-weight: 600; font-size: 0.9rem; transition: background 0.2s ease, transform 0.15s ease; }
+        .btn-secondary:hover { background: #cbd5e1; transform: translateY(-1px); }
+        .btn-danger { background: rgba(239, 68, 68, 0.15); color: var(--error-badge); border: 1px solid rgba(239, 68, 68, 0.3); padding: 0.7rem 1.35rem; border-radius: 8px; cursor: pointer; font-weight: 600; font-size: 0.9rem; transition: background 0.2s ease, transform 0.15s ease; }
+        .btn-danger:hover { background: rgba(239, 68, 68, 0.25); transform: translateY(-1px); }
 
         .log-item { padding: 0.75rem; border-bottom: 1px solid var(--border-color); font-size: 0.88rem; display: flex; flex-direction: column; gap: 0.25rem; }
         .log-meta { display: flex; justify-content: space-between; color: var(--text-muted); font-size: 0.78rem; text-transform: capitalize; }
@@ -1199,15 +1236,18 @@
             cursor: pointer; 
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15); 
             z-index: 999;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+        .floating-corner-btn:hover, .floating-corner-btn-left:hover {
+            transform: scale(1.06);
+            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
         }
 
-        /* Для ПК версии — располагаем кнопки внутри углов контейнера, чтобы они не обрезались */
         @media (min-width: 601px) {
             .floating-corner-btn { position: absolute; bottom: 1.25rem; right: 1.25rem; }
             .floating-corner-btn-left { position: absolute; bottom: 1.25rem; left: 1.25rem; }
         }
 
-        /* Для мобильной версии и приложения — фиксируем поверх экрана */
         @media (max-width: 600px) {
             .floating-corner-btn { 
                 position: fixed !important; 
@@ -1219,6 +1259,198 @@
                 left: 1.25rem !important; 
                 bottom: max(1.25rem, env(safe-area-inset-bottom, 1.25rem)) !important; 
             }
+        }
+
+        /* Панель суперпользователя в виде аккордеонов (стиль сайта) */
+        .helios-accordion-card {
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            overflow: hidden;
+            background: var(--card-bg);
+            transition: border-color 0.2s ease;
+        }
+        .helios-accordion-header {
+            padding: 0.9rem 1.1rem;
+            background: var(--row-hover);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.9rem;
+            color: var(--text-main);
+            transition: background 0.2s ease;
+        }
+        .helios-accordion-header:hover {
+            background-color: var(--border-color);
+        }
+        .helios-accordion-header-left {
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+        }
+        .helios-accordion-header-left svg {
+            width: 20px;
+            height: 20px;
+            stroke: var(--text-main);
+            fill: none;
+            stroke-width: 1.8;
+            flex-shrink: 0;
+        }
+        .helios-accordion-header-left svg.rotated-icon {
+            transform: rotate(180deg);
+        }
+        
+        .helios-accordion-arrow {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            transition: transform 0.25s ease;
+        }
+        .helios-accordion-card.open .helios-accordion-arrow {
+            transform: rotate(180deg);
+        }
+
+        .helios-accordion-anim-wrapper {
+            display: grid;
+            grid-template-rows: 0fr;
+            opacity: 0;
+            transition: grid-template-rows 0.4s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.3s ease-out;
+            overflow: hidden;
+            background: var(--card-bg);
+            border-top: 1px solid transparent;
+        }
+        .helios-accordion-card.open .helios-accordion-anim-wrapper {
+            grid-template-rows: 1fr;
+            opacity: 1;
+            border-top-color: var(--border-color);
+        }
+        /* Скроллбар внутри самих аккордеонов при нехватке места */
+        .helios-accordion-anim-wrapper > div {
+            min-height: 0;
+            max-height: 240px;
+            overflow-y: auto;
+            padding: 1.1rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.95rem;
+            -webkit-overflow-scrolling: touch;
+            scrollbar-width: thin;
+        }
+        .helios-accordion-anim-wrapper > div::-webkit-scrollbar {
+            width: 6px;
+        }
+        .helios-accordion-anim-wrapper > div::-webkit-scrollbar-thumb {
+            background-color: #cbd5e1;
+            border-radius: 4px;
+        }
+
+        .helios-export-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 0.6rem;
+        }
+        @media (max-width: 500px) {
+            .helios-export-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+        .helios-action-btn {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 0.75rem 0.5rem;
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: var(--text-main);
+            cursor: pointer;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.4rem;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.04);
+            transition: all 0.2s ease;
+        }
+        .helios-action-btn:hover {
+            background-color: var(--row-hover);
+            border-color: var(--text-muted);
+            transform: translateY(-1px);
+        }
+        .helios-action-btn svg {
+            width: 22px;
+            height: 22px;
+            stroke: var(--text-main);
+            fill: none;
+            stroke-width: 1.8;
+        }
+
+        .helios-checkbox-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 0.6rem;
+        }
+        .helios-checkbox-card {
+            position: relative;
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 0.75rem 0.5rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 0.4rem;
+            cursor: pointer;
+            user-select: none;
+            transition: all 0.2s ease;
+        }
+        .helios-checkbox-card input[type="checkbox"] {
+            position: absolute;
+            opacity: 0;
+            cursor: pointer;
+        }
+        .helios-checkbox-card span {
+            font-size: 0.78rem;
+            font-weight: 600;
+            color: var(--text-muted);
+            text-align: center;
+        }
+        .helios-checkbox-card svg {
+            width: 22px;
+            height: 22px;
+            stroke: var(--text-muted);
+            fill: none;
+            stroke-width: 1.8;
+            transition: stroke 0.2s ease;
+        }
+        .helios-checkbox-card.checked {
+            background-color: #f1f5f9;
+            border-color: var(--text-main);
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.06);
+            transform: translateY(1px);
+        }
+        .helios-checkbox-card.checked span {
+            color: var(--text-main);
+        }
+        .helios-checkbox-card.checked svg {
+            stroke: var(--text-main);
+        }
+        .helios-checkbox-card.checked::after {
+            content: '✓';
+            position: absolute;
+            top: 4px;
+            right: 6px;
+            font-size: 11px;
+            font-weight: bold;
+            color: #ffffff;
+            background: #0f172a;
+            border-radius: 50%;
+            width: 15px;
+            height: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.1);
         }
     </style>
 </head>
@@ -1232,6 +1464,11 @@
                     <img src="icon8.png" alt="Přihlásit" id="authBtnIcon">
                 </span>
                 <span id="authBtnText" style="text-transform: capitalize;">Přihlásit</span>
+            </button>
+            <button class="superuser-badge-btn" id="superuserBadgeBtn" tabindex="0" onclick="openHeliosAdminModal()" title="Helios Superuser Panel" style="display: none;">
+                <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+                </svg>
             </button>
         </div>
 
@@ -1347,9 +1584,9 @@
     <div class="modal-card">
         <div class="modal-header"><h3>Historie přemístění forem</h3><button class="close-modal-btn" onclick="closeLogsModal()">✕</button></div>
         <div class="modal-body" id="logsList"><div class="no-data">Načítání historie...</div></div>
-        <div class="modal-footer">
-            <button class="btn-secondary" style="background: rgba(239, 68, 68, 0.2); color: var(--error-badge);" onclick="promptClearLogs()">Vyčistit historii</button>
-            <button class="btn-primary" onclick="closeLogsModal()">Zavřít</button>
+        <div class="modal-footer" style="display: flex; justify-content: space-between; align-items: center;">
+            <button class="btn-secondary" id="clearLogsBtnFooter" style="background: rgba(239, 68, 68, 0.2); color: var(--error-badge); display: none;" onclick="promptClearLogs()">Vyčistit historii</button>
+            <button class="btn-primary" onclick="closeLogsModal()" style="margin-left: auto;">Zavřít</button>
         </div>
     </div>
 </div>
@@ -1542,10 +1779,200 @@
     </div>
 </div>
 
+<!-- Модальное окно панели Helios со скроллом внутри аккордеонов -->
+<div class="modal-overlay" id="heliosAdminModal">
+    <div class="modal-card" style="max-width: 520px;">
+        <div class="modal-header">
+            <h3 style="display: flex; align-items: center; gap: 0.5rem;">
+                <span class="superuser-badge-btn" style="width: 28px; height: 28px; border-radius: 6px; cursor: default; animation: none; box-shadow: none;">
+                    <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width: 15px; height: 15px; stroke: #ffffff;">
+                        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+                    </svg>
+                </span>
+                Helios Superuser Panel
+            </h3>
+            <button class="close-modal-btn" onclick="closeHeliosAdminModal()">✕</button>
+        </div>
+        <div class="modal-body" style="gap: 0.9rem;">
+            
+            <!-- Аккордеон 1: Ручной вывоз данных -->
+            <div class="helios-accordion-card" id="helCardManual">
+                <div class="helios-accordion-header" onclick="toggleHeliosAccordion('manual')">
+                    <div class="helios-accordion-header-left">
+                        <svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+                        <span>Ruční vývoz dat do Heliosu</span>
+                    </div>
+                    <span class="helios-accordion-arrow">▼</span>
+                </div>
+                <div class="helios-accordion-anim-wrapper">
+                    <div>
+                        <p style="font-size: 0.8rem; color: var(--text-muted); margin: 0;">Vyberte aspekt pro okamžité stažení souboru:</p>
+                        <div class="helios-export-grid">
+                            <button class="helios-action-btn" onclick="exportHeliosData('positions')">
+                                <svg viewBox="0 0 24 24"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path><polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline><line x1="12" y1="22.08" x2="12" y2="12"></line></svg>
+                                <span>Pozice forem</span>
+                            </button>
+                            <button class="helios-action-btn" onclick="exportHeliosData('statuses')">
+                                <svg viewBox="0 0 24 24"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"></path></svg>
+                                <span>Stavy forem</span>
+                            </button>
+                            <button class="helios-action-btn" onclick="exportHeliosData('issues')">
+                                <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+                                <span>Problémy & Foto</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Аккордеон 2: Мгновенная отправка на e-mail -->
+            <div class="helios-accordion-card" id="helCardInstant">
+                <div class="helios-accordion-header" onclick="toggleHeliosAccordion('instant')">
+                    <div class="helios-accordion-header-left">
+                        <svg viewBox="0 0 24 24"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
+                        <span>Odeslat na e-mail okamžitě</span>
+                    </div>
+                    <span class="helios-accordion-arrow">▼</span>
+                </div>
+                <div class="helios-accordion-anim-wrapper">
+                    <div>
+                        <p style="font-size: 0.8rem; color: var(--text-muted); margin: 0;">Zvolte aspekty a odešlete data ihned:</p>
+                        
+                        <div class="helios-checkbox-grid">
+                            <label class="helios-checkbox-card checked" id="cardChkInstPos" onclick="toggleInstantCheckbox('Pos')">
+                                <input type="checkbox" id="chkInstPos" checked onchange="updateInstantCheckboxUI()">
+                                <svg viewBox="0 0 24 24"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path><polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline><line x1="12" y1="22.08" x2="12" y2="12"></line></svg>
+                                <span>Pozice forem</span>
+                            </label>
+                            <label class="helios-checkbox-card checked" id="cardChkInstStatus" onclick="toggleInstantCheckbox('Status')">
+                                <input type="checkbox" id="chkInstStatus" checked onchange="updateInstantCheckboxUI()">
+                                <svg viewBox="0 0 24 24"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"></path></svg>
+                                <span>Stavy forem</span>
+                            </label>
+                            <label class="helios-checkbox-card checked" id="cardChkInstIssues" onclick="toggleInstantCheckbox('Issues')">
+                                <input type="checkbox" id="chkInstIssues" checked onchange="updateInstantCheckboxUI()">
+                                <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+                                <span>Problémy</span>
+                            </label>
+                        </div>
+
+                        <!-- Управление адресами для мгновенной отправки -->
+                        <div class="form-group" style="margin-top: 0.2rem; gap: 0.5rem;">
+                            <label style="display: flex; justify-content: space-between; align-items: center;">
+                                <span>E-mailové adresy (max 2):</span>
+                                <button type="button" id="addInstEmailSlotBtn" onclick="addInstEmailSlot()" style="background: none; border: none; color: #2563eb; font-size: 0.8rem; font-weight: 600; cursor: pointer; display: inline-flex; align-items: center; gap: 2px;">+ Přidat e-mail</button>
+                            </label>
+                            
+                            <div id="instEmailSlotsContainer" style="display: flex; flex-direction: column; gap: 0.4rem;">
+                                <div class="email-slot-row" style="display: flex; gap: 0.4rem; align-items: center;">
+                                    <input type="email" id="instEmailInput1" placeholder="test@firma.cz" autocomplete="off" style="flex: 1;">
+                                </div>
+                                <div class="email-slot-row" id="instEmailRow2" style="display: none; gap: 0.4rem; align-items: center;">
+                                    <input type="email" id="instEmailInput2" placeholder="vedouci@firma.cz" autocomplete="off" style="flex: 1;">
+                                    <button type="button" class="btn-danger" onclick="removeInstEmailSlot(2)" style="padding: 0.75rem 0.85rem; font-size: 0.85rem;" title="Smazat e-mail">✕</button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <button class="btn-primary" style="width: 100%; margin-top: 0.2rem;" onclick="executeInstantEmailSend()">
+                            Odeslat data na e-mail hned
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Аккордеон 3: Автоматическая отправка на e-mail -->
+            <div class="helios-accordion-card" id="helCardAuto">
+                <div class="helios-accordion-header" onclick="toggleHeliosAccordion('auto')">
+                    <div class="helios-accordion-header-left">
+                        <svg class="rotated-icon" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+                        <span>Automatické odesílání na e-mail</span>
+                    </div>
+                    <span class="helios-accordion-arrow">▼</span>
+                </div>
+                <div class="helios-accordion-anim-wrapper">
+                    <div>
+                        <p style="font-size: 0.8rem; color: var(--text-muted); margin: 0;">Zvolte aspekty kliknutím na ikony:</p>
+                        
+                        <div class="helios-checkbox-grid">
+                            <label class="helios-checkbox-card checked" id="cardChkPos" onclick="toggleHeliosCheckbox('Pos')">
+                                <input type="checkbox" id="chkAspectPos" checked onchange="updateHeliosCheckboxUI()">
+                                <svg viewBox="0 0 24 24"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path><polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline><line x1="12" y1="22.08" x2="12" y2="12"></line></svg>
+                                <span>Pozice forem</span>
+                            </label>
+                            <label class="helios-checkbox-card checked" id="cardChkStatus" onclick="toggleHeliosCheckbox('Status')">
+                                <input type="checkbox" id="chkAspectStatus" checked onchange="updateHeliosCheckboxUI()">
+                                <svg viewBox="0 0 24 24"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"></path></svg>
+                                <span>Stavy forem</span>
+                            </label>
+                            <label class="helios-checkbox-card checked" id="cardChkIssues" onclick="toggleHeliosCheckbox('Issues')">
+                                <input type="checkbox" id="chkAspectIssues" checked onchange="updateHeliosCheckboxUI()">
+                                <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+                                <span>Problémy</span>
+                            </label>
+                        </div>
+
+                        <!-- Блок управления e-mail адресами -->
+                        <div class="form-group" style="margin-top: 0.2rem; gap: 0.5rem;">
+                            <label style="display: flex; justify-content: space-between; align-items: center;">
+                                <span>E-mailové adresy (max 2):</span>
+                                <button type="button" id="addEmailSlotBtn" onclick="addEmailSlot()" style="background: none; border: none; color: #2563eb; font-size: 0.8rem; font-weight: 600; cursor: pointer; display: inline-flex; align-items: center; gap: 2px;">+ Přidat e-mail</button>
+                            </label>
+                            
+                            <div id="emailSlotsContainer" style="display: flex; flex-direction: column; gap: 0.4rem;">
+                                <div class="email-slot-row" style="display: flex; gap: 0.4rem; align-items: center;">
+                                    <input type="email" id="heliosEmailInput1" placeholder="planovac@firma.cz" autocomplete="off" style="flex: 1;">
+                                </div>
+                                <div class="email-slot-row" id="emailRow2" style="display: none; gap: 0.4rem; align-items: center;">
+                                    <input type="email" id="heliosEmailInput2" placeholder="vedoucí@firma.cz" autocomplete="off" style="flex: 1;">
+                                    <button type="button" class="btn-danger" onclick="removeEmailSlot(2)" style="padding: 0.75rem 0.85rem; font-size: 0.85rem;" title="Smazat e-mail">✕</button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.6rem;">
+                            <div class="form-group">
+                                <label>Frekvence:</label>
+                                <select id="heliosFrequencySelect" style="padding: 0.75rem; border: 1px solid var(--border-color); border-radius: 8px; background: var(--input-bg); font-size: 0.95rem;">
+                                    <option value="daily">Den</option>
+                                    <option value="weekly">Týden</option>
+                                    <option value="monthly">Měsíc</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Čas odesílání:</label>
+                                <select id="heliosTimeSelect" style="padding: 0.75rem; border: 1px solid var(--border-color); border-radius: 8px; background: var(--input-bg); font-size: 0.95rem;">
+                                    <option value="06:00">06:00 (Ráno)</option>
+                                    <option value="08:00" selected>08:00</option>
+                                    <option value="10:00">10:00</option>
+                                    <option value="12:00">12:00 (Poledne)</option>
+                                    <option value="14:00">14:00</option>
+                                    <option value="18:00">18:00 (Večer)</option>
+                                    <option value="22:00">22:00 (Noc)</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <button class="btn-primary" style="width: 100%; margin-top: 0.2rem;" onclick="saveAutoEmailSettings()">
+                            Uložit nastavení automatizace
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+        <div class="modal-footer">
+            <button class="btn-secondary" onclick="closeHeliosAdminModal()">Zavřít</button>
+        </div>
+    </div>
+</div>
+
 <script>
     const API_URL = "https://qjoovhagucdcaebgdmbx.supabase.co";
     const API_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFqb292aGFndWNkY2FlYmdkbWJ4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQ4OTYyMTEsImV4cCI6MjEwMDQ3MjIxMX0.Z-Pey6nbpo5b-RyXkc2cCCV7Uj3-YgbAqZsTUV1kZD0";
+    const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbz2Zp-Me-bMX_2VY6Be2Mt0Z5HguRLwnjuYz9fNh1nXjbAXIOVXMIlcTNjs1Z72qiuM9Q/exec";
     const MASTER_PASSWORD = "adisadis";
+    const SUPER_ADMIN_PASSWORD = "adisadmin";
     const KEYBOARD_BLUR_DELAY = 800;
 
     function triggerHapticFeedback(pattern = [15]) {
@@ -1608,7 +2035,7 @@
         modal.classList.remove('active');
         setTimeout(() => {
             modal.style.display = 'none';
-        }, 180);
+        }, 200);
     }
 
     const supabaseClient = window.supabase.createClient(API_URL, API_KEY);
@@ -1636,7 +2063,9 @@
     let currentCustomerFilter = 'ALL';
     let currentDashboardStatusFilter = 'ALL';
     let selectedPresetColor = "#ffffff";
+    
     let currentUser = localStorage.getItem('adis_user_name') || null;
+    let isSuperUser = localStorage.getItem('adis_is_superuser') === 'true';
 
     let activeEditMoldId = null;
     let activeEditOldCust = null;
@@ -1693,7 +2122,6 @@
         return trimmed.replace(/\s+([zcmbzCMBHh])(?!\.)$/i, ' $1.');
     }
 
-    /* === СЕРВИС СВАЙПОВ ПО ВКЛАДКАМ === */
     function initSwipeNavigation() {
         const swipeArea = document.getElementById('swipeContentArea');
         if (!swipeArea) return;
@@ -1736,7 +2164,6 @@
         }, { passive: true });
     }
 
-    /* === УМНЫЙ ТАКТИЛЬНЫЙ ФИДБЕК (БЕЗ ЗАЛИПАНИЙ) === */
     function initSmartHaptics() {
         let touchStartX = 0;
         let touchStartY = 0;
@@ -1745,7 +2172,7 @@
 
         document.addEventListener('pointerdown', (e) => {
             document.querySelectorAll('.is-touched').forEach(el => el.classList.remove('is-touched'));
-            const target = e.target.closest('button, .tab-btn, .filter-chip, .dash-card, .badge-position, .tag-customer, .add-customer-chip, .top-icon-btn, .auth-btn, .comment-item, .toggle-accordion-btn, .edit-btn, .comment-btn, .floating-corner-btn, .floating-corner-btn-left, .mold-clickable-id');
+            const target = e.target.closest('button, .tab-btn, .filter-chip, .dash-card, .badge-position, .tag-customer, .add-customer-chip, .top-icon-btn, .auth-btn, .superuser-badge-btn, .comment-item, .toggle-accordion-btn, .edit-btn, .comment-btn, .floating-corner-btn, .floating-corner-btn-left, .mold-clickable-id, .helios-checkbox-card');
             if (target) {
                 touchStartX = e.clientX;
                 touchStartY = e.clientY;
@@ -1795,6 +2222,8 @@
         renderCustomColorDropdownOptions();
         initSwipeNavigation();
         initSmartHaptics();
+        updateHeliosCheckboxUI();
+        updateInstantCheckboxUI();
 
         document.getElementById('btn-search').addEventListener('click', () => switchTab('search'));
         document.getElementById('btn-database').addEventListener('click', () => switchTab('database'));
@@ -1885,6 +2314,7 @@
 
     function updateAuthUI() {
         const authBtn = document.getElementById('authCornerBtn');
+        const superuserBtn = document.getElementById('superuserBadgeBtn');
         const iconWrapper = document.getElementById('authBtnIconWrapper');
         const textSpan = document.getElementById('authBtnText');
         const userSvgHtml = `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>`;
@@ -1895,11 +2325,18 @@
             iconWrapper.innerHTML = userSvgHtml;
             textSpan.textContent = `${currentUser}`;
             authBtn.title = `Přihlášen jako: ${currentUser} (Klikněte pro odhlášení)`;
+
+            if (isSuperUser) {
+                superuserBtn.style.display = 'flex';
+            } else {
+                superuserBtn.style.display = 'none';
+            }
         } else {
             authBtn.classList.remove('logged-in');
             iconWrapper.innerHTML = keyImgHtml;
             textSpan.textContent = 'Přihlásit';
             authBtn.title = 'Přihlášení uživatele';
+            superuserBtn.style.display = 'none';
         }
     }
 
@@ -1907,29 +2344,10 @@
         triggerHapticFeedback([18]);
         if (currentUser) {
             if (confirm(`Chcete se odhlásit z účtu ${currentUser}?`)) {
-                const exitingUser = currentUser;
-
-                try {
-                    await fetch(`${API_URL}/rest/v1/mold_logs`, {
-                        method: 'POST',
-                        headers: { 
-                            'apikey': API_KEY, 
-                            'Authorization': `Bearer ${API_KEY}`, 
-                            'Content-Type': 'application/json' 
-                        },
-                        body: JSON.stringify({ 
-                            mold_id: 'SYSTEM', 
-                            old_position: 'Přihlášen', 
-                            new_position: 'Odhlášen ze systému', 
-                            user_name: exitingUser 
-                        })
-                    });
-                } catch (e) { 
-                    console.error("Error logging logout event:", e); 
-                }
-
                 currentUser = null;
+                isSuperUser = false;
                 localStorage.removeItem('adis_user_name');
+                localStorage.removeItem('adis_is_superuser');
                 updateAuthUI();
                 refreshUI();
                 showToast("Byli jste odhlášen");
@@ -1954,38 +2372,280 @@
         const username = document.getElementById('loginUsername').value.trim();
         const password = document.getElementById('loginPassword').value.trim();
         if (!username) { alert("Zadejte vaše jméno nebo směnu!"); return; }
-        if (password !== MASTER_PASSWORD) { alert("Nesprávné heslo!"); return; }
+        
+        if (password !== MASTER_PASSWORD && password !== SUPER_ADMIN_PASSWORD) {
+            alert("Nesprávné heslo!"); 
+            return; 
+        }
 
         currentUser = username;
+        isSuperUser = (password === SUPER_ADMIN_PASSWORD);
+
         localStorage.setItem('adis_user_name', username);
+        localStorage.setItem('adis_is_superuser', isSuperUser ? 'true' : 'false');
+        
         closeLoginModal();
         updateAuthUI();
         refreshUI();
-        showToast(`Přihlášen: ${currentUser}`);
 
-        try {
-            await fetch(`${API_URL}/rest/v1/mold_logs`, {
-                method: 'POST',
-                headers: { 
-                    'apikey': API_KEY, 
-                    'Authorization': `Bearer ${API_KEY}`, 
-                    'Content-Type': 'application/json' 
-                },
-                body: JSON.stringify({ 
-                    mold_id: 'SYSTEM', 
-                    old_position: 'Odhlášen', 
-                    new_position: 'Přihlášen do systému', 
-                    user_name: currentUser 
-                })
-            });
-        } catch (e) { 
-            console.error("Error logging login event:", e); 
+        if (isSuperUser) {
+            showToast(`Přihlášen jako Superuser: ${currentUser}`);
+        } else {
+            showToast(`Přihlášen: ${currentUser}`);
         }
     }
 
     function checkAuthOrPrompt() {
         if (!currentUser) { openLoginModal(); return false; }
         return true;
+    }
+
+    function toggleHeliosAccordion(type) {
+        triggerHapticFeedback([12]);
+        const cardManual = document.getElementById('helCardManual');
+        const cardInstant = document.getElementById('helCardInstant');
+        const cardAuto = document.getElementById('helCardAuto');
+
+        if (type === 'manual') {
+            cardManual.classList.toggle('open', !cardManual.classList.contains('open'));
+        } else if (type === 'instant') {
+            cardInstant.classList.toggle('open', !cardInstant.classList.contains('open'));
+        } else if (type === 'auto') {
+            cardAuto.classList.toggle('open', !cardAuto.classList.contains('open'));
+        }
+    }
+
+    function toggleHeliosCheckbox(aspect) {
+        triggerHapticFeedback([12]);
+        const chk = document.getElementById(`chkAspect${aspect}`);
+        const card = document.getElementById(`cardChk${aspect}`);
+        if (chk && card) {
+            chk.checked = !chk.checked;
+            updateHeliosCheckboxUI();
+        }
+    }
+
+    function updateHeliosCheckboxUI() {
+        ['Pos', 'Status', 'Issues'].forEach(aspect => {
+            const chk = document.getElementById(`chkAspect${aspect}`);
+            const card = document.getElementById(`cardChk${aspect}`);
+            if (chk && card) {
+                if (chk.checked) card.classList.add('checked');
+                else card.classList.remove('checked');
+            }
+        });
+    }
+
+    function toggleInstantCheckbox(aspect) {
+        triggerHapticFeedback([12]);
+        const chk = document.getElementById(`chkInst${aspect}`);
+        const card = document.getElementById(`cardChkInst${aspect}`);
+        if (chk && card) {
+            chk.checked = !chk.checked;
+            updateInstantCheckboxUI();
+        }
+    }
+
+    function updateInstantCheckboxUI() {
+        ['Pos', 'Status', 'Issues'].forEach(aspect => {
+            const chk = document.getElementById(`chkInst${aspect}`);
+            const card = document.getElementById(`cardChkInst${aspect}`);
+            if (chk && card) {
+                if (chk.checked) card.classList.add('checked');
+                else card.classList.remove('checked');
+            }
+        });
+    }
+
+    function addEmailSlot() {
+        triggerHapticFeedback([12]);
+        const row2 = document.getElementById('emailRow2');
+        const addBtn = document.getElementById('addEmailSlotBtn');
+        if (row2) {
+            row2.style.display = 'flex';
+            if (addBtn) addBtn.style.display = 'none';
+            document.getElementById('heliosEmailInput2').focus();
+        }
+    }
+
+    function removeEmailSlot(slotNumber) {
+        triggerHapticFeedback([12]);
+        if (slotNumber === 2) {
+            const input2 = document.getElementById('heliosEmailInput2');
+            const row2 = document.getElementById('emailRow2');
+            const addBtn = document.getElementById('addEmailSlotBtn');
+            if (input2) input2.value = '';
+            if (row2) row2.style.display = 'none';
+            if (addBtn) addBtn.style.display = 'inline-flex';
+        }
+    }
+
+    function addInstEmailSlot() {
+        triggerHapticFeedback([12]);
+        const row2 = document.getElementById('instEmailRow2');
+        const addBtn = document.getElementById('addInstEmailSlotBtn');
+        if (row2) {
+            row2.style.display = 'flex';
+            if (addBtn) addBtn.style.display = 'none';
+            document.getElementById('instEmailInput2').focus();
+        }
+    }
+
+    function removeInstEmailSlot(slotNumber) {
+        triggerHapticFeedback([12]);
+        if (slotNumber === 2) {
+            const input2 = document.getElementById('instEmailInput2');
+            const row2 = document.getElementById('instEmailRow2');
+            const addBtn = document.getElementById('addInstEmailSlotBtn');
+            if (input2) input2.value = '';
+            if (row2) row2.style.display = 'none';
+            if (addBtn) addBtn.style.display = 'inline-flex';
+        }
+    }
+
+    function openHeliosAdminModal() {
+        if (!isSuperUser) {
+            alert("Nemáte oprávnění superuživatele!");
+            return;
+        }
+        showModalAnimated('heliosAdminModal');
+    }
+
+    function closeHeliosAdminModal() {
+        hideModalAnimated('heliosAdminModal');
+    }
+
+    function exportHeliosData(type) {
+        triggerHapticFeedback([15]);
+        const activeMolds = getExpandedDatabase(rawDatabase).filter(i => !i[4]);
+        let csvHeader = "";
+        let csvRows = [];
+        let fileName = "";
+
+        if (type === 'positions') {
+            csvHeader = "ID_Formy;Pozice;Stav\n";
+            csvRows = activeMolds.map(i => `${i[0]};${i[1]};${i[3] || ''}`);
+            fileName = "helios_pozice_forem.csv";
+        } else if (type === 'statuses') {
+            csvHeader = "ID_Formy;Zákazník;Stav;Pozice\n";
+            csvRows = activeMolds.map(i => `${i[0]};${i[2]};${i[3] || 'Aktivní'};${i[1]}`);
+            fileName = "helios_stavy_forem.csv";
+        } else if (type === 'issues') {
+            csvHeader = "ID_Formy;Pozice;Stav;Posledni_Komentar;Fotografie\n";
+            csvRows = activeMolds.map(i => {
+                const moldComments = allComments.filter(c => String(c.mold_id) === String(i[0]));
+                const lastComm = moldComments.length > 0 ? moldComments[0].comment.replace(/[\r\n]+/g, " ") : "";
+                let photos = i[6] ? (Array.isArray(i[6]) ? i[6].join(", ") : i[6]) : "";
+                return `${i[0]};${i[1]};${i[3] || ''};"${lastComm}";"${photos}"`;
+            });
+            fileName = "helios_problemy_komentare.csv";
+        }
+
+        const csvContent = "\uFEFF" + csvHeader + csvRows.join("\n");
+        const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement("a");
+        link.setAttribute("href", url);
+        link.setAttribute("download", fileName);
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        showToast(`Soubor ${fileName} stažen`);
+    }
+
+    async function executeInstantEmailSend() {
+        const email1 = document.getElementById('instEmailInput1').value.trim();
+        const email2 = document.getElementById('instEmailInput2').value.trim();
+        const row2Visible = document.getElementById('instEmailRow2').style.display !== 'none';
+        
+        let emails = [];
+        if (email1) emails.push(email1);
+        if (row2Visible && email2) emails.push(email2);
+
+        const posChecked = document.getElementById('chkInstPos').checked;
+        const statusChecked = document.getElementById('chkInstStatus').checked;
+        const issuesChecked = document.getElementById('chkInstIssues').checked;
+
+        if (emails.length === 0) {
+            alert("Zadejte alespoň jednu e-mailovou adresu!");
+            return;
+        }
+
+        if (!posChecked && !statusChecked && !issuesChecked) {
+            alert("Vyberte alespoň jeden aspekt pro odeslání!");
+            return;
+        }
+
+        triggerHapticFeedback([18]);
+        showToast("Odesílání dat na e-mail...");
+
+        const activeMolds = getExpandedDatabase(rawDatabase).filter(i => !i[4]);
+        const moldsPayload = activeMolds.map(i => {
+            const moldComments = allComments.filter(c => String(c.mold_id) === String(i[0]));
+            const lastComm = moldComments.length > 0 ? moldComments[0].comment : "";
+            let photos = i[6] ? (Array.isArray(i[6]) ? i[6] : [i[6]]) : [];
+            return {
+                id: i[0],
+                position: i[1],
+                customer: i[2],
+                status: i[3] || '',
+                product_name: i[5] || '',
+                last_comment: lastComm,
+                photos: photos
+            };
+        });
+
+        const payload = {
+            emails: emails,
+            aspects: {
+                pos: posChecked,
+                status: statusChecked,
+                issues: issuesChecked
+            },
+            molds: moldsPayload
+        };
+
+        try {
+            await fetch(GOOGLE_SCRIPT_URL, {
+                method: 'POST',
+                mode: 'no-cors',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            });
+            showToast(`Data úspěšně odeslána na ${emails.join(', ')}!`);
+            closeHeliosAdminModal();
+        } catch (e) {
+            console.error("Error sending email via Google Script:", e);
+            showToast("Chyba při odesílání e-mailu", true);
+        }
+    }
+
+    function saveAutoEmailSettings() {
+        const email1 = document.getElementById('heliosEmailInput1').value.trim();
+        const email2 = document.getElementById('heliosEmailInput2').value.trim();
+        const row2Visible = document.getElementById('emailRow2').style.display !== 'none';
+        
+        let emails = [];
+        if (email1) emails.push(email1);
+        if (row2Visible && email2) emails.push(email2);
+
+        const posChecked = document.getElementById('chkAspectPos').checked;
+        const statusChecked = document.getElementById('chkAspectStatus').checked;
+        const issuesChecked = document.getElementById('chkAspectIssues').checked;
+
+        if (emails.length === 0) {
+            alert("Zadejte alespoň jednu e-mailovou adresu!");
+            return;
+        }
+
+        if (!posChecked && !statusChecked && !issuesChecked) {
+            alert("Vyberte alespoň jeden aspekt pro odesílání!");
+            return;
+        }
+
+        triggerHapticFeedback([18]);
+        showToast(`Nastavení odesílání uloženo pro ${emails.length} e-mail(ů).`);
+        closeHeliosAdminModal();
     }
 
     function updateTrashIconVisibility() {
@@ -2190,7 +2850,7 @@
                     fetch(`${API_URL}/rest/v1/mold_logs`, {
                         method: 'POST',
                         headers: { 'apikey': API_KEY, 'Authorization': `Bearer ${API_KEY}`, 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ mold_id: moldId, old_position: `Aktivní`, new_position: `Koš (Kontekstní menu)`, user_name: currentUser })
+                        body: JSON.stringify({ mold_id: moldId, old_position: `Aktivní`, new_position: `Koš (Kontextní menu)`, user_name: currentUser })
                     })
                 ]);
             } catch (e) { console.error(e); }
@@ -3059,7 +3719,7 @@
         showModalAnimated('trashModal');
         const list = document.getElementById('trashList');
         const deleted = rawDatabase.filter(item => item[4] === true);
-        if (deleted.length === 0) { list.innerHTML = `<div class="no-data">Koš je prázdný</div>`; return; }
+        if (deleted.length === 0) { list.innerHTML = `<div class="no-data">Koш je prázdný</div>`; return; }
         list.innerHTML = deleted.map(item => `
             <div class="log-item" style="flex-direction: row; justify-content: space-between; align-items: center;">
                 <div><strong>Forma ${escapeHtml(item[0])}</strong> (${escapeHtml(item[2])}, ${escapeHtml(item[1])})</div>
@@ -3165,6 +3825,12 @@
 
     async function openLogsModal() {
         showModalAnimated('logsModal');
+        
+        const clearLogsBtnFooter = document.getElementById('clearLogsBtnFooter');
+        if (clearLogsBtnFooter) {
+            clearLogsBtnFooter.style.display = isSuperUser ? 'inline-block' : 'none';
+        }
+
         const list = document.getElementById('logsList');
         list.innerHTML = `<div class="no-data">Načítání historie...</div>`;
         try {
@@ -3181,10 +3847,17 @@
     }
 
     function closeLogsModal() { hideModalAnimated('logsModal'); }
-    function promptClearLogs() { if (checkAuthOrPrompt()) showModalAnimated('clearLogsModal'); }
+    function promptClearLogs() { 
+        if (!isSuperUser) {
+            alert("Nemáte oprávnění pro vyčištění historie!");
+            return;
+        }
+        if (checkAuthOrPrompt()) showModalAnimated('clearLogsModal'); 
+    }
     function closeClearLogsModal() { hideModalAnimated('clearLogsModal'); }
 
     async function executeClearLogs() {
+        if (!isSuperUser) return;
         if (isSubmittingAction) return;
         isSubmittingAction = true;
         closeClearLogsModal();
@@ -3390,7 +4063,7 @@
             `;
         }).join('')}</div>` : '';
 
-        const contextAttrs = enableContextMenu ? `
+        const contextAttrs = (enableContextMenu && prefixKey === 'db') ? `
             oncontextmenu="handleMoldRowRightClick(event, '${escapeHtml(num)}')"
         ` : '';
 
