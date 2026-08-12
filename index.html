@@ -969,10 +969,35 @@
 
         .status-dot { width: 6px; height: 6px; border-radius: 50%; display: inline-block; flex-shrink: 0; }
         
-        .dot-green { background-color: var(--success-badge); }
-        .dot-red { background-color: var(--error-badge); }
-        .dot-orange { background-color: var(--warning-badge); }
-        .dot-yellow { background-color: var(--maintenance-badge); }
+        /* Анимация пульсации статусов */
+        @keyframes status-pulse {
+            0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7); }
+            70% { transform: scale(1); box-shadow: 0 0 0 5px rgba(239, 68, 68, 0); }
+            100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); }
+        }
+
+        @keyframes status-pulse-orange {
+            0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(249, 115, 22, 0.7); }
+            70% { transform: scale(1); box-shadow: 0 0 0 5px rgba(249, 115, 22, 0); }
+            100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(249, 115, 22, 0); }
+        }
+
+        @keyframes status-pulse-yellow {
+            0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(250, 204, 21, 0.7); }
+            70% { transform: scale(1); box-shadow: 0 0 0 5px rgba(250, 204, 21, 0); }
+            100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(250, 204, 21, 0); }
+        }
+
+        @keyframes status-pulse-green {
+            0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.7); }
+            70% { transform: scale(1); box-shadow: 0 0 0 5px rgba(34, 197, 94, 0); }
+            100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(34, 197, 94, 0); }
+        }
+
+        .dot-green { background-color: var(--success-badge); animation: status-pulse-green 2s infinite ease-in-out; }
+        .dot-red { background-color: var(--error-badge); animation: status-pulse 2s infinite ease-in-out; }
+        .dot-orange { background-color: var(--warning-badge); animation: status-pulse-orange 2s infinite ease-in-out; }
+        .dot-yellow { background-color: var(--maintenance-badge); animation: status-pulse-yellow 2s infinite ease-in-out; }
 
         .position-cell { display: flex; align-items: center; position: relative; width: 100%; gap: 0.5rem; flex-wrap: wrap; }
         .position-wrapper { display: flex; flex-direction: column; align-items: center; gap: 0.15rem; }
@@ -1000,6 +1025,7 @@
         .pos-m { background-color: #2563eb !important; color: #ffffff !important; }
         .pos-b { background-color: #ffffff !important; color: #0f172a !important; border: 1px solid #cbd5e1 !important; }
         .pos-h { background-color: #9a3412 !important; color: #ffffff !important; }
+        .pos-externi { background-color: #7c2d12 !important; color: #ffffff !important; }
 
         .comments-section {
             margin-top: 0.45rem;
@@ -1261,7 +1287,6 @@
             }
         }
 
-        /* Панель суперпользователя в виде аккордеонов (стиль сайта) */
         .helios-accordion-card {
             border: 1px solid var(--border-color);
             border-radius: 10px;
@@ -1297,9 +1322,6 @@
             stroke-width: 1.8;
             flex-shrink: 0;
         }
-        .helios-accordion-header-left svg.rotated-icon {
-            transform: rotate(180deg);
-        }
         
         .helios-accordion-arrow {
             font-size: 0.8rem;
@@ -1324,7 +1346,6 @@
             opacity: 1;
             border-top-color: var(--border-color);
         }
-        /* Скроллбар внутри самих аккордеонов при нехватке места */
         .helios-accordion-anim-wrapper > div {
             min-height: 0;
             max-height: 240px;
@@ -1347,7 +1368,7 @@
 
         .helios-export-grid {
             display: grid;
-            grid-template-columns: repeat(3, 1fr);
+            grid-template-columns: repeat(2, 1fr);
             gap: 0.6rem;
         }
         @media (max-width: 500px) {
@@ -1383,75 +1404,6 @@
             stroke: var(--text-main);
             fill: none;
             stroke-width: 1.8;
-        }
-
-        .helios-checkbox-grid {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 0.6rem;
-        }
-        .helios-checkbox-card {
-            position: relative;
-            background: var(--card-bg);
-            border: 1px solid var(--border-color);
-            border-radius: 8px;
-            padding: 0.75rem 0.5rem;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            gap: 0.4rem;
-            cursor: pointer;
-            user-select: none;
-            transition: all 0.2s ease;
-        }
-        .helios-checkbox-card input[type="checkbox"] {
-            position: absolute;
-            opacity: 0;
-            cursor: pointer;
-        }
-        .helios-checkbox-card span {
-            font-size: 0.78rem;
-            font-weight: 600;
-            color: var(--text-muted);
-            text-align: center;
-        }
-        .helios-checkbox-card svg {
-            width: 22px;
-            height: 22px;
-            stroke: var(--text-muted);
-            fill: none;
-            stroke-width: 1.8;
-            transition: stroke 0.2s ease;
-        }
-        .helios-checkbox-card.checked {
-            background-color: #f1f5f9;
-            border-color: var(--text-main);
-            box-shadow: inset 0 2px 4px rgba(0,0,0,0.06);
-            transform: translateY(1px);
-        }
-        .helios-checkbox-card.checked span {
-            color: var(--text-main);
-        }
-        .helios-checkbox-card.checked svg {
-            stroke: var(--text-main);
-        }
-        .helios-checkbox-card.checked::after {
-            content: '✓';
-            position: absolute;
-            top: 4px;
-            right: 6px;
-            font-size: 11px;
-            font-weight: bold;
-            color: #ffffff;
-            background: #0f172a;
-            border-radius: 50%;
-            width: 15px;
-            height: 15px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            box-shadow: 0 1px 2px rgba(0,0,0,0.1);
         }
     </style>
 </head>
@@ -1536,13 +1488,13 @@
                     <div class="dash-card-value" id="dash-count-fronte-opravu">0</div>
                 </div>
 
-                <div class="dash-card" id="card-udrzbe" onclick="filterDashboardStatus('Na údržbě', this)">
-                    <div class="dash-card-title"><span class="status-dot dot-yellow"></span> Na údržbě</div>
+                <div class="dash-card" id="card-udrzbe" onclick="filterDashboardStatus('Na údržbě / Na opravě', this)">
+                    <div class="dash-card-title"><span class="status-dot dot-yellow"></span> Na údržbě / Na opravě</div>
                     <div class="dash-card-value" id="dash-count-udrzbe">0</div>
                 </div>
 
-                <div class="dash-card" id="card-oprave-pryc" onclick="filterDashboardStatus('Na opravě / pryč', this)">
-                    <div class="dash-card-title"><span class="status-dot dot-red"></span> Na opravě / pryč</div>
+                <div class="dash-card" id="card-oprave-pryc" onclick="filterDashboardStatus('Na opravě pryč', this)">
+                    <div class="dash-card-title"><span class="status-dot dot-red"></span> Na opravě pryč</div>
                     <div class="dash-card-value" id="dash-count-oprave-pryc">0</div>
                 </div>
             </div>
@@ -1670,7 +1622,6 @@
     </div>
 </div>
 
-<!-- Стильное кастомное окно подтверждения (замена стандартного confirm) -->
 <div class="modal-overlay" id="customConfirmModal">
     <div class="modal-card" style="max-width: 380px; text-align: center;">
         <div class="modal-header"><h3 id="customConfirmTitle">Potvrzení akce</h3><button class="close-modal-btn" onclick="closeCustomConfirm(false)">✕</button></div>
@@ -1700,8 +1651,8 @@
                     <option value="Po údržbě">Po údržbě</option>
                     <option value="Ve frontě na údržbu">Ve frontě na údržbu</option>
                     <option value="Ve frontě na opravu">Ve frontě na opravu</option>
-                    <option value="Na údržbě">Na údržbě</option>
-                    <option value="Na opravě / pryč">Na opravě / pryč</option>
+                    <option value="Na údržbě / Na opravě">Na údržbě / Na opravě</option>
+                    <option value="Na opravě pryč">Na opravě pryč</option>
                 </select>
             </div>
         </div>
@@ -1734,8 +1685,8 @@
                     <option value="Po údržbě">Po údržbě</option>
                     <option value="Ve frontě na údržbu">Ve frontě na údržbu</option>
                     <option value="Ve frontě na opravu">Ve frontě na opravu</option>
-                    <option value="Na údržbě">Na údržbě</option>
-                    <option value="Na opravě / pryč">Na opravě / pryč</option>
+                    <option value="Na údržbě / Na opravě">Na údržbě / Na opravě</option>
+                    <option value="Na opravě pryč">Na opravě pryč</option>
                 </select>
             </div>
             <div class="form-group" style="flex-direction: row; align-items: center; gap: 0.5rem;"><input type="checkbox" id="autoMeziskladCheckbox" style="width: 18px; height: 18px;"><label for="autoMeziskladCheckbox">Přesunout na Mezisklad</label></div>
@@ -1773,6 +1724,7 @@
                 <select id="directProdStatus">
                     <option value="Ve frontě na údržbu">Ve frontě na údržbu</option>
                     <option value="Ve frontě na opravu">Ve frontě na opravu</option>
+                    <option value="Na opravě pryč">Na opravě pryč (Mezisklad Externí)</option>
                 </select>
             </div>
 
@@ -1819,19 +1771,15 @@
                 </div>
                 <div class="helios-accordion-anim-wrapper">
                     <div>
-                        <p style="font-size: 0.8rem; color: var(--text-muted); margin: 0;">Vyberte aspekt pro okamžité stažení souboru:</p>
+                        <p style="font-size: 0.8rem; color: var(--text-muted); margin: 0;">Vyberte formát pro okamžité stažení souboru:</p>
                         <div class="helios-export-grid">
-                            <button class="helios-action-btn" onclick="exportHeliosData('positions')">
-                                <svg viewBox="0 0 24 24"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path><polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline><line x1="12" y1="22.08" x2="12" y2="12"></line></svg>
-                                <span>Pozice forem</span>
+                            <button class="helios-action-btn" onclick="exportHeliosSql()">
+                                <svg viewBox="0 0 24 24"><path d="M4 14a1 1 0 0 1-.78-1.63l9.9-9.9a1 1 0 0 1 1.41 0l5.36 5.36a1 1 0 0 1 0 1.41l-9.9 9.9A1 1 0 0 1 4 14z"></path><path d="M12 22h8a2 2 0 0 0 2-2v-4"></path></svg>
+                                <span>SQL pro Helios</span>
                             </button>
-                            <button class="helios-action-btn" onclick="exportHeliosData('statuses')">
-                                <svg viewBox="0 0 24 24"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"></path></svg>
-                                <span>Stavy forem</span>
-                            </button>
-                            <button class="helios-action-btn" onclick="exportHeliosData('issues')">
-                                <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
-                                <span>Problémy & Foto</span>
+                            <button class="helios-action-btn" onclick="exportHeliosCsv()">
+                                <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line></svg>
+                                <span>Export CSV</span>
                             </button>
                         </div>
                     </div>
@@ -1848,27 +1796,20 @@
                 </div>
                 <div class="helios-accordion-anim-wrapper">
                     <div>
-                        <p style="font-size: 0.8rem; color: var(--text-muted); margin: 0;">Zvolte aspekty a odešlete data ihned:</p>
+                        <p style="font-size: 0.8rem; color: var(--text-muted); margin: 0;">Zvolte formát exportu pro e-mail:</p>
                         
-                        <div class="helios-checkbox-grid">
-                            <label class="helios-checkbox-card checked" id="cardChkInstPos" onclick="toggleInstantCheckbox('Pos')">
-                                <input type="checkbox" id="chkInstPos" checked onchange="updateInstantCheckboxUI()">
-                                <svg viewBox="0 0 24 24"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path><polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline><line x1="12" y1="22.08" x2="12" y2="12"></line></svg>
-                                <span>Pozice forem</span>
-                            </label>
-                            <label class="helios-checkbox-card checked" id="cardChkInstStatus" onclick="toggleInstantCheckbox('Status')">
-                                <input type="checkbox" id="chkInstStatus" checked onchange="updateInstantCheckboxUI()">
-                                <svg viewBox="0 0 24 24"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"></path></svg>
-                                <span>Stavy forem</span>
-                            </label>
-                            <label class="helios-checkbox-card checked" id="cardChkInstIssues" onclick="toggleInstantCheckbox('Issues')">
-                                <input type="checkbox" id="chkInstIssues" checked onchange="updateInstantCheckboxUI()">
-                                <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
-                                <span>Problémy</span>
-                            </label>
+                        <div class="helios-export-grid">
+                            <button class="helios-action-btn" onclick="executeInstantEmailSend('sql')">
+                                <svg viewBox="0 0 24 24"><path d="M4 14a1 1 0 0 1-.78-1.63l9.9-9.9a1 1 0 0 1 1.41 0l5.36 5.36a1 1 0 0 1 0 1.41l-9.9 9.9A1 1 0 0 1 4 14z"></path><path d="M12 22h8a2 2 0 0 0 2-2v-4"></path></svg>
+                                <span>SQL pro Helios</span>
+                            </button>
+                            <button class="helios-action-btn" onclick="executeInstantEmailSend('csv')">
+                                <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line></svg>
+                                <span>Export CSV</span>
+                            </button>
                         </div>
 
-                        <div class="form-group" style="margin-top: 0.2rem; gap: 0.5rem;">
+                        <div class="form-group" style="margin-top: 0.5rem; gap: 0.5rem;">
                             <label style="display: flex; justify-content: space-between; align-items: center;">
                                 <span>E-mailové adresy (max 2):</span>
                                 <button type="button" id="addInstEmailSlotBtn" onclick="addInstEmailSlot()" style="background: none; border: none; color: #2563eb; font-size: 0.8rem; font-weight: 600; cursor: pointer; display: inline-flex; align-items: center; gap: 2px;">+ Přidat e-mail</button>
@@ -1884,10 +1825,6 @@
                                 </div>
                             </div>
                         </div>
-
-                        <button class="btn-primary" style="width: 100%; margin-top: 0.2rem;" onclick="executeInstantEmailSend()">
-                            Odeslat data na e-mail hned
-                        </button>
                     </div>
                 </div>
             </div>
@@ -1895,34 +1832,27 @@
             <div class="helios-accordion-card" id="helCardAuto">
                 <div class="helios-accordion-header" onclick="toggleHeliosAccordion('auto')">
                     <div class="helios-accordion-header-left">
-                        <svg class="rotated-icon" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+                        <svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
                         <span>Automatické odesílání na e-mail</span>
                     </div>
                     <span class="helios-accordion-arrow">▼</span>
                 </div>
                 <div class="helios-accordion-anim-wrapper">
                     <div>
-                        <p style="font-size: 0.8rem; color: var(--text-muted); margin: 0;">Zvolte aspekty kliknutím na ikony:</p>
+                        <p style="font-size: 0.8rem; color: var(--text-muted); margin: 0;">Zvolte formát a nastavte automatické odesílání:</p>
                         
-                        <div class="helios-checkbox-grid">
-                            <label class="helios-checkbox-card checked" id="cardChkPos" onclick="toggleHeliosCheckbox('Pos')">
-                                <input type="checkbox" id="chkAspectPos" checked onchange="updateHeliosCheckboxUI()">
-                                <svg viewBox="0 0 24 24"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path><polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline><line x1="12" y1="22.08" x2="12" y2="12"></line></svg>
-                                <span>Pozice forem</span>
-                            </label>
-                            <label class="helios-checkbox-card checked" id="cardChkStatus" onclick="toggleHeliosCheckbox('Status')">
-                                <input type="checkbox" id="chkAspectStatus" checked onchange="updateHeliosCheckboxUI()">
-                                <svg viewBox="0 0 24 24"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"></path></svg>
-                                <span>Stavy forem</span>
-                            </label>
-                            <label class="helios-checkbox-card checked" id="cardChkIssues" onclick="toggleHeliosCheckbox('Issues')">
-                                <input type="checkbox" id="chkAspectIssues" checked onchange="updateHeliosCheckboxUI()">
-                                <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
-                                <span>Problémy</span>
-                            </label>
+                        <div class="helios-export-grid">
+                            <button class="helios-action-btn" onclick="saveAutoEmailSettings('sql')">
+                                <svg viewBox="0 0 24 24"><path d="M4 14a1 1 0 0 1-.78-1.63l9.9-9.9a1 1 0 0 1 1.41 0l5.36 5.36a1 1 0 0 1 0 1.41l-9.9 9.9A1 1 0 0 1 4 14z"></path><path d="M12 22h8a2 2 0 0 0 2-2v-4"></path></svg>
+                                <span>SQL pro Helios (Auto)</span>
+                            </button>
+                            <button class="helios-action-btn" onclick="saveAutoEmailSettings('csv')">
+                                <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line></svg>
+                                <span>Export CSV (Auto)</span>
+                            </button>
                         </div>
 
-                        <div class="form-group" style="margin-top: 0.2rem; gap: 0.5rem;">
+                        <div class="form-group" style="margin-top: 0.5rem; gap: 0.5rem;">
                             <label style="display: flex; justify-content: space-between; align-items: center;">
                                 <span>E-mailové adresy (max 2):</span>
                                 <button type="button" id="addEmailSlotBtn" onclick="addEmailSlot()" style="background: none; border: none; color: #2563eb; font-size: 0.8rem; font-weight: 600; cursor: pointer; display: inline-flex; align-items: center; gap: 2px;">+ Přidat e-mail</button>
@@ -1961,10 +1891,6 @@
                                 </select>
                             </div>
                         </div>
-
-                        <button class="btn-primary" style="width: 100%; margin-top: 0.2rem;" onclick="saveAutoEmailSettings()">
-                            Uložit nastavení automatizace
-                        </button>
                     </div>
                 </div>
             </div>
@@ -2047,7 +1973,6 @@
         }, 200);
     }
 
-    // Универсальная функция красивого модального окна подтверждения
     let customConfirmCallback = null;
     function showCustomConfirm(title, message, confirmButtonText = "Smazat", onConfirm) {
         triggerHapticFeedback([15]);
@@ -2126,7 +2051,7 @@
     ];
 
     const POSSIBLE_POSITIONS = (() => {
-        const positions = ["Mezisklad", "Mezisklad Ctiboř"];
+        const positions = ["Mezisklad", "Mezisklad Ctiboř", "Mezisklad Externí"];
         const shelves = ['A', 'B', 'C', 'D', 'E', 'F', 'G'];
         const colors = ['z', 'c', 'm', 'b', 'h'];
         for (let num = 1; num <= 99; num++) {
@@ -2251,8 +2176,6 @@
         renderCustomColorDropdownOptions();
         initSwipeNavigation();
         initSmartHaptics();
-        updateHeliosCheckboxUI();
-        updateInstantCheckboxUI();
 
         document.getElementById('btn-search').addEventListener('click', () => switchTab('search'));
         document.getElementById('btn-database').addEventListener('click', () => switchTab('database'));
@@ -2436,54 +2359,12 @@
         const cardAuto = document.getElementById('helCardAuto');
 
         if (type === 'manual') {
-            cardManual.classList.toggle('open', !cardManual.classList.contains('open'));
+            cardManual.classList.toggle('open');
         } else if (type === 'instant') {
-            cardInstant.classList.toggle('open', !cardInstant.classList.contains('open'));
+            cardInstant.classList.toggle('open');
         } else if (type === 'auto') {
-            cardAuto.classList.toggle('open', !cardAuto.classList.contains('open'));
+            cardAuto.classList.toggle('open');
         }
-    }
-
-    function toggleHeliosCheckbox(aspect) {
-        triggerHapticFeedback([12]);
-        const chk = document.getElementById(`chkAspect${aspect}`);
-        const card = document.getElementById(`cardChk${aspect}`);
-        if (chk && card) {
-            chk.checked = !chk.checked;
-            updateHeliosCheckboxUI();
-        }
-    }
-
-    function updateHeliosCheckboxUI() {
-        ['Pos', 'Status', 'Issues'].forEach(aspect => {
-            const chk = document.getElementById(`chkAspect${aspect}`);
-            const card = document.getElementById(`cardChk${aspect}`);
-            if (chk && card) {
-                if (chk.checked) card.classList.add('checked');
-                else card.classList.remove('checked');
-            }
-        });
-    }
-
-    function toggleInstantCheckbox(aspect) {
-        triggerHapticFeedback([12]);
-        const chk = document.getElementById(`chkInst${aspect}`);
-        const card = document.getElementById(`cardChkInst${aspect}`);
-        if (chk && card) {
-            chk.checked = !chk.checked;
-            updateInstantCheckboxUI();
-        }
-    }
-
-    function updateInstantCheckboxUI() {
-        ['Pos', 'Status', 'Issues'].forEach(aspect => {
-            const chk = document.getElementById(`chkInst${aspect}`);
-            const card = document.getElementById(`cardChkInst${aspect}`);
-            if (chk && card) {
-                if (chk.checked) card.classList.add('checked');
-                else card.classList.remove('checked');
-            }
-        });
     }
 
     function addEmailSlot() {
@@ -2544,45 +2425,79 @@
         hideModalAnimated('heliosAdminModal');
     }
 
-    function exportHeliosData(type) {
-        triggerHapticFeedback([15]);
+    function exportHeliosSql() {
+        triggerHapticFeedback([18]);
         const activeMolds = getExpandedDatabase(rawDatabase).filter(i => !i[4]);
-        let csvHeader = "";
-        let csvRows = [];
-        let fileName = "";
+        let sqlLines = [
+            `-- Adis Formy - Export pro Helios`,
+            `-- Generováno: ${new Date().toLocaleString()}`,
+            `BEGIN TRANSACTION;`,
+            ``,
+            `IF NOT EXISTS (SELECT * FROM sys.tables WHERE name = 'Adis_Form_Integration')`,
+            `CREATE TABLE Adis_Form_Integration (`,
+            `    FormID NVARCHAR(50) PRIMARY KEY,`,
+            `    ProductName NVARCHAR(255),`,
+            `    Customer NVARCHAR(100),`,
+            `    Position NVARCHAR(100),`,
+            `    Status NVARCHAR(100),`,
+            `    LastComment NVARCHAR(MAX),`,
+            `    PhotoLink NVARCHAR(MAX),`,
+            `    UpdatedAt DATETIME`,
+            `);`,
+            ``,
+            `TRUNCATE TABLE Adis_Form_Integration;`,
+            ``
+        ];
 
-        if (type === 'positions') {
-            csvHeader = "ID_Formy;Pozice;Stav\n";
-            csvRows = activeMolds.map(i => `${i[0]};${i[1]};${i[3] || ''}`);
-            fileName = "helios_pozice_forem.csv";
-        } else if (type === 'statuses') {
-            csvHeader = "ID_Formy;Zákazník;Stav;Pozice\n";
-            csvRows = activeMolds.map(i => `${i[0]};${i[2]};${i[3] || 'Aktivní'};${i[1]}`);
-            fileName = "helios_stavy_forem.csv";
-        } else if (type === 'issues') {
-            csvHeader = "ID_Formy;Pozice;Stav;Posledni_Komentar;Fotografie\n";
-            csvRows = activeMolds.map(i => {
-                const moldComments = allComments.filter(c => String(c.mold_id) === String(i[0]));
-                const lastComm = moldComments.length > 0 ? moldComments[0].comment.replace(/[\r\n]+/g, " ") : "";
-                let photos = i[6] ? (Array.isArray(i[6]) ? i[6].join(", ") : i[6]) : "";
-                return `${i[0]};${i[1]};${i[3] || ''};"${lastComm}";"${photos}"`;
-            });
-            fileName = "helios_problemy_komentare.csv";
-        }
+        activeMolds.forEach(i => {
+            const comms = allComments.filter(c => String(c.mold_id) === String(i[0]));
+            const lastC = comms.length > 0 ? comms[0].comment.replace(/'/g, "''") : "";
+            const photos = Array.isArray(i[6]) ? i[6].join(", ") : i[6];
+            const cleanProd = (i[5] || '').replace(/'/g, "''");
+            const cleanCust = (i[2] || '').replace(/'/g, "''");
+            const cleanPos = (i[1] || '').replace(/'/g, "''");
+            const cleanStatus = (i[3] || '').replace(/'/g, "''");
 
-        const csvContent = "\uFEFF" + csvHeader + csvRows.join("\n");
-        const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+            sqlLines.push(`INSERT INTO Adis_Form_Integration (FormID, ProductName, Customer, Position, Status, LastComment, PhotoLink, UpdatedAt)`);
+            sqlLines.push(`VALUES ('${i[0]}', '${cleanProd}', '${cleanCust}', '${cleanPos}', '${cleanStatus}', '${lastC}', '${photos}', GETDATE());`);
+        });
+
+        sqlLines.push(``);
+        sqlLines.push(`COMMIT;`);
+
+        const blob = new Blob([sqlLines.join("\n")], { type: 'text/plain;charset=utf-8;' });
+        downloadBlob(blob, `helios_sync_${new Date().toISOString().slice(0,10)}.sql`);
+    }
+
+    function exportHeliosCsv() {
+        triggerHapticFeedback([18]);
+        const activeMolds = getExpandedDatabase(rawDatabase).filter(i => !i[4]);
+        let csv = "\uFEFFID_Formy;Výroba;Zákazník;Pozice;Stav;Poslední_Komentář;Foto;Poslední_Aktualizace\n";
+        
+        const nowStr = new Date().toLocaleString('cs-CZ');
+        
+        activeMolds.forEach(i => {
+            const comms = allComments.filter(c => String(c.mold_id) === String(i[0]));
+            const lastC = comms.length > 0 ? comms[0].comment : "";
+            csv += `${i[0]};${i[5]};${i[2]};${i[1]};${i[3]};"${lastC.replace(/"/g, '""')}";"${i[6]}";"${nowStr}"\n`;
+        });
+        
+        const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+        downloadBlob(blob, `export_${new Date().toISOString().slice(0,10)}.csv`);
+    }
+
+    function downloadBlob(blob, filename) {
         const url = URL.createObjectURL(blob);
         const link = document.createElement("a");
-        link.setAttribute("href", url);
-        link.setAttribute("download", fileName);
+        link.href = url;
+        link.download = filename;
         document.body.appendChild(link);
         link.click();
         document.body.removeChild(link);
-        showToast(`Soubor ${fileName} stažen`);
+        showToast(`Soubor ${filename} stažen`);
     }
 
-    async function executeInstantEmailSend() {
+    async function executeInstantEmailSend(formatType) {
         const email1 = document.getElementById('instEmailInput1').value.trim();
         const email2 = document.getElementById('instEmailInput2').value.trim();
         const row2Visible = document.getElementById('instEmailRow2').style.display !== 'none';
@@ -2591,24 +2506,16 @@
         if (email1) emails.push(email1);
         if (row2Visible && email2) emails.push(email2);
 
-        const posChecked = document.getElementById('chkInstPos').checked;
-        const statusChecked = document.getElementById('chkInstStatus').checked;
-        const issuesChecked = document.getElementById('chkInstIssues').checked;
-
         if (emails.length === 0) {
             alert("Zadejte alespoň jednu e-mailovou adresu!");
             return;
         }
 
-        if (!posChecked && !statusChecked && !issuesChecked) {
-            alert("Vyberte alespoň jeden aspekt pro odeslání!");
-            return;
-        }
-
         triggerHapticFeedback([18]);
-        showToast("Odesílání dat na e-mail...");
+        showToast(`Odesílání dat (${formatType.toUpperCase()}) na e-mail...`);
 
         const activeMolds = getExpandedDatabase(rawDatabase).filter(i => !i[4]);
+        const nowStr = new Date().toLocaleString('cs-CZ');
         const moldsPayload = activeMolds.map(i => {
             const moldComments = allComments.filter(c => String(c.mold_id) === String(i[0]));
             const lastComm = moldComments.length > 0 ? moldComments[0].comment : "";
@@ -2620,17 +2527,14 @@
                 status: i[3] || '',
                 product_name: i[5] || '',
                 last_comment: lastComm,
-                photos: photos
+                photos: photos,
+                updated_at: nowStr
             };
         });
 
         const payload = {
             emails: emails,
-            aspects: {
-                pos: posChecked,
-                status: statusChecked,
-                issues: issuesChecked
-            },
+            format: formatType,
             molds: moldsPayload
         };
 
@@ -2649,7 +2553,7 @@
         }
     }
 
-    function saveAutoEmailSettings() {
+    function saveAutoEmailSettings(formatType) {
         const email1 = document.getElementById('heliosEmailInput1').value.trim();
         const email2 = document.getElementById('heliosEmailInput2').value.trim();
         const row2Visible = document.getElementById('emailRow2').style.display !== 'none';
@@ -2658,22 +2562,13 @@
         if (email1) emails.push(email1);
         if (row2Visible && email2) emails.push(email2);
 
-        const posChecked = document.getElementById('chkAspectPos').checked;
-        const statusChecked = document.getElementById('chkAspectStatus').checked;
-        const issuesChecked = document.getElementById('chkAspectIssues').checked;
-
         if (emails.length === 0) {
             alert("Zadejte alespoň jednu e-mailovou adresu!");
             return;
         }
 
-        if (!posChecked && !statusChecked && !issuesChecked) {
-            alert("Vyberte alespoň jeden aspekt pro odesílání!");
-            return;
-        }
-
         triggerHapticFeedback([18]);
-        showToast(`Nastavení odesílání uloženo pro ${emails.length} e-mail(ů).`);
+        showToast(`Automatické odesílání (${formatType.toUpperCase()}) uloženo pro ${emails.length} e-mail(ů).`);
         closeHeliosAdminModal();
     }
 
@@ -3006,6 +2901,7 @@
 
     function getPositionBadgeClass(pos) {
         const p = String(pos || "").trim().toLowerCase();
+        if (p.includes("externí") || p.includes("externi")) return 'badge-position pos-externi';
         if (p.includes("mezisklad")) return 'badge-position pos-mezisklad';
         if (p.includes(' z')) return 'badge-position pos-z';
         if (p.includes(' c')) return 'badge-position pos-c';
@@ -3564,18 +3460,23 @@
         const oldPos = existing ? existing[1] : 'Neznámá';
         closeDirectProdModal();
 
+        let targetPosition = 'Mezisklad';
+        if (selectedStatus === 'Na opravě pryč') {
+            targetPosition = 'Mezisklad Externí';
+        }
+
         let prevPosToSave = existing ? existing[10] : '';
         if (oldPos && !oldPos.toLowerCase().includes('mezisklad')) {
             prevPosToSave = oldPos;
         }
 
         if (existing) {
-            existing[1] = 'Mezisklad'; 
+            existing[1] = targetPosition; 
             existing[3] = selectedStatus;
             existing[10] = prevPosToSave;
         }
 
-        showToast(`Forma ${moldId} přesunuta na Mezisklad`);
+        showToast(`Forma ${moldId} přesunuta na ${targetPosition}`);
 
         let uploadedPhotoUrls = [];
         for (let file of directProdPendingFiles) {
@@ -3591,13 +3492,13 @@
             await fetch(`${API_URL}/rest/v1/molds?id=eq.${moldId}`, {
                 method: 'PATCH',
                 headers: { 'apikey': API_KEY, 'Authorization': `Bearer ${API_KEY}`, 'Content-Type': 'application/json', 'Prefer': 'return=minimal' },
-                body: JSON.stringify({ position: 'Mezisklad', status: selectedStatus, previous_position: prevPosToSave })
+                body: JSON.stringify({ position: targetPosition, status: selectedStatus, previous_position: prevPosToSave })
             });
 
             await fetch(`${API_URL}/rest/v1/mold_logs`, {
                 method: 'POST',
                 headers: { 'apikey': API_KEY, 'Authorization': `Bearer ${API_KEY}`, 'Content-Type': 'application/json' },
-                body: JSON.stringify({ mold_id: moldId, old_position: `Pozice: ${oldPos}`, new_position: `Pozice: Mezisklad, Stav: ${selectedStatus}`, user_name: currentUser })
+                body: JSON.stringify({ mold_id: moldId, old_position: `Pozice: ${oldPos}`, new_position: `Pozice: ${targetPosition}, Stav: ${selectedStatus}`, user_name: currentUser })
             });
 
             if (commentText || uploadedPhotoUrls.length > 0) {
@@ -3635,7 +3536,7 @@
     }
 
     function onStatusSelectChange(selectElem) {
-        document.getElementById('autoMeziskladCheckbox').checked = ['Ve frontě na údržbu', 'Ve frontě na opravu', 'Na údržbě', 'Na opravě / pryč'].includes(selectElem.value);
+        document.getElementById('autoMeziskladCheckbox').checked = ['Ve frontě na údržbu', 'Ve frontě na opravu', 'Na údržbě / Na opravě', 'Na opravě pryč'].includes(selectElem.value);
     }
 
     function openFullEdit(moldId, currentPos, currentStatus, currentProductName, isAlt = false) {
@@ -3652,7 +3553,7 @@
 
         document.getElementById('fullEditPositionInput').value = fallbackPos;
         document.getElementById('fullEditStatusSelect').value = currentStatus || '';
-        document.getElementById('autoMeziskladCheckbox').checked = ['Ve frontě na údržbu', 'Ve frontě na opravu', 'Na údržbě', 'Na opravě / pryč'].includes(currentStatus);
+        document.getElementById('autoMeziskladCheckbox').checked = ['Ve frontě na údržbu', 'Ve frontě na opravu', 'Na údržbě / Na opravě', 'Na opravě pryč'].includes(currentStatus);
         showModalAnimated('fullEditModal');
     }
 
@@ -3672,7 +3573,7 @@
         const item = rawDatabase[itemIdx];
         let prevPosToSave = item[10];
 
-        const isRepairStatus = ['Ve frontě na údržbu', 'Ve frontě na opravu', 'Na údržbě', 'Na opravě / pryč'].includes(newStatus);
+        const isRepairStatus = ['Ve frontě na údržbu', 'Ve frontě na opravu', 'Na údržbě / Na opravě', 'Na opravě pryč'].includes(newStatus);
         
         if (!isRepairStatus && !autoMezisklad) {
             if (item[10] && item[10].trim() !== "") {
@@ -3695,7 +3596,11 @@
             if (item[1] && !item[1].toLowerCase().includes('mezisklad')) {
                 prevPosToSave = item[1];
             }
-            newPos = 'Mezisklad';
+            if (newStatus === 'Na opravě pryč') {
+                newPos = 'Mezisklad Externí';
+            } else {
+                newPos = 'Mezisklad';
+            }
         }
 
         isSubmittingAction = true;
@@ -3944,8 +3849,8 @@
         if (s.includes('po údržbě') || s.includes('po udrzbe')) dot = 'dot-green';
         else if (s.includes('frontě na údržbu') || s.includes('fronte na udrzbe')) dot = 'dot-orange';
         else if (s.includes('frontě na opravu') || s.includes('fronte na opravu')) dot = 'dot-red';
-        else if (s.includes('na údržbě') || s.includes('na udrzbe')) dot = 'dot-yellow';
-        else if (s.includes('na opravě') || s.includes('na oprave')) dot = 'dot-red';
+        else if (s.includes('na opravě pryč') || s.includes('na oprave pryc')) dot = 'dot-red';
+        else if (s.includes('na údržbě') || s.includes('na udrzbe') || s.includes('opravě')) dot = 'dot-yellow';
         return `<span class="status-pill"><span class="status-dot ${dot}"></span>${escapeHtml(status)}</span>`;
     }
 
@@ -4176,8 +4081,8 @@
             const s = (i[3] || '').toLowerCase();
             if (s.includes('frontě na údržbu') || s.includes('fronte na udrzbe')) fFronteUdrzbu++;
             else if (s.includes('frontě na opravu') || s.includes('fronte na opravu')) fFronteOpravu++;
-            else if (s.includes('na údržbě') || s.includes('na udrzbe')) fUdrzbe++;
-            else if (s.includes('na opravě') || s.includes('na oprave')) fOpravePryc++;
+            else if (s.includes('na údržbě') || s.includes('na udrzbe') || s.includes('opravě')) fUdrzbe++;
+            else if (s.includes('na opravě pryč') || s.includes('na oprave pryc')) fOpravePryc++;
         });
 
         document.getElementById('dash-count-active').textContent = withStatus.length;
