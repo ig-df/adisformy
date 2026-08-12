@@ -1670,6 +1670,20 @@
     </div>
 </div>
 
+<!-- Стильное кастомное окно подтверждения (замена стандартного confirm) -->
+<div class="modal-overlay" id="customConfirmModal">
+    <div class="modal-card" style="max-width: 380px; text-align: center;">
+        <div class="modal-header"><h3 id="customConfirmTitle">Potvrzení akce</h3><button class="close-modal-btn" onclick="closeCustomConfirm(false)">✕</button></div>
+        <div class="modal-body">
+            <p id="customConfirmMessage" style="font-size: 0.95rem; color: var(--text-main); line-height: 1.4; padding: 0.5rem 0;"></p>
+        </div>
+        <div class="modal-footer" style="justify-content: space-between; gap: 0.75rem;">
+            <button class="btn-secondary" style="flex: 1;" onclick="closeCustomConfirm(false)">Zrušit</button>
+            <button class="btn-danger" id="customConfirmYesBtn" style="flex: 1;" onclick="closeCustomConfirm(true)">Smazat</button>
+        </div>
+    </div>
+</div>
+
 <div class="modal-overlay" id="addModal">
     <div class="modal-card">
         <div class="modal-header"><h3>Přidat novou formu</h3><button class="close-modal-btn" onclick="closeAddModal()">✕</button></div>
@@ -1780,7 +1794,6 @@
     </div>
 </div>
 
-<!-- Модальное окно панели Helios со стабильным скроллом аккордеонов -->
 <div class="modal-overlay" id="heliosAdminModal">
     <div class="modal-card" style="max-width: 520px;">
         <div class="modal-header">
@@ -1796,7 +1809,6 @@
         </div>
         <div class="modal-body" style="gap: 0.9rem;">
             
-            <!-- Аккордеон 1: Ручной вывоз данных -->
             <div class="helios-accordion-card" id="helCardManual">
                 <div class="helios-accordion-header" onclick="toggleHeliosAccordion('manual')">
                     <div class="helios-accordion-header-left">
@@ -1826,7 +1838,6 @@
                 </div>
             </div>
 
-            <!-- Аккордеон 2: Мгновенная отправка на e-mail -->
             <div class="helios-accordion-card" id="helCardInstant">
                 <div class="helios-accordion-header" onclick="toggleHeliosAccordion('instant')">
                     <div class="helios-accordion-header-left">
@@ -1857,7 +1868,6 @@
                             </label>
                         </div>
 
-                        <!-- Управление адресами для мгновенной отправки -->
                         <div class="form-group" style="margin-top: 0.2rem; gap: 0.5rem;">
                             <label style="display: flex; justify-content: space-between; align-items: center;">
                                 <span>E-mailové adresy (max 2):</span>
@@ -1882,7 +1892,6 @@
                 </div>
             </div>
 
-            <!-- Аккордеон 3: Автоматическая отправка на e-mail -->
             <div class="helios-accordion-card" id="helCardAuto">
                 <div class="helios-accordion-header" onclick="toggleHeliosAccordion('auto')">
                     <div class="helios-accordion-header-left">
@@ -1913,7 +1922,6 @@
                             </label>
                         </div>
 
-                        <!-- Блок управления e-mail адресами -->
                         <div class="form-group" style="margin-top: 0.2rem; gap: 0.5rem;">
                             <label style="display: flex; justify-content: space-between; align-items: center;">
                                 <span>E-mailové adresy (max 2):</span>
@@ -2037,6 +2045,26 @@
         setTimeout(() => {
             modal.style.display = 'none';
         }, 200);
+    }
+
+    // Универсальная функция красивого модального окна подтверждения
+    let customConfirmCallback = null;
+    function showCustomConfirm(title, message, confirmButtonText = "Smazat", onConfirm) {
+        triggerHapticFeedback([15]);
+        document.getElementById('customConfirmTitle').textContent = title;
+        document.getElementById('customConfirmMessage').textContent = message;
+        const yesBtn = document.getElementById('customConfirmYesBtn');
+        yesBtn.textContent = confirmButtonText;
+        customConfirmCallback = onConfirm;
+        showModalAnimated('customConfirmModal');
+    }
+
+    function closeCustomConfirm(result) {
+        hideModalAnimated('customConfirmModal');
+        if (result && typeof customConfirmCallback === 'function') {
+            customConfirmCallback();
+        }
+        customConfirmCallback = null;
     }
 
     const supabaseClient = window.supabase.createClient(API_URL, API_KEY);
@@ -2344,7 +2372,7 @@
     async function handleAuthClick() {
         triggerHapticFeedback([18]);
         if (currentUser) {
-            if (confirm(`Chcete se odhlásit z účtu ${currentUser}?`)) {
+            showCustomConfirm("Odhlášení", `Chcete se odhlásit z účtu ${currentUser}?`, "Odhlásit", () => {
                 currentUser = null;
                 isSuperUser = false;
                 localStorage.removeItem('adis_user_name');
@@ -2352,7 +2380,7 @@
                 updateAuthUI();
                 refreshUI();
                 showToast("Byli jste odhlášen");
-            }
+            });
         } else {
             openLoginModal();
         }
@@ -2829,34 +2857,35 @@
 
     async function deleteMoldSoftDirect(moldId) {
         if (!checkAuthOrPrompt() || isSubmittingAction) return;
-        if (!confirm(`Opravdu přesunout formu ${moldId} do koše?`)) return;
 
-        isSubmittingAction = true;
-        
-        const trs = document.querySelectorAll(`[id*="${moldId}"]`);
-        trs.forEach(tr => tr.classList.add('row-deleting'));
+        showCustomConfirm("Smazání formy", `Opravdu přesunout formu ${moldId} do koše?`, "Přesunout", async () => {
+            isSubmittingAction = true;
+            
+            const trs = document.querySelectorAll(`[id*="${moldId}"]`);
+            trs.forEach(tr => tr.classList.add('row-deleting'));
 
-        setTimeout(async () => {
-            const itemIdx = rawDatabase.findIndex(i => String(i[0]) === String(moldId));
-            if (itemIdx !== -1) { rawDatabase[itemIdx][4] = true; refreshUI(); }
-            showToast(`Forma ${moldId} přesunuta do koše`);
+            setTimeout(async () => {
+                const itemIdx = rawDatabase.findIndex(i => String(i[0]) === String(moldId));
+                if (itemIdx !== -1) { rawDatabase[itemIdx][4] = true; refreshUI(); }
+                showToast(`Forma ${moldId} přesunuta do koše`);
 
-            try {
-                await Promise.all([
-                    fetch(`${API_URL}/rest/v1/molds?id=eq.${moldId}`, {
-                        method: 'PATCH',
-                        headers: { 'apikey': API_KEY, 'Authorization': `Bearer ${API_KEY}`, 'Content-Type': 'application/json', 'Prefer': 'return=minimal' },
-                        body: JSON.stringify({ is_deleted: true })
-                    }),
-                    fetch(`${API_URL}/rest/v1/mold_logs`, {
-                        method: 'POST',
-                        headers: { 'apikey': API_KEY, 'Authorization': `Bearer ${API_KEY}`, 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ mold_id: moldId, old_position: `Aktivní`, new_position: `Koš (Kontextní menu)`, user_name: currentUser })
-                    })
-                ]);
-            } catch (e) { console.error(e); }
-            finally { isSubmittingAction = false; }
-        }, 280);
+                try {
+                    await Promise.all([
+                        fetch(`${API_URL}/rest/v1/molds?id=eq.${moldId}`, {
+                            method: 'PATCH',
+                            headers: { 'apikey': API_KEY, 'Authorization': `Bearer ${API_KEY}`, 'Content-Type': 'application/json', 'Prefer': 'return=minimal' },
+                            body: JSON.stringify({ is_deleted: true })
+                        }),
+                        fetch(`${API_URL}/rest/v1/mold_logs`, {
+                            method: 'POST',
+                            headers: { 'apikey': API_KEY, 'Authorization': `Bearer ${API_KEY}`, 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ mold_id: moldId, old_position: `Aktivní`, new_position: `Koš (Kontextní menu)`, user_name: currentUser })
+                        })
+                    ]);
+                } catch (e) { console.error(e); }
+                finally { isSubmittingAction = false; }
+            }, 280);
+        });
     }
 
     async function deleteComment(commentId) {
@@ -2865,56 +2894,56 @@
         const cObj = allComments.find(c => String(c.id) === String(commentId));
         const moldId = cObj ? cObj.mold_id : 'Neznámá';
 
-        if (!confirm("Opravdu chcete trvale smazat tuto poznámku?")) return;
+        showCustomConfirm("Smazání poznámky", "Opravdu chcete trvale smazat tuto poznámku?", "Smazat", async () => {
+            isSubmittingAction = true;
 
-        isSubmittingAction = true;
+            if (cObj && cObj.photo_urls) {
+                let photoUrls = [];
+                if (Array.isArray(cObj.photo_urls)) {
+                    photoUrls = cObj.photo_urls;
+                } else if (typeof cObj.photo_urls === 'string') {
+                    try {
+                        const parsed = JSON.parse(cObj.photo_urls);
+                        photoUrls = Array.isArray(parsed) ? parsed : [cObj.photo_urls];
+                    } catch { photoUrls = [cObj.photo_urls]; }
+                }
 
-        if (cObj && cObj.photo_urls) {
-            let photoUrls = [];
-            if (Array.isArray(cObj.photo_urls)) {
-                photoUrls = cObj.photo_urls;
-            } else if (typeof cObj.photo_urls === 'string') {
-                try {
-                    const parsed = JSON.parse(cObj.photo_urls);
-                    photoUrls = Array.isArray(parsed) ? parsed : [cObj.photo_urls];
-                } catch { photoUrls = [cObj.photo_urls]; }
-            }
+                const filesToRemove = photoUrls.map(url => {
+                    const parts = url.split('/mold-photos/');
+                    return parts.length > 1 ? parts[1] : null;
+                }).filter(Boolean);
 
-            const filesToRemove = photoUrls.map(url => {
-                const parts = url.split('/mold-photos/');
-                return parts.length > 1 ? parts[1] : null;
-            }).filter(Boolean);
-
-            if (filesToRemove.length > 0) {
-                try {
-                    await supabaseClient.storage.from('mold-photos').remove(filesToRemove);
-                } catch (err) {
-                    console.error("Error removing photos from storage:", err);
+                if (filesToRemove.length > 0) {
+                    try {
+                        await supabaseClient.storage.from('mold-photos').remove(filesToRemove);
+                    } catch (err) {
+                        console.error("Error removing photos from storage:", err);
+                    }
                 }
             }
-        }
 
-        allComments = allComments.filter(c => String(c.id) !== String(commentId));
-        refreshUI();
-        showToast("Poznámka byla smazána");
+            allComments = allComments.filter(c => String(c.id) !== String(commentId));
+            refreshUI();
+            showToast("Poznámka byla smazána");
 
-        try {
-            await Promise.all([
-                fetch(`${API_URL}/rest/v1/mold_comments?id=eq.${commentId}`, {
-                    method: 'DELETE',
-                    headers: { 'apikey': API_KEY, 'Authorization': `Bearer ${API_KEY}`, 'Prefer': 'return=minimal' }
-                }),
-                fetch(`${API_URL}/rest/v1/mold_logs`, {
-                    method: 'POST',
-                    headers: { 'apikey': API_KEY, 'Authorization': `Bearer ${API_KEY}`, 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ mold_id: moldId, old_position: `Poznámka`, new_position: `Poznámka smazána`, user_name: currentUser })
-                })
-            ]);
-        } catch (e) {
-            console.error("Error deleting comment:", e);
-        } finally {
-            isSubmittingAction = false;
-        }
+            try {
+                await Promise.all([
+                    fetch(`${API_URL}/rest/v1/mold_comments?id=eq.${commentId}`, {
+                        method: 'DELETE',
+                        headers: { 'apikey': API_KEY, 'Authorization': `Bearer ${API_KEY}`, 'Prefer': 'return=minimal' }
+                    }),
+                    fetch(`${API_URL}/rest/v1/mold_logs`, {
+                        method: 'POST',
+                        headers: { 'apikey': API_KEY, 'Authorization': `Bearer ${API_KEY}`, 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ mold_id: moldId, old_position: `Poznámka`, new_position: `Poznámka smazána`, user_name: currentUser })
+                    })
+                ]);
+            } catch (e) {
+                console.error("Error deleting comment:", e);
+            } finally {
+                isSubmittingAction = false;
+            }
+        });
     }
 
     function executeViewCommentDelete() {
@@ -3632,41 +3661,59 @@
     async function saveFullEditChange() {
         triggerHapticFeedback([18]);
         if (isSubmittingAction) return;
+        
         let newPos = autoDotPosition(document.getElementById('fullEditPositionInput').value);
         const newStatus = document.getElementById('fullEditStatusSelect').value;
         const autoMezisklad = document.getElementById('autoMeziskladCheckbox').checked;
 
         const itemIdx = rawDatabase.findIndex(i => String(i[0]) === String(activeEditMoldId));
-        let prevPosToSave = itemIdx !== -1 ? rawDatabase[itemIdx][10] : '';
+        if (itemIdx === -1) return;
+        
+        const item = rawDatabase[itemIdx];
+        let prevPosToSave = item[10];
 
-        if (autoMezisklad) {
-            if (activeEditOldPos && !activeEditOldPos.toLowerCase().includes('mezisklad')) {
-                prevPosToSave = activeEditOldPos;
-            }
-            newPos = 'Mezisklad';
-        } else {
-            if (!newPos.toLowerCase().includes('mezisklad')) {
+        const isRepairStatus = ['Ve frontě na údržbu', 'Ve frontě na opravu', 'Na údržbě', 'Na opravě / pryč'].includes(newStatus);
+        
+        if (!isRepairStatus && !autoMezisklad) {
+            if (item[10] && item[10].trim() !== "") {
+                newPos = item[10];
                 prevPosToSave = '';
             }
+
+            const hasComments = allComments.some(c => String(c.mold_id) === String(activeEditMoldId));
+            if (hasComments) {
+                showCustomConfirm("Smazat poznámky?", "Chcete smazat staré poznámky a problémy k této formě?", "Smazat", async () => {
+                    await fetch(`${API_URL}/rest/v1/mold_comments?mold_id=eq.${activeEditMoldId}`, {
+                        method: 'DELETE',
+                        headers: { 'apikey': API_KEY, 'Authorization': `Bearer ${API_KEY}`, 'Prefer': 'return=minimal' }
+                    });
+                    allComments = allComments.filter(c => String(c.mold_id) !== String(activeEditMoldId));
+                    showToast("Poznámky byly smazány");
+                });
+            }
+        } else if (autoMezisklad) {
+            if (item[1] && !item[1].toLowerCase().includes('mezisklad')) {
+                prevPosToSave = item[1];
+            }
+            newPos = 'Mezisklad';
         }
 
         isSubmittingAction = true;
         closeFullEditModal();
         
         let updateBody = {};
-        if (itemIdx !== -1) {
-            if (activeEditIsAlt) {
-                rawDatabase[itemIdx][8] = newPos;
-                rawDatabase[itemIdx][3] = newStatus;
-                updateBody = { alt_position: newPos, status: newStatus };
-            } else {
-                rawDatabase[itemIdx][1] = newPos;
-                rawDatabase[itemIdx][3] = newStatus;
-                rawDatabase[itemIdx][10] = prevPosToSave;
-                updateBody = { position: newPos, status: newStatus, previous_position: prevPosToSave };
-            }
-            refreshUI();
+        if (activeEditIsAlt) {
+            rawDatabase[itemIdx][8] = newPos;
+            rawDatabase[itemIdx][3] = newStatus;
+            updateBody = { alt_position: newPos, status: newStatus };
+        } else {
+            rawDatabase[itemIdx][1] = newPos;
+            rawDatabase[itemIdx][3] = newStatus;
+            rawDatabase[itemIdx][10] = prevPosToSave;
+            updateBody = { position: newPos, status: newStatus, previous_position: prevPosToSave };
         }
+        
+        refreshUI();
         showToast(`Forma ${activeEditMoldId} byla upravena`);
 
         try {
@@ -3740,41 +3787,39 @@
             return;
         }
 
-        if (!confirm(`Opravdu chcete trvale smazat všech ${deletedMolds.length} forem z koše? Tato akce je nevratná!`)) {
-            return;
-        }
+        showCustomConfirm("Vyčištění koše", `Opravdu chcete trvale smazat všech ${deletedMolds.length} forem z koše? Tato akce je nevratná!`, "Vyčistit", async () => {
+            if (isSubmittingAction) return;
+            isSubmittingAction = true;
 
-        if (isSubmittingAction) return;
-        isSubmittingAction = true;
+            try {
+                const res = await fetch(`${API_URL}/rest/v1/molds?is_deleted=eq.true`, {
+                    method: 'DELETE',
+                    headers: { 
+                        'apikey': API_KEY, 
+                        'Authorization': `Bearer ${API_KEY}`,
+                        'Prefer': 'return=minimal'
+                    }
+                });
 
-        try {
-            const res = await fetch(`${API_URL}/rest/v1/molds?is_deleted=eq.true`, {
-                method: 'DELETE',
-                headers: { 
-                    'apikey': API_KEY, 
-                    'Authorization': `Bearer ${API_KEY}`,
-                    'Prefer': 'return=minimal'
-                }
-            });
+                if (!res.ok) throw new Error("Chyba při mazání z databáze");
 
-            if (!res.ok) throw new Error("Chyba při mazání z databáze");
+                await fetch(`${API_URL}/rest/v1/mold_logs`, {
+                    method: 'POST',
+                    headers: { 'apikey': API_KEY, 'Authorization': `Bearer ${API_KEY}`, 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ mold_id: 'SYSTEM', old_position: 'Koš', new_position: 'Trvale vyčištěn', user_name: currentUser })
+                });
 
-            await fetch(`${API_URL}/rest/v1/mold_logs`, {
-                method: 'POST',
-                headers: { 'apikey': API_KEY, 'Authorization': `Bearer ${API_KEY}`, 'Content-Type': 'application/json' },
-                body: JSON.stringify({ mold_id: 'SYSTEM', old_position: 'Koš', new_position: 'Trvale vyčištěn', user_name: currentUser })
-            });
-
-            rawDatabase = rawDatabase.filter(item => item[4] !== true);
-            
-            showToast("Koš byl vyčištěn");
-            closeTrashModal();
-            refreshUI();
-        } catch (e) {
-            alert("Chyba: " + e.message);
-        } finally {
-            setTimeout(() => { isSubmittingAction = false; }, 800);
-        }
+                rawDatabase = rawDatabase.filter(item => item[4] !== true);
+                
+                showToast("Koš byl vyčištěn");
+                closeTrashModal();
+                refreshUI();
+            } catch (e) {
+                alert("Chyba: " + e.message);
+            } finally {
+                setTimeout(() => { isSubmittingAction = false; }, 800);
+            }
+        });
     }
 
     function openAddModal() {
@@ -3853,7 +3898,9 @@
             alert("Nemáte oprávnění pro vyčištění historie!");
             return;
         }
-        if (checkAuthOrPrompt()) showModalAnimated('clearLogsModal'); 
+        if (checkAuthOrPrompt()) {
+            showCustomConfirm("Vyčistit historii", "Opravdu chcete vyčistit starou historii přemístění forem?", "Vyčistit", executeClearLogs);
+        }
     }
     function closeClearLogsModal() { hideModalAnimated('clearLogsModal'); }
 
@@ -3861,7 +3908,6 @@
         if (!isSuperUser) return;
         if (isSubmittingAction) return;
         isSubmittingAction = true;
-        closeClearLogsModal();
         try {
             await fetch(`${API_URL}/rest/v1/mold_logs?mold_id=neq.NULL`, {
                 method: 'DELETE',
