@@ -2077,7 +2077,6 @@
     let activeEditOldPos = null;
     let activeEditOldStatus = null;
     let activeEditOldProductName = null;
-    let activeEditIsAlt = false;
     let activeCommentMoldId = null;
     
     let activeContextMenuTag = null;
@@ -2488,10 +2487,10 @@
         hideModalAnimated('heliosAdminModal');
     }
 
-    // ИСПРАВЛЕННАЯ ФУНКЦИЯ ЭКСПОРТА SQL
+    // ИСПРАВЛЕННАЯ ФУНКЦИЯ ЭКСПОРТА SQL (С ЗАЩИТОЙ ОТ NULL)
     function exportHeliosSql() {
         triggerHapticFeedback([18]);
-        const activeMolds = getExpandedDatabase(rawDatabase).filter(i => !i[4]);
+        const activeMolds = rawDatabase.filter(i => !i[4]);
         let sqlLines = [
             `-- Adis Formy - Export pro Helios`,
             `-- Generováno: ${new Date().toLocaleString()}`,
@@ -2525,17 +2524,19 @@
             if (insertedPairs.has(pairKey)) return;
             insertedPairs.add(pairKey);
 
+            // ЗАЩИТА ОТ NULL: проверка комментария
             const comms = allComments.filter(c => String(c.mold_id) === formId);
-            const lastC = comms.length > 0 ? comms[0].comment.replace(/'/g, "''") : "";
+            const lastC = (comms.length > 0 && comms[0].comment) ? String(comms[0].comment).replace(/'/g, "''") : "";
             
-            const rawPhotos = Array.isArray(i[6]) ? i[6].join(", ") : (i[6] || "");
+            // ЗАЩИТА ОТ NULL: принудительное приведение к строке для фото
+            const rawPhotos = Array.isArray(i[6]) ? i[6].join(", ") : String(i[6] || "");
             const cleanPhotos = rawPhotos.replace(/'/g, "''");
             
             const cleanId = formId.replace(/'/g, "''").substring(0, 50);
-            const cleanProd = (i[5] || '').replace(/'/g, "''").substring(0, 255);
-            const cleanCust = (i[2] || '').replace(/'/g, "''").substring(0, 100);
+            const cleanProd = String(i[5] || '').replace(/'/g, "''").substring(0, 255);
+            const cleanCust = String(i[2] || '').replace(/'/g, "''").substring(0, 100);
             const cleanPos = position.replace(/'/g, "''").substring(0, 100);
-            const cleanStatus = (i[3] || '').replace(/'/g, "''").substring(0, 100);
+            const cleanStatus = String(i[3] || '').replace(/'/g, "''").substring(0, 100);
 
             sqlLines.push(`INSERT INTO Adis_Form_Integration (FormID, ProductName, Customer, Position, Status, LastComment, PhotoLink, UpdatedAt)`);
             sqlLines.push(`VALUES ('${cleanId}', '${cleanProd}', '${cleanCust}', '${cleanPos}', '${cleanStatus}', '${lastC}', '${cleanPhotos}', GETDATE());`);
@@ -2550,14 +2551,14 @@
 
     function exportHeliosCsv() {
         triggerHapticFeedback([18]);
-        const activeMolds = getExpandedDatabase(rawDatabase).filter(i => !i[4]);
+        const activeMolds = rawDatabase.filter(i => !i[4]);
         let csv = "\uFEFFID_Formy;Výroba;Zákazník;Pozice;Stav;Poslední_Komentář;Foto;Poslední_Aktualizace\n";
         
         const nowStr = new Date().toLocaleString('cs-CZ');
         
         activeMolds.forEach(i => {
             const comms = allComments.filter(c => String(c.mold_id) === String(i[0]));
-            const lastC = comms.length > 0 ? comms[0].comment : "";
+            const lastC = (comms.length > 0 && comms[0].comment) ? comms[0].comment : "";
             csv += `${i[0]};${i[5]};${i[2]};${i[1]};${i[3]};"${lastC.replace(/"/g, '""')}";"${i[6]}";"${nowStr}"\n`;
         });
         
@@ -2576,7 +2577,6 @@
         showToast(`Soubor ${filename} stažen`);
     }
 
-    // ИСПРАВЛЕННАЯ ФУНКЦИЯ ОТПРАВКИ ПО EMAIL С ВАЛИДАЦИЕЙ
     async function executeInstantEmailSend(formatType) {
         const email1 = document.getElementById('instEmailInput1').value.trim();
         const email2 = document.getElementById('instEmailInput2').value.trim();
@@ -2602,11 +2602,11 @@
         triggerHapticFeedback([18]);
         showToast(`Odesílání dat (${formatType.toUpperCase()}) na e-mail...`);
 
-        const activeMolds = getExpandedDatabase(rawDatabase).filter(i => !i[4]);
+        const activeMolds = rawDatabase.filter(i => !i[4]);
         const nowStr = new Date().toLocaleString('cs-CZ');
         const moldsPayload = activeMolds.map(i => {
             const moldComments = allComments.filter(c => String(c.mold_id) === String(i[0]));
-            const lastComm = moldComments.length > 0 ? moldComments[0].comment : "";
+            const lastComm = (moldComments.length > 0 && moldComments[0].comment) ? moldComments[0].comment : "";
             let photos = i[6] ? (Array.isArray(i[6]) ? i[6] : [i[6]]) : [];
             return {
                 id: i[0],
@@ -3094,10 +3094,8 @@
                     item.is_deleted || false,                // 4: is_deleted
                     item.product_name || '',                 // 5: product_name
                     photosArr,                               // 6: photosArr
-                    item.alt_customer || '',                 // 7: alt_customer
-                    item.alt_position || '',                 // 8: alt_position
-                    item.navodka_url || '',                  // 9: navodka_url
-                    item.previous_position || ''             // 10: previous_position
+                    item.navodka_url || '',                  // 7: navodka_url
+                    item.previous_position || ''             // 8: previous_position
                 ];
             });
 
@@ -3123,21 +3121,6 @@
 
             refreshUI();
         } catch (e) { console.error("Fetch error:", e); }
-    }
-
-    function getExpandedDatabase(db) {
-        let expanded = [];
-        db.forEach(item => {
-            expanded.push([
-                item[0], item[1], item[2], item[3], item[4], item[5], item[6], item[7] || '', item[8] || '', item[9] || '', item[10] || '', false
-            ]);
-            if (item[8] && String(item[8]).trim()) {
-                expanded.push([
-                    item[0], item[8], item[7] || item[2], item[3], item[4], item[5], item[6], item[7] || '', item[8] || '', item[9] || '', item[10] || '', true
-                ]);
-            }
-        });
-        return expanded;
     }
 
     function toggleAccordion(rowKey, moldId) {
@@ -3287,7 +3270,7 @@
         const itemIdx = rawDatabase.findIndex(i => String(i[0]) === String(moldId));
         if (itemIdx === -1) return;
 
-        let navodkaUrl = rawDatabase[itemIdx][9] || '';
+        let navodkaUrl = rawDatabase[itemIdx][7] || '';
         let currentNavodky = [];
         try {
             const parsed = navodkaUrl.startsWith("[") ? JSON.parse(navodkaUrl) : [{url: navodkaUrl, title: "Návodka 1"}];
@@ -3299,7 +3282,7 @@
         currentNavodky.splice(index, 1);
         const newNavodkaUrl = currentNavodky.length > 0 ? JSON.stringify(currentNavodky) : '';
 
-        rawDatabase[itemIdx][9] = newNavodkaUrl;
+        rawDatabase[itemIdx][7] = newNavodkaUrl;
         
         if (editingAccordionMap[moldId]) {
             toggleAccordionEditMode(moldId);
@@ -3342,7 +3325,7 @@
             }
         }
 
-        let navodkaUrl = rawDatabase[itemIdx][9] || '';
+        let navodkaUrl = rawDatabase[itemIdx][7] || '';
         let currentNavodky = [];
         try {
             currentNavodky = navodkaUrl.startsWith("[") ? JSON.parse(navodkaUrl) : (navodkaUrl ? [{url: navodkaUrl, title: "Návodka 1"}] : []);
@@ -3368,7 +3351,7 @@
 
         rawDatabase[itemIdx][5] = newProductName;
         rawDatabase[itemIdx][6] = photosArr;
-        rawDatabase[itemIdx][9] = finalNavodkaUrl;
+        rawDatabase[itemIdx][7] = finalNavodkaUrl;
         refreshUI();
         showToast(`Detail formy ${moldId} byl uložen`);
 
@@ -3491,19 +3474,18 @@
         activeViewCommentId = null;
     }
 
-    function editPosition(moldId, currentPos, isAlt = false) {
+    function editPosition(moldId, currentPos) {
         if (!checkAuthOrPrompt()) return;
         activeEditMoldId = moldId;
         activeEditOldPos = currentPos;
-        activeEditIsAlt = isAlt;
         
         let fallbackPos = currentPos;
         if (currentPos.toLowerCase().includes('mezisklad')) {
             const itm = rawDatabase.find(i => String(i[0]) === String(moldId));
-            fallbackPos = (itm && itm[10]) ? itm[10] : '';
+            fallbackPos = (itm && itm[8]) ? itm[8] : '';
         }
 
-        document.getElementById('positionModalLabel').textContent = `Forma č. ${moldId} (${isAlt ? '2. pozice' : 'stávající'}: ${currentPos}):`;
+        document.getElementById('positionModalLabel').textContent = `Forma č. ${moldId} (stávající: ${currentPos}):`;
         document.getElementById('modalPositionInput').value = fallbackPos;
         showModalAnimated('positionModal');
     }
@@ -3523,22 +3505,17 @@
         
         let updateBody = {};
         if (itemIdx !== -1) {
-            if (activeEditIsAlt) {
-                rawDatabase[itemIdx][8] = newPos;
-                updateBody = { alt_position: newPos };
-            } else {
-                let prevPosToSave = rawDatabase[itemIdx][10];
-                if (newPos.toLowerCase().includes('mezisklad')) {
-                    if (!activeEditOldPos.toLowerCase().includes('mezisklad')) {
-                        prevPosToSave = activeEditOldPos;
-                    }
-                } else {
-                    prevPosToSave = '';
+            let prevPosToSave = rawDatabase[itemIdx][8];
+            if (newPos.toLowerCase().includes('mezisklad')) {
+                if (!activeEditOldPos.toLowerCase().includes('mezisklad')) {
+                    prevPosToSave = activeEditOldPos;
                 }
-                rawDatabase[itemIdx][1] = newPos;
-                rawDatabase[itemIdx][10] = prevPosToSave;
-                updateBody = { position: newPos, previous_position: prevPosToSave };
+            } else {
+                prevPosToSave = '';
             }
+            rawDatabase[itemIdx][1] = newPos;
+            rawDatabase[itemIdx][8] = prevPosToSave;
+            updateBody = { position: newPos, previous_position: prevPosToSave };
             refreshUI();
         }
         showToast(`Pozice změněna na ${newPos}`);
@@ -3553,7 +3530,7 @@
                 fetch(`${API_URL}/rest/v1/mold_logs`, {
                     method: 'POST',
                     headers: { 'apikey': API_KEY, 'Authorization': `Bearer ${API_KEY}`, 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ mold_id: activeEditMoldId, old_position: `Pozice: ${activeEditOldPos}`, new_position: `Pozice (${activeEditIsAlt ? '2. poz' : 'Hlavní'}): ${newPos}`, user_name: currentUser })
+                    body: JSON.stringify({ mold_id: activeEditMoldId, old_position: `Pozice: ${activeEditOldPos}`, new_position: `Pozice: ${newPos}`, user_name: currentUser })
                 })
             ]);
         } catch (e) { console.error("Error updating position:", e); }
@@ -3628,7 +3605,7 @@
             targetPosition = 'Mezisklad Externí';
         }
 
-        let prevPosToSave = existing ? existing[10] : '';
+        let prevPosToSave = existing ? existing[8] : '';
         if (oldPos && !oldPos.toLowerCase().includes('mezisklad')) {
             prevPosToSave = oldPos;
         }
@@ -3636,7 +3613,7 @@
         if (existing) {
             existing[1] = targetPosition; 
             existing[3] = selectedStatus;
-            existing[10] = prevPosToSave;
+            existing[8] = prevPosToSave;
         }
 
         showToast(`Forma ${moldId} přesunuta na ${targetPosition}`);
@@ -3702,16 +3679,15 @@
         document.getElementById('autoMeziskladCheckbox').checked = ['Ve frontě na údržbu', 'Ve frontě na opravu', 'Na údržbě / Na opravě', 'Na opravě pryč'].includes(selectElem.value);
     }
 
-    function openFullEdit(moldId, currentPos, currentStatus, currentProductName, isAlt = false) {
+    function openFullEdit(moldId, currentPos, currentStatus, currentProductName) {
         if (!checkAuthOrPrompt()) return;
         activeEditMoldId = moldId;
         activeEditOldPos = currentPos;
-        activeEditIsAlt = isAlt;
 
         let fallbackPos = currentPos;
         if (currentPos.toLowerCase().includes('mezisklad')) {
             const itm = rawDatabase.find(i => String(i[0]) === String(moldId));
-            fallbackPos = (itm && itm[10]) ? itm[10] : '';
+            fallbackPos = (itm && itm[8]) ? itm[8] : '';
         }
 
         document.getElementById('fullEditPositionInput').value = fallbackPos;
@@ -3734,13 +3710,13 @@
         if (itemIdx === -1) return;
         
         const item = rawDatabase[itemIdx];
-        let prevPosToSave = item[10];
+        let prevPosToSave = item[8];
 
         const isRepairStatus = ['Ve frontě na údržbu', 'Ve frontě na opravu', 'Na údržbě / Na opravě', 'Na opravě pryč'].includes(newStatus);
         
         if (!isRepairStatus && !autoMezisklad) {
-            if (item[10] && item[10].trim() !== "") {
-                newPos = item[10];
+            if (item[8] && item[8].trim() !== "") {
+                newPos = item[8];
                 prevPosToSave = '';
             }
 
@@ -3769,17 +3745,11 @@
         isSubmittingAction = true;
         closeFullEditModal();
         
-        let updateBody = {};
-        if (activeEditIsAlt) {
-            rawDatabase[itemIdx][8] = newPos;
-            rawDatabase[itemIdx][3] = newStatus;
-            updateBody = { alt_position: newPos, status: newStatus };
-        } else {
-            rawDatabase[itemIdx][1] = newPos;
-            rawDatabase[itemIdx][3] = newStatus;
-            rawDatabase[itemIdx][10] = prevPosToSave;
-            updateBody = { position: newPos, status: newStatus, previous_position: prevPosToSave };
-        }
+        rawDatabase[itemIdx][1] = newPos;
+        rawDatabase[itemIdx][3] = newStatus;
+        rawDatabase[itemIdx][8] = prevPosToSave;
+        
+        let updateBody = { position: newPos, status: newStatus, previous_position: prevPosToSave };
         
         refreshUI();
         showToast(`Forma ${activeEditMoldId} byla upravena`);
@@ -3916,7 +3886,7 @@
 
         isSubmittingAction = true;
         closeAddModal();
-        rawDatabase.push([id, position, customer, status, false, productName, [], '', '', '', '']);
+        rawDatabase.push([id, position, customer, status, false, productName, [], '', '']);
         refreshUI();
         showToast(`Forma ${id} byla vytvořena`);
 
@@ -4017,25 +3987,25 @@
         return `<span class="status-pill"><span class="status-dot ${dot}"></span>${escapeHtml(status)}</span>`;
     }
 
-    function renderPositionCellHtml(num, pos, status, productName, prevPos = '', isAlt = false) {
+    function renderPositionCellHtml(num, pos, status, productName, prevPos = '') {
         const badgeClass = getPositionBadgeClass(pos);
         const sub = pos.toLowerCase().includes('mezisklad') && prevPos ? `<span class="prev-position-sub">(Původně: ${escapeHtml(prevPos)})</span>` : '';
         return `
             <div class="position-cell">
                 <div class="position-wrapper">
-                    <span class="${badgeClass}" tabindex="0" onclick="editPosition('${escapeHtml(num)}', '${escapeHtml(pos)}', ${isAlt})">${escapeHtml(pos)}</span>
+                    <span class="${badgeClass}" tabindex="0" onclick="editPosition('${escapeHtml(num)}', '${escapeHtml(pos)}')">${escapeHtml(pos)}</span>
                     ${sub}
                 </div>
                 <div class="action-buttons-group">
                     <button class="comment-btn" onclick="openCommentModal('${escapeHtml(num)}')">${COMMENT_ICON_HTML}</button>
-                    <button class="edit-btn" onclick="openFullEdit('${escapeHtml(num)}', '${escapeHtml(pos)}', '${escapeHtml(status || '')}', '${escapeHtml(productName || '')}', ${isAlt})">${GEAR_ICON_HTML}</button>
+                    <button class="edit-btn" onclick="openFullEdit('${escapeHtml(num)}', '${escapeHtml(pos)}', '${escapeHtml(status || '')}', '${escapeHtml(productName || '')}')">${GEAR_ICON_HTML}</button>
                 </div>
             </div>
         `;
     }
 
     function renderAccordionInnerContent(item) {
-        const [num, pos, cust, status, isDel, productName, photosArr, altCust, altPos, navodkaUrl, prevPos] = item;
+        const [num, pos, cust, status, isDel, productName, photosArr, navodkaUrl, prevPos] = item;
         const isEditing = Boolean(editingAccordionMap[num]);
 
         if (!isEditing) {
@@ -4159,13 +4129,11 @@
     }
 
     function renderTableRow(item, extraRowClass = '', enableContextMenu = false, showPlusBtn = true, prefixKey = '') {
-        const [num, pos, cust, status, isDel, productName, photosArr, altCust, altPos, navodkaUrl, prevPos, isAlt] = item;
+        const [num, pos, cust, status, isDel, productName, photosArr, navodkaUrl, prevPos] = item;
         const custStyle = getCustomerStyle(cust);
-        const baseKey = isAlt ? `${num}_alt` : `${num}`;
-        const rowKey = prefixKey ? `${prefixKey}_${baseKey}` : baseKey;
+        const rowKey = prefixKey ? `${prefixKey}_${num}` : num;
         const isExpanded = Boolean(expandedMoldsMap[rowKey]);
         
-        const altSub = isAlt ? `<div class="product-name-sub" style="color:#d97706; font-weight:600;">↳ 2. pozice</div>` : '';
         const productSub = productName ? `<div class="product-name-sub">↳ ${escapeHtml(productName)}</div>` : '';
 
         const comments = allComments.filter(c => String(c.mold_id) === String(num));
@@ -4213,12 +4181,11 @@
                         ${plusBtnHtml}
                         <strong>${escapeHtml(num)}</strong> ${renderStatusPill(status)}
                     </div>
-                    ${altSub}
                     ${productSub}
                     ${commentsHtml}
                 </td>
-                <td><span class="tag-customer" style="${custStyle}" onclick="editCustomer('${escapeHtml(num)}', '${escapeHtml(cust)}', ${Boolean(isAlt)})">${escapeHtml(cust)}</span></td>
-                <td>${renderPositionCellHtml(num, pos, status, productName, prevPos, Boolean(isAlt))}</td>
+                <td><span class="tag-customer" style="${custStyle}" onclick="editCustomer('${escapeHtml(num)}', '${escapeHtml(cust)}')">${escapeHtml(cust)}</span></td>
+                <td>${renderPositionCellHtml(num, pos, status, productName, prevPos)}</td>
             </tr>
             <tr style="display: none;"><td colspan="3"></td></tr>
         `;
@@ -4237,7 +4204,7 @@
         const tbody = document.getElementById('databaseTable'), stats = document.getElementById('dbStats'), container = document.getElementById('databaseTableContainer');
         container.querySelectorAll('.accordion-floating-layer').forEach(el => el.remove());
         container.style.minHeight = '';
-        const active = getExpandedDatabase(rawDatabase).filter(i => !i[4]);
+        const active = rawDatabase.filter(i => !i[4]);
         if (active.length === 0) { tbody.innerHTML = `<tr><td colspan="3" class="no-data">Žádná data</td></tr>`; stats.textContent = 'Celkem aktivních forem: 0'; return; }
 
         let filtered = currentCustomerFilter === 'ALL' ? active : active.filter(i => i[2].toLowerCase() === currentCustomerFilter.toLowerCase());
@@ -4256,7 +4223,7 @@
         const tbody = document.getElementById('dashboardTable'), stats = document.getElementById('dashStats'), container = document.getElementById('dashboardTableContainer');
         container.querySelectorAll('.accordion-floating-layer').forEach(el => el.remove());
         container.style.minHeight = '';
-        const active = getExpandedDatabase(rawDatabase).filter(i => !i[4]);
+        const active = rawDatabase.filter(i => !i[4]);
         const withStatus = active.filter(i => { const s = (i[3] || '').toLowerCase(); return s && !s.includes('po údržbě'); });
 
         let fFronteUdrzbu = 0, fFronteOpravu = 0, fUdrzbe = 0, fOpravePryc = 0;
@@ -4293,7 +4260,7 @@
             return; 
         }
         
-        const active = getExpandedDatabase(rawDatabase).filter(i => !i[4]);
+        const active = rawDatabase.filter(i => !i[4]);
         let res = active.filter(i => String(i[0]).toLowerCase().includes(q) || String(i[1]).toLowerCase().includes(q) || String(i[2]).toLowerCase().includes(q) || String(i[5] || '').toLowerCase().includes(q));
 
         const exactMatches = res.filter(i => String(i[0]).toLowerCase() === q);
@@ -4320,12 +4287,11 @@
         }, KEYBOARD_BLUR_DELAY);
     }
 
-    function editCustomer(moldId, currentCust, isAlt = false) {
+    function editCustomer(moldId, currentCust) {
         if (!checkAuthOrPrompt()) return;
         activeEditMoldId = moldId;
         activeEditOldPos = currentCust;
-        activeEditIsAlt = isAlt;
-        document.getElementById('customerModalLabel').textContent = `Forma č. ${moldId} (${isAlt ? '2. pozice' : 'stávající'}: ${currentCust}):`;
+        document.getElementById('customerModalLabel').textContent = `Forma č. ${moldId} (stávající: ${currentCust}):`;
         document.getElementById('modalCustomerSelect').innerHTML = customersList.map(c => `<option value="${escapeHtml(c.name)}" ${c.name === currentCust ? 'selected' : ''}>${escapeHtml(c.name)}</option>`).join('');
         showModalAnimated('customerModal');
     }
@@ -4338,21 +4304,16 @@
         closeCustomerModal();
         const item = rawDatabase.find(i => String(i[0]) === String(activeEditMoldId));
         if (item) {
-            if (activeEditIsAlt) {
-                item[7] = newCust;
-            } else {
-                item[2] = newCust;
-            }
+            item[2] = newCust;
             refreshUI();
         }
         showToast(`Zákazník byl změněn na ${newCust}`);
 
         try {
-            const updateBody = activeEditIsAlt ? { alt_customer: newCust } : { customer: newCust };
             await fetch(`${API_URL}/rest/v1/molds?id=eq.${activeEditMoldId}`, {
                 method: 'PATCH',
                 headers: { 'apikey': API_KEY, 'Authorization': `Bearer ${API_KEY}`, 'Content-Type': 'application/json', 'Prefer': 'return=minimal' },
-                body: JSON.stringify(updateBody)
+                body: JSON.stringify({ customer: newCust })
             });
         } catch (e) { console.error(e); }
         finally { 
