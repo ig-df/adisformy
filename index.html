@@ -2342,6 +2342,15 @@
 
         if (document.getElementById('heliosFrequencySelect')) document.getElementById('heliosFrequencySelect').value = freq;
         if (document.getElementById('heliosTimeSelect')) document.getElementById('heliosTimeSelect').value = time;
+        
+        try {
+            const savedFormats = localStorage.getItem('adis_auto_formats');
+            if (savedFormats) {
+                autoSelectedFormats = JSON.parse(savedFormats);
+                if (autoSelectedFormats.sql) document.getElementById('autoBtnSql').classList.add('selected');
+                if (autoSelectedFormats.csv) document.getElementById('autoBtnCsv').classList.add('selected');
+            }
+        } catch(e) {}
     }
 
     const PALETTE_COLORS = [
@@ -2840,7 +2849,7 @@
         }
     }
 
-    function saveAutoEmailSettingsSelected() {
+    async function saveAutoEmailSettingsSelected() {
         let emails = getEmailsFromContainer('auto');
         const freq = document.getElementById('heliosFrequencySelect').value;
         const time = document.getElementById('heliosTimeSelect').value;
@@ -2861,8 +2870,26 @@
         localStorage.setItem('adis_auto_formats', JSON.stringify(autoSelectedFormats));
 
         triggerHapticFeedback([18]);
-        showToast(`Automatické odesílání úspěšně uloženo!`);
-        closeHeliosAdminModal();
+        showToast(`Ukládání nastavení na server...`);
+
+        try {
+            await fetch(GOOGLE_SCRIPT_URL, {
+                method: 'POST',
+                mode: 'no-cors',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    action: "saveSettings",
+                    emails: emails,
+                    formats: autoSelectedFormats,
+                    frequency: freq,
+                    time: time
+                })
+            });
+            showToast(`Automatické odesílání plně aktivováno na serveru!`);
+            closeHeliosAdminModal();
+        } catch (e) {
+            showToast("Chyba při ukládání na server", true);
+        }
     }
 
     function updateTrashIconVisibility() {
