@@ -734,7 +734,7 @@
 
         @media (min-width: 601px) {
             th { text-align: center !important; padding: 0.75rem 1rem; font-size: 0.75rem; }
-            th:nth-child(1), td:nth-child(1) { width: 36% !important; text-align: center !important; position: relative; }
+            th:nth-child(1), td:nth-child(1) { width: 36% !important; text-align: center !important; }
             th:nth-child(2), td:nth-child(2) { width: 28% !important; text-align: center !important; }
             th:nth-child(3), td:nth-child(3) { width: 36% !important; text-align: center !important; }
             td { padding: 0.75rem 0.8rem; }
@@ -896,35 +896,78 @@
             transform: scale(1.02);
         }
 
-        .navodka-card-box {
-            border: 1px dashed #3b82f6;
-            background: #eff6ff;
-            border-radius: 8px;
-            padding: 0.65rem;
+        .navodka-container-horizontal {
             display: flex;
-            align-items: center;
-            justify-content: space-between;
+            flex-wrap: wrap;
             gap: 0.5rem;
+            align-items: center;
         }
 
-        .navodka-btn-link {
+        .navodka-badge-item {
+            position: relative;
             display: inline-flex;
             align-items: center;
-            gap: 0.35rem;
-            background: #2563eb;
-            color: #ffffff;
-            padding: 0.5rem 0.85rem;
+            gap: 0.45rem;
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            padding: 0.35rem 0.7rem;
             border-radius: 8px;
-            font-size: 0.82rem;
+            font-size: 0.78rem;
             font-weight: 600;
-            border: none;
+            color: var(--text-main);
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+            transition: all 0.15s ease;
+            text-decoration: none;
             cursor: pointer;
-            box-shadow: 0 1px 3px rgba(37, 99, 235, 0.3);
-            transition: transform 0.2s ease, background-color 0.2s ease;
         }
-        .navodka-btn-link:hover {
-            background-color: #1d4ed8;
+
+        .navodka-badge-item:hover {
+            background-color: var(--row-hover);
+            border-color: #3b82f6;
             transform: translateY(-1px);
+        }
+
+        .navodka-badge-item svg.navodka-file-icon {
+            width: 15px;
+            height: 15px;
+            stroke: var(--text-muted);
+            fill: none;
+            stroke-width: 2;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+            flex-shrink: 0;
+            transition: stroke 0.15s ease;
+        }
+
+        .navodka-badge-item:hover svg.navodka-file-icon {
+            stroke: #3b82f6;
+        }
+
+        .navodka-delete-cross {
+            position: absolute;
+            top: -6px;
+            right: -6px;
+            background: var(--card-bg);
+            color: var(--text-muted);
+            border: 1px solid var(--border-color);
+            border-radius: 50%;
+            width: 18px;
+            height: 18px;
+            font-size: 11px;
+            font-weight: bold;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.06);
+            transition: transform 0.15s ease, background-color 0.15s ease, color 0.15s ease;
+            z-index: 5;
+        }
+
+        .navodka-delete-cross:hover {
+            background-color: var(--border-color);
+            color: var(--text-main);
+            transform: scale(1.12);
         }
 
         .accordion-thumb-wrapper {
@@ -969,7 +1012,6 @@
 
         .status-dot { width: 6px; height: 6px; border-radius: 50%; display: inline-block; flex-shrink: 0; }
         
-        /* Анимация пульсации статусов */
         @keyframes status-pulse {
             0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7); }
             70% { transform: scale(1); box-shadow: 0 0 0 5px rgba(239, 68, 68, 0); }
@@ -1162,7 +1204,6 @@
         .custom-color-option { display: flex; align-items: center; padding: 0.4rem 0.5rem; border-radius: 6px; cursor: pointer; }
         .custom-color-option-sample { width: 24px; height: 24px; border-radius: 4px; border: 1px solid var(--border-color); }
 
-        /* Модальные окна с плавной анимацией */
         .modal-overlay {
             display: none; 
             position: fixed; 
@@ -1762,7 +1803,7 @@
         <div class="modal-body" style="gap: 0.9rem;">
             
             <div class="helios-accordion-card" id="helCardManual">
-                <div class="helios-accordion-header" onclick="toggleHeliosAccordion('manual')">
+                <div class="helios-accordion-header" onclick="toggleHeliosAccordionSection('manual')">
                     <div class="helios-accordion-header-left">
                         <svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
                         <span>Ruční vývoz dat do Heliosu</span>
@@ -1787,7 +1828,7 @@
             </div>
 
             <div class="helios-accordion-card" id="helCardInstant">
-                <div class="helios-accordion-header" onclick="toggleHeliosAccordion('instant')">
+                <div class="helios-accordion-header" onclick="toggleHeliosAccordionSection('instant')">
                     <div class="helios-accordion-header-left">
                         <svg viewBox="0 0 24 24"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
                         <span>Odeslat na e-mail okamžitě</span>
@@ -1830,7 +1871,7 @@
             </div>
 
             <div class="helios-accordion-card" id="helCardAuto">
-                <div class="helios-accordion-header" onclick="toggleHeliosAccordion('auto')">
+                <div class="helios-accordion-header" onclick="toggleHeliosAccordionSection('auto')">
                     <div class="helios-accordion-header-left">
                         <svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
                         <span>Automatické odesílání na e-mail</span>
@@ -1949,15 +1990,25 @@
         const modal = document.getElementById(modalId);
         if (!modal) return;
 
-        if (document.activeElement) {
+        const scrollContainers = document.querySelectorAll('.table-container, .modal-body, .helios-accordion-anim-wrapper > div');
+        const scrollPositions = Array.from(scrollContainers).map(el => ({ el, scrollTop: el.scrollTop }));
+
+        if (document.activeElement && typeof document.activeElement.blur === 'function') {
             document.activeElement.blur();
         }
+
+        scrollPositions.forEach(item => {
+            item.el.scrollTop = item.scrollTop;
+        });
 
         modal.style.display = 'flex';
         
         setTimeout(() => {
             requestAnimationFrame(() => {
                 modal.classList.add('active');
+                scrollPositions.forEach(item => {
+                    item.el.scrollTop = item.scrollTop;
+                });
             });
         }, 12);
     }
@@ -2352,7 +2403,19 @@
         return true;
     }
 
-    function toggleHeliosAccordion(type) {
+    function checkSuperUserOrPrompt() {
+        if (!currentUser) {
+            openLoginModal();
+            return false;
+        }
+        if (!isSuperUser) {
+            alert("Tato akce je dostupná pouze pro superuživatele!");
+            return false;
+        }
+        return true;
+    }
+
+    function toggleHeliosAccordionSection(type) {
         triggerHapticFeedback([12]);
         const cardManual = document.getElementById('helCardManual');
         const cardInstant = document.getElementById('helCardInstant');
@@ -2425,6 +2488,7 @@
         hideModalAnimated('heliosAdminModal');
     }
 
+    // ИСПРАВЛЕННАЯ ФУНКЦИЯ ЭКСПОРТА SQL
     function exportHeliosSql() {
         triggerHapticFeedback([18]);
         const activeMolds = getExpandedDatabase(rawDatabase).filter(i => !i[4]);
@@ -2435,31 +2499,46 @@
             ``,
             `IF NOT EXISTS (SELECT * FROM sys.tables WHERE name = 'Adis_Form_Integration')`,
             `CREATE TABLE Adis_Form_Integration (`,
-            `    FormID NVARCHAR(50) PRIMARY KEY,`,
+            `    FormID NVARCHAR(50),`,
             `    ProductName NVARCHAR(255),`,
             `    Customer NVARCHAR(100),`,
             `    Position NVARCHAR(100),`,
             `    Status NVARCHAR(100),`,
             `    LastComment NVARCHAR(MAX),`,
             `    PhotoLink NVARCHAR(MAX),`,
-            `    UpdatedAt DATETIME`,
+            `    UpdatedAt DATETIME,`,
+            `    PRIMARY KEY (FormID, Position)`,
             `);`,
             ``,
-            `TRUNCATE TABLE Adis_Form_Integration;`,
+            `-- Bezpečné vymazání starých dat před vložením nových`,
+            `DELETE FROM Adis_Form_Integration;`,
             ``
         ];
 
+        const insertedPairs = new Set();
+
         activeMolds.forEach(i => {
-            const comms = allComments.filter(c => String(c.mold_id) === String(i[0]));
+            const formId = String(i[0] || '').trim();
+            const position = String(i[1] || '').trim();
+            
+            const pairKey = `${formId}_${position}`;
+            if (insertedPairs.has(pairKey)) return;
+            insertedPairs.add(pairKey);
+
+            const comms = allComments.filter(c => String(c.mold_id) === formId);
             const lastC = comms.length > 0 ? comms[0].comment.replace(/'/g, "''") : "";
-            const photos = Array.isArray(i[6]) ? i[6].join(", ") : i[6];
-            const cleanProd = (i[5] || '').replace(/'/g, "''");
-            const cleanCust = (i[2] || '').replace(/'/g, "''");
-            const cleanPos = (i[1] || '').replace(/'/g, "''");
-            const cleanStatus = (i[3] || '').replace(/'/g, "''");
+            
+            const rawPhotos = Array.isArray(i[6]) ? i[6].join(", ") : (i[6] || "");
+            const cleanPhotos = rawPhotos.replace(/'/g, "''");
+            
+            const cleanId = formId.replace(/'/g, "''").substring(0, 50);
+            const cleanProd = (i[5] || '').replace(/'/g, "''").substring(0, 255);
+            const cleanCust = (i[2] || '').replace(/'/g, "''").substring(0, 100);
+            const cleanPos = position.replace(/'/g, "''").substring(0, 100);
+            const cleanStatus = (i[3] || '').replace(/'/g, "''").substring(0, 100);
 
             sqlLines.push(`INSERT INTO Adis_Form_Integration (FormID, ProductName, Customer, Position, Status, LastComment, PhotoLink, UpdatedAt)`);
-            sqlLines.push(`VALUES ('${i[0]}', '${cleanProd}', '${cleanCust}', '${cleanPos}', '${cleanStatus}', '${lastC}', '${photos}', GETDATE());`);
+            sqlLines.push(`VALUES ('${cleanId}', '${cleanProd}', '${cleanCust}', '${cleanPos}', '${cleanStatus}', '${lastC}', '${cleanPhotos}', GETDATE());`);
         });
 
         sqlLines.push(``);
@@ -2497,6 +2576,7 @@
         showToast(`Soubor ${filename} stažen`);
     }
 
+    // ИСПРАВЛЕННАЯ ФУНКЦИЯ ОТПРАВКИ ПО EMAIL С ВАЛИДАЦИЕЙ
     async function executeInstantEmailSend(formatType) {
         const email1 = document.getElementById('instEmailInput1').value.trim();
         const email2 = document.getElementById('instEmailInput2').value.trim();
@@ -2509,6 +2589,14 @@
         if (emails.length === 0) {
             alert("Zadejte alespoň jednu e-mailovou adresu!");
             return;
+        }
+
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        for (let em of emails) {
+            if (!emailRegex.test(em)) {
+                alert(`Neplatný formát e-mailové adresy: ${em}`);
+                return;
+            }
         }
 
         triggerHapticFeedback([18]);
@@ -2545,7 +2633,7 @@
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(payload)
             });
-            showToast(`Data úspěšně odeslána na ${emails.join(', ')}!`);
+            showToast(`Požadavek na odeslání byl úspěšně odeslán!`);
             closeHeliosAdminModal();
         } catch (e) {
             console.error("Error sending email via Google Script:", e);
@@ -2565,6 +2653,14 @@
         if (emails.length === 0) {
             alert("Zadejte alespoň jednu e-mailovou adresu!");
             return;
+        }
+
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        for (let em of emails) {
+            if (!emailRegex.test(em)) {
+                alert(`Neplatný formát e-mailové adresy: ${em}`);
+                return;
+            }
         }
 
         triggerHapticFeedback([18]);
@@ -2646,6 +2742,8 @@
         const container = document.getElementById('customerFilters');
         if (!container) return;
 
+        const savedScrollLeft = container.scrollLeft;
+
         const isAllActive = currentCustomerFilter === 'ALL' ? 'active' : '';
         let html = `
             <span class="filter-chip ${isAllActive}" tabindex="0" onclick="filterCustomer('ALL', this)" style="background-color: #ffffff; color: #0f172a; border-color: #cbd5e1; font-weight: normal;">
@@ -2673,6 +2771,8 @@
         
         html += `<button class="add-customer-chip" tabindex="0" onclick="openAddCustomerModal()" title="Přidat nového zákazníka">+</button>`;
         container.innerHTML = html;
+
+        container.scrollLeft = savedScrollLeft;
     }
 
     function handleTagRightClick(e, customerName) {
@@ -2859,9 +2959,19 @@
 
     function openAddCustomerModal() {
         if (!checkAuthOrPrompt()) return;
+        
+        const filtersContainer = document.querySelector('.customer-filters');
+        const currentScrollLeft = filtersContainer ? filtersContainer.scrollLeft : 0;
+
         document.getElementById('newCustomerName').value = '';
         selectCustomColor("#ffffff");
         showModalAnimated('addCustomerModal');
+
+        if (filtersContainer) {
+            setTimeout(() => {
+                filtersContainer.scrollLeft = currentScrollLeft;
+            }, 50);
+        }
     }
 
     function closeAddCustomerModal() { hideModalAnimated('addCustomerModal'); }
@@ -3035,26 +3145,32 @@
         const btn = document.getElementById(`accordion-btn-${rowKey}`);
         const isExpanded = Boolean(expandedMoldsMap[rowKey]);
 
+        const triggerTr = document.getElementById(`accordion-trigger-${rowKey}`);
+        const tableContainer = triggerTr ? triggerTr.closest('.table-container') : (floatingLayer ? floatingLayer.closest('.table-container') : null);
+        const currentScrollTop = tableContainer ? tableContainer.scrollTop : 0;
+
         if (isExpanded) {
             expandedMoldsMap[rowKey] = false;
             if (btn) btn.classList.remove('expanded');
             
             if (floatingLayer) {
                 const wrapper = document.getElementById(`accordion-wrap-${rowKey}`);
-                const tableContainer = floatingLayer.closest('.table-container');
 
                 if (wrapper) wrapper.classList.remove('open');
                 floatingLayer.classList.remove('open');
 
                 if (tableContainer) {
                     tableContainer.style.minHeight = '';
+                    tableContainer.scrollTop = currentScrollTop;
                 }
                 
                 setTimeout(() => {
+                    if (tableContainer) tableContainer.scrollTop = currentScrollTop;
                     floatingLayer.remove();
                     delete editingAccordionMap[moldId];
                     delete temporaryFilesMap[moldId];
                     delete temporaryNavodkaMap[moldId];
+                    if (tableContainer) tableContainer.scrollTop = currentScrollTop;
                 }, 470);
             }
         } else {
@@ -3065,11 +3181,8 @@
             if (btn) btn.classList.add('expanded');
 
             const item = rawDatabase.find(i => String(i[0]) === String(moldId));
-            const triggerTr = document.getElementById(`accordion-trigger-${rowKey}`);
             
             if (item && triggerTr) {
-                const tableContainer = triggerTr.closest('.table-container');
-                
                 if (!floatingLayer) {
                     const html = `
                         <div id="accordion-floating-${escapeHtml(rowKey)}" class="accordion-floating-layer" style="z-index: 500;">
@@ -3097,20 +3210,23 @@
                     if (tableContainer.clientHeight < requiredHeight) {
                         tableContainer.style.minHeight = `${requiredHeight}px`;
                     }
+                    tableContainer.scrollTop = currentScrollTop;
                 }
 
                 floatingLayer.style.display = 'block';
                 requestAnimationFrame(() => {
+                    if (tableContainer) tableContainer.scrollTop = currentScrollTop;
                     floatingLayer.classList.add('open');
                     const wrapper = document.getElementById(`accordion-wrap-${rowKey}`);
                     if (wrapper) wrapper.classList.add('open');
+                    if (tableContainer) tableContainer.scrollTop = currentScrollTop;
                 });
             }
         }
     }
 
     function toggleAccordionEditMode(moldId) {
-        if (!checkAuthOrPrompt()) return;
+        if (!checkSuperUserOrPrompt()) return;
         editingAccordionMap[moldId] = !editingAccordionMap[moldId];
         if (!editingAccordionMap[moldId]) {
             delete temporaryFilesMap[moldId];
@@ -3138,7 +3254,10 @@
     function handleNavodkaFileSelect(moldId, inputElement) {
         if (inputElement.files && inputElement.files.length > 0) {
             triggerHapticFeedback([12]);
-            temporaryNavodkaMap[moldId] = inputElement.files[0];
+            if (!temporaryNavodkaMap[moldId]) temporaryNavodkaMap[moldId] = [];
+            for (let i = 0; i < inputElement.files.length; i++) {
+                temporaryNavodkaMap[moldId].push(inputElement.files[i]);
+            }
             toggleAccordionEditMode(moldId);
         }
     }
@@ -3151,25 +3270,60 @@
         }
     }
 
-    function removeExistingNavodka(moldId) {
+    function removeTempNavodka(moldId, index) {
         triggerHapticFeedback([12]);
-        const itemIdx = rawDatabase.findIndex(i => String(i[0]) === String(moldId));
-        if (itemIdx !== -1) {
-            rawDatabase[itemIdx][9] = '';
-            delete temporaryNavodkaMap[moldId];
+        if (temporaryNavodkaMap[moldId]) {
+            temporaryNavodkaMap[moldId].splice(index, 1);
+            if (temporaryNavodkaMap[moldId].length === 0) {
+                delete temporaryNavodkaMap[moldId];
+            }
             toggleAccordionEditMode(moldId);
         }
     }
 
-    function removeTempNavodka(moldId) {
+    async function removeSpecificNavodka(moldId, index) {
         triggerHapticFeedback([12]);
-        delete temporaryNavodkaMap[moldId];
-        toggleAccordionEditMode(moldId);
+        if (!checkSuperUserOrPrompt()) return;
+        const itemIdx = rawDatabase.findIndex(i => String(i[0]) === String(moldId));
+        if (itemIdx === -1) return;
+
+        let navodkaUrl = rawDatabase[itemIdx][9] || '';
+        let currentNavodky = [];
+        try {
+            const parsed = navodkaUrl.startsWith("[") ? JSON.parse(navodkaUrl) : [{url: navodkaUrl, title: "Návodka 1"}];
+            currentNavodky = Array.isArray(parsed) ? parsed : [{url: navodkaUrl, title: "Návodka 1"}];
+        } catch(e) {
+            currentNavodky = [{url: navodkaUrl, title: "Návodka 1"}];
+        }
+
+        currentNavodky.splice(index, 1);
+        const newNavodkaUrl = currentNavodky.length > 0 ? JSON.stringify(currentNavodky) : '';
+
+        rawDatabase[itemIdx][9] = newNavodkaUrl;
+        
+        if (editingAccordionMap[moldId]) {
+            toggleAccordionEditMode(moldId);
+            toggleAccordionEditMode(moldId); 
+        } else {
+            const contentDiv = document.getElementById(`accordion-content-box-${moldId}`);
+            if (contentDiv) contentDiv.innerHTML = renderAccordionInnerContent(rawDatabase[itemIdx]);
+        }
+        showToast("Návodka byla smazána");
+
+        try {
+            await fetch(`${API_URL}/rest/v1/molds?id=eq.${moldId}`, {
+                method: 'PATCH',
+                headers: { 'apikey': API_KEY, 'Authorization': `Bearer ${API_KEY}`, 'Content-Type': 'application/json', 'Prefer': 'return=minimal' },
+                body: JSON.stringify({ navodka_url: newNavodkaUrl })
+            });
+        } catch (e) {
+            console.error("Error removing navodka:", e);
+        }
     }
 
     async function saveAccordionDetails(moldId) {
         triggerHapticFeedback([18]);
-        if (!checkAuthOrPrompt() || isSubmittingAction) return;
+        if (!checkSuperUserOrPrompt() || isSubmittingAction) return;
         const nameInput = document.getElementById(`acc-name-${moldId}`);
         const newProductName = nameInput ? nameInput.value.trim() : '';
         const itemIdx = rawDatabase.findIndex(i => String(i[0]) === String(moldId));
@@ -3189,15 +3343,24 @@
         }
 
         let navodkaUrl = rawDatabase[itemIdx][9] || '';
-        if (temporaryNavodkaMap[moldId]) {
-            const file = temporaryNavodkaMap[moldId];
-            const fileName = `navodka_${moldId}_${Date.now()}.${file.name.split('.').pop()}`;
+        let currentNavodky = [];
+        try {
+            currentNavodky = navodkaUrl.startsWith("[") ? JSON.parse(navodkaUrl) : (navodkaUrl ? [{url: navodkaUrl, title: "Návodka 1"}] : []);
+        } catch(e) { 
+            currentNavodky = navodkaUrl ? [{url: navodkaUrl, title: "Návodka 1"}] : []; 
+        }
+
+        const pendingNavodkyFiles = temporaryNavodkaMap[moldId] || [];
+        for (let file of pendingNavodkyFiles) {
+            const fileName = `navodka_${moldId}_${Date.now()}_${Math.random().toString(36).substring(2, 7)}.${file.name.split('.').pop()}`;
             const { error } = await supabaseClient.storage.from('mold-photos').upload(fileName, file, { upsert: true });
             if (!error) {
                 const { data } = supabaseClient.storage.from('mold-photos').getPublicUrl(fileName);
-                navodkaUrl = data.publicUrl;
+                currentNavodky.push({ url: data.publicUrl, title: file.name || `Návodka ${currentNavodky.length + 1}` });
             }
         }
+
+        const finalNavodkaUrl = currentNavodky.length > 0 ? JSON.stringify(currentNavodky) : '';
 
         delete temporaryFilesMap[moldId];
         delete temporaryNavodkaMap[moldId];
@@ -3205,7 +3368,7 @@
 
         rawDatabase[itemIdx][5] = newProductName;
         rawDatabase[itemIdx][6] = photosArr;
-        rawDatabase[itemIdx][9] = navodkaUrl;
+        rawDatabase[itemIdx][9] = finalNavodkaUrl;
         refreshUI();
         showToast(`Detail formy ${moldId} byl uložen`);
 
@@ -3216,7 +3379,7 @@
                 body: JSON.stringify({ 
                     product_name: newProductName, 
                     photo_url: photosArr.length > 0 ? JSON.stringify(photosArr) : '',
-                    navodka_url: navodkaUrl
+                    navodka_url: finalNavodkaUrl
                 })
             });
         } catch (e) { console.error("Error saving accordion:", e); }
@@ -3672,7 +3835,7 @@
         showModalAnimated('trashModal');
         const list = document.getElementById('trashList');
         const deleted = rawDatabase.filter(item => item[4] === true);
-        if (deleted.length === 0) { list.innerHTML = `<div class="no-data">Koш je prázdný</div>`; return; }
+        if (deleted.length === 0) { list.innerHTML = `<div class="no-data">Koš je prázdný</div>`; return; }
         list.innerHTML = deleted.map(item => `
             <div class="log-item" style="flex-direction: row; justify-content: space-between; align-items: center;">
                 <div><strong>Forma ${escapeHtml(item[0])}</strong> (${escapeHtml(item[2])}, ${escapeHtml(item[1])})</div>
@@ -3882,32 +4045,36 @@
 
             let navodkaBlockHtml = `<span style="font-size: 0.8rem; color: var(--text-muted);">Není přiložena</span>`;
             if (navodkaUrl) {
-                const isPdf = navodkaUrl.toLowerCase().endsWith('.pdf');
-                if (isPdf) {
-                    navodkaBlockHtml = `
-                        <button type="button" class="navodka-btn-link" onclick="openPdfModal('${escapeHtml(navodkaUrl)}', '${escapeHtml(num)}')">
-                            📄 Otevřít Návodku (PDF)
-                        </button>
-                    `;
-                } else {
-                    navodkaBlockHtml = `
-                        <div class="accordion-thumb-wrapper" style="border-color: #2563eb;">
-                            <img src="${escapeHtml(navodkaUrl)}" class="accordion-thumb" onclick="openPhotoModal('${escapeHtml(navodkaUrl)}', 'Návodka ${escapeHtml(num)}')">
-                        </div>
-                    `;
+                let navodky = [];
+                try {
+                    const parsed = navodkaUrl.startsWith("[") ? JSON.parse(navodkaUrl) : [{url: navodkaUrl, title: "Návodka 1"}];
+                    navodky = Array.isArray(parsed) ? parsed : [{url: navodkaUrl, title: "Návodka 1"}];
+                } catch(e) {
+                    navodky = [{url: navodkaUrl, title: "Návodka 1"}];
                 }
+
+                navodkaBlockHtml = `<div class="navodka-container-horizontal">` + navodky.map((itemObj, index) => {
+                    const url = typeof itemObj === 'string' ? itemObj : itemObj.url;
+                    const title = typeof itemObj === 'string' ? `Návodka ${index + 1}` : (itemObj.title || `Návodka ${index + 1}`);
+                    return `
+                        <a href="javascript:void(0)" class="navodka-badge-item" onclick="openPdfModal('${escapeHtml(url)}', '${escapeHtml(num)} — ${escapeHtml(title)}')">
+                            <svg class="navodka-file-icon" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+                            <span>${escapeHtml(title)}</span>
+                        </a>
+                    `;
+                }).join('') + `</div>`;
             }
 
             return `
                 <div class="accordion-top-bar">
                     <div class="accordion-header-title">Detail formy</div>
-                    <button class="accordion-edit-trigger-btn" onclick="toggleAccordionEditMode('${escapeHtml(num)}')">${ACCORDION_EDIT_ICON_HTML} Upravit</button>
+                    ${isSuperUser ? `<button class="accordion-edit-trigger-btn" onclick="toggleAccordionEditMode('${escapeHtml(num)}')">${ACCORDION_EDIT_ICON_HTML} Upravit</button>` : ''}
                 </div>
                 <div style="font-size: 0.9rem; text-transform: capitalize;"><strong>Název výroby:</strong> ${productName ? escapeHtml(productName) : '<span style="color:var(--text-muted)">Nezadán</span>'}</div>
                 
                 <div>
-                    <div class="accordion-header-title" style="margin-bottom: 0.3rem; color:#2563eb;">Návodka k výrobě:</div>
-                    <div class="navodka-card-box">${navodkaBlockHtml}</div>
+                    <div class="accordion-header-title" style="color: #3b82f6; margin-bottom: 0.3rem;">Návodka k výrobě:</div>
+                    ${navodkaBlockHtml}
                 </div>
 
                 <div>
@@ -3930,42 +4097,58 @@
                 <label for="acc-file-${escapeHtml(num)}" class="photo-upload-card"><span style="font-size:24px; color:var(--text-muted)">+</span><span style="font-size:0.65rem; color:var(--text-muted)">Přidat foto</span></label>
             ` : '';
 
-            let navodkaEditContent = '';
-            if (temporaryNavodkaMap[num]) {
-                const tempFile = temporaryNavodkaMap[num];
-                navodkaEditContent = `
-                    <div class="navodka-card-box">
-                        <span style="font-size:0.8rem; font-weight:600;">${escapeHtml(tempFile.name)} (Nová)</span>
-                        <button type="button" class="btn-danger" style="padding:0.25rem 0.5rem; font-size:0.75rem;" onclick="removeTempNavodka('${escapeHtml(num)}')">✕</button>
-                    </div>
-                `;
-            } else if (navodkaUrl) {
-                const isPdf = navodkaUrl.toLowerCase().endsWith('.pdf');
-                navodkaEditContent = `
-                    <div class="navodka-card-box">
-                        <span style="font-size:0.8rem; font-weight:600;">${isPdf ? '📄 Soubor Návodky (PDF)' : '🖼️ Obrázek Návodky'}</span>
-                        <button type="button" class="btn-danger" style="padding:0.25rem 0.5rem; font-size:0.75rem;" onclick="removeExistingNavodka('${escapeHtml(num)}')">Smazat</button>
-                    </div>
-                `;
-            } else {
-                navodkaEditContent = `
-                    <input type="file" id="navodka-file-${escapeHtml(num)}" accept="image/*,.pdf" class="file-upload-hidden" onchange="handleNavodkaFileSelect('${escapeHtml(num)}', this)">
-                    <label for="navodka-file-${escapeHtml(num)}" class="navodka-btn-link" style="cursor:pointer; background:#475569;">
-                        + Nahrát Návodku (PDF / Obrázek)
-                    </label>
-                `;
+            let currentNavodky = [];
+            if (navodkaUrl) {
+                try {
+                    const parsed = navodkaUrl.startsWith("[") ? JSON.parse(navodkaUrl) : [{url: navodkaUrl, title: "Návodka 1"}];
+                    currentNavodky = Array.isArray(parsed) ? parsed : [{url: navodkaUrl, title: "Návodka 1"}];
+                } catch(e) {
+                    currentNavodky = [{url: navodkaUrl, title: "Návodka 1"}];
+                }
             }
+
+            let existingNavodkyEditHtml = currentNavodky.map((itemObj, idx) => {
+                const title = typeof itemObj === 'string' ? `Návodka ${idx + 1}` : (itemObj.title || `Návodka ${idx + 1}`);
+                const url = typeof itemObj === 'string' ? itemObj : itemObj.url;
+                return `
+                    <div class="navodka-badge-item" style="border-color: #3b82f6;">
+                        <svg class="navodka-file-icon" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+                        <span onclick="openPdfModal('${escapeHtml(url)}', '${escapeHtml(num)} — ${escapeHtml(title)}')">${escapeHtml(title)}</span>
+                        ${isSuperUser ? `<button type="button" class="navodka-delete-cross" onclick="removeSpecificNavodka('${escapeHtml(num)}', ${idx})" title="Smazat návodku">✕</button>` : ''}
+                    </div>
+                `;
+            }).join('');
+
+            const pendingNavodky = temporaryNavodkaMap[num] || [];
+            let tempNavodkyEditHtml = pendingNavodky.map((file, idx) => `
+                <div class="navodka-badge-item" style="border-color: #22c55e;">
+                    <svg class="navodka-file-icon" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+                    <span style="color: #166534;">${escapeHtml(file.name)} (Nová)</span>
+                    <button type="button" class="navodka-delete-cross" onclick="removeTempNavodka('${escapeHtml(num)}', ${idx})" title="Zrušit">✕</button>
+                </div>
+            `).join('');
+
+            const navodkaUploadArea = isSuperUser ? `
+                <input type="file" id="navodka-file-${escapeHtml(num)}" accept="image/*,.pdf" multiple class="file-upload-hidden" onchange="handleNavodkaFileSelect('${escapeHtml(num)}', this)">
+                <label for="navodka-file-${escapeHtml(num)}" class="navodka-badge-item" style="cursor:pointer; background: #f8fafc; border-style: dashed; color: #3b82f6;">
+                    <span>+ Přidat návodku</span>
+                </label>
+            ` : '';
 
             return `
                 <div class="accordion-top-bar">
-                    <div class="accordion-header-title" style="color: #3b82f6; font-weight: bold;">Režim úprav</div>
+                    <div class="accordion-header-title" style="color: #3b82f6; font-weight: bold;">Režim úprav (Superuser)</div>
                     <button class="accordion-edit-trigger-btn" onclick="toggleAccordionEditMode('${escapeHtml(num)}')">✕ Zrušit</button>
                 </div>
                 <div><div class="accordion-header-title">Název výroby:</div><input type="text" id="acc-name-${escapeHtml(num)}" value="${escapeHtml(productName || '')}" style="width:100%; max-width:260px; padding:0.4rem; border-radius:6px; border:1px solid var(--border-color);" autocapitalization="sentences" autocapitalize="sentences"></div>
                 
                 <div>
-                    <div class="accordion-header-title" style="color:#2563eb;">Návodka k výrobě:</div>
-                    <div style="margin-top: 0.35rem;">${navodkaEditContent}</div>
+                    <div class="accordion-header-title" style="color: #3b82f6; margin-bottom: 0.3rem;">Návodka k výrobě:</div>
+                    <div class="navodka-container-horizontal">
+                        ${existingNavodkyEditHtml}
+                        ${tempNavodkyEditHtml}
+                        ${navodkaUploadArea}
+                    </div>
                 </div>
 
                 <div><div class="accordion-header-title">Fotografie formy:</div><div class="accordion-photo-box">${existingThumbs}${pendingThumbs}${uploadCard}</div></div>
