@@ -1271,7 +1271,7 @@
             padding: 0.75rem; font-size: 1rem; border: 1px solid var(--border-color); border-radius: 8px;
             background: var(--input-bg); color: var(--text-main); outline: none;
             text-transform: none;
-            transition: border-color 0.2s ease, box-shadow 0.2s ease;
+            transition: border-color 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
         }
         .form-group input:focus, .form-group select:focus, .form-group textarea:focus {
             border-color: #3b82f6;
@@ -1336,14 +1336,14 @@
             transition: border-color 0.2s ease;
         }
         .helios-accordion-header {
-            padding: 0.9rem 1.1rem;
+            padding: 0.8rem 1rem;
             background: var(--row-hover);
             display: flex;
             justify-content: space-between;
             align-items: center;
             cursor: pointer;
             font-weight: 600;
-            font-size: 0.9rem;
+            font-size: 0.88rem;
             color: var(--text-main);
             transition: background 0.2s ease;
         }
@@ -1353,11 +1353,11 @@
         .helios-accordion-header-left {
             display: flex;
             align-items: center;
-            gap: 0.6rem;
+            gap: 0.5rem;
         }
         .helios-accordion-header-left svg {
-            width: 20px;
-            height: 20px;
+            width: 18px;
+            height: 18px;
             stroke: var(--text-main);
             fill: none;
             stroke-width: 1.8;
@@ -1365,7 +1365,7 @@
         }
         
         .helios-accordion-arrow {
-            font-size: 0.8rem;
+            font-size: 0.75rem;
             color: var(--text-muted);
             transition: transform 0.25s ease;
         }
@@ -1387,30 +1387,27 @@
             opacity: 1;
             border-top-color: var(--border-color);
         }
+        
         .helios-accordion-anim-wrapper > div {
             min-height: 0;
-            max-height: 240px;
-            overflow-y: auto;
-            scrollbar-gutter: stable;
-            padding: 1.1rem;
+            overflow-y: visible;
+            max-height: none;
+            padding: 0.85rem 1rem;
             display: flex;
             flex-direction: column;
-            gap: 0.95rem;
+            gap: 0.65rem;
             -webkit-overflow-scrolling: touch;
-            scrollbar-width: thin;
         }
-        .helios-accordion-anim-wrapper > div::-webkit-scrollbar {
-            width: 6px;
-        }
-        .helios-accordion-anim-wrapper > div::-webkit-scrollbar-thumb {
-            background-color: #cbd5e1;
-            border-radius: 4px;
+        
+        .helios-accordion-anim-wrapper.scrollable-body > div {
+            overflow-y: visible;
+            max-height: none;
         }
 
         .helios-export-grid {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
-            gap: 0.6rem;
+            gap: 0.5rem;
         }
         @media (max-width: 500px) {
             .helios-export-grid {
@@ -1421,8 +1418,8 @@
             background: var(--card-bg);
             border: 1px solid var(--border-color);
             border-radius: 8px;
-            padding: 0.75rem 0.5rem;
-            font-size: 0.8rem;
+            padding: 0.55rem 0.4rem;
+            font-size: 0.78rem;
             font-weight: 600;
             color: var(--text-main);
             cursor: pointer;
@@ -1430,7 +1427,7 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            gap: 0.4rem;
+            gap: 0.25rem;
             box-shadow: 0 1px 2px rgba(0,0,0,0.04);
             transition: all 0.2s ease;
         }
@@ -1440,11 +1437,121 @@
             transform: translateY(-1px);
         }
         .helios-action-btn svg {
-            width: 22px;
-            height: 22px;
+            width: 18px;
+            height: 18px;
             stroke: var(--text-main);
             fill: none;
             stroke-width: 1.8;
+        }
+
+        .selectable-btn {
+            position: relative;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        .selectable-btn.selected {
+            border-color: #22c55e !important;
+            background-color: #f0fdf4 !important;
+            box-shadow: 0 0 0 2px rgba(34, 197, 94, 0.2);
+        }
+        .selectable-btn.selected::after {
+            content: '✓';
+            position: absolute;
+            top: 5px;
+            right: 6px;
+            background-color: #22c55e;
+            color: #ffffff;
+            font-size: 10px;
+            font-weight: bold;
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.15);
+        }
+
+        .email-list-scroll-box {
+            display: flex;
+            flex-direction: column;
+            gap: 0.35rem;
+            padding-right: 2px;
+        }
+
+        .email-input-container {
+            position: relative;
+            display: inline-flex;
+            align-items: center;
+            width: 100%;
+        }
+
+        .email-compact-input {
+            width: 100%;
+            padding: 0.28rem 0.6rem;
+            font-size: 0.85rem;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            background-color: #f1f5f9;
+            color: var(--text-muted);
+            outline: none;
+            transition: all 0.2s ease;
+            cursor: pointer;
+        }
+
+        .email-compact-input:not(:focus):not(:active) {
+            background-color: #f1f5f9 !important;
+            color: var(--text-muted) !important;
+            border-color: var(--border-color) !important;
+        }
+
+        .email-compact-input:focus {
+            background-color: var(--input-bg) !important;
+            color: var(--text-main) !important;
+            border-color: #3b82f6 !important;
+            box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.15);
+            padding-right: 3.8rem;
+        }
+
+        .email-inline-icons {
+            display: none;
+            position: absolute;
+            right: 6px;
+            align-items: center;
+            gap: 2px;
+            z-index: 5;
+        }
+
+        .email-input-container:focus-within .email-inline-icons {
+            display: flex;
+        }
+
+        .email-icon-btn {
+            background: none;
+            border: none;
+            width: 20px;
+            height: 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 11px;
+            font-weight: bold;
+            transition: background 0.15s ease, transform 0.1s ease;
+        }
+
+        .email-icon-btn:hover {
+            background-color: rgba(0, 0, 0, 0.08);
+            transform: scale(1.1);
+        }
+
+        .email-icon-check {
+            color: #16a34a;
+        }
+
+        .email-icon-cross {
+            color: #dc2626;
         }
     </style>
 </head>
@@ -1800,22 +1907,22 @@
             </h3>
             <button class="close-modal-btn" onclick="closeHeliosAdminModal()">✕</button>
         </div>
-        <div class="modal-body" style="gap: 0.9rem;">
+        <div class="modal-body" style="gap: 0.75rem;">
             
             <div class="helios-accordion-card" id="helCardManual">
                 <div class="helios-accordion-header" onclick="toggleHeliosAccordionSection('manual')">
                     <div class="helios-accordion-header-left">
-                        <svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+                        <img src="sql.png" alt="SQL" style="width: 18px; height: 18px; object-fit: contain;">
                         <span>Ruční vývoz dat do Heliosu</span>
                     </div>
                     <span class="helios-accordion-arrow">▼</span>
                 </div>
                 <div class="helios-accordion-anim-wrapper">
                     <div>
-                        <p style="font-size: 0.8rem; color: var(--text-muted); margin: 0;">Vyberte formát pro okamžité stažení souboru:</p>
+                        <p style="font-size: 0.78rem; color: var(--text-muted); margin: 0;">Vyberte formát pro okamžité stažení souboru:</p>
                         <div class="helios-export-grid">
                             <button class="helios-action-btn" onclick="exportHeliosSql()">
-                                <svg viewBox="0 0 24 24"><path d="M4 14a1 1 0 0 1-.78-1.63l9.9-9.9a1 1 0 0 1 1.41 0l5.36 5.36a1 1 0 0 1 0 1.41l-9.9 9.9A1 1 0 0 1 4 14z"></path><path d="M12 22h8a2 2 0 0 0 2-2v-4"></path></svg>
+                                <img src="sql.png" alt="SQL" style="width: 18px; height: 18px; object-fit: contain;">
                                 <span>SQL pro Helios</span>
                             </button>
                             <button class="helios-action-btn" onclick="exportHeliosCsv()">
@@ -1835,37 +1942,30 @@
                     </div>
                     <span class="helios-accordion-arrow">▼</span>
                 </div>
-                <div class="helios-accordion-anim-wrapper">
+                <div class="helios-accordion-anim-wrapper scrollable-body">
                     <div>
-                        <p style="font-size: 0.8rem; color: var(--text-muted); margin: 0;">Zvolte formát exportu pro e-mail:</p>
+                        <p style="font-size: 0.78rem; color: var(--text-muted); margin: 0;">Vyberte soubory k odeslání:</p>
                         
                         <div class="helios-export-grid">
-                            <button class="helios-action-btn" onclick="executeInstantEmailSend('sql')">
-                                <svg viewBox="0 0 24 24"><path d="M4 14a1 1 0 0 1-.78-1.63l9.9-9.9a1 1 0 0 1 1.41 0l5.36 5.36a1 1 0 0 1 0 1.41l-9.9 9.9A1 1 0 0 1 4 14z"></path><path d="M12 22h8a2 2 0 0 0 2-2v-4"></path></svg>
+                            <div class="helios-action-btn selectable-btn" id="instBtnSql" onclick="toggleExportButtonSelect(this, 'inst', 'sql')">
+                                <img src="sql.png" alt="SQL" style="width: 18px; height: 18px; object-fit: contain;">
                                 <span>SQL pro Helios</span>
-                            </button>
-                            <button class="helios-action-btn" onclick="executeInstantEmailSend('csv')">
+                            </div>
+                            <div class="helios-action-btn selectable-btn" id="instBtnCsv" onclick="toggleExportButtonSelect(this, 'inst', 'csv')">
                                 <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line></svg>
                                 <span>Export CSV</span>
-                            </button>
-                        </div>
-
-                        <div class="form-group" style="margin-top: 0.5rem; gap: 0.5rem;">
-                            <label style="display: flex; justify-content: space-between; align-items: center;">
-                                <span>E-mailové adresy (max 2):</span>
-                                <button type="button" id="addInstEmailSlotBtn" onclick="addInstEmailSlot()" style="background: none; border: none; color: #2563eb; font-size: 0.8rem; font-weight: 600; cursor: pointer; display: inline-flex; align-items: center; gap: 2px;">+ Přidat e-mail</button>
-                            </label>
-                            
-                            <div id="instEmailSlotsContainer" style="display: flex; flex-direction: column; gap: 0.4rem;">
-                                <div class="email-slot-row" style="display: flex; gap: 0.4rem; align-items: center;">
-                                    <input type="email" id="instEmailInput1" placeholder="test@firma.cz" autocomplete="off" style="flex: 1;">
-                                </div>
-                                <div class="email-slot-row" id="instEmailRow2" style="display: none; gap: 0.4rem; align-items: center;">
-                                    <input type="email" id="instEmailInput2" placeholder="vedouci@firma.cz" autocomplete="off" style="flex: 1;">
-                                    <button type="button" class="btn-danger" onclick="removeInstEmailSlot(2)" style="padding: 0.75rem 0.85rem; font-size: 0.85rem;" title="Smazat e-mail">✕</button>
-                                </div>
                             </div>
                         </div>
+
+                        <div class="form-group" style="gap: 0.3rem;">
+                            <label style="font-size: 0.78rem;">E-mailové adresy:</label>
+                            <div class="email-list-scroll-box" id="instEmailContainer"></div>
+                            <button type="button" id="instAddEmailBtn" class="btn-secondary" style="padding: 0.4rem; font-size: 0.78rem; margin-top: 0.2rem;" onclick="addEmailSlot('inst')">+ Přidat e-mail</button>
+                        </div>
+
+                        <button class="btn-primary" style="width: 100%; padding: 0.6rem; font-size: 0.85rem;" onclick="executeInstantEmailSendSelected()">
+                            Odeslat vybrané na e-mail
+                        </button>
                     </div>
                 </div>
             </div>
@@ -1878,60 +1978,70 @@
                     </div>
                     <span class="helios-accordion-arrow">▼</span>
                 </div>
-                <div class="helios-accordion-anim-wrapper">
+                <div class="helios-accordion-anim-wrapper scrollable-body">
                     <div>
-                        <p style="font-size: 0.8rem; color: var(--text-muted); margin: 0;">Zvolte formát a nastavte automatické odesílání:</p>
+                        <p style="font-size: 0.78rem; color: var(--text-muted); margin: 0;">Vyberte soubory pro automatické odesílání:</p>
                         
                         <div class="helios-export-grid">
-                            <button class="helios-action-btn" onclick="saveAutoEmailSettings('sql')">
-                                <svg viewBox="0 0 24 24"><path d="M4 14a1 1 0 0 1-.78-1.63l9.9-9.9a1 1 0 0 1 1.41 0l5.36 5.36a1 1 0 0 1 0 1.41l-9.9 9.9A1 1 0 0 1 4 14z"></path><path d="M12 22h8a2 2 0 0 0 2-2v-4"></path></svg>
-                                <span>SQL pro Helios (Auto)</span>
-                            </button>
-                            <button class="helios-action-btn" onclick="saveAutoEmailSettings('csv')">
+                            <div class="helios-action-btn selectable-btn" id="autoBtnSql" onclick="toggleExportButtonSelect(this, 'auto', 'sql')">
+                                <img src="sql.png" alt="SQL" style="width: 18px; height: 18px; object-fit: contain;">
+                                <span>SQL pro Helios</span>
+                            </div>
+                            <div class="helios-action-btn selectable-btn" id="autoBtnCsv" onclick="toggleExportButtonSelect(this, 'auto', 'csv')">
                                 <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line></svg>
-                                <span>Export CSV (Auto)</span>
-                            </button>
-                        </div>
-
-                        <div class="form-group" style="margin-top: 0.5rem; gap: 0.5rem;">
-                            <label style="display: flex; justify-content: space-between; align-items: center;">
-                                <span>E-mailové adresy (max 2):</span>
-                                <button type="button" id="addEmailSlotBtn" onclick="addEmailSlot()" style="background: none; border: none; color: #2563eb; font-size: 0.8rem; font-weight: 600; cursor: pointer; display: inline-flex; align-items: center; gap: 2px;">+ Přidat e-mail</button>
-                            </label>
-                            
-                            <div id="emailSlotsContainer" style="display: flex; flex-direction: column; gap: 0.4rem;">
-                                <div class="email-slot-row" style="display: flex; gap: 0.4rem; align-items: center;">
-                                    <input type="email" id="heliosEmailInput1" placeholder="planovac@firma.cz" autocomplete="off" style="flex: 1;">
-                                </div>
-                                <div class="email-slot-row" id="emailRow2" style="display: none; gap: 0.4rem; align-items: center;">
-                                    <input type="email" id="heliosEmailInput2" placeholder="vedoucí@firma.cz" autocomplete="off" style="flex: 1;">
-                                    <button type="button" class="btn-danger" onclick="removeEmailSlot(2)" style="padding: 0.75rem 0.85rem; font-size: 0.85rem;" title="Smazat e-mail">✕</button>
-                                </div>
+                                <span>Export CSV</span>
                             </div>
                         </div>
 
-                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.6rem;">
-                            <div class="form-group">
-                                <label>Frekvence:</label>
-                                <select id="heliosFrequencySelect" style="padding: 0.75rem; border: 1px solid var(--border-color); border-radius: 8px; background: var(--input-bg); font-size: 0.95rem;">
+                        <div class="form-group" style="gap: 0.3rem;">
+                            <label style="font-size: 0.78rem;">E-mailové adresy:</label>
+                            <div class="email-list-scroll-box" id="autoEmailContainer"></div>
+                            <button type="button" id="autoAddEmailBtn" class="btn-secondary" style="padding: 0.4rem; font-size: 0.78rem; margin-top: 0.2rem;" onclick="addEmailSlot('auto')">+ Přidat e-mail</button>
+                        </div>
+
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem;">
+                            <div class="form-group" style="gap: 0.2rem;">
+                                <label style="font-size: 0.75rem;">Frekvence:</label>
+                                <select id="heliosFrequencySelect" style="padding: 0.55rem; border: 1px solid var(--border-color); border-radius: 8px; background: var(--input-bg); font-size: 0.88rem;">
                                     <option value="daily">Den</option>
                                     <option value="weekly">Týden</option>
                                     <option value="monthly">Měsíc</option>
                                 </select>
                             </div>
-                            <div class="form-group">
-                                <label>Čas odesílání:</label>
-                                <select id="heliosTimeSelect" style="padding: 0.75rem; border: 1px solid var(--border-color); border-radius: 8px; background: var(--input-bg); font-size: 0.95rem;">
+                            <div class="form-group" style="gap: 0.2rem;">
+                                <label style="font-size: 0.75rem;">Čas odesílání:</label>
+                                <select id="heliosTimeSelect" style="padding: 0.55rem; border: 1px solid var(--border-color); border-radius: 8px; background: var(--input-bg); font-size: 0.88rem;">
+                                    <option value="00:00">00:00</option>
+                                    <option value="01:00">01:00</option>
+                                    <option value="02:00">02:00</option>
+                                    <option value="03:00">03:00</option>
+                                    <option value="04:00">04:00</option>
+                                    <option value="05:00">05:00</option>
                                     <option value="06:00">06:00 (Ráno)</option>
+                                    <option value="07:00">07:00</option>
                                     <option value="08:00" selected>08:00</option>
+                                    <option value="09:00">09:00</option>
                                     <option value="10:00">10:00</option>
+                                    <option value="11:00">11:00</option>
                                     <option value="12:00">12:00 (Poledne)</option>
+                                    <option value="13:00">13:00</option>
                                     <option value="14:00">14:00</option>
+                                    <option value="15:00">15:00</option>
+                                    <option value="16:00">16:00</option>
+                                    <option value="17:00">17:00</option>
                                     <option value="18:00">18:00 (Večer)</option>
+                                    <option value="19:00">19:00</option>
+                                    <option value="20:00">20:00</option>
+                                    <option value="21:00">21:00</option>
                                     <option value="22:00">22:00 (Noc)</option>
+                                    <option value="23:00">23:00</option>
                                 </select>
                             </div>
                         </div>
+
+                        <button class="btn-primary" style="width: 100%; padding: 0.6rem; font-size: 0.85rem;" onclick="saveAutoEmailSettingsSelected()">
+                            Uložit nastavení automatického odesílání
+                        </button>
                     </div>
                 </div>
             </div>
@@ -1949,7 +2059,7 @@
     const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbz2Zp-Me-bMX_2VY6Be2Mt0Z5HguRLwnjuYz9fNh1nXjbAXIOVXMIlcTNjs1Z72qiuM9Q/exec";
     const MASTER_PASSWORD = "adisadis";
     const SUPER_ADMIN_PASSWORD = "adisadmin";
-    const KEYBOARD_BLUR_DELAY = 800;
+    const KEYBOARD_BLUR_DELAY = 1500; // Увеличено до 1.5 секунд
 
     function triggerHapticFeedback(pattern = [15]) {
         if ('vibrate' in navigator) {
@@ -2088,6 +2198,151 @@
     let realtimeDebounceTimer = null;
     let searchDebounceTimer = null;
     let isTabTransitioning = false;
+
+    let instantSelectedFormats = { sql: false, csv: false };
+    let autoSelectedFormats = { sql: false, csv: false };
+
+    function toggleExportButtonSelect(element, mode, format) {
+        triggerHapticFeedback([12]);
+        element.classList.toggle('selected');
+        const isSelected = element.classList.contains('selected');
+
+        if (mode === 'inst') {
+            instantSelectedFormats[format] = isSelected;
+        } else if (mode === 'auto') {
+            autoSelectedFormats[format] = isSelected;
+        }
+    }
+
+    const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+    function renderEmailSlots(mode, savedEmails = []) {
+        const container = document.getElementById(`${mode}EmailContainer`);
+        const addBtn = document.getElementById(`${mode}AddEmailBtn`);
+        if (!container) return;
+
+        if (savedEmails.length === 0) savedEmails = [""];
+
+        container.innerHTML = savedEmails.map((email, idx) => {
+            return `
+                <div class="email-input-container" id="${mode}Slot_${idx}">
+                    <input type="email" id="${mode}EmailInput_${idx}" class="email-compact-input" value="${escapeHtml(email)}" placeholder="${idx === 0 ? 'test@firma.cz' : 'dalsi@firma.cz'}" autocomplete="off">
+                    <div class="email-inline-icons">
+                        <button type="button" class="email-icon-btn email-icon-check" onclick="confirmEmailSlot('${mode}', ${idx})" title="Potvrdit e-mail">✓</button>
+                        <button type="button" class="email-icon-btn email-icon-cross" onclick="removeEmailSlot('${mode}', ${idx})" title="Smazat e-mail">✕</button>
+                    </div>
+                </div>
+            `;
+        }).join('');
+
+        if (addBtn) {
+            addBtn.style.display = savedEmails.length >= 4 ? 'none' : 'inline-block';
+        }
+    }
+
+    function confirmEmailSlot(mode, idx) {
+        triggerHapticFeedback([12]);
+        const input = document.getElementById(`${mode}EmailInput_${idx}`);
+        if (input) {
+            const val = input.value.trim();
+            if (!val) {
+                alert("Zadejte e-mailovou adresu!");
+                return;
+            }
+            if (!EMAIL_REGEX.test(val)) {
+                alert("Neplatný formát e-mailové adresy! Zadejte platný e-mail (např. jmeno@firma.cz).");
+                return;
+            }
+            saveEmailsToLocalStorage(mode);
+            showToast("E-mail byl uložen");
+            input.blur();
+        }
+    }
+
+    function addEmailSlot(mode) {
+        triggerHapticFeedback([12]);
+        const container = document.getElementById(`${mode}EmailContainer`);
+        if (!container) return;
+        const currentInputs = container.querySelectorAll('input[type="email"]');
+        let currentEmails = Array.from(currentInputs).map(inp => inp.value.trim());
+        currentEmails.push("");
+        renderEmailSlots(mode, currentEmails);
+        
+        const newIdx = currentEmails.length - 1;
+        const newInput = document.getElementById(`${mode}EmailInput_${newIdx}`);
+        if (newInput) {
+            newInput.focus();
+            container.scrollTop = container.scrollHeight;
+        }
+    }
+
+    function removeEmailSlot(mode, idx) {
+        triggerHapticFeedback([12]);
+        const container = document.getElementById(`${mode}EmailContainer`);
+        if (!container) return;
+        const currentInputs = container.querySelectorAll('input[type="email"]');
+        let currentEmails = Array.from(currentInputs).map(inp => inp.value.trim());
+        currentEmails.splice(idx, 1);
+        if (currentEmails.length === 0) currentEmails = [""];
+        renderEmailSlots(mode, currentEmails);
+        saveEmailsToLocalStorage(mode);
+        showToast("E-mail byl smazán");
+    }
+
+    function saveEmailsToLocalStorage(mode) {
+        const emails = getEmailsFromContainer(mode);
+        if (mode === 'inst') {
+            localStorage.setItem('adis_inst_emails', JSON.stringify(emails));
+        } else if (mode === 'auto') {
+            localStorage.setItem('adis_auto_emails', JSON.stringify(emails));
+        }
+    }
+
+    function getEmailsFromContainer(mode) {
+        const container = document.getElementById(`${mode}EmailContainer`);
+        if (!container) return [];
+        const inputs = container.querySelectorAll('input[type="email"]');
+        let emails = [];
+        inputs.forEach(inp => {
+            const val = inp.value.trim();
+            if (val && EMAIL_REGEX.test(val)) emails.push(val);
+        });
+        return emails;
+    }
+
+    function loadSavedEmailSettings() {
+        let instEmails = [];
+        try {
+            const savedInst = localStorage.getItem('adis_inst_emails');
+            if (savedInst) instEmails = JSON.parse(savedInst);
+        } catch(e) {}
+        if (instEmails.length === 0) {
+            const legacy1 = localStorage.getItem('adis_inst_email_1');
+            const legacy2 = localStorage.getItem('adis_inst_email_2');
+            if (legacy1) instEmails.push(legacy1);
+            if (legacy2) instEmails.push(legacy2);
+        }
+        renderEmailSlots('inst', instEmails);
+
+        let autoEmails = [];
+        try {
+            const savedAuto = localStorage.getItem('adis_auto_emails');
+            if (savedAuto) autoEmails = JSON.parse(savedAuto);
+        } catch(e) {}
+        if (autoEmails.length === 0) {
+            const legacy1 = localStorage.getItem('adis_auto_email_1');
+            const legacy2 = localStorage.getItem('adis_auto_email_2');
+            if (legacy1) autoEmails.push(legacy1);
+            if (legacy2) autoEmails.push(legacy2);
+        }
+        renderEmailSlots('auto', autoEmails);
+
+        const freq = localStorage.getItem('adis_auto_freq') || 'daily';
+        const time = localStorage.getItem('adis_auto_time') || '08:00';
+
+        if (document.getElementById('heliosFrequencySelect')) document.getElementById('heliosFrequencySelect').value = freq;
+        if (document.getElementById('heliosTimeSelect')) document.getElementById('heliosTimeSelect').value = time;
+    }
 
     const PALETTE_COLORS = [
         "#ffffff", "#f8fafc", "#cbd5e1", "#64748b", "#1e293b", "#0f172a",
@@ -2429,57 +2684,12 @@
         }
     }
 
-    function addEmailSlot() {
-        triggerHapticFeedback([12]);
-        const row2 = document.getElementById('emailRow2');
-        const addBtn = document.getElementById('addEmailSlotBtn');
-        if (row2) {
-            row2.style.display = 'flex';
-            if (addBtn) addBtn.style.display = 'none';
-            document.getElementById('heliosEmailInput2').focus();
-        }
-    }
-
-    function removeEmailSlot(slotNumber) {
-        triggerHapticFeedback([12]);
-        if (slotNumber === 2) {
-            const input2 = document.getElementById('heliosEmailInput2');
-            const row2 = document.getElementById('emailRow2');
-            const addBtn = document.getElementById('addEmailSlotBtn');
-            if (input2) input2.value = '';
-            if (row2) row2.style.display = 'none';
-            if (addBtn) addBtn.style.display = 'inline-flex';
-        }
-    }
-
-    function addInstEmailSlot() {
-        triggerHapticFeedback([12]);
-        const row2 = document.getElementById('instEmailRow2');
-        const addBtn = document.getElementById('addInstEmailSlotBtn');
-        if (row2) {
-            row2.style.display = 'flex';
-            if (addBtn) addBtn.style.display = 'none';
-            document.getElementById('instEmailInput2').focus();
-        }
-    }
-
-    function removeInstEmailSlot(slotNumber) {
-        triggerHapticFeedback([12]);
-        if (slotNumber === 2) {
-            const input2 = document.getElementById('instEmailInput2');
-            const row2 = document.getElementById('instEmailRow2');
-            const addBtn = document.getElementById('addInstEmailSlotBtn');
-            if (input2) input2.value = '';
-            if (row2) row2.style.display = 'none';
-            if (addBtn) addBtn.style.display = 'inline-flex';
-        }
-    }
-
     function openHeliosAdminModal() {
         if (!isSuperUser) {
             alert("Nemáte oprávnění superuživatele!");
             return;
         }
+        loadSavedEmailSettings();
         showModalAnimated('heliosAdminModal');
     }
 
@@ -2487,7 +2697,6 @@
         hideModalAnimated('heliosAdminModal');
     }
 
-    // ИСПРАВЛЕННАЯ ФУНКЦИЯ ЭКСПОРТА SQL (С ЗАЩИТОЙ ОТ NULL)
     function exportHeliosSql() {
         triggerHapticFeedback([18]);
         const activeMolds = rawDatabase.filter(i => !i[4]);
@@ -2509,7 +2718,6 @@
             `    PRIMARY KEY (FormID, Position)`,
             `);`,
             ``,
-            `-- Bezpečné vymazání starých dat před vložením nových`,
             `DELETE FROM Adis_Form_Integration;`,
             ``
         ];
@@ -2524,11 +2732,9 @@
             if (insertedPairs.has(pairKey)) return;
             insertedPairs.add(pairKey);
 
-            // ЗАЩИТА ОТ NULL: проверка комментария
             const comms = allComments.filter(c => String(c.mold_id) === formId);
             const lastC = (comms.length > 0 && comms[0].comment) ? String(comms[0].comment).replace(/'/g, "''") : "";
             
-            // ЗАЩИТА ОТ NULL: принудительное приведение к строке для фото
             const rawPhotos = Array.isArray(i[6]) ? i[6].join(", ") : String(i[6] || "");
             const cleanPhotos = rawPhotos.replace(/'/g, "''");
             
@@ -2577,30 +2783,23 @@
         showToast(`Soubor ${filename} stažen`);
     }
 
-    async function executeInstantEmailSend(formatType) {
-        const email1 = document.getElementById('instEmailInput1').value.trim();
-        const email2 = document.getElementById('instEmailInput2').value.trim();
-        const row2Visible = document.getElementById('instEmailRow2').style.display !== 'none';
-        
-        let emails = [];
-        if (email1) emails.push(email1);
-        if (row2Visible && email2) emails.push(email2);
+    async function executeInstantEmailSendSelected() {
+        let emails = getEmailsFromContainer('inst');
 
         if (emails.length === 0) {
-            alert("Zadejte alespoň jednu e-mailovou adresu!");
+            alert("Zadejte alespoň jednu platnou e-mailovou adresu!");
             return;
         }
 
-        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-        for (let em of emails) {
-            if (!emailRegex.test(em)) {
-                alert(`Neplatný formát e-mailové adresy: ${em}`);
-                return;
-            }
+        if (!instantSelectedFormats.sql && !instantSelectedFormats.csv) {
+            alert("Vyberte alespoň jeden formát souboru (SQL nebo CSV)! Klikněte na tlačítka výše.");
+            return;
         }
 
+        localStorage.setItem('adis_inst_emails', JSON.stringify(emails));
+
         triggerHapticFeedback([18]);
-        showToast(`Odesílání dat (${formatType.toUpperCase()}) na e-mail...`);
+        showToast(`Odesílání vybraných dat na e-mail...`);
 
         const activeMolds = rawDatabase.filter(i => !i[4]);
         const nowStr = new Date().toLocaleString('cs-CZ');
@@ -2622,7 +2821,7 @@
 
         const payload = {
             emails: emails,
-            format: formatType,
+            formats: instantSelectedFormats,
             molds: moldsPayload
         };
 
@@ -2641,30 +2840,28 @@
         }
     }
 
-    function saveAutoEmailSettings(formatType) {
-        const email1 = document.getElementById('heliosEmailInput1').value.trim();
-        const email2 = document.getElementById('heliosEmailInput2').value.trim();
-        const row2Visible = document.getElementById('emailRow2').style.display !== 'none';
-        
-        let emails = [];
-        if (email1) emails.push(email1);
-        if (row2Visible && email2) emails.push(email2);
+    function saveAutoEmailSettingsSelected() {
+        let emails = getEmailsFromContainer('auto');
+        const freq = document.getElementById('heliosFrequencySelect').value;
+        const time = document.getElementById('heliosTimeSelect').value;
 
         if (emails.length === 0) {
-            alert("Zadejte alespoň jednu e-mailovou adresu!");
+            alert("Zadejte alespoň jednu platnou e-mailovou adresu!");
             return;
         }
 
-        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-        for (let em of emails) {
-            if (!emailRegex.test(em)) {
-                alert(`Neplatný formát e-mailové adresy: ${em}`);
-                return;
-            }
+        if (!autoSelectedFormats.sql && !autoSelectedFormats.csv) {
+            alert("Vyberte alespoň jeden formát souboru pro automatické odesílání! Klikněte na tlačítka výše.");
+            return;
         }
 
+        localStorage.setItem('adis_auto_emails', JSON.stringify(emails));
+        localStorage.setItem('adis_auto_freq', freq);
+        localStorage.setItem('adis_auto_time', time);
+        localStorage.setItem('adis_auto_formats', JSON.stringify(autoSelectedFormats));
+
         triggerHapticFeedback([18]);
-        showToast(`Automatické odesílání (${formatType.toUpperCase()}) uloženo pro ${emails.length} e-mail(ů).`);
+        showToast(`Automatické odesílání úspěšně uloženo!`);
         closeHeliosAdminModal();
     }
 
