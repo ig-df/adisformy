@@ -2329,15 +2329,12 @@
         showToast("E-mail byl smazán");
     }
 
-    /* ОБНОВЛЕННАЯ ФУНКЦИЯ: Сохраняет и локально, и отправляет в Supabase */
     async function saveEmailsToLocalStorage(mode) {
         const emails = getEmailsFromContainer(mode);
         const key = mode === 'inst' ? 'adis_inst_emails' : 'adis_auto_emails';
         
-        // 1. Сохраняем локально
         localStorage.setItem(key, JSON.stringify(emails));
         
-        // 2. Отправляем в базу Supabase для полнейшей синхронизации
         try {
             await supabaseClient
                 .from('app_settings')
@@ -2780,6 +2777,7 @@
         hideModalAnimated('heliosAdminModal');
     }
 
+    /* ИСПРАВЛЕННАЯ ФУНКЦИЯ ЭКСПОРТА SQL ДЛЯ HELIOS */
     function exportHeliosSql() {
         triggerHapticFeedback([18]);
         const activeMolds = rawDatabase.filter(i => !i[4]);
@@ -2818,8 +2816,22 @@
             const comms = allComments.filter(c => String(c.mold_id) === formId);
             const lastC = (comms.length > 0 && comms[0].comment) ? String(comms[0].comment).replace(/'/g, "''") : "";
             
-            const rawPhotos = Array.isArray(i[6]) ? i[6].join(", ") : String(i[6] || "");
-            const cleanPhotos = rawPhotos.replace(/'/g, "''");
+            // 1. Собираем фото самой формы
+            let allPhotoUrls = Array.isArray(i[6]) ? [...i[6]] : (i[6] ? [String(i[6])] : []);
+
+            // 2. Добавляем фото из комментариев/проблем, если они есть
+            comms.forEach(c => {
+                if (c.photo_urls) {
+                    let cPhotos = Array.isArray(c.photo_urls) ? c.photo_urls : [c.photo_urls];
+                    cPhotos.forEach(pUrl => {
+                        if (pUrl && !allPhotoUrls.includes(pUrl)) {
+                            allPhotoUrls.push(pUrl);
+                        }
+                    });
+                }
+            });
+
+            const cleanPhotos = allPhotoUrls.join(", ").replace(/'/g, "''");
             
             const cleanId = formId.replace(/'/g, "''").substring(0, 50);
             const cleanProd = String(i[5] || '').replace(/'/g, "''").substring(0, 255);
@@ -2827,8 +2839,9 @@
             const cleanPos = position.replace(/'/g, "''").substring(0, 100);
             const cleanStatus = String(i[3] || '').replace(/'/g, "''").substring(0, 100);
 
+            // Префикс N'...' для юникода и корректного сохранения чешских букв в MS SQL
             sqlLines.push(`INSERT INTO Adis_Form_Integration (FormID, ProductName, Customer, Position, Status, LastComment, PhotoLink, UpdatedAt)`);
-            sqlLines.push(`VALUES ('${cleanId}', '${cleanProd}', '${cleanCust}', '${cleanPos}', '${cleanStatus}', '${lastC}', '${cleanPhotos}', GETDATE());`);
+            sqlLines.push(`VALUES (N'${cleanId}', N'${cleanProd}', N'${cleanCust}', N'${cleanPos}', N'${cleanStatus}', N'${lastC}', N'${cleanPhotos}', GETDATE());`);
         });
 
         sqlLines.push(``);
