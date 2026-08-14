@@ -1265,6 +1265,13 @@
             -webkit-overflow-scrolling: touch;
         }
 
+        #heliosAdminModal .modal-body {
+            padding-bottom: 2rem !important;
+            max-height: calc(85vh - 110px) !important;
+            overflow-y: auto !important;
+            -webkit-overflow-scrolling: touch !important;
+        }
+
         .form-group { display: flex; flex-direction: column; gap: 0.35rem; position: relative; }
         .form-group label { font-size: 0.85rem; color: var(--text-muted); }
         .form-group input, .form-group select, .form-group textarea {
@@ -1390,58 +1397,62 @@
         
         .helios-accordion-anim-wrapper > div {
             min-height: 0;
-            overflow-y: visible;
-            max-height: none;
             padding: 0.85rem 1rem;
             display: flex;
             flex-direction: column;
             gap: 0.65rem;
             -webkit-overflow-scrolling: touch;
         }
-        
-        .helios-accordion-anim-wrapper.scrollable-body > div {
-            overflow-y: visible;
-            max-height: none;
-        }
 
-        .helios-export-grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 0.5rem;
-        }
-        @media (max-width: 500px) {
-            .helios-export-grid {
-                grid-template-columns: 1fr;
+        /* Исправление обрезания кнопки на мобильных устройствах */
+        @media (max-width: 600px) {
+            .helios-accordion-card.open .helios-accordion-anim-wrapper > div {
+                max-height: 55vh;
+                overflow-y: auto !important;
+                padding-bottom: 1.2rem !important;
             }
         }
+
+        /* Кнопки экспорта всегда строго в 2 колонки рядом */
+        .helios-export-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr !important;
+            gap: 0.5rem;
+            margin-bottom: 0.4rem;
+        }
+
+        /* Компактные аккуратные плашки в один ряд */
         .helios-action-btn {
             background: var(--card-bg);
             border: 1px solid var(--border-color);
             border-radius: 8px;
-            padding: 0.55rem 0.4rem;
+            padding: 0.35rem 0.5rem;
             font-size: 0.78rem;
             font-weight: 600;
             color: var(--text-main);
             cursor: pointer;
             text-align: center;
             display: flex;
-            flex-direction: column;
+            flex-direction: row !important;
             align-items: center;
-            gap: 0.25rem;
+            justify-content: center;
+            gap: 0.4rem;
+            height: 38px;
             box-shadow: 0 1px 2px rgba(0,0,0,0.04);
             transition: all 0.2s ease;
         }
+
         .helios-action-btn:hover {
             background-color: var(--row-hover);
             border-color: var(--text-muted);
             transform: translateY(-1px);
         }
+
+        .helios-action-btn img, 
         .helios-action-btn svg {
             width: 18px;
             height: 18px;
-            stroke: var(--text-main);
-            fill: none;
-            stroke-width: 1.8;
+            flex-shrink: 0;
         }
 
         .selectable-btn {
@@ -1552,6 +1563,24 @@
 
         .email-icon-cross {
             color: #dc2626;
+        }
+
+        /* Синяя ссылка для добавления email над полем ввода */
+        .add-email-link {
+            font-size: 0.78rem;
+            font-weight: 600;
+            color: #2563eb;
+            cursor: pointer;
+            background: none;
+            border: none;
+            padding: 0;
+            transition: opacity 0.2s ease;
+            user-select: none;
+        }
+
+        .add-email-link:hover {
+            opacity: 0.8;
+            text-decoration: underline;
         }
     </style>
 </head>
@@ -1942,7 +1971,7 @@
                     </div>
                     <span class="helios-accordion-arrow">▼</span>
                 </div>
-                <div class="helios-accordion-anim-wrapper scrollable-body">
+                <div class="helios-accordion-anim-wrapper">
                     <div>
                         <p style="font-size: 0.78rem; color: var(--text-muted); margin: 0;">Vyberte soubory k odeslání:</p>
                         
@@ -1958,9 +1987,11 @@
                         </div>
 
                         <div class="form-group" style="gap: 0.3rem;">
-                            <label style="font-size: 0.78rem;">E-mailové adresy:</label>
+                            <div style="display: flex; justify-content: space-between; align-items: center;">
+                                <label style="font-size: 0.78rem;">E-mailové adresy:</label>
+                                <button type="button" id="instAddEmailBtn" class="add-email-link" onclick="addEmailSlot('inst')">+ Přidat e-mail</button>
+                            </div>
                             <div class="email-list-scroll-box" id="instEmailContainer"></div>
-                            <button type="button" id="instAddEmailBtn" class="btn-secondary" style="padding: 0.4rem; font-size: 0.78rem; margin-top: 0.2rem;" onclick="addEmailSlot('inst')">+ Přidat e-mail</button>
                         </div>
 
                         <button class="btn-primary" style="width: 100%; padding: 0.6rem; font-size: 0.85rem;" onclick="executeInstantEmailSendSelected()">
@@ -1978,7 +2009,7 @@
                     </div>
                     <span class="helios-accordion-arrow">▼</span>
                 </div>
-                <div class="helios-accordion-anim-wrapper scrollable-body">
+                <div class="helios-accordion-anim-wrapper">
                     <div>
                         <p style="font-size: 0.78rem; color: var(--text-muted); margin: 0;">Vyberte soubory pro automatické odesílání:</p>
                         
@@ -1994,9 +2025,11 @@
                         </div>
 
                         <div class="form-group" style="gap: 0.3rem;">
-                            <label style="font-size: 0.78rem;">E-mailové adresy:</label>
+                            <div style="display: flex; justify-content: space-between; align-items: center;">
+                                <label style="font-size: 0.78rem;">E-mailové adresy:</label>
+                                <button type="button" id="autoAddEmailBtn" class="add-email-link" onclick="addEmailSlot('auto')">+ Přidat e-mail</button>
+                            </div>
                             <div class="email-list-scroll-box" id="autoEmailContainer"></div>
-                            <button type="button" id="autoAddEmailBtn" class="btn-secondary" style="padding: 0.4rem; font-size: 0.78rem; margin-top: 0.2rem;" onclick="addEmailSlot('auto')">+ Přidat e-mail</button>
                         </div>
 
                         <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem;">
@@ -2067,7 +2100,6 @@
         }
     }
 
-    // Вспомогательная функция для очистки имен файлов (удаление диакритики, пробелов и спецсимволов)
     function sanitizeFileName(fileName) {
         const normalized = fileName.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
         return normalized
@@ -2297,12 +2329,21 @@
         showToast("E-mail byl smazán");
     }
 
-    function saveEmailsToLocalStorage(mode) {
+    /* ОБНОВЛЕННАЯ ФУНКЦИЯ: Сохраняет и локально, и отправляет в Supabase */
+    async function saveEmailsToLocalStorage(mode) {
         const emails = getEmailsFromContainer(mode);
-        if (mode === 'inst') {
-            localStorage.setItem('adis_inst_emails', JSON.stringify(emails));
-        } else if (mode === 'auto') {
-            localStorage.setItem('adis_auto_emails', JSON.stringify(emails));
+        const key = mode === 'inst' ? 'adis_inst_emails' : 'adis_auto_emails';
+        
+        // 1. Сохраняем локально
+        localStorage.setItem(key, JSON.stringify(emails));
+        
+        // 2. Отправляем в базу Supabase для полнейшей синхронизации
+        try {
+            await supabaseClient
+                .from('app_settings')
+                .upsert([{ key: key, value: JSON.stringify(emails) }], { onConflict: 'key' });
+        } catch (err) {
+            console.error("Chyba při ukládání e-mailů do Supabase:", err);
         }
     }
 
@@ -2318,18 +2359,41 @@
         return emails;
     }
 
-    function loadSavedEmailSettings() {
+    async function loadSavedEmailSettings() {
+        try {
+            const { data } = await supabaseClient
+                .from('app_settings')
+                .select('*');
+            
+            if (data && data.length > 0) {
+                const settingsMap = {};
+                data.forEach(row => { settingsMap[row.key] = row.value; });
+
+                if (settingsMap['adis_inst_emails']) {
+                    try { localStorage.setItem('adis_inst_emails', settingsMap['adis_inst_emails']); } catch(e){}
+                }
+                if (settingsMap['adis_auto_emails']) {
+                    try { localStorage.setItem('adis_auto_emails', settingsMap['adis_auto_emails']); } catch(e){}
+                }
+                if (settingsMap['adis_auto_freq']) {
+                    try { localStorage.setItem('adis_auto_freq', settingsMap['adis_auto_freq']); } catch(e){}
+                }
+                if (settingsMap['adis_auto_time']) {
+                    try { localStorage.setItem('adis_auto_time', settingsMap['adis_auto_time']); } catch(e){}
+                }
+                if (settingsMap['adis_auto_formats']) {
+                    try { localStorage.setItem('adis_auto_formats', settingsMap['adis_auto_formats']); } catch(e){}
+                }
+            }
+        } catch (e) {
+            console.error("Error loading settings from Supabase:", e);
+        }
+
         let instEmails = [];
         try {
             const savedInst = localStorage.getItem('adis_inst_emails');
             if (savedInst) instEmails = JSON.parse(savedInst);
         } catch(e) {}
-        if (instEmails.length === 0) {
-            const legacy1 = localStorage.getItem('adis_inst_email_1');
-            const legacy2 = localStorage.getItem('adis_inst_email_2');
-            if (legacy1) instEmails.push(legacy1);
-            if (legacy2) instEmails.push(legacy2);
-        }
         renderEmailSlots('inst', instEmails);
 
         let autoEmails = [];
@@ -2337,12 +2401,6 @@
             const savedAuto = localStorage.getItem('adis_auto_emails');
             if (savedAuto) autoEmails = JSON.parse(savedAuto);
         } catch(e) {}
-        if (autoEmails.length === 0) {
-            const legacy1 = localStorage.getItem('adis_auto_email_1');
-            const legacy2 = localStorage.getItem('adis_auto_email_2');
-            if (legacy1) autoEmails.push(legacy1);
-            if (legacy2) autoEmails.push(legacy2);
-        }
         renderEmailSlots('auto', autoEmails);
 
         const freq = localStorage.getItem('adis_auto_freq') || 'daily';
@@ -2697,16 +2755,24 @@
         } else if (type === 'instant') {
             cardInstant.classList.toggle('open');
         } else if (type === 'auto') {
-            cardAuto.classList.toggle('open');
+            const isOpen = cardAuto.classList.toggle('open');
+            if (isOpen && window.innerWidth <= 600) {
+                setTimeout(() => {
+                    const autoContainer = document.querySelector('#helCardAuto .helios-accordion-anim-wrapper > div');
+                    if (autoContainer) {
+                        autoContainer.scrollTo({ top: autoContainer.scrollHeight, behavior: 'smooth' });
+                    }
+                }, 300);
+            }
         }
     }
 
-    function openHeliosAdminModal() {
+    async function openHeliosAdminModal() {
         if (!isSuperUser) {
             alert("Nemáte oprávnění superuživatele!");
             return;
         }
-        loadSavedEmailSettings();
+        await loadSavedEmailSettings();
         showModalAnimated('heliosAdminModal');
     }
 
@@ -2813,7 +2879,7 @@
             return;
         }
 
-        localStorage.setItem('adis_inst_emails', JSON.stringify(emails));
+        saveEmailsToLocalStorage('inst');
 
         triggerHapticFeedback([18]);
         showToast(`Odesílání vybraných dat na e-mail...`);
@@ -2873,13 +2939,28 @@
             return;
         }
 
-        localStorage.setItem('adis_auto_emails', JSON.stringify(emails));
+        saveEmailsToLocalStorage('auto');
         localStorage.setItem('adis_auto_freq', freq);
         localStorage.setItem('adis_auto_time', time);
         localStorage.setItem('adis_auto_formats', JSON.stringify(autoSelectedFormats));
 
         triggerHapticFeedback([18]);
         showToast(`Ukládání nastavení na server...`);
+
+        const settingsToSave = [
+            { key: 'adis_auto_emails', value: JSON.stringify(emails) },
+            { key: 'adis_auto_freq', value: freq },
+            { key: 'adis_auto_time', value: time },
+            { key: 'adis_auto_formats', value: JSON.stringify(autoSelectedFormats) }
+        ];
+
+        try {
+            await supabaseClient
+                .from('app_settings')
+                .upsert(settingsToSave, { onConflict: 'key' });
+        } catch (err) {
+            console.error("Error saving settings to Supabase:", err);
+        }
 
         const params = new URLSearchParams({
             action: "saveSettings",
@@ -2934,6 +3015,7 @@
             .on('postgres_changes', { event: '*', schema: 'public', table: 'mold_comments' }, debouncedFetch)
             .on('postgres_changes', { event: '*', schema: 'public', table: 'mold_logs' }, debouncedFetch)
             .on('postgres_changes', { event: '*', schema: 'public', table: 'customers' }, debouncedFetch)
+            .on('postgres_changes', { event: '*', schema: 'public', table: 'app_settings' }, debouncedFetch)
             .subscribe();
     }
 
@@ -3367,7 +3449,6 @@
         const triggerTr = document.getElementById(`accordion-trigger-${rowKey}`);
         const tableContainer = triggerTr ? triggerTr.closest('.table-container') : (floatingLayer ? floatingLayer.closest('.table-container') : null);
         
-        // Надежно фиксируем текущую позицию скролла таблицы перед открытием/закрытием
         const currentScrollTop = tableContainer ? tableContainer.scrollTop : 0;
 
         if (isExpanded) {
@@ -3427,10 +3508,7 @@
                     floatingLayer.style.top = `${topPos}px`;
                     floatingLayer.style.left = `${leftPos}px`;
 
-                    // Убираем принудительное раздувание min-height, чтобы таблица не теряла способность скроллиться
                     tableContainer.style.minHeight = '';
-                    
-                    // Жестко возвращаем скролл на место перед показом анимации
                     tableContainer.scrollTop = currentScrollTop;
                 }
 
@@ -3442,7 +3520,6 @@
                     const wrapper = document.getElementById(`accordion-wrap-${rowKey}`);
                     if (wrapper) wrapper.classList.add('open');
                     
-                    // Контрольный возврат скролла после старта анимации
                     if (tableContainer) tableContainer.scrollTop = currentScrollTop;
                 });
             }
@@ -3496,6 +3573,40 @@
             temporaryFilesMap[moldId].splice(index, 1);
             refreshAccordionContent(moldId);
         }
+    }
+
+    async function removeExistingAccordionPhoto(moldId, index) {
+        triggerHapticFeedback([12]);
+        if (!checkSuperUserOrPrompt() || isSubmittingAction) return;
+        const itemIdx = rawDatabase.findIndex(i => String(i[0]) === String(moldId));
+        if (itemIdx === -1) return;
+
+        showCustomConfirm("Smazání fotografie", "Opravdu chcete smazat tuto fotografii?", "Smazat", async () => {
+            isSubmittingAction = true;
+            let photosArr = [...rawDatabase[itemIdx][6]];
+            photosArr.splice(index, 1);
+            rawDatabase[itemIdx][6] = photosArr;
+
+            refreshAccordionContent(moldId);
+            showToast("Fotografie byla smazána");
+
+            try {
+                await fetch(`${API_URL}/rest/v1/molds?id=eq.${moldId}`, {
+                    method: 'PATCH',
+                    headers: { 
+                        'apikey': API_KEY, 
+                        'Authorization': `Bearer ${API_KEY}`, 
+                        'Content-Type': 'application/json', 
+                        'Prefer': 'return=minimal' 
+                    },
+                    body: JSON.stringify({ photo_url: photosArr.length > 0 ? JSON.stringify(photosArr) : '' })
+                });
+            } catch (e) {
+                console.error("Chyba při mazání foto:", e);
+            } finally {
+                isSubmittingAction = false;
+            }
+        });
     }
 
     function removeTempNavodka(moldId, index) {
