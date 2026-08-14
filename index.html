@@ -2059,12 +2059,20 @@
     const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbz2Zp-Me-bMX_2VY6Be2Mt0Z5HguRLwnjuYz9fNh1nXjbAXIOVXMIlcTNjs1Z72qiuM9Q/exec";
     const MASTER_PASSWORD = "adisadis";
     const SUPER_ADMIN_PASSWORD = "adisadmin";
-    const KEYBOARD_BLUR_DELAY = 1500; // Увеличено до 1.5 секунд
+    const KEYBOARD_BLUR_DELAY = 1500;
 
     function triggerHapticFeedback(pattern = [15]) {
         if ('vibrate' in navigator) {
             try { navigator.vibrate(pattern); } catch (e) {}
         }
+    }
+
+    // Вспомогательная функция для очистки имен файлов (удаление диакритики, пробелов и спецсимволов)
+    function sanitizeFileName(fileName) {
+        const normalized = fileName.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+        return normalized
+            .replace(/[^a-zA-Z0-9._-]/g, "_")
+            .replace(/__+/g, "_");
     }
 
     let toastTimer = null;
@@ -2829,6 +2837,7 @@
         });
 
         const payload = {
+            action: "sendInstant",
             emails: emails,
             formats: instantSelectedFormats,
             molds: moldsPayload
@@ -2860,7 +2869,7 @@
         }
 
         if (!autoSelectedFormats.sql && !autoSelectedFormats.csv) {
-            alert("Vyberte alespoň jeden formát souboru pro automatické odesílání! Klikněte na tlačítka výše.");
+            alert("Vyberte alespoň jeden formát souboru pro automatické odesílání!");
             return;
         }
 
@@ -2872,19 +2881,22 @@
         triggerHapticFeedback([18]);
         showToast(`Ukládání nastavení na server...`);
 
+        const params = new URLSearchParams({
+            action: "saveSettings",
+            emails: JSON.stringify(emails),
+            formats: JSON.stringify(autoSelectedFormats),
+            frequency: freq,
+            time: time
+        });
+
         try {
-            await fetch(GOOGLE_SCRIPT_URL, {
-                method: 'POST',
-                mode: 'no-cors',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    action: "saveSettings",
-                    emails: emails,
-                    formats: autoSelectedFormats,
-                    frequency: freq,
-                    time: time
-                })
+            const beaconUrl = `${GOOGLE_SCRIPT_URL}?${params.toString()}`;
+            
+            await fetch(beaconUrl, {
+                method: 'GET',
+                mode: 'no-cors'
             });
+
             showToast(`Automatické odesílání plně aktivováno na serveru!`);
             closeHeliosAdminModal();
         } catch (e) {
@@ -3354,6 +3366,8 @@
 
         const triggerTr = document.getElementById(`accordion-trigger-${rowKey}`);
         const tableContainer = triggerTr ? triggerTr.closest('.table-container') : (floatingLayer ? floatingLayer.closest('.table-container') : null);
+        
+        // Надежно фиксируем текущую позицию скролла таблицы перед открытием/закрытием
         const currentScrollTop = tableContainer ? tableContainer.scrollTop : 0;
 
         if (isExpanded) {
@@ -3413,19 +3427,22 @@
                     floatingLayer.style.top = `${topPos}px`;
                     floatingLayer.style.left = `${leftPos}px`;
 
-                    const requiredHeight = topPos + 280;
-                    if (tableContainer.clientHeight < requiredHeight) {
-                        tableContainer.style.minHeight = `${requiredHeight}px`;
-                    }
+                    // Убираем принудительное раздувание min-height, чтобы таблица не теряла способность скроллиться
+                    tableContainer.style.minHeight = '';
+                    
+                    // Жестко возвращаем скролл на место перед показом анимации
                     tableContainer.scrollTop = currentScrollTop;
                 }
 
                 floatingLayer.style.display = 'block';
+                
                 requestAnimationFrame(() => {
                     if (tableContainer) tableContainer.scrollTop = currentScrollTop;
                     floatingLayer.classList.add('open');
                     const wrapper = document.getElementById(`accordion-wrap-${rowKey}`);
                     if (wrapper) wrapper.classList.add('open');
+                    
+                    // Контрольный возврат скролла после старта анимации
                     if (tableContainer) tableContainer.scrollTop = currentScrollTop;
                 });
             }
@@ -3439,6 +3456,10 @@
             delete temporaryFilesMap[moldId];
             delete temporaryNavodkaMap[moldId];
         }
+        refreshAccordionContent(moldId);
+    }
+
+    function refreshAccordionContent(moldId) {
         const contentDiv = document.getElementById(`accordion-content-box-${moldId}`);
         const item = rawDatabase.find(i => String(i[0]) === String(moldId));
         if (contentDiv && item) contentDiv.innerHTML = renderAccordionInnerContent(item);
@@ -3454,7 +3475,7 @@
                 if (existingCount + temporaryFilesMap[moldId].length >= 5) { alert("Max 5 fotografií!"); break; }
                 temporaryFilesMap[moldId].push(inputElement.files[i]);
             }
-            toggleAccordionEditMode(moldId);
+            refreshAccordionContent(moldId);
         }
     }
 
@@ -3465,7 +3486,7 @@
             for (let i = 0; i < inputElement.files.length; i++) {
                 temporaryNavodkaMap[moldId].push(inputElement.files[i]);
             }
-            toggleAccordionEditMode(moldId);
+            refreshAccordionContent(moldId);
         }
     }
 
@@ -3473,7 +3494,7 @@
         triggerHapticFeedback([12]);
         if (temporaryFilesMap[moldId]) {
             temporaryFilesMap[moldId].splice(index, 1);
-            toggleAccordionEditMode(moldId);
+            refreshAccordionContent(moldId);
         }
     }
 
@@ -3484,7 +3505,7 @@
             if (temporaryNavodkaMap[moldId].length === 0) {
                 delete temporaryNavodkaMap[moldId];
             }
-            toggleAccordionEditMode(moldId);
+            refreshAccordionContent(moldId);
         }
     }
 
@@ -3508,13 +3529,7 @@
 
         rawDatabase[itemIdx][7] = newNavodkaUrl;
         
-        if (editingAccordionMap[moldId]) {
-            toggleAccordionEditMode(moldId);
-            toggleAccordionEditMode(moldId); 
-        } else {
-            const contentDiv = document.getElementById(`accordion-content-box-${moldId}`);
-            if (contentDiv) contentDiv.innerHTML = renderAccordionInnerContent(rawDatabase[itemIdx]);
-        }
+        refreshAccordionContent(moldId);
         showToast("Návodka byla smazána");
 
         try {
@@ -3541,7 +3556,8 @@
         const pendingFiles = temporaryFilesMap[moldId] || [];
 
         for (let file of pendingFiles) {
-            const fileName = `${moldId}_${Date.now()}_${Math.random().toString(36).substring(2, 7)}.${file.name.split('.').pop()}`;
+            const cleanOrigName = sanitizeFileName(file.name || "photo.jpg");
+            const fileName = `${moldId}_${Date.now()}_${cleanOrigName}`;
             const { error } = await supabaseClient.storage.from('mold-photos').upload(fileName, file, { upsert: true });
             if (!error) {
                 const { data } = supabaseClient.storage.from('mold-photos').getPublicUrl(fileName);
@@ -3559,7 +3575,8 @@
 
         const pendingNavodkyFiles = temporaryNavodkaMap[moldId] || [];
         for (let file of pendingNavodkyFiles) {
-            const fileName = `navodka_${moldId}_${Date.now()}_${Math.random().toString(36).substring(2, 7)}.${file.name.split('.').pop()}`;
+            const cleanOrigName = sanitizeFileName(file.name || "navodka.pdf");
+            const fileName = `navodka_${moldId}_${Date.now()}_${cleanOrigName}`;
             const { error } = await supabaseClient.storage.from('mold-photos').upload(fileName, file, { upsert: true });
             if (!error) {
                 const { data } = supabaseClient.storage.from('mold-photos').getPublicUrl(fileName);
@@ -3844,7 +3861,8 @@
 
         let uploadedPhotoUrls = [];
         for (let file of directProdPendingFiles) {
-            const fileName = `defect_${moldId}_${Date.now()}_${Math.random().toString(36).substring(2, 7)}.${file.name.split('.').pop()}`;
+            const cleanOrigName = sanitizeFileName(file.name || "photo.jpg");
+            const fileName = `defect_${moldId}_${Date.now()}_${cleanOrigName}`;
             const { error } = await supabaseClient.storage.from('mold-photos').upload(fileName, file, { upsert: true });
             if (!error) {
                 const { data } = supabaseClient.storage.from('mold-photos').getPublicUrl(fileName);
