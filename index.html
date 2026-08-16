@@ -1408,7 +1408,6 @@
             -webkit-overflow-scrolling: touch;
         }
 
-        /* Исправление обрезания кнопки на мобильных устройствах */
         @media (max-width: 600px) {
             .helios-accordion-card.open .helios-accordion-anim-wrapper > div {
                 max-height: 55vh;
@@ -1417,7 +1416,6 @@
             }
         }
 
-        /* Кнопки экспорта всегда строго в 2 колонки рядом */
         .helios-export-grid {
             display: grid;
             grid-template-columns: 1fr 1fr !important;
@@ -1425,7 +1423,6 @@
             margin-bottom: 0.4rem;
         }
 
-        /* Компактные аккуратные плашки в один ряд */
         .helios-action-btn {
             background: var(--card-bg);
             border: 1px solid var(--border-color);
@@ -1569,7 +1566,6 @@
             color: #dc2626;
         }
 
-        /* Синяя ссылка для добавления email над полем ввода */
         .add-email-link {
             font-size: 0.78rem;
             font-weight: 600;
@@ -1679,7 +1675,7 @@
                     <div class="dash-card-value" id="dash-count-oprave-pryc">0</div>
                 </div>
             </div>
-            <div class="stats-bar"><span id="dashStats">Přehled forem se staveм...</span></div>
+            <div class="stats-bar"><span id="dashStats">Přehled forem se stavem...</span></div>
             <div class="table-container" id="dashboardTableContainer">
                 <table>
                     <thead><tr><th>Číslo formy</th><th>Zákazník</th><th>Pozice</th></tr></thead>
@@ -1697,7 +1693,6 @@
     </button>
 </div>
 
-<!-- Обновлённое контекстное меню с опцией смены цвета -->
 <div id="customContextMenu" class="custom-context-menu">
     <div id="contextEditColorOption" class="context-menu-item" style="color: var(--text-main);">
         <span>🎨</span> <span>Změnit barvu</span>
@@ -1756,7 +1751,6 @@
     </div>
 </div>
 
-<!-- Модальное окно для смены цвета заказчика -->
 <div class="modal-overlay" id="editCustomerColorModal">
     <div class="modal-card" style="max-width: 380px;">
         <div class="modal-header"><h3 id="editCustomerColorTitle">Změnit barvu zákazníka</h3><button class="close-modal-btn" onclick="closeEditCustomerColorModal()">✕</button></div>
@@ -2685,7 +2679,6 @@
         if (dd) dd.classList.remove('open');
     }
 
-    /* Логика выбора цвета при редактировании */
     function toggleEditCustomColorDropdown(e) {
         e.stopPropagation();
         triggerHapticFeedback([12]);
@@ -3593,6 +3586,10 @@
         if (isExpanded) {
             expandedMoldsMap[rowKey] = false;
             if (btn) btn.classList.remove('expanded');
+
+            if (temporaryFilesMap[moldId]) {
+                temporaryFilesMap[moldId].forEach(f => { if (f._previewUrl) URL.revokeObjectURL(f._previewUrl); });
+            }
             
             if (floatingLayer) {
                 const wrapper = document.getElementById(`accordion-wrap-${rowKey}`);
@@ -3669,6 +3666,9 @@
         if (!checkSuperUserOrPrompt()) return;
         editingAccordionMap[moldId] = !editingAccordionMap[moldId];
         if (!editingAccordionMap[moldId]) {
+            if (temporaryFilesMap[moldId]) {
+                temporaryFilesMap[moldId].forEach(f => { if (f._previewUrl) URL.revokeObjectURL(f._previewUrl); });
+            }
             delete temporaryFilesMap[moldId];
             delete temporaryNavodkaMap[moldId];
         }
@@ -3709,6 +3709,10 @@
     function removeTempAccordionFile(moldId, index) {
         triggerHapticFeedback([12]);
         if (temporaryFilesMap[moldId]) {
+            const file = temporaryFilesMap[moldId][index];
+            if (file && file._previewUrl) {
+                URL.revokeObjectURL(file._previewUrl);
+            }
             temporaryFilesMap[moldId].splice(index, 1);
             refreshAccordionContent(moldId);
         }
@@ -3813,6 +3817,7 @@
                 const { data } = supabaseClient.storage.from('mold-photos').getPublicUrl(fileName);
                 photosArr.push(data.publicUrl);
             }
+            if (file._previewUrl) URL.revokeObjectURL(file._previewUrl);
         }
 
         let navodkaUrl = rawDatabase[itemIdx][7] || '';
@@ -4035,12 +4040,17 @@
         document.getElementById('directProdMoldId').value = '';
         document.getElementById('directProdStatus').value = 'Ve frontě na údržbu';
         document.getElementById('directProdComment').value = '';
+        directProdPendingFiles.forEach(file => { if (file._previewUrl) URL.revokeObjectURL(file._previewUrl); });
         directProdPendingFiles = [];
         renderDirectProdThumbs();
         showModalAnimated('directProdModal');
     }
 
-    function closeDirectProdModal() { hideModalAnimated('directProdModal'); }
+    function closeDirectProdModal() { 
+        directProdPendingFiles.forEach(file => { if (file._previewUrl) URL.revokeObjectURL(file._previewUrl); });
+        directProdPendingFiles = [];
+        hideModalAnimated('directProdModal'); 
+    }
 
     function handleDirectProdFiles(inputElement) {
         if (inputElement.files && inputElement.files.length > 0) {
@@ -4058,6 +4068,10 @@
 
     function removeDirectProdFile(index) {
         triggerHapticFeedback([12]);
+        const file = directProdPendingFiles[index];
+        if (file && file._previewUrl) {
+            URL.revokeObjectURL(file._previewUrl);
+        }
         directProdPendingFiles.splice(index, 1);
         renderDirectProdThumbs();
     }
@@ -4067,12 +4081,17 @@
         const uploadBtn = document.getElementById('directProdUploadBtn');
         if (!container) return;
 
-        container.innerHTML = directProdPendingFiles.map((file, idx) => `
-            <div class="accordion-thumb-wrapper" style="border-color: #3b82f6;">
-                <img src="${URL.createObjectURL(file)}" class="accordion-thumb">
-                <button type="button" class="accordion-thumb-remove" onclick="removeDirectProdFile(${idx})">&times;</button>
-            </div>
-        `).join('');
+        container.innerHTML = directProdPendingFiles.map((file, idx) => {
+            if (!file._previewUrl) {
+                file._previewUrl = URL.createObjectURL(file);
+            }
+            return `
+                <div class="accordion-thumb-wrapper" style="border-color: #3b82f6;">
+                    <img src="${file._previewUrl}" class="accordion-thumb">
+                    <button type="button" class="accordion-thumb-remove" onclick="removeDirectProdFile(${idx})">&times;</button>
+                </div>
+            `;
+        }).join('');
 
         if (uploadBtn) uploadBtn.style.display = directProdPendingFiles.length >= 2 ? 'none' : 'flex';
     }
@@ -4118,7 +4137,9 @@
                 const { data } = supabaseClient.storage.from('mold-photos').getPublicUrl(fileName);
                 uploadedPhotoUrls.push(data.publicUrl);
             }
+            if (file._previewUrl) URL.revokeObjectURL(file._previewUrl);
         }
+        directProdPendingFiles = [];
 
         try {
             await fetch(`${API_URL}/rest/v1/molds?id=eq.${moldId}`, {
@@ -4429,7 +4450,7 @@
             return;
         }
         if (checkAuthOrPrompt()) {
-            showCustomConfirm("Vyčistit historii", "Opravdu chcete vyčistit starou historii přemístění forem?", "Vyčistit", executeClearLogs);
+            showCustomConfirm("Vyčistir historii", "Opravdu chcete vyčistit starou historii přemístění forem?", "Vyčistit", executeClearLogs);
         }
     }
     function closeClearLogsModal() { hideModalAnimated('clearLogsModal'); }
@@ -4550,9 +4571,14 @@
             `).join('');
 
             const pending = temporaryFilesMap[num] || [];
-            const pendingThumbs = pending.map((file, idx) => `
-                <div class="accordion-thumb-wrapper" style="border-color: #3b82f6;"><img src="${URL.createObjectURL(file)}" class="accordion-thumb"><button type="button" class="accordion-thumb-remove" onclick="removeTempAccordionFile('${escapeHtml(num)}', ${idx})">&times;</button></div>
-            `).join('');
+            const pendingThumbs = pending.map((file, idx) => {
+                if (!file._previewUrl) {
+                    file._previewUrl = URL.createObjectURL(file);
+                }
+                return `
+                    <div class="accordion-thumb-wrapper" style="border-color: #3b82f6;"><img src="${file._previewUrl}" class="accordion-thumb"><button type="button" class="accordion-thumb-remove" onclick="removeTempAccordionFile('${escapeHtml(num)}', ${idx})">&times;</button></div>
+                `;
+            }).join('');
 
             const uploadCard = (photosArr.length + pending.length < 5) ? `
                 <input type="file" id="acc-file-${escapeHtml(num)}" accept="image/*" multiple class="file-upload-hidden" onchange="handleAccordionFileSelect('${escapeHtml(num)}', this)">
