@@ -559,6 +559,10 @@
         }
 
         .context-menu-item:hover {
+            background-color: var(--row-hover);
+        }
+
+        .context-menu-item.danger-item:hover {
             background-color: var(--error-bg);
         }
 
@@ -1693,8 +1697,12 @@
     </button>
 </div>
 
+<!-- Обновлённое контекстное меню с опцией смены цвета -->
 <div id="customContextMenu" class="custom-context-menu">
-    <div id="contextDeleteOption" class="context-menu-item">
+    <div id="contextEditColorOption" class="context-menu-item" style="color: var(--text-main);">
+        <span>🎨</span> <span>Změnit barvu</span>
+    </div>
+    <div id="contextDeleteOption" class="context-menu-item danger-item">
         <span>✕</span> <span id="contextMenuText">Smazat</span>
     </div>
 </div>
@@ -1745,6 +1753,22 @@
             </div>
         </div>
         <div class="modal-footer"><button class="btn-secondary" onclick="closeAddCustomerModal()">Zrušit</button><button class="btn-primary" onclick="submitNewCustomer()">Přidat</button></div>
+    </div>
+</div>
+
+<!-- Модальное окно для смены цвета заказчика -->
+<div class="modal-overlay" id="editCustomerColorModal">
+    <div class="modal-card" style="max-width: 380px;">
+        <div class="modal-header"><h3 id="editCustomerColorTitle">Změnit barvu zákazníka</h3><button class="close-modal-btn" onclick="closeEditCustomerColorModal()">✕</button></div>
+        <div class="modal-body">
+            <div class="form-group"><label>Vybrat barvu:</label>
+                <div class="custom-color-dropdown-wrapper" id="editCustomColorWrapper">
+                    <button type="button" class="custom-color-btn" onclick="toggleEditCustomColorDropdown(event)"><div class="custom-color-sample" id="editSelectedColorSample" style="background-color: #ffffff;"></div><span class="custom-color-arrow">▼</span></button>
+                    <div class="custom-color-dropdown" id="editCustomColorDropdownList"></div>
+                </div>
+            </div>
+        </div>
+        <div class="modal-footer"><button class="btn-secondary" onclick="closeEditCustomerColorModal()">Zrušit</button><button class="btn-primary" onclick="submitEditCustomerColor()">Uložit</button></div>
     </div>
 </div>
 
@@ -2092,7 +2116,6 @@
     const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbz2Zp-Me-bMX_2VY6Be2Mt0Z5HguRLwnjuYz9fNh1nXjbAXIOVXMIlcTNjs1Z72qiuM9Q/exec";
     const MASTER_PASSWORD = "adisadis";
     const SUPER_ADMIN_PASSWORD = "adisadmin";
-    const KEYBOARD_BLUR_DELAY = 1500;
 
     function triggerHapticFeedback(pattern = [15]) {
         if ('vibrate' in navigator) {
@@ -2218,6 +2241,8 @@
     let currentCustomerFilter = 'ALL';
     let currentDashboardStatusFilter = 'ALL';
     let selectedPresetColor = "#ffffff";
+    let selectedEditPresetColor = "#ffffff";
+    let activeEditColorCustomer = null;
     
     let currentUser = localStorage.getItem('adis_user_name') || null;
     let isSuperUser = localStorage.getItem('adis_is_superuser') === 'true';
@@ -2236,7 +2261,6 @@
 
     let isSubmittingAction = false;
     let realtimeDebounceTimer = null;
-    let searchDebounceTimer = null;
     let isTabTransitioning = false;
 
     let instantSelectedFormats = { sql: false, csv: false };
@@ -2562,7 +2586,6 @@
         if (searchInput) {
             searchInput.addEventListener('keydown', function(e) {
                 if (e.key === 'Enter') {
-                    if (searchDebounceTimer) clearTimeout(searchDebounceTimer);
                     this.blur();
                 }
             });
@@ -2580,11 +2603,22 @@
             if (!e.target.closest('.autocomplete-wrapper')) {
                 document.querySelectorAll('.autocomplete-dropdown').forEach(d => d.style.display = 'none');
             }
-            if (!e.target.closest('#customColorWrapper')) {
+            if (!e.target.closest('#customColorWrapper') && !e.target.closest('#editCustomColorWrapper')) {
                 const dd = document.getElementById('customColorDropdownList');
                 if (dd) dd.classList.remove('open');
+                const editDd = document.getElementById('editCustomColorDropdownList');
+                if (editDd) editDd.classList.remove('open');
             }
             hideContextMenu();
+        });
+
+        document.getElementById('contextEditColorOption').addEventListener('click', () => {
+            triggerHapticFeedback([18]);
+            const tagToEdit = activeContextMenuTag;
+            hideContextMenu();
+            if (tagToEdit) {
+                openEditCustomerColorModal(tagToEdit);
+            }
         });
 
         document.getElementById('contextDeleteOption').addEventListener('click', () => {
@@ -2617,12 +2651,22 @@
 
     function renderCustomColorDropdownOptions() {
         const listContainer = document.getElementById('customColorDropdownList');
-        if (!listContainer) return;
-        listContainer.innerHTML = PALETTE_COLORS.map(hex => `
-            <div class="custom-color-option" tabindex="0" onclick="selectCustomColor('${hex}')">
-                <div class="custom-color-option-sample" style="background-color: ${hex};"></div>
-            </div>
-        `).join('');
+        if (listContainer) {
+            listContainer.innerHTML = PALETTE_COLORS.map(hex => `
+                <div class="custom-color-option" tabindex="0" onclick="selectCustomColor('${hex}')">
+                    <div class="custom-color-option-sample" style="background-color: ${hex};"></div>
+                </div>
+            `).join('');
+        }
+
+        const editListContainer = document.getElementById('editCustomColorDropdownList');
+        if (editListContainer) {
+            editListContainer.innerHTML = PALETTE_COLORS.map(hex => `
+                <div class="custom-color-option" tabindex="0" onclick="selectEditCustomColor('${hex}')">
+                    <div class="custom-color-option-sample" style="background-color: ${hex};"></div>
+                </div>
+            `).join('');
+        }
     }
 
     function toggleCustomColorDropdown(e) {
@@ -2639,6 +2683,78 @@
         if (sample) sample.style.backgroundColor = hex;
         const dd = document.getElementById('customColorDropdownList');
         if (dd) dd.classList.remove('open');
+    }
+
+    /* Логика выбора цвета при редактировании */
+    function toggleEditCustomColorDropdown(e) {
+        e.stopPropagation();
+        triggerHapticFeedback([12]);
+        const dd = document.getElementById('editCustomColorDropdownList');
+        if (dd) dd.classList.toggle('open');
+    }
+
+    function selectEditCustomColor(hex) {
+        triggerHapticFeedback([12]);
+        selectedEditPresetColor = hex;
+        const sample = document.getElementById('editSelectedColorSample');
+        if (sample) sample.style.backgroundColor = hex;
+        const dd = document.getElementById('editCustomColorDropdownList');
+        if (dd) dd.classList.remove('open');
+    }
+
+    function openEditCustomerColorModal(customerName) {
+        if (!checkAuthOrPrompt()) return;
+        activeEditColorCustomer = customerName;
+        const cust = customersList.find(c => c.name === customerName);
+        const currentBg = cust ? cust.bg : '#ffffff';
+        selectedEditPresetColor = currentBg;
+
+        const title = document.getElementById('editCustomerColorTitle');
+        if (title) title.textContent = `Změnit barvu: ${customerName}`;
+
+        const sample = document.getElementById('editSelectedColorSample');
+        if (sample) sample.style.backgroundColor = currentBg;
+
+        showModalAnimated('editCustomerColorModal');
+    }
+
+    function closeEditCustomerColorModal() {
+        hideModalAnimated('editCustomerColorModal');
+        activeEditColorCustomer = null;
+    }
+
+    async function submitEditCustomerColor() {
+        if (!activeEditColorCustomer || isSubmittingAction) return;
+        isSubmittingAction = true;
+        const customerName = activeEditColorCustomer;
+        const newBg = selectedEditPresetColor;
+
+        closeEditCustomerColorModal();
+
+        const cust = customersList.find(c => c.name === customerName);
+        if (cust) {
+            cust.bg = newBg;
+        }
+
+        refreshUI();
+        showToast(`Barva zákazníka ${customerName} byla změněna`);
+
+        try {
+            await fetch(`${API_URL}/rest/v1/customers?name=eq.${encodeURIComponent(customerName)}`, {
+                method: 'PATCH',
+                headers: { 
+                    'apikey': API_KEY, 
+                    'Authorization': `Bearer ${API_KEY}`, 
+                    'Content-Type': 'application/json', 
+                    'Prefer': 'return=minimal' 
+                },
+                body: JSON.stringify({ bg_color: newBg })
+            });
+        } catch (e) {
+            console.error("Chyba při změně barvy zákazníka:", e);
+        } finally {
+            isSubmittingAction = false;
+        }
     }
 
     function updateAuthUI() {
@@ -2777,7 +2893,6 @@
         hideModalAnimated('heliosAdminModal');
     }
 
-    /* ИСПРАВЛЕННАЯ ФУНКЦИЯ ЭКСПОРТА SQL ДЛЯ HELIOS */
     function exportHeliosSql() {
         triggerHapticFeedback([18]);
         const activeMolds = rawDatabase.filter(i => !i[4]);
@@ -2814,12 +2929,12 @@
             insertedPairs.add(pairKey);
 
             const comms = allComments.filter(c => String(c.mold_id) === formId);
-            const lastC = (comms.length > 0 && comms[0].comment) ? String(comms[0].comment).replace(/'/g, "''") : "";
+            const lastC = (comms.length > 0 && comms[0].comment) 
+                ? String(comms[0].comment).replace(/'/g, "''").replace(/\r?\n/g, " ") 
+                : "";
             
-            // 1. Собираем фото самой формы
             let allPhotoUrls = Array.isArray(i[6]) ? [...i[6]] : (i[6] ? [String(i[6])] : []);
 
-            // 2. Добавляем фото из комментариев/проблем, если они есть
             comms.forEach(c => {
                 if (c.photo_urls) {
                     let cPhotos = Array.isArray(c.photo_urls) ? c.photo_urls : [c.photo_urls];
@@ -2839,7 +2954,6 @@
             const cleanPos = position.replace(/'/g, "''").substring(0, 100);
             const cleanStatus = String(i[3] || '').replace(/'/g, "''").substring(0, 100);
 
-            // Префикс N'...' для юникода и корректного сохранения чешских букв в MS SQL
             sqlLines.push(`INSERT INTO Adis_Form_Integration (FormID, ProductName, Customer, Position, Status, LastComment, PhotoLink, UpdatedAt)`);
             sqlLines.push(`VALUES (N'${cleanId}', N'${cleanProd}', N'${cleanCust}', N'${cleanPos}', N'${cleanStatus}', N'${lastC}', N'${cleanPhotos}', GETDATE());`);
         });
@@ -3114,6 +3228,10 @@
         activeContextMenuTag = customerName;
         activeContextMenuMoldId = null;
         activeContextMenuCommentId = null;
+
+        const editColorBtn = document.getElementById('contextEditColorOption');
+        if (editColorBtn) editColorBtn.style.display = 'flex';
+
         document.getElementById('contextMenuText').textContent = 'Smazat zákazníka';
 
         const menu = document.getElementById('customContextMenu');
@@ -3129,6 +3247,10 @@
         activeContextMenuMoldId = moldId;
         activeContextMenuTag = null;
         activeContextMenuCommentId = null;
+
+        const editColorBtn = document.getElementById('contextEditColorOption');
+        if (editColorBtn) editColorBtn.style.display = 'none';
+
         document.getElementById('contextMenuText').textContent = `Přesunout ${moldId} do koše`;
 
         const menu = document.getElementById('customContextMenu');
@@ -3145,6 +3267,10 @@
         activeContextMenuCommentId = commentId;
         activeContextMenuTag = null;
         activeContextMenuMoldId = null;
+
+        const editColorBtn = document.getElementById('contextEditColorOption');
+        if (editColorBtn) editColorBtn.style.display = 'none';
+
         document.getElementById('contextMenuText').textContent = `Smazat poznámku`;
 
         const menu = document.getElementById('customContextMenu');
@@ -4603,7 +4729,7 @@
 
         document.getElementById('dash-count-active').textContent = withStatus.length;
         document.getElementById('dash-count-fronte-udrzbu').textContent = fFronteUdrzbu;
-        document.getElementById('dash-count-fronte-opravu').textContent = fOpravePryc ? fOpravePryc : fFronteOpravu;
+        document.getElementById('dash-count-fronte-opravu').textContent = fFronteOpravu;
         document.getElementById('dash-count-udrzbe').textContent = fUdrzbe;
         document.getElementById('dash-count-oprave-pryc').textContent = fOpravePryc;
 
@@ -4643,14 +4769,6 @@
         } else {
             tbody.innerHTML = `<tr class="row-error"><td colspan="3" class="no-data-centered" style="text-align: center !important;">Forma není v databázi</td></tr>`;
         }
-
-        if (searchDebounceTimer) clearTimeout(searchDebounceTimer);
-        searchDebounceTimer = setTimeout(() => {
-            const searchInput = document.getElementById('searchInput');
-            if (searchInput && document.activeElement === searchInput) {
-                searchInput.blur();
-            }
-        }, KEYBOARD_BLUR_DELAY);
     }
 
     function editCustomer(moldId, currentCust) {
