@@ -2845,6 +2845,17 @@
         updateAuthUI();
         refreshUI();
 
+        fetch(`${API_URL}/rest/v1/mold_logs`, {
+            method: 'POST',
+            headers: { 'apikey': API_KEY, 'Authorization': `Bearer ${API_KEY}`, 'Content-Type': 'application/json' },
+            body: JSON.stringify({ 
+                mold_id: 'SYSTEM', 
+                old_position: 'Autorizace', 
+                new_position: isSuperUser ? 'Přihlášení (Superuser)' : 'Přihlášení uživatele', 
+                user_name: username 
+            })
+        }).catch(e => console.error("Chyba při logování přihlášení:", e));
+
         if (isSuperUser) {
             showToast(`Přihlášen jako Superuser: ${currentUser}`);
         } else {
@@ -3866,6 +3877,9 @@
             currentNavodky = navodkaUrl ? [{url: navodkaUrl, title: "Návodka 1"}] : []; 
         }
 
+        const pendingNavodkyFiles = temporaryNavodkaMap[moldId] || [];
+        const hasReplaceNavodky = Object.keys(replaceNavodkaMap[moldId] || {}).length > 0;
+
         if (replaceNavodkaMap[moldId]) {
             for (let idxStr in replaceNavodkaMap[moldId]) {
                 const idx = parseInt(idxStr, 10);
@@ -3883,7 +3897,6 @@
             }
         }
 
-        const pendingNavodkyFiles = temporaryNavodkaMap[moldId] || [];
         for (let file of pendingNavodkyFiles) {
             const cleanOrigName = sanitizeFileName(file.name || "navodka.pdf");
             const fileName = `navodka_${moldId}_${Date.now()}_${cleanOrigName}`;
@@ -3918,6 +3931,19 @@
                     navodka_url: finalNavodkaUrl
                 })
             });
+
+            if (pendingNavodkyFiles.length > 0 || hasReplaceNavodky) {
+                await fetch(`${API_URL}/rest/v1/mold_logs`, {
+                    method: 'POST',
+                    headers: { 'apikey': API_KEY, 'Authorization': `Bearer ${API_KEY}`, 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ 
+                        mold_id: moldId, 
+                        old_position: 'Návodka', 
+                        new_position: 'Aktualizace návodky', 
+                        user_name: currentUser 
+                    })
+                });
+            }
         } catch (e) { console.error("Error saving accordion:", e); }
         finally { isSubmittingAction = false; }
     }
@@ -4477,6 +4503,21 @@
         }
     }
 
+    function isRegularUserLog(log) {
+        const combined = ((log.old_position || '') + ' ' + (log.new_position || '')).toLowerCase();
+
+        if (combined.includes('autorizace') || combined.includes('přihlášení') || combined.includes('přihlášen') || combined.includes('вход') || combined.includes('zákazník') || log.mold_id === 'SYSTEM') {
+            return false;
+        }
+
+        const isPosition = combined.includes('pozice');
+        const isStatus = combined.includes('stav');
+        const isFormAddDel = combined.includes('nová forma') || combined.includes('koš') || combined.includes('obnovena');
+        const isNavodka = combined.includes('návodka');
+
+        return isPosition || isStatus || isFormAddDel || isNavodka;
+    }
+
     async function openLogsModal() {
         showModalAnimated('logsModal');
         
@@ -4488,8 +4529,13 @@
         const list = document.getElementById('logsList');
         list.innerHTML = `<div class="no-data">Načítání historie...</div>`;
         try {
-            const res = await fetch(`${API_URL}/rest/v1/mold_logs?select=*&order=created_at.desc&limit=100`, { headers: { 'apikey': API_KEY, 'Authorization': `Bearer ${API_KEY}` } });
-            const logs = await res.json();
+            const res = await fetch(`${API_URL}/rest/v1/mold_logs?select=*&order=created_at.desc&limit=150`, { headers: { 'apikey': API_KEY, 'Authorization': `Bearer ${API_KEY}` } });
+            let logs = await res.json();
+
+            if (!isSuperUser) {
+                logs = logs.filter(isRegularUserLog);
+            }
+
             if (logs.length === 0) { list.innerHTML = `<div class="no-data">Zatím žádná historie</div>`; return; }
             list.innerHTML = logs.map(log => `
                 <div class="log-item">
@@ -4513,7 +4559,10 @@
     function closeClearLogsModal() { hideModalAnimated('clearLogsModal'); }
 
     async function executeClearLogs() {
-        if (!isSuperUser) return;
+        if (!isSuperUser) {
+            alert("Nemáte oprávnění pro vyčištění historie!");
+            return;
+        }
         if (isSubmittingAction) return;
         isSubmittingAction = true;
         try {
@@ -4877,7 +4926,7 @@
     function editCustomer(moldId, currentCust) {
         if (!checkAuthOrPrompt()) return;
         activeEditMoldId = moldId;
-        activeEditOldPos = currentCust;
+        activeEditOldCust = currentCust;
         document.getElementById('customerModalLabel').textContent = `Forma č. ${moldId} (stávající: ${currentCust}):`;
         document.getElementById('modalCustomerSelect').innerHTML = customersList.map(c => `<option value="${escapeHtml(c.name)}" ${c.name === currentCust ? 'selected' : ''}>${escapeHtml(c.name)}</option>`).join('');
         showModalAnimated('customerModal');
@@ -4897,11 +4946,23 @@
         showToast(`Zákazník byl změněn na ${newCust}`);
 
         try {
-            await fetch(`${API_URL}/rest/v1/molds?id=eq.${activeEditMoldId}`, {
-                method: 'PATCH',
-                headers: { 'apikey': API_KEY, 'Authorization': `Bearer ${API_KEY}`, 'Content-Type': 'application/json', 'Prefer': 'return=minimal' },
-                body: JSON.stringify({ customer: newCust })
-            });
+            await Promise.all([
+                fetch(`${API_URL}/rest/v1/molds?id=eq.${activeEditMoldId}`, {
+                    method: 'PATCH',
+                    headers: { 'apikey': API_KEY, 'Authorization': `Bearer ${API_KEY}`, 'Content-Type': 'application/json', 'Prefer': 'return=minimal' },
+                    body: JSON.stringify({ customer: newCust })
+                }),
+                fetch(`${API_URL}/rest/v1/mold_logs`, {
+                    method: 'POST',
+                    headers: { 'apikey': API_KEY, 'Authorization': `Bearer ${API_KEY}`, 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ 
+                        mold_id: activeEditMoldId, 
+                        old_position: `Zákazník: ${activeEditOldCust}`, 
+                        new_position: `Zákazník: ${newCust}`, 
+                        user_name: currentUser 
+                    })
+                })
+            ]);
         } catch (e) { console.error(e); }
         finally { 
             setTimeout(() => { isSubmittingAction = false; }, 800);
