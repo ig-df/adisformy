@@ -136,14 +136,13 @@
         button, .filter-chip, .dash-card, .badge-position, tr, .tag-customer, .add-customer-chip, .top-icon-btn, .auth-btn, .superuser-badge-btn, .comment-item, .edit-btn, .comment-btn, .floating-corner-btn, .floating-corner-btn-left, .mold-clickable-id {
             user-select: none;
             -webkit-user-select: none;
-            transition: transform 0.2s ease, opacity 0.2s ease, background-color 0.2s ease, box-shadow 0.2s ease;
+            transition: transform 0.15s ease, opacity 0.15s ease, background-color 0.2s ease, box-shadow 0.2s ease;
         }
 
         button:active, .filter-chip:active, .dash-card:active, .badge-position:active, .tag-customer:active, .top-icon-btn:active, .auth-btn:active, .superuser-badge-btn:active, .floating-corner-btn:active, .floating-corner-btn-left:active, .is-touched {
-            transform: scale(0.91) translateY(1px) !important;
-            opacity: 0.75 !important;
-            filter: brightness(0.92);
-            transition: transform 0.06s cubic-bezier(0, 0, 0.2, 1), opacity 0.06s ease !important;
+            transform: scale(0.96) !important;
+            opacity: 0.85 !important;
+            transition: transform 0.05s ease !important;
         }
 
         .header-logo {
@@ -213,15 +212,20 @@
             transform: translateY(-1px);
         }
 
-        .auth-btn.logged-in {
+        .auth-btn.logged-in, .top-icon-btn.logged-in {
             background-color: #22c55e !important;
             border-color: #16a34a !important;
             color: #ffffff !important;
             box-shadow: 0 2px 6px rgba(34, 197, 94, 0.3);
         }
 
-        .auth-btn.logged-in:hover {
+        .auth-btn.logged-in:hover, .top-icon-btn.logged-in:hover {
             background-color: #16a34a !important;
+        }
+
+        .top-icon-btn.logged-in svg {
+            color: #ffffff !important;
+            stroke: #ffffff !important;
         }
 
         .superuser-badge-btn {
@@ -1015,35 +1019,11 @@
         }
 
         .status-dot { width: 6px; height: 6px; border-radius: 50%; display: inline-block; flex-shrink: 0; }
-        
-        @keyframes status-pulse {
-            0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7); }
-            70% { transform: scale(1); box-shadow: 0 0 0 5px rgba(239, 68, 68, 0); }
-            100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); }
-        }
 
-        @keyframes status-pulse-orange {
-            0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(249, 115, 22, 0.7); }
-            70% { transform: scale(1); box-shadow: 0 0 0 5px rgba(249, 115, 22, 0); }
-            100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(249, 115, 22, 0); }
-        }
-
-        @keyframes status-pulse-yellow {
-            0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(250, 204, 21, 0.7); }
-            70% { transform: scale(1); box-shadow: 0 0 0 5px rgba(250, 204, 21, 0); }
-            100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(250, 204, 21, 0); }
-        }
-
-        @keyframes status-pulse-green {
-            0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.7); }
-            70% { transform: scale(1); box-shadow: 0 0 0 5px rgba(34, 197, 94, 0); }
-            100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(34, 197, 94, 0); }
-        }
-
-        .dot-green { background-color: var(--success-badge); animation: status-pulse-green 2s infinite ease-in-out; }
-        .dot-red { background-color: var(--error-badge); animation: status-pulse 2s infinite ease-in-out; }
-        .dot-orange { background-color: var(--warning-badge); animation: status-pulse-orange 2s infinite ease-in-out; }
-        .dot-yellow { background-color: var(--maintenance-badge); animation: status-pulse-yellow 2s infinite ease-in-out; }
+        .dot-green { background-color: var(--success-badge); }
+        .dot-red { background-color: var(--error-badge); }
+        .dot-orange { background-color: var(--warning-badge); }
+        .dot-yellow { background-color: var(--maintenance-badge); }
 
         .position-cell { display: flex; align-items: center; position: relative; width: 100%; gap: 0.5rem; flex-wrap: wrap; }
         .position-wrapper { display: flex; flex-direction: column; align-items: center; gap: 0.15rem; }
@@ -1589,16 +1569,27 @@
 <div class="container">
     <div class="header-logo">
         <div class="header-auth-left">
-            <button class="auth-btn" id="authCornerBtn" tabindex="0" onclick="handleAuthClick()" title="Přihlášení uživatele">
-                <span id="authBtnIconWrapper">
-                    <img src="icon8.png" alt="Přihlásit" id="authBtnIcon">
-                </span>
-                <span id="authBtnText" style="text-transform: capitalize;">Přihlásit</span>
+            <button class="top-icon-btn" id="authCornerBtn" tabindex="0" onclick="handleAuthClick()" title="Přihlášení / Uživatelský profil" style="padding: 0.4rem; display: flex; align-items: center; justify-content: center;">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width: 18px; height: 18px; color: var(--text-main);">
+                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                    <circle cx="12" cy="7" r="4"></circle>
+                </svg>
             </button>
+            
             <button class="superuser-badge-btn" id="superuserBadgeBtn" tabindex="0" onclick="openHeliosAdminModal()" title="Helios Superuser Panel" style="display: none;">
-                <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width: 18px; height: 18px; color: var(--text-main);">
                     <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
                 </svg>
+            </button>
+
+            <button class="top-icon-btn" id="onlineUsersToggleBtn" tabindex="0" onclick="toggleOnlineUsersPopover(event)" title="Aktivní uživatelé" style="position: relative; padding: 0.4rem; display: flex; align-items: center; justify-content: center;">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width: 18px; height: 18px; color: var(--text-main);">
+                    <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                    <circle cx="9" cy="7" r="4"></circle>
+                    <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+                    <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+                </svg>
+                <span id="onlineCountBadge" style="position: absolute; top: 1px; right: 1px; width: 8px; height: 8px; background-color: #22c55e; border: 2px solid var(--card-bg, #ffffff); border-radius: 50%; display: none;"></span>
             </button>
         </div>
 
@@ -1702,14 +1693,41 @@
     </div>
 </div>
 
+<div id="onlineUsersPopover" class="custom-context-menu" style="display: none; position: absolute; z-index: 1000; min-width: 250px; padding: 0.75rem; border-radius: 10px; box-shadow: 0 10px 25px -5px rgba(0,0,0,0.2); background: var(--card-bg, #ffffff); border: 1px solid var(--border-color, #e2e8f0);">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.6rem; padding-bottom: 0.4rem; border-bottom: 1px solid var(--border-color, #e2e8f0);">
+        <strong style="font-size: 0.85rem; color: var(--text-main);">🟢 Uživatele (Online)</strong>
+        <button class="top-icon-btn" onclick="renderOnlineUsers()" style="width: 26px; height: 26px; padding: 0; border: 1px solid var(--border-color); background: transparent; cursor: pointer; display: flex; align-items: center; justify-content: center; text-decoration: none;" title="Obnovit">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width: 14px; height: 14px; color: var(--text-main);">
+                <polyline points="23 4 23 10 17 10"></polyline>
+                <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"></path>
+            </svg>
+        </button>
+    </div>
+    <div id="onlineUsersContainer" style="display: flex; flex-direction: column; gap: 0.4rem; max-height: 250px; overflow-y: auto;">
+        <div style="font-size: 0.78rem; color: var(--text-muted); font-style: italic;">Načítání...</div>
+    </div>
+</div>
+
 <div class="modal-overlay" id="loginModal">
     <div class="modal-card" style="max-width: 360px;">
-        <div class="modal-header"><h3>Přihlášení uživatele</h3><button class="close-modal-btn" onclick="closeLoginModal()">✕</button></div>
-        <div class="modal-body">
-            <div class="form-group"><label>Vaše jméno nebo směnu:</label><input type="text" id="loginUsername" autocomplete="off" autocapitalization="sentences" autocapitalize="sentences" oninput="event.stopPropagation()"></div>
-            <div class="form-group"><label>Heslo:</label><input type="password" id="loginPassword" autocomplete="off" oninput="event.stopPropagation()"></div>
+        <div class="modal-header">
+            <h3>Přihlášení uživatele</h3>
+            <button class="close-modal-btn" onclick="closeLoginModal()">✕</button>
         </div>
-        <div class="modal-footer"><button class="btn-secondary" onclick="closeLoginModal()">Zrušit</button><button class="btn-primary" onclick="executeLogin()">Přihlásit se</button></div>
+        <div class="modal-body">
+            <div class="form-group">
+                <label>Vaše jméno nebo směnu:</label>
+                <input type="text" id="loginUsername" autocomplete="username" autocapitalization="sentences" autocapitalize="sentences" onkeydown="if(event.key==='Enter') executeLogin()">
+            </div>
+            <div class="form-group">
+                <label>Heslo:</label>
+                <input type="password" id="loginPassword" autocomplete="current-password" onkeydown="if(event.key==='Enter') executeLogin()">
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button class="btn-secondary" onclick="closeLoginModal()">Zrušit</button>
+            <button class="btn-primary" onclick="executeLogin()">Přihlásit se</button>
+        </div>
     </div>
 </div>
 
@@ -1955,7 +1973,7 @@
             <button class="close-modal-btn" onclick="closeHeliosAdminModal()">✕</button>
         </div>
         <div class="modal-body" style="gap: 0.75rem;">
-            
+
             <div class="helios-accordion-card" id="helCardManual">
                 <div class="helios-accordion-header" onclick="toggleHeliosAccordionSection('manual')">
                     <div class="helios-accordion-header-left">
@@ -1999,7 +2017,7 @@
                                 <span>SQL pro Helios</span>
                             </div>
                             <div class="helios-action-btn selectable-btn" id="instBtnCsv" onclick="toggleExportButtonSelect(this, 'inst', 'csv')">
-                                <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line></svg>
+                                <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="17"></line></svg>
                                 <span>Export CSV</span>
                             </div>
                         </div>
@@ -2037,7 +2055,7 @@
                                 <span>SQL pro Helios</span>
                             </div>
                             <div class="helios-action-btn selectable-btn" id="autoBtnCsv" onclick="toggleExportButtonSelect(this, 'auto', 'csv')">
-                                <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line></svg>
+                                <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="17"></line></svg>
                                 <span>Export CSV</span>
                             </div>
                         </div>
@@ -2117,6 +2135,16 @@
         'šedá', 'seda', 'stříbrná', 'stribrna', 'oranžová', 'oranzova', 
         'fialová', 'fialova', 'hnědá', 'hneda', 'růžová', 'ruzova'
     ];
+
+    function escapeHtml(str) {
+        if (!str) return '';
+        return String(str)
+            .replace(/&/g, "&amp;")
+            .replace(/</g, "&lt;")
+            .replace(/>/g, "&gt;")
+            .replace(/"/g, "&quot;")
+            .replace(/'/g, "&#039;");
+    }
 
     function getTitleFromFilename(filename, fallbackIndex) {
         if (!filename) return `Návodka ${fallbackIndex}`;
@@ -2203,6 +2231,10 @@
         const modal = document.getElementById(modalId);
         if (!modal) return;
 
+        if (document.activeElement && typeof document.activeElement.blur === 'function') {
+            document.activeElement.blur();
+        }
+
         modal.classList.remove('active');
         setTimeout(() => {
             modal.style.display = 'none';
@@ -2279,6 +2311,119 @@
     let instantSelectedFormats = { sql: false, csv: false };
     let autoSelectedFormats = { sql: false, csv: false };
 
+    async function pingUserPresence() {
+        if (!currentUser) return;
+
+        const normalizedUser = currentUser.trim();
+
+        const device = /Android|webOS|iPhone|iPad|iPod/i.test(navigator.userAgent) 
+            ? 'Smartphone' 
+            : 'PC';
+
+        try {
+            await supabaseClient
+                .from('active_sessions')
+                .upsert({
+                    user_name: normalizedUser,
+                    last_seen: new Date().toISOString(),
+                    device_type: device,
+                    role: isSuperUser ? 'superuser' : 'operator'
+                }, { onConflict: 'user_name' });
+        } catch (err) {
+            console.warn('Presence ping error:', err);
+        }
+    }
+
+    function toggleOnlineUsersPopover(e) {
+        e.stopPropagation();
+        triggerHapticFeedback([12]);
+        const popover = document.getElementById('onlineUsersPopover');
+        const btn = document.getElementById('onlineUsersToggleBtn');
+        
+        if (!popover || !btn) return;
+
+        if (popover.style.display === 'block') {
+            popover.style.display = 'none';
+        } else {
+            const rect = btn.getBoundingClientRect();
+            popover.style.top = `${rect.bottom + window.scrollY + 6}px`;
+            popover.style.left = `${Math.max(10, rect.left + window.scrollX - 100)}px`;
+            popover.style.display = 'block';
+            renderOnlineUsers();
+        }
+    }
+
+    async function renderOnlineUsers() {
+        const container = document.getElementById('onlineUsersContainer');
+        const badge = document.getElementById('onlineCountBadge');
+        if (!container) return;
+
+        try {
+            const { data: sessions, error } = await supabaseClient
+                .from('active_sessions')
+                .select('*')
+                .order('last_seen', { ascending: false });
+
+            if (error || !sessions || sessions.length === 0) {
+                container.innerHTML = '<div style="font-size: 0.78rem; color: var(--text-muted);">Žádní aktivní uživatelé.</div>';
+                if (badge) badge.style.display = 'none';
+                return;
+            }
+
+            const now = new Date();
+            let activeCount = 0;
+
+            container.innerHTML = sessions.map(session => {
+                const lastSeen = new Date(session.last_seen);
+                const diffMinutes = Math.floor((now - lastSeen) / 60000);
+
+                let statusBadge = '';
+                if (diffMinutes < 3) {
+                    activeCount++;
+                    statusBadge = '<span class="status-pill" style="border-color: #bbf7d0; background: #f0fdf4; color: #15803d; font-size: 0.7rem; padding: 2px 6px; border-radius: 4px; border: 1px solid;"><span class="status-dot dot-green" style="display:inline-block; width:6px; height:6px; background:#22c55e; border-radius:50%; margin-right:4px;"></span>Online</span>';
+                } else if (diffMinutes < 15) {
+                    statusBadge = `<span class="status-pill" style="border-color: #fef08a; background: #fefce8; color: #a16207; font-size: 0.7rem; padding: 2px 6px; border-radius: 4px; border: 1px solid;"><span class="status-dot dot-yellow" style="display:inline-block; width:6px; height:6px; background:#eab308; border-radius:50%; margin-right:4px;"></span>${diffMinutes}m</span>`;
+                } else {
+                    statusBadge = `<span class="status-pill" style="border-color: #e2e8f0; background: #f8fafc; color: var(--text-muted, #64748b); font-size: 0.7rem; padding: 2px 6px; border-radius: 4px; border: 1px solid;"><span class="status-dot" style="display:inline-block; width:6px; height:6px; background:#cbd5e1; border-radius:50%; margin-right:4px;"></span>Off</span>`;
+                }
+
+                const roleBadge = session.role === 'superuser' ? '<span style="color:#ef4444; font-weight:bold; font-size:0.7rem; margin-left:2px;">(Admin)</span>' : '';
+
+                const devStr = String(session.device_type || '').toLowerCase();
+                let deviceSvg = '';
+                let deviceLabel = 'PC';
+
+                if (devStr.includes('smart') || devStr.includes('mobil') || devStr.includes('phone') || devStr.includes('android') || devStr.includes('iphone')) {
+                    deviceLabel = 'Smartphone';
+                    deviceSvg = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width: 13px; height: 13px; color: var(--text-muted); display: inline-block; vertical-align: -2px; margin-right: 3px;"><rect x="5" y="2" width="14" height="20" rx="2" ry="2"></rect><line x1="12" y1="18" x2="12.01" y2="18"></line></svg>`;
+                } else {
+                    deviceLabel = 'PC';
+                    deviceSvg = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width: 13px; height: 13px; color: var(--text-muted); display: inline-block; vertical-align: -2px; margin-right: 3px;"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect><line x1="8" y1="21" x2="16" y2="21"></line><line x1="12" y1="17" x2="12.01" y2="21"></line></svg>`;
+                }
+
+                return `
+                    <div style="display: flex; justify-content: space-between; align-items: center; padding: 0.35rem 0.5rem; border: 1px solid var(--border-color, #e2e8f0); border-radius: 6px; background: var(--card-bg, #ffffff); font-size: 0.8rem;">
+                        <div>
+                            <strong style="color: var(--text-main, #0f172a);">${escapeHtml(session.user_name)}</strong> ${roleBadge}
+                            <div style="font-size: 0.68rem; color: var(--text-muted, #64748b); display: flex; align-items: center; margin-top: 2px;">
+                                ${deviceSvg} <span>${deviceLabel}</span>
+                            </div>
+                        </div>
+                        <div>${statusBadge}</div>
+                    </div>
+                `;
+            }).join('');
+
+            if (badge) {
+                badge.style.display = activeCount > 0 ? 'block' : 'none';
+            }
+
+        } catch (e) {
+            console.error("Chyba při načítání сессиí:", e);
+            container.innerHTML = '<div style="font-size: 0.78rem; color: var(--error-badge);">Chyba načítání dat.</div>';
+        }
+    }
+
     function toggleExportButtonSelect(element, mode, format) {
         triggerHapticFeedback([12]);
         element.classList.toggle('selected');
@@ -2298,12 +2443,20 @@
         const addBtn = document.getElementById(`${mode}AddEmailBtn`);
         if (!container) return;
 
-        if (savedEmails.length === 0) savedEmails = [""];
+        if (savedEmails.length === 0) {
+            container.innerHTML = `
+                <div style="font-size: 0.78rem; color: var(--text-muted); font-style: italic; padding: 0.2rem 0;">
+                    ${mode === 'auto' ? 'Automatické odesílání je vypnuto (žádné e-mailové adresy).' : 'Seznam e-mailových adres je prázdný.'}
+                </div>
+            `;
+            if (addBtn) addBtn.style.display = 'inline-block';
+            return;
+        }
 
         container.innerHTML = savedEmails.map((email, idx) => {
             return `
                 <div class="email-input-container" id="${mode}Slot_${idx}">
-                    <input type="email" id="${mode}EmailInput_${idx}" class="email-compact-input" value="${escapeHtml(email)}" placeholder="${idx === 0 ? 'test@firma.cz' : 'dalsi@firma.cz'}" autocomplete="off">
+                    <input type="email" id="${mode}EmailInput_${idx}" class="email-compact-input" value="${escapeHtml(email)}" placeholder="e-mail@firma.cz" autocomplete="off">
                     <div class="email-inline-icons">
                         <button type="button" class="email-icon-btn email-icon-check" onclick="confirmEmailSlot('${mode}', ${idx})" title="Potvrdit e-mail">✓</button>
                         <button type="button" class="email-icon-btn email-icon-cross" onclick="removeEmailSlot('${mode}', ${idx})" title="Smazat e-mail">✕</button>
@@ -2327,7 +2480,7 @@
                 return;
             }
             if (!EMAIL_REGEX.test(val)) {
-                alert("Neplatný formát e-mailové adresy! Zadejte platný e-mail (např. jmeno@firma.cz).");
+                alert("Neplatný formát e-mailové adresy!");
                 return;
             }
             saveEmailsToLocalStorage(mode);
@@ -2360,7 +2513,7 @@
         const currentInputs = container.querySelectorAll('input[type="email"]');
         let currentEmails = Array.from(currentInputs).map(inp => inp.value.trim());
         currentEmails.splice(idx, 1);
-        if (currentEmails.length === 0) currentEmails = [""];
+        
         renderEmailSlots(mode, currentEmails);
         saveEmailsToLocalStorage(mode);
         showToast("E-mail byl smazán");
@@ -2395,32 +2548,19 @@
 
     async function loadSavedEmailSettings() {
         try {
-            const { data } = await supabaseClient
-                .from('app_settings')
-                .select('*');
-            
+            const { data } = await supabaseClient.from('app_settings').select('*');
             if (data && data.length > 0) {
                 const settingsMap = {};
                 data.forEach(row => { settingsMap[row.key] = row.value; });
 
-                if (settingsMap['adis_inst_emails']) {
-                    try { localStorage.setItem('adis_inst_emails', settingsMap['adis_inst_emails']); } catch(e){}
-                }
-                if (settingsMap['adis_auto_emails']) {
-                    try { localStorage.setItem('adis_auto_emails', settingsMap['adis_auto_emails']); } catch(e){}
-                }
-                if (settingsMap['adis_auto_freq']) {
-                    try { localStorage.setItem('adis_auto_freq', settingsMap['adis_auto_freq']); } catch(e){}
-                }
-                if (settingsMap['adis_auto_time']) {
-                    try { localStorage.setItem('adis_auto_time', settingsMap['adis_auto_time']); } catch(e){}
-                }
-                if (settingsMap['adis_auto_formats']) {
-                    try { localStorage.setItem('adis_auto_formats', settingsMap['adis_auto_formats']); } catch(e){}
-                }
+                if (settingsMap['adis_inst_emails']) localStorage.setItem('adis_inst_emails', settingsMap['adis_inst_emails']);
+                if (settingsMap['adis_auto_emails']) localStorage.setItem('adis_auto_emails', settingsMap['adis_auto_emails']);
+                if (settingsMap['adis_auto_freq']) localStorage.setItem('adis_auto_freq', settingsMap['adis_auto_freq']);
+                if (settingsMap['adis_auto_time']) localStorage.setItem('adis_auto_time', settingsMap['adis_auto_time']);
+                if (settingsMap['adis_auto_formats']) localStorage.setItem('adis_auto_formats', settingsMap['adis_auto_formats']);
             }
         } catch (e) {
-            console.error("Error loading settings from Supabase:", e);
+            console.error("Error loading settings:", e);
         }
 
         let instEmails = [];
@@ -2517,13 +2657,9 @@
                 const currentIndex = tabsOrder.indexOf(currentActive);
 
                 if (diffX < 0) {
-                    if (currentIndex < tabsOrder.length - 1) {
-                        switchTab(tabsOrder[currentIndex + 1]);
-                    }
+                    if (currentIndex < tabsOrder.length - 1) switchTab(tabsOrder[currentIndex + 1]);
                 } else {
-                    if (currentIndex > 0) {
-                        switchTab(tabsOrder[currentIndex - 1]);
-                    }
+                    if (currentIndex > 0) switchTab(tabsOrder[currentIndex - 1]);
                 }
             }
 
@@ -2533,55 +2669,17 @@
     }
 
     function initSmartHaptics() {
-        let touchStartX = 0;
-        let touchStartY = 0;
-        let currentTouchedTarget = null;
-        let isSwipingOrScrolling = false;
-
         document.addEventListener('pointerdown', (e) => {
-            document.querySelectorAll('.is-touched').forEach(el => el.classList.remove('is-touched'));
-            const target = e.target.closest('button, .tab-btn, .filter-chip, .dash-card, .badge-position, .tag-customer, .add-customer-chip, .top-icon-btn, .auth-btn, .superuser-badge-btn, .comment-item, .toggle-accordion-btn, .edit-btn, .comment-btn, .floating-corner-btn, .floating-corner-btn-left, .mold-clickable-id, .helios-checkbox-card');
-            if (target) {
-                touchStartX = e.clientX;
-                touchStartY = e.clientY;
-                currentTouchedTarget = target;
-                isSwipingOrScrolling = false;
-            }
+            const target = e.target.closest('button, .tab-btn, .filter-chip, .dash-card, .badge-position, .tag-customer, .add-customer-chip, .top-icon-btn, .auth-btn, .superuser-badge-btn, .comment-item, .toggle-accordion-btn, .edit-btn, .comment-btn, .floating-corner-btn, .floating-corner-btn-left, .mold-clickable-id');
+            if (target) target.classList.add('is-touched');
         }, { passive: true });
 
-        document.addEventListener('pointermove', (e) => {
-            if (!currentTouchedTarget) return;
-            const diffX = Math.abs(e.clientX - touchStartX);
-            const diffY = Math.abs(e.clientY - touchStartY);
-            
-            if (diffX > 8 || diffY > 8) {
-                isSwipingOrScrolling = true;
-                currentTouchedTarget.classList.remove('is-touched');
-                currentTouchedTarget = null;
-            }
+        document.addEventListener('pointerup', () => {
+            document.querySelectorAll('.is-touched').forEach(el => el.classList.remove('is-touched'));
         }, { passive: true });
 
-        const handleTouchEndOrCancel = () => {
-            document.querySelectorAll('.is-touched').forEach(el => el.classList.remove('is-touched'));
-            if (currentTouchedTarget && !isSwipingOrScrolling) {
-                triggerHapticFeedback([18]);
-                if (!currentTouchedTarget.classList.contains('tab-btn')) {
-                    const targetToTouch = currentTouchedTarget;
-                    targetToTouch.classList.add('is-touched');
-                    setTimeout(() => {
-                        if (targetToTouch) targetToTouch.classList.remove('is-touched');
-                    }, 120);
-                }
-            }
-            currentTouchedTarget = null;
-            isSwipingOrScrolling = false;
-        };
-
-        document.addEventListener('pointerup', handleTouchEndOrCancel, { passive: true });
         document.addEventListener('pointercancel', () => {
             document.querySelectorAll('.is-touched').forEach(el => el.classList.remove('is-touched'));
-            currentTouchedTarget = null;
-            isSwipingOrScrolling = false;
         }, { passive: true });
     }
 
@@ -2591,6 +2689,12 @@
         initSwipeNavigation();
         initSmartHaptics();
 
+        pingUserPresence();
+        setInterval(pingUserPresence, 2 * 60 * 1000);
+        document.addEventListener('visibilitychange', () => {
+            if (document.visibilityState === 'visible') pingUserPresence();
+        });
+
         document.getElementById('btn-search').addEventListener('click', () => switchTab('search'));
         document.getElementById('btn-database').addEventListener('click', () => switchTab('database'));
         document.getElementById('btn-dashboard').addEventListener('click', () => switchTab('dashboard'));
@@ -2598,17 +2702,13 @@
         const searchInput = document.getElementById('searchInput');
         if (searchInput) {
             searchInput.addEventListener('keydown', function(e) {
-                if (e.key === 'Enter') {
-                    this.blur();
-                }
+                if (e.key === 'Enter') this.blur();
             });
         }
 
         document.querySelectorAll('.modal-overlay').forEach(overlay => {
             overlay.addEventListener('click', (e) => {
-                if (e.target === overlay) {
-                    hideModalAnimated(overlay.id);
-                }
+                if (e.target === overlay) hideModalAnimated(overlay.id);
             });
         });
 
@@ -2622,6 +2722,13 @@
                 const editDd = document.getElementById('editCustomColorDropdownList');
                 if (editDd) editDd.classList.remove('open');
             }
+            const popover = document.getElementById('onlineUsersPopover');
+            const popoverBtn = document.getElementById('onlineUsersToggleBtn');
+            if (popover && popover.style.display === 'block') {
+                if (!popover.contains(e.target) && !popoverBtn.contains(e.target)) {
+                    popover.style.display = 'none';
+                }
+            }
             hideContextMenu();
         });
 
@@ -2629,20 +2736,14 @@
             triggerHapticFeedback([18]);
             const tagToEdit = activeContextMenuTag;
             hideContextMenu();
-            if (tagToEdit) {
-                openEditCustomerColorModal(tagToEdit);
-            }
+            if (tagToEdit) openEditCustomerColorModal(tagToEdit);
         });
 
         document.getElementById('contextDeleteOption').addEventListener('click', () => {
             triggerHapticFeedback([20]);
-            if (activeContextMenuTag) {
-                deleteCustomerTagDirect(activeContextMenuTag);
-            } else if (activeContextMenuMoldId) {
-                deleteMoldSoftDirect(activeContextMenuMoldId);
-            } else if (activeContextMenuCommentId) {
-                deleteComment(activeContextMenuCommentId);
-            }
+            if (activeContextMenuTag) deleteCustomerTagDirect(activeContextMenuTag);
+            else if (activeContextMenuMoldId) deleteMoldSoftDirect(activeContextMenuMoldId);
+            else if (activeContextMenuCommentId) deleteComment(activeContextMenuCommentId);
             hideContextMenu();
         });
 
@@ -2744,9 +2845,7 @@
         closeEditCustomerColorModal();
 
         const cust = customersList.find(c => c.name === customerName);
-        if (cust) {
-            cust.bg = newBg;
-        }
+        if (cust) cust.bg = newBg;
 
         refreshUI();
         showToast(`Barva zákazníka ${customerName} byla změněna`);
@@ -2772,32 +2871,21 @@
     function updateAuthUI() {
         const authBtn = document.getElementById('authCornerBtn');
         const superuserBtn = document.getElementById('superuserBadgeBtn');
-        const iconWrapper = document.getElementById('authBtnIconWrapper');
-        const textSpan = document.getElementById('authBtnText');
-        const userSvgHtml = `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>`;
-        const keyImgHtml = `<img src="icon8.png" alt="Přihlásit">`;
 
         if (currentUser) {
-            authBtn.classList.add('logged-in');
-            iconWrapper.innerHTML = userSvgHtml;
-            textSpan.textContent = `${currentUser}`;
             authBtn.title = `Přihlášen jako: ${currentUser} (Klikněte pro odhlášení)`;
+            authBtn.classList.add('logged-in');
 
-            if (isSuperUser) {
-                superuserBtn.style.display = 'flex';
-            } else {
-                superuserBtn.style.display = 'none';
-            }
+            if (isSuperUser) superuserBtn.style.display = 'flex';
+            else superuserBtn.style.display = 'none';
         } else {
-            authBtn.classList.remove('logged-in');
-            iconWrapper.innerHTML = keyImgHtml;
-            textSpan.textContent = 'Přihlásit';
             authBtn.title = 'Přihlášení uživatele';
+            authBtn.classList.remove('logged-in');
             superuserBtn.style.display = 'none';
         }
     }
 
-    async function handleAuthClick() {
+    function handleAuthClick() {
         triggerHapticFeedback([18]);
         if (currentUser) {
             showCustomConfirm("Odhlášení", `Chcete se odhlásit z účtu ${currentUser}?`, "Odhlásit", () => {
@@ -2826,14 +2914,14 @@
 
     async function executeLogin() {
         triggerHapticFeedback([18]);
+        if (document.activeElement && typeof document.activeElement.blur === 'function') {
+            document.activeElement.blur();
+        }
         const username = document.getElementById('loginUsername').value.trim();
         const password = document.getElementById('loginPassword').value.trim();
-        if (!username) { alert("Zadejte vaše jméno nebo směnu!"); return; }
         
-        if (password !== MASTER_PASSWORD && password !== SUPER_ADMIN_PASSWORD) {
-            alert("Nesprávné heslo!"); 
-            return; 
-        }
+        if (!username) { showToast("Zadejte vaše jméno nebo směnu!", true); return; }
+        if (password !== MASTER_PASSWORD && password !== SUPER_ADMIN_PASSWORD) { showToast("Nesprávné heslo!", true); return; }
 
         currentUser = username;
         isSuperUser = (password === SUPER_ADMIN_PASSWORD);
@@ -2845,6 +2933,8 @@
         updateAuthUI();
         refreshUI();
 
+        pingUserPresence();
+
         fetch(`${API_URL}/rest/v1/mold_logs`, {
             method: 'POST',
             headers: { 'apikey': API_KEY, 'Authorization': `Bearer ${API_KEY}`, 'Content-Type': 'application/json' },
@@ -2854,13 +2944,10 @@
                 new_position: isSuperUser ? 'Přihlášení (Superuser)' : 'Přihlášení uživatele', 
                 user_name: username 
             })
-        }).catch(e => console.error("Chyba při logování přihlášení:", e));
+        }).catch(e => console.error("Chyba při logování:", e));
 
-        if (isSuperUser) {
-            showToast(`Přihlášen jako Superuser: ${currentUser}`);
-        } else {
-            showToast(`Přihlášen: ${currentUser}`);
-        }
+        if (isSuperUser) showToast(`Přihlášen jako Superuser: ${currentUser}`);
+        else showToast(`Přihlášen: ${currentUser}`);
     }
 
     function checkAuthOrPrompt() {
@@ -2869,14 +2956,8 @@
     }
 
     function checkSuperUserOrPrompt() {
-        if (!currentUser) {
-            openLoginModal();
-            return false;
-        }
-        if (!isSuperUser) {
-            alert("Tato akce je dostupná pouze pro superuživatele!");
-            return false;
-        }
+        if (!currentUser) { openLoginModal(); return false; }
+        if (!isSuperUser) { alert("Tato akce je dostupná pouze pro superuživatele!"); return false; }
         return true;
     }
 
@@ -2886,35 +2967,26 @@
         const cardInstant = document.getElementById('helCardInstant');
         const cardAuto = document.getElementById('helCardAuto');
 
-        if (type === 'manual') {
-            cardManual.classList.toggle('open');
-        } else if (type === 'instant') {
-            cardInstant.classList.toggle('open');
-        } else if (type === 'auto') {
+        if (type === 'manual') cardManual.classList.toggle('open');
+        else if (type === 'instant') cardInstant.classList.toggle('open');
+        else if (type === 'auto') {
             const isOpen = cardAuto.classList.toggle('open');
             if (isOpen && window.innerWidth <= 600) {
                 setTimeout(() => {
                     const autoContainer = document.querySelector('#helCardAuto .helios-accordion-anim-wrapper > div');
-                    if (autoContainer) {
-                        autoContainer.scrollTo({ top: autoContainer.scrollHeight, behavior: 'smooth' });
-                    }
+                    if (autoContainer) autoContainer.scrollTo({ top: autoContainer.scrollHeight, behavior: 'smooth' });
                 }, 300);
             }
         }
     }
 
     async function openHeliosAdminModal() {
-        if (!isSuperUser) {
-            alert("Nemáte oprávnění superuživatele!");
-            return;
-        }
+        if (!isSuperUser) { alert("Nemáte oprávnění superuživatele!"); return; }
         await loadSavedEmailSettings();
         showModalAnimated('heliosAdminModal');
     }
 
-    function closeHeliosAdminModal() {
-        hideModalAnimated('heliosAdminModal');
-    }
+    function closeHeliosAdminModal() { hideModalAnimated('heliosAdminModal'); }
 
     function exportHeliosSql() {
         triggerHapticFeedback([18]);
@@ -2962,15 +3034,12 @@
                 if (c.photo_urls) {
                     let cPhotos = Array.isArray(c.photo_urls) ? c.photo_urls : [c.photo_urls];
                     cPhotos.forEach(pUrl => {
-                        if (pUrl && !allPhotoUrls.includes(pUrl)) {
-                            allPhotoUrls.push(pUrl);
-                        }
+                        if (pUrl && !allPhotoUrls.includes(pUrl)) allPhotoUrls.push(pUrl);
                     });
                 }
             });
 
             const cleanPhotos = allPhotoUrls.join(", ").replace(/'/g, "''");
-            
             const cleanId = formId.replace(/'/g, "''").substring(0, 50);
             const cleanProd = String(i[5] || '').replace(/'/g, "''").substring(0, 255);
             const cleanCust = String(i[2] || '').replace(/'/g, "''").substring(0, 100);
@@ -2992,7 +3061,6 @@
         triggerHapticFeedback([18]);
         const activeMolds = rawDatabase.filter(i => !i[4]);
         let csv = "\uFEFFID_Formy;Výroba;Zákazník;Pozice;Stav;Poslední_Komentář;Foto;Poslední_Aktualizace\n";
-        
         const nowStr = new Date().toLocaleString('cs-CZ');
         
         activeMolds.forEach(i => {
@@ -3018,19 +3086,10 @@
 
     async function executeInstantEmailSendSelected() {
         let emails = getEmailsFromContainer('inst');
-
-        if (emails.length === 0) {
-            alert("Zadejte alespoň jednu platnou e-mailovou adresu!");
-            return;
-        }
-
-        if (!instantSelectedFormats.sql && !instantSelectedFormats.csv) {
-            alert("Vyberte alespoň jeden formát souboru (SQL nebo CSV)! Klikněte na tlačítka výše.");
-            return;
-        }
+        if (emails.length === 0) { alert("Zadejte alespoň jednu platnou e-mailovou adresu!"); return; }
+        if (!instantSelectedFormats.sql && !instantSelectedFormats.csv) { alert("Vyberte alespoň jeden formát souboru!"); return; }
 
         saveEmailsToLocalStorage('inst');
-
         triggerHapticFeedback([18]);
         showToast(`Odesílání vybraných dat na e-mail...`);
 
@@ -3052,12 +3111,7 @@
             };
         });
 
-        const payload = {
-            action: "sendInstant",
-            emails: emails,
-            formats: instantSelectedFormats,
-            molds: moldsPayload
-        };
+        const payload = { action: "sendInstant", emails: emails, formats: instantSelectedFormats, molds: moldsPayload };
 
         try {
             await fetch(GOOGLE_SCRIPT_URL, {
@@ -3066,11 +3120,11 @@
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(payload)
             });
-            showToast(`Požadavek na odeslání byl úspěšně odeslán!`);
+            showToast(`Požadavek byl úspěšně odeslán!`);
             closeHeliosAdminModal();
         } catch (e) {
-            console.error("Error sending email via Google Script:", e);
-            showToast("Chyba při odesílání e-mailu", true);
+            console.error(e);
+            showToast("Chyba při odesílání", true);
         }
     }
 
@@ -3080,13 +3134,9 @@
         const time = document.getElementById('heliosTimeSelect').value;
 
         if (emails.length === 0) {
-            alert("Zadejte alespoň jednu platnou e-mailovou adresu!");
-            return;
-        }
-
-        if (!autoSelectedFormats.sql && !autoSelectedFormats.csv) {
-            alert("Vyberte alespoň jeden formát souboru pro automatické odesílání!");
-            return;
+            if (!confirm("Seznam e-mailových adres je prázdný. Automatické odesílání bude VYPNUTO. Pokračovat?")) return;
+        } else if (!autoSelectedFormats.sql && !autoSelectedFormats.csv) {
+            alert("Vyberte alespoň jeden formát souboru!"); return;
         }
 
         saveEmailsToLocalStorage('auto');
@@ -3095,7 +3145,7 @@
         localStorage.setItem('adis_auto_formats', JSON.stringify(autoSelectedFormats));
 
         triggerHapticFeedback([18]);
-        showToast(`Ukládání nastavení na server...`);
+        showToast("Ukládání nastavení...");
 
         const settingsToSave = [
             { key: 'adis_auto_emails', value: JSON.stringify(emails) },
@@ -3105,33 +3155,24 @@
         ];
 
         try {
-            await supabaseClient
-                .from('app_settings')
-                .upsert(settingsToSave, { onConflict: 'key' });
-        } catch (err) {
-            console.error("Error saving settings to Supabase:", err);
-        }
+            await supabaseClient.from('app_settings').upsert(settingsToSave, { onConflict: 'key' });
+        } catch (err) { console.error(err); }
 
         const params = new URLSearchParams({
             action: "saveSettings",
             emails: JSON.stringify(emails),
             formats: JSON.stringify(autoSelectedFormats),
             frequency: freq,
-            time: time
+            time: time,
+            enabled: emails.length > 0 ? "true" : "false"
         });
 
         try {
-            const beaconUrl = `${GOOGLE_SCRIPT_URL}?${params.toString()}`;
-            
-            await fetch(beaconUrl, {
-                method: 'GET',
-                mode: 'no-cors'
-            });
-
-            showToast(`Automatické odesílání plně aktivováno na serveru!`);
+            await fetch(`${GOOGLE_SCRIPT_URL}?${params.toString()}`, { method: 'GET', mode: 'no-cors' });
+            showToast("Nastavení uložena!");
             closeHeliosAdminModal();
         } catch (e) {
-            showToast("Chyba při ukládání na server", true);
+            showToast("Chyba při ukládání", true);
         }
     }
 
@@ -3154,9 +3195,7 @@
         const debouncedFetch = () => {
             if (isSubmittingAction) return; 
             if (realtimeDebounceTimer) clearTimeout(realtimeDebounceTimer);
-            realtimeDebounceTimer = setTimeout(() => {
-                fetchData();
-            }, 500);
+            realtimeDebounceTimer = setTimeout(() => { fetchData(); }, 500);
         };
 
         supabaseClient
@@ -3166,6 +3205,10 @@
             .on('postgres_changes', { event: '*', schema: 'public', table: 'mold_logs' }, debouncedFetch)
             .on('postgres_changes', { event: '*', schema: 'public', table: 'customers' }, debouncedFetch)
             .on('postgres_changes', { event: '*', schema: 'public', table: 'app_settings' }, debouncedFetch)
+            .on('postgres_changes', { event: '*', schema: 'public', table: 'active_sessions' }, () => {
+                const popover = document.getElementById('onlineUsersPopover');
+                if (popover && popover.style.display === 'block') renderOnlineUsers();
+            })
             .subscribe();
     }
 
@@ -3178,7 +3221,6 @@
                 const data = await res.json();
                 if (data && data.length > 0) {
                     let fetchedList = data.map(c => ({ name: c.name, bg: c.bg_color || '#ffffff' }));
-                    
                     const savedOrderJson = localStorage.getItem('adis_customers_order');
                     if (savedOrderJson) {
                         try {
@@ -3195,11 +3237,8 @@
 
                     const othersObj = fetchedList.find(c => c.name.toLowerCase() === 'others');
                     let listWithoutOthers = fetchedList.filter(c => c.name.toLowerCase() !== 'others');
-                    if (othersObj) {
-                        listWithoutOthers.push(othersObj);
-                    } else {
-                        listWithoutOthers.push({ name: "Others", bg: "#fdfbf7" });
-                    }
+                    if (othersObj) listWithoutOthers.push(othersObj);
+                    else listWithoutOthers.push({ name: "Others", bg: "#fdfbf7" });
                     customersList = listWithoutOthers;
                 }
             }
@@ -3211,7 +3250,6 @@
         if (!container) return;
 
         const savedScrollLeft = container.scrollLeft;
-
         const isAllActive = currentCustomerFilter === 'ALL' ? 'active' : '';
         let html = `
             <span class="filter-chip ${isAllActive}" tabindex="0" onclick="filterCustomer('ALL', this)" style="background-color: #ffffff; color: #0f172a; border-color: #cbd5e1; font-weight: normal;">
@@ -3239,7 +3277,6 @@
         
         html += `<button class="add-customer-chip" tabindex="0" onclick="openAddCustomerModal()" title="Přidat nového zákazníka">+</button>`;
         container.innerHTML = html;
-
         container.scrollLeft = savedScrollLeft;
     }
 
@@ -3354,7 +3391,7 @@
                         fetch(`${API_URL}/rest/v1/mold_logs`, {
                             method: 'POST',
                             headers: { 'apikey': API_KEY, 'Authorization': `Bearer ${API_KEY}`, 'Content-Type': 'application/json' },
-                            body: JSON.stringify({ mold_id: moldId, old_position: `Aktivní`, new_position: `Koš (Kontextní menu)`, user_name: currentUser })
+                            body: JSON.stringify({ mold_id: moldId, old_position: `Aktivní`, new_position: `Koš`, user_name: currentUser })
                         })
                     ]);
                 } catch (e) { console.error(e); }
@@ -3374,9 +3411,8 @@
 
             if (cObj && cObj.photo_urls) {
                 let photoUrls = [];
-                if (Array.isArray(cObj.photo_urls)) {
-                    photoUrls = cObj.photo_urls;
-                } else if (typeof cObj.photo_urls === 'string') {
+                if (Array.isArray(cObj.photo_urls)) photoUrls = cObj.photo_urls;
+                else if (typeof cObj.photo_urls === 'string') {
                     try {
                         const parsed = JSON.parse(cObj.photo_urls);
                         photoUrls = Array.isArray(parsed) ? parsed : [cObj.photo_urls];
@@ -3389,11 +3425,7 @@
                 }).filter(Boolean);
 
                 if (filesToRemove.length > 0) {
-                    try {
-                        await supabaseClient.storage.from('mold-photos').remove(filesToRemove);
-                    } catch (err) {
-                        console.error("Error removing photos from storage:", err);
-                    }
+                    try { await supabaseClient.storage.from('mold-photos').remove(filesToRemove); } catch (err) {}
                 }
             }
 
@@ -3413,11 +3445,8 @@
                         body: JSON.stringify({ mold_id: moldId, old_position: `Poznámka`, new_position: `Poznámka smazána`, user_name: currentUser })
                     })
                 ]);
-            } catch (e) {
-                console.error("Error deleting comment:", e);
-            } finally {
-                isSubmittingAction = false;
-            }
+            } catch (e) { console.error(e); }
+            finally { isSubmittingAction = false; }
         });
     }
 
@@ -3439,7 +3468,6 @@
 
     function openAddCustomerModal() {
         if (!checkAuthOrPrompt()) return;
-        
         const filtersContainer = document.querySelector('.customer-filters');
         const currentScrollLeft = filtersContainer ? filtersContainer.scrollLeft : 0;
 
@@ -3448,15 +3476,16 @@
         showModalAnimated('addCustomerModal');
 
         if (filtersContainer) {
-            setTimeout(() => {
-                filtersContainer.scrollLeft = currentScrollLeft;
-            }, 50);
+            setTimeout(() => { filtersContainer.scrollLeft = currentScrollLeft; }, 50);
         }
     }
 
     function closeAddCustomerModal() { hideModalAnimated('addCustomerModal'); }
 
     async function submitNewCustomer() {
+        if (document.activeElement && typeof document.activeElement.blur === 'function') {
+            document.activeElement.blur();
+        }
         if (isSubmittingAction) return;
         const name = document.getElementById('newCustomerName').value.trim();
         const bg = selectedPresetColor;
@@ -3467,11 +3496,8 @@
         closeAddCustomerModal();
         
         const othersIndex = customersList.findIndex(c => c.name.toLowerCase() === 'others');
-        if (othersIndex !== -1) {
-            customersList.splice(othersIndex, 0, { name, bg });
-        } else {
-            customersList.push({ name, bg });
-        }
+        if (othersIndex !== -1) customersList.splice(othersIndex, 0, { name, bg });
+        else customersList.push({ name, bg });
         
         const savedOrder = customersList.map(c => c.name);
         localStorage.setItem('adis_customers_order', JSON.stringify(savedOrder));
@@ -3485,7 +3511,7 @@
                 headers: { 'apikey': API_KEY, 'Authorization': `Bearer ${API_KEY}`, 'Content-Type': 'application/json', 'Prefer': 'return=minimal' },
                 body: JSON.stringify({ name: name, bg_color: bg, text_color: '#000000', border_color: '#cbd5e1' })
             });
-        } catch (e) { console.error("Error saving customer:", e); }
+        } catch (e) { console.error(e); }
         finally { isSubmittingAction = false; }
     }
 
@@ -3515,8 +3541,13 @@
 
     function selectPosition(inputId, value) {
         triggerHapticFeedback([12]);
-        document.getElementById(inputId).value = value;
-        document.getElementById(inputId + 'Dropdown').style.display = 'none';
+        const inputEl = document.getElementById(inputId);
+        if (inputEl) {
+            inputEl.value = value;
+            inputEl.blur();
+        }
+        const dropdown = document.getElementById(inputId + 'Dropdown');
+        if (dropdown) dropdown.style.display = 'none';
     }
 
     function switchTab(tabName) {
@@ -3535,16 +3566,11 @@
         const activeContent = document.getElementById(`tab-${currentActive}`);
         const nextContent = document.getElementById(`tab-${tabName}`);
 
-        if (activeContent) {
-            activeContent.classList.remove('active');
-        }
+        if (activeContent) activeContent.classList.remove('active');
 
         if (nextContent) {
             nextContent.classList.add('active');
-
-            setTimeout(() => {
-                isTabTransitioning = false;
-            }, 220);
+            setTimeout(() => { isTabTransitioning = false; }, 220);
         }
     }
 
@@ -3558,6 +3584,8 @@
 
             if (!moldsRes.ok) throw new Error("Chyba API");
             const data = await moldsRes.json();
+            
+            // Натуральная сортировка Natural Sort по ID формы (сохраняет человеческий порядок: 1, 2, 10, 49Am)
             rawDatabase = data.map(item => {
                 let photosArr = [];
                 if (item.photo_url) {
@@ -3567,32 +3595,23 @@
                     } catch { photosArr = [item.photo_url]; }
                 }
                 return [
-                    item.id,                                 // 0: id
-                    item.position || '',                     // 1: position
-                    item.customer || 'Others',               // 2: customer
-                    item.status || '',                       // 3: status
-                    item.is_deleted || false,                // 4: is_deleted
-                    item.product_name || '',                 // 5: product_name
-                    photosArr,                               // 6: photosArr
-                    item.navodka_url || '',                  // 7: navodka_url
-                    item.previous_position || ''             // 8: previous_position
+                    item.id, item.position || '', item.customer || 'Others',
+                    item.status || '', item.is_deleted || false, item.product_name || '',
+                    photosArr, item.navodka_url || '', item.previous_position || ''
                 ];
-            });
+            }).sort((a, b) => String(a[0]).localeCompare(String(b[0]), undefined, { numeric: true, sensitivity: 'base' }));
 
             if (commentsRes && commentsRes.ok) {
                 const loadedComments = await commentsRes.json();
                 allComments = loadedComments.map(c => {
                     let parsedPhotoUrls = [];
                     if (c.photo_urls) {
-                        if (Array.isArray(c.photo_urls)) {
-                            parsedPhotoUrls = c.photo_urls;
-                        } else if (typeof c.photo_urls === 'string') {
+                        if (Array.isArray(c.photo_urls)) parsedPhotoUrls = c.photo_urls;
+                        else if (typeof c.photo_urls === 'string') {
                             try {
                                 const parsed = JSON.parse(c.photo_urls);
                                 parsedPhotoUrls = Array.isArray(parsed) ? parsed : [c.photo_urls];
-                            } catch {
-                                parsedPhotoUrls = [c.photo_urls];
-                            }
+                            } catch { parsedPhotoUrls = [c.photo_urls]; }
                         }
                     }
                     return { ...c, photo_urls: parsedPhotoUrls };
@@ -3610,7 +3629,6 @@
 
         const triggerTr = document.getElementById(`accordion-trigger-${rowKey}`);
         const tableContainer = triggerTr ? triggerTr.closest('.table-container') : (floatingLayer ? floatingLayer.closest('.table-container') : null);
-        
         const currentScrollTop = tableContainer ? tableContainer.scrollTop : 0;
 
         if (isExpanded) {
@@ -3623,7 +3641,6 @@
             
             if (floatingLayer) {
                 const wrapper = document.getElementById(`accordion-wrap-${rowKey}`);
-
                 if (wrapper) wrapper.classList.remove('open');
                 floatingLayer.classList.remove('open');
 
@@ -3656,8 +3673,8 @@
                     const html = `
                         <div id="accordion-floating-${escapeHtml(rowKey)}" class="accordion-floating-layer" style="z-index: 500;">
                             <div id="accordion-wrap-${escapeHtml(rowKey)}" class="accordion-anim-wrapper">
-                                <div class="accordion-content" id="accordion-content-box-${escapeHtml(moldId)}">
-                                    ${renderAccordionInnerContent(item)}
+                                <div class="accordion-content" id="accordion-content-box-${escapeHtml(rowKey)}">
+                                    ${renderAccordionInnerContent(item, rowKey)}
                                 </div>
                             </div>
                         </div>
@@ -3668,7 +3685,6 @@
 
                 if (tableContainer && floatingLayer) {
                     floatingLayer.style.width = `${tableContainer.clientWidth}px`;
-                    
                     const topPos = triggerTr.offsetTop + triggerTr.offsetHeight;
                     const leftPos = triggerTr.offsetLeft;
 
@@ -3686,14 +3702,13 @@
                     floatingLayer.classList.add('open');
                     const wrapper = document.getElementById(`accordion-wrap-${rowKey}`);
                     if (wrapper) wrapper.classList.add('open');
-                    
                     if (tableContainer) tableContainer.scrollTop = currentScrollTop;
                 });
             }
         }
     }
 
-    function toggleAccordionEditMode(moldId) {
+    function toggleAccordionEditMode(moldId, rowKey) {
         if (!checkSuperUserOrPrompt()) return;
         editingAccordionMap[moldId] = !editingAccordionMap[moldId];
         if (!editingAccordionMap[moldId]) {
@@ -3704,16 +3719,17 @@
             delete temporaryNavodkaMap[moldId];
             delete replaceNavodkaMap[moldId];
         }
-        refreshAccordionContent(moldId);
+        refreshAccordionContent(moldId, rowKey);
     }
 
-    function refreshAccordionContent(moldId) {
-        const contentDiv = document.getElementById(`accordion-content-box-${moldId}`);
+    function refreshAccordionContent(moldId, rowKey) {
+        const key = rowKey || moldId;
+        const contentDiv = document.getElementById(`accordion-content-box-${key}`);
         const item = rawDatabase.find(i => String(i[0]) === String(moldId));
-        if (contentDiv && item) contentDiv.innerHTML = renderAccordionInnerContent(item);
+        if (contentDiv && item) contentDiv.innerHTML = renderAccordionInnerContent(item, key);
     }
 
-    function handleAccordionFileSelect(moldId, inputElement) {
+    function handleAccordionFileSelect(moldId, inputElement, rowKey) {
         if (inputElement.files && inputElement.files.length > 0) {
             triggerHapticFeedback([12]);
             if (!temporaryFilesMap[moldId]) temporaryFilesMap[moldId] = [];
@@ -3723,51 +3739,47 @@
                 if (existingCount + temporaryFilesMap[moldId].length >= 5) { alert("Max 5 fotografií!"); break; }
                 temporaryFilesMap[moldId].push(inputElement.files[i]);
             }
-            refreshAccordionContent(moldId);
+            refreshAccordionContent(moldId, rowKey);
         }
     }
 
-    function handleNavodkaFileSelect(moldId, inputElement) {
+    function handleNavodkaFileSelect(moldId, inputElement, rowKey) {
         if (inputElement.files && inputElement.files.length > 0) {
             triggerHapticFeedback([12]);
             if (!temporaryNavodkaMap[moldId]) temporaryNavodkaMap[moldId] = [];
             for (let i = 0; i < inputElement.files.length; i++) {
                 temporaryNavodkaMap[moldId].push(inputElement.files[i]);
             }
-            refreshAccordionContent(moldId);
+            refreshAccordionContent(moldId, rowKey);
         }
     }
 
-    function handleNavodkaReplaceSelect(moldId, index, inputElement) {
+    function handleNavodkaReplaceSelect(moldId, index, inputElement, rowKey) {
         if (inputElement.files && inputElement.files.length > 0) {
             triggerHapticFeedback([12]);
             if (!replaceNavodkaMap[moldId]) replaceNavodkaMap[moldId] = {};
             replaceNavodkaMap[moldId][index] = inputElement.files[0];
-            refreshAccordionContent(moldId);
+            refreshAccordionContent(moldId, rowKey);
         }
     }
 
-    function cancelNavodkaReplace(moldId, index) {
+    function cancelNavodkaReplace(moldId, index, rowKey) {
         triggerHapticFeedback([12]);
-        if (replaceNavodkaMap[moldId]) {
-            delete replaceNavodkaMap[moldId][index];
-        }
-        refreshAccordionContent(moldId);
+        if (replaceNavodkaMap[moldId]) delete replaceNavodkaMap[moldId][index];
+        refreshAccordionContent(moldId, rowKey);
     }
 
-    function removeTempAccordionFile(moldId, index) {
+    function removeTempAccordionFile(moldId, index, rowKey) {
         triggerHapticFeedback([12]);
         if (temporaryFilesMap[moldId]) {
             const file = temporaryFilesMap[moldId][index];
-            if (file && file._previewUrl) {
-                URL.revokeObjectURL(file._previewUrl);
-            }
+            if (file && file._previewUrl) URL.revokeObjectURL(file._previewUrl);
             temporaryFilesMap[moldId].splice(index, 1);
-            refreshAccordionContent(moldId);
+            refreshAccordionContent(moldId, rowKey);
         }
     }
 
-    async function removeExistingAccordionPhoto(moldId, index) {
+    async function removeExistingAccordionPhoto(moldId, index, rowKey) {
         triggerHapticFeedback([12]);
         if (!checkSuperUserOrPrompt() || isSubmittingAction) return;
         const itemIdx = rawDatabase.findIndex(i => String(i[0]) === String(moldId));
@@ -3779,40 +3791,30 @@
             photosArr.splice(index, 1);
             rawDatabase[itemIdx][6] = photosArr;
 
-            refreshAccordionContent(moldId);
+            refreshAccordionContent(moldId, rowKey);
             showToast("Fotografie byla smazána");
 
             try {
                 await fetch(`${API_URL}/rest/v1/molds?id=eq.${moldId}`, {
                     method: 'PATCH',
-                    headers: { 
-                        'apikey': API_KEY, 
-                        'Authorization': `Bearer ${API_KEY}`, 
-                        'Content-Type': 'application/json', 
-                        'Prefer': 'return=minimal' 
-                    },
+                    headers: { 'apikey': API_KEY, 'Authorization': `Bearer ${API_KEY}`, 'Content-Type': 'application/json', 'Prefer': 'return=minimal' },
                     body: JSON.stringify({ photo_url: photosArr.length > 0 ? JSON.stringify(photosArr) : '' })
                 });
-            } catch (e) {
-                console.error("Chyba při mazání foto:", e);
-            } finally {
-                isSubmittingAction = false;
-            }
+            } catch (e) { console.error(e); }
+            finally { isSubmittingAction = false; }
         });
     }
 
-    function removeTempNavodka(moldId, index) {
+    function removeTempNavodka(moldId, index, rowKey) {
         triggerHapticFeedback([12]);
         if (temporaryNavodkaMap[moldId]) {
             temporaryNavodkaMap[moldId].splice(index, 1);
-            if (temporaryNavodkaMap[moldId].length === 0) {
-                delete temporaryNavodkaMap[moldId];
-            }
-            refreshAccordionContent(moldId);
+            if (temporaryNavodkaMap[moldId].length === 0) delete temporaryNavodkaMap[moldId];
+            refreshAccordionContent(moldId, rowKey);
         }
     }
 
-    async function removeSpecificNavodka(moldId, index) {
+    async function removeSpecificNavodka(moldId, index, rowKey) {
         triggerHapticFeedback([12]);
         if (!checkSuperUserOrPrompt()) return;
         const itemIdx = rawDatabase.findIndex(i => String(i[0]) === String(moldId));
@@ -3823,16 +3825,13 @@
         try {
             const parsed = navodkaUrl.startsWith("[") ? JSON.parse(navodkaUrl) : [{url: navodkaUrl, title: "Návodka 1"}];
             currentNavodky = Array.isArray(parsed) ? parsed : [{url: navodkaUrl, title: "Návodka 1"}];
-        } catch(e) {
-            currentNavodky = [{url: navodkaUrl, title: "Návodka 1"}];
-        }
+        } catch(e) { currentNavodky = [{url: navodkaUrl, title: "Návodka 1"}]; }
 
         currentNavodky.splice(index, 1);
         const newNavodkaUrl = currentNavodky.length > 0 ? JSON.stringify(currentNavodky) : '';
-
         rawDatabase[itemIdx][7] = newNavodkaUrl;
         
-        refreshAccordionContent(moldId);
+        refreshAccordionContent(moldId, rowKey);
         showToast("Návodka byla smazána");
 
         try {
@@ -3841,15 +3840,17 @@
                 headers: { 'apikey': API_KEY, 'Authorization': `Bearer ${API_KEY}`, 'Content-Type': 'application/json', 'Prefer': 'return=minimal' },
                 body: JSON.stringify({ navodka_url: newNavodkaUrl })
             });
-        } catch (e) {
-            console.error("Error removing navodka:", e);
-        }
+        } catch (e) { console.error(e); }
     }
 
-    async function saveAccordionDetails(moldId) {
+    async function saveAccordionDetails(moldId, rowKey) {
         triggerHapticFeedback([18]);
+        if (document.activeElement && typeof document.activeElement.blur === 'function') {
+            document.activeElement.blur();
+        }
         if (!checkSuperUserOrPrompt() || isSubmittingAction) return;
-        const nameInput = document.getElementById(`acc-name-${moldId}`);
+        const uniqueKey = rowKey || moldId;
+        const nameInput = document.getElementById(`acc-name-${uniqueKey}`);
         const newProductName = nameInput ? nameInput.value.trim() : '';
         const itemIdx = rawDatabase.findIndex(i => String(i[0]) === String(moldId));
         if (itemIdx === -1) return;
@@ -3873,9 +3874,7 @@
         let currentNavodky = [];
         try {
             currentNavodky = navodkaUrl.startsWith("[") ? JSON.parse(navodkaUrl) : (navodkaUrl ? [{url: navodkaUrl, title: "Návodka 1"}] : []);
-        } catch(e) { 
-            currentNavodky = navodkaUrl ? [{url: navodkaUrl, title: "Návodka 1"}] : []; 
-        }
+        } catch(e) { currentNavodky = navodkaUrl ? [{url: navodkaUrl, title: "Návodka 1"}] : []; }
 
         const pendingNavodkyFiles = temporaryNavodkaMap[moldId] || [];
         const hasReplaceNavodky = Object.keys(replaceNavodkaMap[moldId] || {}).length > 0;
@@ -3936,15 +3935,10 @@
                 await fetch(`${API_URL}/rest/v1/mold_logs`, {
                     method: 'POST',
                     headers: { 'apikey': API_KEY, 'Authorization': `Bearer ${API_KEY}`, 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ 
-                        mold_id: moldId, 
-                        old_position: 'Návodka', 
-                        new_position: 'Aktualizace návodky', 
-                        user_name: currentUser 
-                    })
+                    body: JSON.stringify({ mold_id: moldId, old_position: 'Návodka', new_position: 'Aktualizace návodky', user_name: currentUser })
                 });
             }
-        } catch (e) { console.error("Error saving accordion:", e); }
+        } catch (e) { console.error(e); }
         finally { isSubmittingAction = false; }
     }
 
@@ -3966,9 +3960,7 @@
 
     function closePdfModal() {
         hideModalAnimated('pdfModal');
-        setTimeout(() => {
-            document.getElementById('pdfFrame').src = '';
-        }, 220);
+        setTimeout(() => { document.getElementById('pdfFrame').src = ''; }, 220);
     }
 
     function openCommentModal(moldId) {
@@ -3983,6 +3975,9 @@
 
     async function submitComment() {
         triggerHapticFeedback([18]);
+        if (document.activeElement && typeof document.activeElement.blur === 'function') {
+            document.activeElement.blur();
+        }
         if (isSubmittingAction) return;
         const text = document.getElementById('commentText').value.trim();
         if (!text) { alert("Zadejte text poznámky!"); return; }
@@ -4009,9 +4004,8 @@
                 }
             }
             showToast(`Poznámka k formě ${activeCommentMoldId} byla přidána`);
-        } catch (e) { 
-            console.error("Error saving comment:", e); 
-        } finally { 
+        } catch (e) { console.error(e); }
+        finally { 
             isSubmittingAction = false; 
             refreshUI();
         }
@@ -4024,16 +4018,20 @@
         activeViewCommentId = commentId;
         document.getElementById('viewCommentTitle').textContent = `Detail poznámky ${commentObj.mold_id}`;
         document.getElementById('viewCommentMeta').textContent = `Autor: ${commentObj.user_name || 'Neznámý'} | ${new Date(commentObj.created_at).toLocaleString('cs-CZ')}`;
-        document.getElementById('viewCommentDisplay').textContent = commentObj.comment;
+        document.getElementById('viewCommentDisplay').textContent = commentObj.comment || '';
 
         const photosBox = document.getElementById('viewCommentPhotosBox');
         const photosContainer = document.getElementById('viewCommentPhotosContainer');
 
         let photosArr = [];
         if (commentObj.photo_urls) {
-            try {
-                photosArr = typeof commentObj.photo_urls === 'string' ? JSON.parse(commentObj.photo_urls) : commentObj.photo_urls;
-            } catch { photosArr = [commentObj.photo_urls]; }
+            if (Array.isArray(commentObj.photo_urls)) photosArr = commentObj.photo_urls;
+            else if (typeof commentObj.photo_urls === 'string') {
+                try {
+                    const parsed = JSON.parse(commentObj.photo_urls);
+                    photosArr = Array.isArray(parsed) ? parsed : [commentObj.photo_urls];
+                } catch (e) { photosArr = commentObj.photo_urls.trim() ? [commentObj.photo_urls] : []; }
+            }
         }
 
         if (photosArr && photosArr.length > 0) {
@@ -4041,9 +4039,7 @@
                 <div class="accordion-thumb-wrapper"><img src="${escapeHtml(url)}" class="accordion-thumb" onclick="openPhotoModal('${escapeHtml(url)}', '${escapeHtml(commentObj.mold_id)}')"></div>
             `).join('');
             photosBox.style.display = 'block';
-        } else {
-            photosBox.style.display = 'none';
-        }
+        } else photosBox.style.display = 'none';
 
         showModalAnimated('viewCommentModal');
     }
@@ -4073,6 +4069,9 @@
 
     async function savePositionChange() {
         triggerHapticFeedback([18]);
+        if (document.activeElement && typeof document.activeElement.blur === 'function') {
+            document.activeElement.blur();
+        }
         if (isSubmittingAction) return;
         const newPos = autoDotPosition(document.getElementById('modalPositionInput').value);
         if (!newPos) { alert("Zadejte pozici!"); return; }
@@ -4112,10 +4111,8 @@
                     body: JSON.stringify({ mold_id: activeEditMoldId, old_position: `Pozice: ${activeEditOldPos}`, new_position: `Pozice: ${newPos}`, user_name: currentUser })
                 })
             ]);
-        } catch (e) { console.error("Error updating position:", e); }
-        finally { 
-            setTimeout(() => { isSubmittingAction = false; }, 800);
-        }
+        } catch (e) { console.error(e); }
+        finally { setTimeout(() => { isSubmittingAction = false; }, 800); }
     }
 
     function openDirectProdModal() {
@@ -4123,14 +4120,23 @@
         document.getElementById('directProdMoldId').value = '';
         document.getElementById('directProdStatus').value = 'Ve frontě na údržbu';
         document.getElementById('directProdComment').value = '';
-        directProdPendingFiles.forEach(file => { if (file._previewUrl) URL.revokeObjectURL(file._previewUrl); });
+        if (directProdPendingFiles && directProdPendingFiles.length > 0) {
+            directProdPendingFiles.forEach(file => { if (file._previewUrl) URL.revokeObjectURL(file._previewUrl); });
+        }
         directProdPendingFiles = [];
         renderDirectProdThumbs();
         showModalAnimated('directProdModal');
     }
 
     function closeDirectProdModal() { 
-        directProdPendingFiles.forEach(file => { if (file._previewUrl) URL.revokeObjectURL(file._previewUrl); });
+        if (directProdPendingFiles && directProdPendingFiles.length > 0) {
+            directProdPendingFiles.forEach(file => { 
+                if (file._previewUrl) {
+                    URL.revokeObjectURL(file._previewUrl);
+                    delete file._previewUrl;
+                }
+            });
+        }
         directProdPendingFiles = [];
         hideModalAnimated('directProdModal'); 
     }
@@ -4152,9 +4158,7 @@
     function removeDirectProdFile(index) {
         triggerHapticFeedback([12]);
         const file = directProdPendingFiles[index];
-        if (file && file._previewUrl) {
-            URL.revokeObjectURL(file._previewUrl);
-        }
+        if (file && file._previewUrl) URL.revokeObjectURL(file._previewUrl);
         directProdPendingFiles.splice(index, 1);
         renderDirectProdThumbs();
     }
@@ -4165,9 +4169,7 @@
         if (!container) return;
 
         container.innerHTML = directProdPendingFiles.map((file, idx) => {
-            if (!file._previewUrl) {
-                file._previewUrl = URL.createObjectURL(file);
-            }
+            if (!file._previewUrl) file._previewUrl = URL.createObjectURL(file);
             return `
                 <div class="accordion-thumb-wrapper" style="border-color: #3b82f6;">
                     <img src="${file._previewUrl}" class="accordion-thumb">
@@ -4181,6 +4183,9 @@
 
     async function executeDirectProductionMove() {
         triggerHapticFeedback([22]);
+        if (document.activeElement && typeof document.activeElement.blur === 'function') {
+            document.activeElement.blur();
+        }
         if (isSubmittingAction) return;
         const moldId = document.getElementById('directProdMoldId').value.trim();
         const selectedStatus = document.getElementById('directProdStatus').value;
@@ -4194,14 +4199,10 @@
         closeDirectProdModal();
 
         let targetPosition = 'Mezisklad';
-        if (selectedStatus === 'Na opravě pryč') {
-            targetPosition = 'Mezisklad Externí';
-        }
+        if (selectedStatus === 'Na opravě pryč') targetPosition = 'Mezisklad Externí';
 
         let prevPosToSave = existing ? existing[8] : '';
-        if (oldPos && !oldPos.toLowerCase().includes('mezisklad')) {
-            prevPosToSave = oldPos;
-        }
+        if (oldPos && !oldPos.toLowerCase().includes('mezisklad')) prevPosToSave = oldPos;
 
         if (existing) {
             existing[1] = targetPosition; 
@@ -4263,9 +4264,8 @@
                     }
                 }
             }
-        } catch (e) { 
-            console.error("Error submitting production move:", e); 
-        } finally { 
+        } catch (e) { console.error(e); }
+        finally { 
             setTimeout(() => { isSubmittingAction = false; }, 800);
             refreshUI();
         }
@@ -4296,6 +4296,9 @@
 
     async function saveFullEditChange() {
         triggerHapticFeedback([18]);
+        if (document.activeElement && typeof document.activeElement.blur === 'function') {
+            document.activeElement.blur();
+        }
         if (isSubmittingAction) return;
         
         let newPos = autoDotPosition(document.getElementById('fullEditPositionInput').value);
@@ -4328,14 +4331,9 @@
                 });
             }
         } else if (autoMezisklad) {
-            if (item[1] && !item[1].toLowerCase().includes('mezisklad')) {
-                prevPosToSave = item[1];
-            }
-            if (newStatus === 'Na opravě pryč') {
-                newPos = 'Mezisklad Externí';
-            } else {
-                newPos = 'Mezisklad';
-            }
+            if (item[1] && !item[1].toLowerCase().includes('mezisklad')) prevPosToSave = item[1];
+            if (newStatus === 'Na opravě pryč') newPos = 'Mezisklad Externí';
+            else newPos = 'Mezisklad';
         }
 
         isSubmittingAction = true;
@@ -4364,9 +4362,7 @@
                 })
             ]);
         } catch (e) { console.error(e); }
-        finally { 
-            setTimeout(() => { isSubmittingAction = false; }, 800);
-        }
+        finally { setTimeout(() => { isSubmittingAction = false; }, 800); }
     }
 
     async function restoreMold(moldId) {
@@ -4392,9 +4388,7 @@
                 })
             ]);
         } catch (e) { console.error(e); }
-        finally { 
-            setTimeout(() => { isSubmittingAction = false; }, 800);
-        }
+        finally { setTimeout(() => { isSubmittingAction = false; }, 800); }
     }
 
     function openTrashModal() {
@@ -4414,12 +4408,8 @@
 
     async function emptyTrash() {
         if (!checkAuthOrPrompt()) return;
-        
         const deletedMolds = rawDatabase.filter(item => item[4] === true);
-        if (deletedMolds.length === 0) {
-            alert("Koš je již prázdný!");
-            return;
-        }
+        if (deletedMolds.length === 0) { alert("Koš je již prázdný!"); return; }
 
         showCustomConfirm("Vyčištění koše", `Opravdu chcete trvale smazat všech ${deletedMolds.length} forem z koše? Tato akce je nevratná!`, "Vyčistit", async () => {
             if (isSubmittingAction) return;
@@ -4428,11 +4418,7 @@
             try {
                 const res = await fetch(`${API_URL}/rest/v1/molds?is_deleted=eq.true`, {
                     method: 'DELETE',
-                    headers: { 
-                        'apikey': API_KEY, 
-                        'Authorization': `Bearer ${API_KEY}`,
-                        'Prefer': 'return=minimal'
-                    }
+                    headers: { 'apikey': API_KEY, 'Authorization': `Bearer ${API_KEY}`, 'Prefer': 'return=minimal' }
                 });
 
                 if (!res.ok) throw new Error("Chyba při mazání z databáze");
@@ -4444,7 +4430,6 @@
                 });
 
                 rawDatabase = rawDatabase.filter(item => item[4] !== true);
-                
                 showToast("Koš byl vyčištěn");
                 closeTrashModal();
                 refreshUI();
@@ -4470,6 +4455,9 @@
 
     async function submitNewMold() {
         triggerHapticFeedback([18]);
+        if (document.activeElement && typeof document.activeElement.blur === 'function') {
+            document.activeElement.blur();
+        }
         if (isSubmittingAction) return;
         const id = document.getElementById('addMoldId').value.trim();
         const productName = document.getElementById('addMoldProductName').value.trim();
@@ -4483,6 +4471,10 @@
         isSubmittingAction = true;
         closeAddModal();
         rawDatabase.push([id, position, customer, status, false, productName, [], '', '']);
+        
+        // Автоматически сортируем массив с новой формой
+        rawDatabase.sort((a, b) => String(a[0]).localeCompare(String(b[0]), undefined, { numeric: true, sensitivity: 'base' }));
+        
         refreshUI();
         showToast(`Forma ${id} byla vytvořena`);
 
@@ -4498,33 +4490,21 @@
                 body: JSON.stringify({ mold_id: id, old_position: 'Nová forma', new_position: `${position}`, user_name: `${currentUser}` })
             });
         } catch (e) { alert("Chyba: " + e.message); fetchData(); }
-        finally { 
-            setTimeout(() => { isSubmittingAction = false; }, 800);
-        }
+        finally { setTimeout(() => { isSubmittingAction = false; }, 800); }
     }
 
     function isRegularUserLog(log) {
         const combined = ((log.old_position || '') + ' ' + (log.new_position || '')).toLowerCase();
-
-        if (combined.includes('autorizace') || combined.includes('přihlášení') || combined.includes('přihlášen') || combined.includes('вход') || combined.includes('zákazník') || log.mold_id === 'SYSTEM') {
+        if (combined.includes('autorizace') || combined.includes('přihlášení') || combined.includes('přihlášen') || combined.includes('zákazník') || log.mold_id === 'SYSTEM') {
             return false;
         }
-
-        const isPosition = combined.includes('pozice');
-        const isStatus = combined.includes('stav');
-        const isFormAddDel = combined.includes('nová forma') || combined.includes('koš') || combined.includes('obnovena');
-        const isNavodka = combined.includes('návodka');
-
-        return isPosition || isStatus || isFormAddDel || isNavodka;
+        return combined.includes('pozice') || combined.includes('stav') || combined.includes('nová forma') || combined.includes('koš') || combined.includes('obnovena') || combined.includes('návodka');
     }
 
     async function openLogsModal() {
         showModalAnimated('logsModal');
-        
         const clearLogsBtnFooter = document.getElementById('clearLogsBtnFooter');
-        if (clearLogsBtnFooter) {
-            clearLogsBtnFooter.style.display = isSuperUser ? 'inline-block' : 'none';
-        }
+        if (clearLogsBtnFooter) clearLogsBtnFooter.style.display = isSuperUser ? 'inline-block' : 'none';
 
         const list = document.getElementById('logsList');
         list.innerHTML = `<div class="no-data">Načítání historie...</div>`;
@@ -4532,9 +4512,7 @@
             const res = await fetch(`${API_URL}/rest/v1/mold_logs?select=*&order=created_at.desc&limit=150`, { headers: { 'apikey': API_KEY, 'Authorization': `Bearer ${API_KEY}` } });
             let logs = await res.json();
 
-            if (!isSuperUser) {
-                logs = logs.filter(isRegularUserLog);
-            }
+            if (!isSuperUser) logs = logs.filter(isRegularUserLog);
 
             if (logs.length === 0) { list.innerHTML = `<div class="no-data">Zatím žádná historie</div>`; return; }
             list.innerHTML = logs.map(log => `
@@ -4548,10 +4526,7 @@
 
     function closeLogsModal() { hideModalAnimated('logsModal'); }
     function promptClearLogs() { 
-        if (!isSuperUser) {
-            alert("Nemáte oprávnění pro vyčištění historie!");
-            return;
-        }
+        if (!isSuperUser) { alert("Nemáte oprávnění pro vyčištění historie!"); return; }
         if (checkAuthOrPrompt()) {
             showCustomConfirm("Vyčistir historii", "Opravdu chcete vyčistit starou historii přemístění forem?", "Vyčistit", executeClearLogs);
         }
@@ -4559,22 +4534,14 @@
     function closeClearLogsModal() { hideModalAnimated('clearLogsModal'); }
 
     async function executeClearLogs() {
-        if (!isSuperUser) {
-            alert("Nemáte oprávnění pro vyčištění historie!");
-            return;
-        }
+        if (!isSuperUser) { alert("Nemáte oprávnění pro vyčištění historie!"); return; }
         if (isSubmittingAction) return;
         isSubmittingAction = true;
         try {
             await fetch(`${API_URL}/rest/v1/mold_logs?mold_id=neq.NULL`, {
                 method: 'DELETE',
-                headers: { 
-                    'apikey': API_KEY, 
-                    'Authorization': `Bearer ${API_KEY}`,
-                    'Prefer': 'return=minimal'
-                }
+                headers: { 'apikey': API_KEY, 'Authorization': `Bearer ${API_KEY}`, 'Prefer': 'return=minimal' }
             });
-            
             await fetch(`${API_URL}/rest/v1/mold_logs`, {
                 method: 'POST',
                 headers: { 'apikey': API_KEY, 'Authorization': `Bearer ${API_KEY}`, 'Content-Type': 'application/json' },
@@ -4584,9 +4551,7 @@
             showToast("Historie byla vyčištěna");
             openLogsModal();
         } catch (e) { alert("Chyba při mazání: " + e.message); }
-        finally { 
-            setTimeout(() => { isSubmittingAction = false; }, 800);
-        }
+        finally { setTimeout(() => { isSubmittingAction = false; }, 800); }
     }
 
     function getCustomerStyle(cust) {
@@ -4623,9 +4588,10 @@
         `;
     }
 
-    function renderAccordionInnerContent(item) {
+    function renderAccordionInnerContent(item, rowKey) {
         const [num, pos, cust, status, isDel, productName, photosArr, navodkaUrl, prevPos] = item;
         const isEditing = Boolean(editingAccordionMap[num]);
+        const uniqueKey = rowKey || num;
 
         if (!isEditing) {
             const photosHtml = photosArr.length > 0 ? photosArr.map(url => `
@@ -4638,9 +4604,7 @@
                 try {
                     const parsed = navodkaUrl.startsWith("[") ? JSON.parse(navodkaUrl) : [{url: navodkaUrl, title: "Návodka 1"}];
                     navodky = Array.isArray(parsed) ? parsed : [{url: navodkaUrl, title: "Návodka 1"}];
-                } catch(e) {
-                    navodky = [{url: navodkaUrl, title: "Návodka 1"}];
-                }
+                } catch(e) { navodky = [{url: navodkaUrl, title: "Návodka 1"}]; }
 
                 navodkaBlockHtml = `<div class="navodka-container-horizontal">` + navodky.map((itemObj, index) => {
                     const url = typeof itemObj === 'string' ? itemObj : itemObj.url;
@@ -4657,7 +4621,7 @@
             return `
                 <div class="accordion-top-bar">
                     <div class="accordion-header-title">Detail formy</div>
-                    ${isSuperUser ? `<button class="accordion-edit-trigger-btn" onclick="toggleAccordionEditMode('${escapeHtml(num)}')">${ACCORDION_EDIT_ICON_HTML} Upravit</button>` : ''}
+                    ${isSuperUser ? `<button class="accordion-edit-trigger-btn" onclick="toggleAccordionEditMode('${escapeHtml(num)}', '${escapeHtml(uniqueKey)}')">${ACCORDION_EDIT_ICON_HTML} Upravit</button>` : ''}
                 </div>
                 <div style="font-size: 0.9rem; text-transform: capitalize;"><strong>Název výroby:</strong> ${productName ? escapeHtml(productName) : '<span style="color:var(--text-muted)">Nezadán</span>'}</div>
                 
@@ -4673,22 +4637,20 @@
             `;
         } else {
             const existingThumbs = photosArr.map((url, idx) => `
-                <div class="accordion-thumb-wrapper"><img src="${escapeHtml(url)}" class="accordion-thumb"><button type="button" class="accordion-thumb-remove" onclick="removeExistingAccordionPhoto('${escapeHtml(num)}', ${idx})">&times;</button></div>
+                <div class="accordion-thumb-wrapper"><img src="${escapeHtml(url)}" class="accordion-thumb"><button type="button" class="accordion-thumb-remove" onclick="removeExistingAccordionPhoto('${escapeHtml(num)}', ${idx}, '${escapeHtml(uniqueKey)}')">&times;</button></div>
             `).join('');
 
             const pending = temporaryFilesMap[num] || [];
             const pendingThumbs = pending.map((file, idx) => {
-                if (!file._previewUrl) {
-                    file._previewUrl = URL.createObjectURL(file);
-                }
+                if (!file._previewUrl) file._previewUrl = URL.createObjectURL(file);
                 return `
-                    <div class="accordion-thumb-wrapper" style="border-color: #3b82f6;"><img src="${file._previewUrl}" class="accordion-thumb"><button type="button" class="accordion-thumb-remove" onclick="removeTempAccordionFile('${escapeHtml(num)}', ${idx})">&times;</button></div>
+                    <div class="accordion-thumb-wrapper" style="border-color: #3b82f6;"><img src="${file._previewUrl}" class="accordion-thumb"><button type="button" class="accordion-thumb-remove" onclick="removeTempAccordionFile('${escapeHtml(num)}', ${idx}, '${escapeHtml(uniqueKey)}')">&times;</button></div>
                 `;
             }).join('');
 
             const uploadCard = (photosArr.length + pending.length < 5) ? `
-                <input type="file" id="acc-file-${escapeHtml(num)}" accept="image/*" multiple class="file-upload-hidden" onchange="handleAccordionFileSelect('${escapeHtml(num)}', this)">
-                <label for="acc-file-${escapeHtml(num)}" class="photo-upload-card"><span style="font-size:24px; color:var(--text-muted)">+</span><span style="font-size:0.65rem; color:var(--text-muted)">Přidat foto</span></label>
+                <input type="file" id="acc-file-${escapeHtml(uniqueKey)}" accept="image/*" multiple class="file-upload-hidden" onchange="handleAccordionFileSelect('${escapeHtml(num)}', this, '${escapeHtml(uniqueKey)}')">
+                <label for="acc-file-${escapeHtml(uniqueKey)}" class="photo-upload-card"><span style="font-size:24px; color:var(--text-muted)">+</span><span style="font-size:0.65rem; color:var(--text-muted)">Přidat foto</span></label>
             ` : '';
 
             let currentNavodky = [];
@@ -4696,9 +4658,7 @@
                 try {
                     const parsed = navodkaUrl.startsWith("[") ? JSON.parse(navodkaUrl) : [{url: navodkaUrl, title: "Návodka 1"}];
                     currentNavodky = Array.isArray(parsed) ? parsed : [{url: navodkaUrl, title: "Návodka 1"}];
-                } catch(e) {
-                    currentNavodky = [{url: navodkaUrl, title: "Návodka 1"}];
-                }
+                } catch(e) { currentNavodky = [{url: navodkaUrl, title: "Návodka 1"}]; }
             }
 
             let existingNavodkyEditHtml = currentNavodky.map((itemObj, idx) => {
@@ -4712,7 +4672,7 @@
                         <div class="navodka-badge-item" style="border-color: #f59e0b; background-color: #fffbeb;">
                             <svg class="navodka-file-icon" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg>
                             <span style="color: #b45309;"><strong>Bude nahrazeno:</strong> ${escapeHtml(newTitle)}</span>
-                            <button type="button" class="navodka-delete-cross" onclick="cancelNavodkaReplace('${escapeHtml(num)}', ${idx})" title="Zrušit náhradu">✕</button>
+                            <button type="button" class="navodka-delete-cross" onclick="cancelNavodkaReplace('${escapeHtml(num)}', ${idx}, '${escapeHtml(uniqueKey)}')" title="Zrušit náhradu">✕</button>
                         </div>
                     `;
                 }
@@ -4722,10 +4682,10 @@
                         <svg class="navodka-file-icon" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
                         <span onclick="openPdfModal('${escapeHtml(url)}', '${escapeHtml(num)} — ${escapeHtml(title)}')">${escapeHtml(title)}</span>
 
-                        <input type="file" id="navodka-replace-input-${escapeHtml(num)}-${idx}" accept="image/*,.pdf" class="file-upload-hidden" onchange="handleNavodkaReplaceSelect('${escapeHtml(num)}', ${idx}, this)">
-                        <label for="navodka-replace-input-${escapeHtml(num)}-${idx}" style="cursor:pointer; margin-left:6px; font-size:12px; filter: grayscale(100%); opacity:0.75; transition:opacity 0.2s;" title="Nahradit soubor" onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0.75'">🔄</label>
+                        <input type="file" id="navodka-replace-input-${escapeHtml(uniqueKey)}-${idx}" accept="image/*,.pdf" class="file-upload-hidden" onchange="handleNavodkaReplaceSelect('${escapeHtml(num)}', ${idx}, this, '${escapeHtml(uniqueKey)}')">
+                        <label for="navodka-replace-input-${escapeHtml(uniqueKey)}-${idx}" style="cursor:pointer; margin-left:6px; font-size:12px; filter: grayscale(100%); opacity:0.75; transition:opacity 0.2s;" title="Nahradit soubor">🔄</label>
 
-                        ${isSuperUser ? `<button type="button" class="navodka-delete-cross" onclick="removeSpecificNavodka('${escapeHtml(num)}', ${idx})" title="Smazat návodku">✕</button>` : ''}
+                        ${isSuperUser ? `<button type="button" class="navodka-delete-cross" onclick="removeSpecificNavodka('${escapeHtml(num)}', ${idx}, '${escapeHtml(uniqueKey)}')" title="Smazat návodku">✕</button>` : ''}
                     </div>
                 `;
             }).join('');
@@ -4736,241 +4696,321 @@
                 return `
                     <div class="navodka-badge-item" style="border-color: #22c55e;">
                         <svg class="navodka-file-icon" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg>
-                        <span style="color: #166534;">+ Alternativní: ${escapeHtml(autoTitle)}</span>
-                        <button type="button" class="navodka-delete-cross" onclick="removeTempNavodka('${escapeHtml(num)}', ${idx})" title="Zrušit">✕</button>
+                        <span style="color: #15803d;">+ ${escapeHtml(autoTitle)}</span>
+                        <button type="button" class="navodka-delete-cross" onclick="removeTempNavodka('${escapeHtml(num)}', ${idx}, '${escapeHtml(uniqueKey)}')" title="Zrušit">✕</button>
                     </div>
                 `;
             }).join('');
 
-            const navodkaUploadArea = isSuperUser ? `
-                <input type="file" id="navodka-file-${escapeHtml(num)}" accept="image/*,.pdf" multiple class="file-upload-hidden" onchange="handleNavodkaFileSelect('${escapeHtml(num)}', this)">
-                <label for="navodka-file-${escapeHtml(num)}" class="navodka-badge-item" style="cursor:pointer; background: #f8fafc; border-style: dashed; color: #3b82f6;">
-                    <span>+ Přidat návodku</span>
-                </label>
-            ` : '';
-
             return `
                 <div class="accordion-top-bar">
-                    <div class="accordion-header-title" style="color: #3b82f6; font-weight: bold;">Režim úprav (Superuser)</div>
-                    <button class="accordion-edit-trigger-btn" onclick="toggleAccordionEditMode('${escapeHtml(num)}')">✕ Zrušit</button>
+                    <div class="accordion-header-title">Úprava detailu formy</div>
+                    <button class="accordion-edit-trigger-btn" onclick="toggleAccordionEditMode('${escapeHtml(num)}', '${escapeHtml(uniqueKey)}')">Zrušit</button>
                 </div>
-                <div><div class="accordion-header-title">Název výroby:</div><input type="text" id="acc-name-${escapeHtml(num)}" value="${escapeHtml(productName || '')}" style="width:100%; max-width:260px; padding:0.4rem; border-radius:6px; border:1px solid var(--border-color);" autocapitalization="sentences" autocapitalize="sentences"></div>
                 
+                <div class="form-group" style="margin-bottom: 0.5rem;">
+                    <label style="font-size:0.78rem; color:var(--text-muted)">Název výroby / dílu:</label>
+                    <input type="text" id="acc-name-${escapeHtml(uniqueKey)}" value="${escapeHtml(productName)}" placeholder="Zadejte název..." style="padding: 0.5rem; font-size: 0.85rem;" autocomplete="off" autocapitalization="sentences" autocapitalize="sentences">
+                </div>
+
                 <div>
-                    <div class="accordion-header-title" style="color: #3b82f6; margin-bottom: 0.3rem;">Návodka k výrobě:</div>
-                    <div class="navodka-container-horizontal">
+                    <div class="accordion-header-title" style="color: #3b82f6; margin-bottom: 0.35rem;">Návodka k výrobě:</div>
+                    <div class="navodka-container-horizontal" style="margin-bottom: 0.4rem;">
                         ${existingNavodkyEditHtml}
                         ${tempNavodkyEditHtml}
-                        ${navodkaUploadArea}
+                    </div>
+                    <input type="file" id="navodka-file-${escapeHtml(uniqueKey)}" accept="image/*,.pdf" multiple class="file-upload-hidden" onchange="handleNavodkaFileSelect('${escapeHtml(num)}', this, '${escapeHtml(uniqueKey)}')">
+                    <label for="navodka-file-${escapeHtml(uniqueKey)}" class="btn-secondary" style="display:inline-flex; align-items:center; gap:0.35rem; padding: 0.35rem 0.65rem; font-size:0.75rem; cursor:pointer;">
+                        📎 Připojit další návodku
+                    </label>
+                </div>
+
+                <div>
+                    <div class="accordion-header-title" style="margin-bottom: 0.35rem;">Fotografie formy (${photosArr.length + pending.length}/5):</div>
+                    <div class="accordion-photo-box">
+                        ${existingThumbs}
+                        ${pendingThumbs}
+                        ${uploadCard}
                     </div>
                 </div>
 
-                <div><div class="accordion-header-title">Fotografie formy:</div><div class="accordion-photo-box">${existingThumbs}${pendingThumbs}${uploadCard}</div></div>
-                
-                <div style="text-align: right;"><button class="btn-primary" style="padding: 0.4rem 0.85rem; font-size: 0.8rem;" onclick="saveAccordionDetails('${escapeHtml(num)}')">Uložit změny</button></div>
+                <div style="display:flex; justify-content:flex-end; gap:0.5rem; margin-top:0.5rem;">
+                    <button class="btn-primary" style="padding:0.4rem 0.85rem; font-size:0.82rem;" onclick="saveAccordionDetails('${escapeHtml(num)}', '${escapeHtml(uniqueKey)}')">Uložit změny</button>
+                </div>
             `;
         }
     }
 
-    function renderTableRow(item, extraRowClass = '', enableContextMenu = false, showPlusBtn = true, prefixKey = '') {
-        const [num, pos, cust, status, isDel, productName, photosArr, navodkaUrl, prevPos] = item;
-        const custStyle = getCustomerStyle(cust);
-        const rowKey = prefixKey ? `${prefixKey}_${num}` : num;
-        const isExpanded = Boolean(expandedMoldsMap[rowKey]);
-        
-        const productSub = productName ? `<div class="product-name-sub">↳ ${escapeHtml(productName)}</div>` : '';
-
-        const comments = allComments.filter(c => String(c.mold_id) === String(num));
-        const commentsHtml = comments.length > 0 ? `<div class="comments-section">${comments.map(c => {
-            const hasPhotos = c.photo_urls && (Array.isArray(c.photo_urls) ? c.photo_urls.length > 0 : String(c.photo_urls).length > 2);
-            const photoBadge = hasPhotos ? ` 📷` : '';
-            
-            const isLongText = (c.comment || '').length > 90 || (c.comment || '').includes('\n');
-            const textClass = isLongText ? 'comment-text-faded' : 'comment-text-full';
-
-            return `
-                <div class="comment-item" 
-                     onclick="openViewCommentModal('${c.id}')" 
-                     oncontextmenu="handleCommentRightClick(event, '${c.id}')"
-                     title="Klikněte pro detail, pravým tlačítkem smažete">
-                    <div class="comment-header-row">
-                        <div class="comment-meta">
-                            <span>${escapeHtml(c.user_name)}</span>
-                            <span>${new Date(c.created_at).toLocaleString('cs-CZ', {hour:'2-digit', minute:'2-digit'})}${photoBadge}</span>
-                        </div>
-                        <span class="comment-expand-hint" title="Otevřít detail">
-                            <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                <path class="arrow-corner-tr" d="M9 3h4v4" />
-                                <path class="arrow-corner-bl" d="M7 13H3v-4" />
-                            </svg>
-                        </span>
-                    </div>
-                    <div class="${textClass}">${escapeHtml(c.comment)}</div>
-                </div>
-            `;
-        }).join('')}</div>` : '';
-
-        const contextAttrs = (enableContextMenu && prefixKey === 'db') ? `
-            oncontextmenu="handleMoldRowRightClick(event, '${escapeHtml(num)}')"
-        ` : '';
-
-        const plusBtnHtml = showPlusBtn ? `
-            <button id="accordion-btn-${escapeHtml(rowKey)}" class="toggle-accordion-btn ${isExpanded ? 'expanded' : ''}" onclick="toggleAccordion('${escapeHtml(rowKey)}', '${escapeHtml(num)}')">${isExpanded ? '−' : '+'}</button>
-        ` : '';
+    function renderCommentsListHtml(moldId) {
+        const itemComments = allComments.filter(c => String(c.mold_id) === String(moldId));
+        if (itemComments.length === 0) return '';
 
         return `
-            <tr id="accordion-trigger-${escapeHtml(rowKey)}" class="row-adding ${extraRowClass}" ${contextAttrs}>
-                <td>
-                    <div class="mold-cell-content">
-                        ${plusBtnHtml}
-                        <strong>${escapeHtml(num)}</strong> ${renderStatusPill(status)}
-                    </div>
-                    ${productSub}
-                    ${commentsHtml}
-                </td>
-                <td><span class="tag-customer" style="${custStyle}" onclick="editCustomer('${escapeHtml(num)}', '${escapeHtml(cust)}')">${escapeHtml(cust)}</span></td>
-                <td>${renderPositionCellHtml(num, pos, status, productName, prevPos)}</td>
-            </tr>
-            <tr style="display: none;"><td colspan="3"></td></tr>
+            <div class="comments-section">
+                ${itemComments.map(c => {
+                    const author = escapeHtml(c.user_name || 'Neznámý');
+                    const text = escapeHtml(c.comment || '');
+                    const cDate = new Date(c.created_at).toLocaleString('cs-CZ');
+
+                    let photosArr = [];
+                    if (c.photo_urls) {
+                        if (Array.isArray(c.photo_urls)) photosArr = c.photo_urls;
+                        else if (typeof c.photo_urls === 'string') {
+                            try {
+                                const parsed = JSON.parse(c.photo_urls);
+                                photosArr = Array.isArray(parsed) ? parsed : [c.photo_urls];
+                            } catch (e) { photosArr = c.photo_urls.trim() ? [c.photo_urls] : []; }
+                        }
+                    }
+
+                    const photoTag = photosArr.length > 0 ? `<span style="color: #3b82f6; font-weight: bold; margin-left: auto; display: flex; align-items: center; gap: 2px;">📷 ${photosArr.length}</span>` : '';
+
+                    return `
+                        <div class="comment-item" onclick="openViewCommentModal('${escapeHtml(c.id)}')" oncontextmenu="handleCommentRightClick(event, '${escapeHtml(c.id)}')">
+                            <div class="comment-header-row">
+                                <span class="comment-meta">💬 <strong>${author}</strong> • ${cDate}</span>
+                                ${photoTag}
+                                <span class="comment-expand-hint" title="Zobrazit detail">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
+                                </span>
+                            </div>
+                            <div class="comment-text-faded">${text}</div>
+                        </div>
+                    `;
+                }).join('')}
+            </div>
         `;
     }
 
-    function filterCustomer(cust) { currentCustomerFilter = cust; renderCustomerFilters(); renderFullDatabase(); }
-    
-    function filterDashboardStatus(status, element) {
-        currentDashboardStatusFilter = status;
-        document.querySelectorAll('.dash-card').forEach(c => c.classList.remove('active'));
-        element.classList.add('active');
-        renderDashboard();
-    }
-
     function renderFullDatabase() {
-        const tbody = document.getElementById('databaseTable'), stats = document.getElementById('dbStats'), container = document.getElementById('databaseTableContainer');
-        container.querySelectorAll('.accordion-floating-layer').forEach(el => el.remove());
-        container.style.minHeight = '';
-        const active = rawDatabase.filter(i => !i[4]);
-        if (active.length === 0) { tbody.innerHTML = `<tr><td colspan="3" class="no-data">Žádná data</td></tr>`; stats.textContent = 'Celkem aktivních forem: 0'; return; }
+        const tbody = document.getElementById('databaseTable');
+        if (!tbody) return;
 
-        let filtered = currentCustomerFilter === 'ALL' ? active : active.filter(i => i[2].toLowerCase() === currentCustomerFilter.toLowerCase());
-        filtered.sort((a, b) => parseInt(a[0], 10) - parseInt(b[0], 10));
+        let activeMolds = rawDatabase.filter(item => item[4] !== true);
 
-        if (currentCustomerFilter === 'ALL') {
-            stats.textContent = `Celkem aktivních forem: ${active.length}`;
-        } else {
-            stats.textContent = `Zobrazeno: ${filtered.length} z ${active.length}`;
+        if (currentCustomerFilter !== 'ALL') {
+            activeMolds = activeMolds.filter(item => String(item[2]).toLowerCase() === currentCustomerFilter.toLowerCase());
         }
 
-        tbody.innerHTML = filtered.map(i => renderTableRow(i, '', true, true, 'db')).join('');
+        const countSpan = document.getElementById('dbStats');
+        if (countSpan) countSpan.textContent = `Celkem forem: ${activeMolds.length}`;
+
+        if (activeMolds.length === 0) {
+            tbody.innerHTML = `<tr><td colspan="3" class="no-data-centered" style="text-align: center !important;">V databázi nejsou žádné formy</td></tr>`;
+            return;
+        }
+
+        tbody.innerHTML = activeMolds.map(item => {
+            const [num, pos, cust, status, isDel, productName, photosArr, navodkaUrl, prevPos] = item;
+            const rowKey = `db_${num}`;
+            const isExpanded = Boolean(expandedMoldsMap[rowKey]);
+            const btnExpandedClass = isExpanded ? 'expanded' : '';
+
+            const custStyle = getCustomerStyle(cust);
+            const statusPill = renderStatusPill(status);
+            const commentsHtml = renderCommentsListHtml(num);
+
+            let cameraIconHtml = '';
+            if (photosArr.length > 0) {
+                cameraIconHtml = `<span style="font-size: 0.72rem; color: #3b82f6; font-weight: bold; margin-left: 0.2rem;" title="${photosArr.length} fotek">📷 ${photosArr.length}</span>`;
+            }
+
+            return `
+                <tr id="accordion-trigger-${rowKey}" oncontextmenu="handleMoldRowRightClick(event, '${escapeHtml(num)}')">
+                    <td>
+                        <div class="mold-cell-content">
+                            <button id="accordion-btn-${rowKey}" class="toggle-accordion-btn ${btnExpandedClass}" onclick="toggleAccordion('${rowKey}', '${escapeHtml(num)}')">▼</button>
+                            <strong class="mold-clickable-id" onclick="toggleAccordion('${rowKey}', '${escapeHtml(num)}')" style="cursor: pointer;">${escapeHtml(num)}</strong>
+                            ${cameraIconHtml}
+                        </div>
+                        <div class="product-name-sub">${productName ? escapeHtml(productName) : ''}</div>
+                    </td>
+                    <td style="text-align: center;">
+                        <span class="tag-customer" style="${custStyle}" oncontextmenu="handleTagRightClick(event, '${escapeHtml(cust)}')">${escapeHtml(cust)}</span>
+                        ${statusPill}
+                        ${commentsHtml}
+                    </td>
+                    <td>${renderPositionCellHtml(num, pos, status, productName, prevPos)}</td>
+                </tr>
+            `;
+        }).join('');
+    }
+
+    function filterCustomer(customerName, element) {
+        triggerHapticFeedback([12]);
+        currentCustomerFilter = customerName;
+        document.querySelectorAll('#customerFilters .filter-chip').forEach(chip => chip.classList.remove('active'));
+        if (element) element.classList.add('active');
+        renderFullDatabase();
     }
 
     function renderDashboard() {
-        const tbody = document.getElementById('dashboardTable'), stats = document.getElementById('dashStats'), container = document.getElementById('dashboardTableContainer');
-        container.querySelectorAll('.accordion-floating-layer').forEach(el => el.remove());
-        container.style.minHeight = '';
-        const active = rawDatabase.filter(i => !i[4]);
-        const withStatus = active.filter(i => { const s = (i[3] || '').toLowerCase(); return s && !s.includes('po údržbě'); });
+        const activeMolds = rawDatabase.filter(item => item[4] !== true);
 
-        let fFronteUdrzbu = 0, fFronteOpravu = 0, fUdrzbe = 0, fOpravePryc = 0;
-        withStatus.forEach(i => {
-            const s = (i[3] || '').toLowerCase();
-            if (s.includes('frontě na údržbu') || s.includes('fronte na udrzbe')) fFronteUdrzbu++;
-            else if (s.includes('frontě na opravu') || s.includes('fronte na opravu')) fFronteOpravu++;
-            else if (s.includes('na údržbě') || s.includes('na udrzbe') || s.includes('opravě')) fUdrzbe++;
-            else if (s.includes('na opravě pryč') || s.includes('na oprave pryc')) fOpravePryc++;
+        const counts = {
+            active: 0,
+            fronteUdrzbu: 0,
+            fronteOpravu: 0,
+            udrzbe: 0,
+            opravePryc: 0
+        };
+
+        activeMolds.forEach(item => {
+            const s = String(item[3] || '').toLowerCase();
+            if (s.includes('ve frontě na údržbu') || s.includes('ve fronte na udrzbu')) counts.fronteUdrzbu++;
+            else if (s.includes('ve frontě na opravu') || s.includes('ve fronte na opravu')) counts.fronteOpravu++;
+            else if (s.includes('na údržbě') || s.includes('na udrzbe') || s.includes('na opravě / na údržbě')) counts.udrzbe++;
+            else if (s.includes('na opravě pryč') || s.includes('na oprave pryc')) counts.opravePryc++;
         });
 
-        document.getElementById('dash-count-active').textContent = withStatus.length;
-        document.getElementById('dash-count-fronte-udrzbu').textContent = fFronteUdrzbu;
-        document.getElementById('dash-count-fronte-opravu').textContent = fFronteOpravu;
-        document.getElementById('dash-count-udrzbe').textContent = fUdrzbe;
-        document.getElementById('dash-count-oprave-pryc').textContent = fOpravePryc;
+        counts.active = counts.fronteUdrzbu + counts.fronteOpravu + counts.udrzbe + counts.opravePryc;
 
-        let filtered = currentDashboardStatusFilter === 'ALL' ? withStatus : withStatus.filter(i => (i[3] || '').toLowerCase().includes(currentDashboardStatusFilter.toLowerCase()));
-        filtered.sort((a, b) => parseInt(a[0], 10) - parseInt(b[0], 10));
+        if (document.getElementById('dash-count-active')) document.getElementById('dash-count-active').textContent = counts.active;
+        if (document.getElementById('dash-count-fronte-udrzbu')) document.getElementById('dash-count-fronte-udrzbu').textContent = counts.fronteUdrzbu;
+        if (document.getElementById('dash-count-fronte-opravu')) document.getElementById('dash-count-fronte-opravu').textContent = counts.fronteOpravu;
+        if (document.getElementById('dash-count-udrzbe')) document.getElementById('dash-count-udrzbe').textContent = counts.udrzbe;
+        if (document.getElementById('dash-count-oprave-pryc')) document.getElementById('dash-count-oprave-pryc').textContent = counts.opravePryc;
 
-        stats.textContent = `Zobrazeno: ${filtered.length}`;
-        tbody.innerHTML = filtered.length > 0 ? filtered.map(i => renderTableRow(i, '', true, true, 'dash')).join('') : `<tr><td colspan="3" class="no-data-centered" style="text-align: center !important;">V seznamu zatím nejsou žádné formy ke kontrole</td></tr>`;
+        renderDashboardTable();
+    }
+
+    function filterDashboardStatus(statusGroup, cardElement) {
+        triggerHapticFeedback([12]);
+        currentDashboardStatusFilter = statusGroup;
+        document.querySelectorAll('.dashboard-grid .dash-card').forEach(card => card.classList.remove('active'));
+        if (cardElement) cardElement.classList.add('active');
+        renderDashboardTable();
+    }
+
+    function renderDashboardTable() {
+        const tbody = document.getElementById('dashboardTable');
+        if (!tbody) return;
+
+        let activeMolds = rawDatabase.filter(item => item[4] !== true && item[3] && item[3].trim() !== '' && item[3] !== 'Po údržbě');
+
+        if (currentDashboardStatusFilter !== 'ALL') {
+            activeMolds = activeMolds.filter(item => {
+                const s = String(item[3] || '').toLowerCase();
+                const filter = currentDashboardStatusFilter.toLowerCase();
+                if (filter.includes('fronte na udrzbe') || filter.includes('frontě na údržbu')) return s.includes('frontě na údržbu') || s.includes('fronte na udrzbe');
+                if (filter.includes('fronte na opravu') || filter.includes('frontě na opravu')) return s.includes('frontě na opravu') || s.includes('fronte na opravu');
+                if (filter.includes('na udrzbe') || filter.includes('na údržbě')) return s.includes('na údržbě') || s.includes('na udrzbe');
+                if (filter.includes('oprave pryc') || filter.includes('opravě pryč')) return s.includes('na opravě pryč') || s.includes('na oprave pryc');
+                return s === filter;
+            });
+        }
+
+        const statsBar = document.getElementById('dashStats');
+        if (statsBar) statsBar.textContent = `Nalezeno forem: ${activeMolds.length}`;
+
+        if (activeMolds.length === 0) {
+            tbody.innerHTML = `<tr><td colspan="3" class="no-data-centered" style="text-align: center !important;">V této kategorii nejsou žádné formy</td></tr>`;
+            return;
+        }
+
+        tbody.innerHTML = activeMolds.map(item => {
+            const [num, pos, cust, status, isDel, productName, photosArr, navodkaUrl, prevPos] = item;
+            const rowKey = `dash_${num}`;
+            const isExpanded = Boolean(expandedMoldsMap[rowKey]);
+            const btnExpandedClass = isExpanded ? 'expanded' : '';
+
+            const custStyle = getCustomerStyle(cust);
+            const statusPill = renderStatusPill(status);
+            const commentsHtml = renderCommentsListHtml(num);
+
+            let cameraIconHtml = '';
+            if (photosArr.length > 0) {
+                cameraIconHtml = `<span style="font-size: 0.72rem; color: #3b82f6; font-weight: bold; margin-left: 0.2rem;" title="${photosArr.length} fotek">📷 ${photosArr.length}</span>`;
+            }
+
+            return `
+                <tr id="accordion-trigger-${rowKey}" oncontextmenu="handleMoldRowRightClick(event, '${escapeHtml(num)}')">
+                    <td>
+                        <div class="mold-cell-content">
+                            <button id="accordion-btn-${rowKey}" class="toggle-accordion-btn ${btnExpandedClass}" onclick="toggleAccordion('${rowKey}', '${escapeHtml(num)}')">▼</button>
+                            <strong class="mold-clickable-id" onclick="toggleAccordion('${rowKey}', '${escapeHtml(num)}')" style="cursor: pointer;">${escapeHtml(num)}</strong>
+                            ${cameraIconHtml}
+                        </div>
+                        <div class="product-name-sub">${productName ? escapeHtml(productName) : ''}</div>
+                    </td>
+                    <td style="text-align: center;">
+                        <span class="tag-customer" style="${custStyle}" oncontextmenu="handleTagRightClick(event, '${escapeHtml(cust)}')">${escapeHtml(cust)}</span>
+                        ${statusPill}
+                        ${commentsHtml}
+                    </td>
+                    <td>${renderPositionCellHtml(num, pos, status, productName, prevPos)}</td>
+                </tr>
+            `;
+        }).join('');
     }
 
     function handleSearch() {
-        const q = document.getElementById('searchInput').value.trim().toLowerCase();
-        const tbody = document.getElementById('searchResults'), stats = document.getElementById('searchStats'), container = document.getElementById('searchTableContainer');
-        container.querySelectorAll('.accordion-floating-layer').forEach(el => el.remove());
-        container.style.minHeight = '';
+        const query = document.getElementById('searchInput').value.trim().toLowerCase();
+        const tbody = document.getElementById('searchResults');
+        const statsSpan = document.getElementById('searchStats');
+        if (!tbody) return;
 
-        if (!q) { 
-            tbody.innerHTML = `<tr><td colspan="3" class="no-data-centered" style="text-align: center !important;">Začněte psát do pole výše</td></tr>`; 
-            stats.textContent = ''; 
-            return; 
-        }
-        
-        const active = rawDatabase.filter(i => !i[4]);
-        let res = active.filter(i => String(i[0]).toLowerCase().includes(q) || String(i[1]).toLowerCase().includes(q) || String(i[2]).toLowerCase().includes(q) || String(i[5] || '').toLowerCase().includes(q));
-
-        const exactMatches = res.filter(i => String(i[0]).toLowerCase() === q);
-        if (exactMatches.length > 0) {
-            res = exactMatches;
+        if (!query) {
+            tbody.innerHTML = `<tr><td colspan="3" class="no-data-centered" style="text-align: center !important;">Začněte psát do pole výše</td></tr>`;
+            if (statsSpan) statsSpan.textContent = '';
+            return;
         }
 
-        res.sort((a, b) => parseInt(a[0], 10) - parseInt(b[0], 10));
+        const activeMolds = rawDatabase.filter(item => item[4] !== true);
+        const filtered = activeMolds.filter(item => {
+            const [num, pos, cust, status, isDel, productName] = item;
+            const moldComments = allComments.filter(c => String(c.mold_id) === String(num));
+            const commentsText = moldComments.map(c => c.comment || '').join(' ').toLowerCase();
 
-        stats.textContent = `Nalezeno: ${res.length}`;
-        
-        if (res.length > 0) {
-            tbody.innerHTML = res.map(i => renderTableRow(i, String(i[0]).toLowerCase() === q ? 'row-success' : '', true, true, 'search')).join('');
-        } else {
-            tbody.innerHTML = `<tr class="row-error"><td colspan="3" class="no-data-centered" style="text-align: center !important;">Forma není v databázi</td></tr>`;
+            return String(num).toLowerCase().includes(query) ||
+                   String(pos).toLowerCase().includes(query) ||
+                   String(cust).toLowerCase().includes(query) ||
+                   String(status).toLowerCase().includes(query) ||
+                   String(productName).toLowerCase().includes(query) ||
+                   commentsText.includes(query);
+        });
+
+        if (statsSpan) statsSpan.textContent = `Nalezeno: ${filtered.length}`;
+
+        if (filtered.length === 0) {
+            tbody.innerHTML = `<tr><td colspan="3" class="no-data-centered" style="text-align: center !important;">Nic nenalezeno</td></tr>`;
+            return;
         }
-    }
 
-    function editCustomer(moldId, currentCust) {
-        if (!checkAuthOrPrompt()) return;
-        activeEditMoldId = moldId;
-        activeEditOldCust = currentCust;
-        document.getElementById('customerModalLabel').textContent = `Forma č. ${moldId} (stávající: ${currentCust}):`;
-        document.getElementById('modalCustomerSelect').innerHTML = customersList.map(c => `<option value="${escapeHtml(c.name)}" ${c.name === currentCust ? 'selected' : ''}>${escapeHtml(c.name)}</option>`).join('');
-        showModalAnimated('customerModal');
-    }
-    function closeCustomerModal() { hideModalAnimated('customerModal'); }
+        tbody.innerHTML = filtered.map(item => {
+            const [num, pos, cust, status, isDel, productName, photosArr, navodkaUrl, prevPos] = item;
+            const rowKey = `search_${num}`;
+            const isExpanded = Boolean(expandedMoldsMap[rowKey]);
+            const btnExpandedClass = isExpanded ? 'expanded' : '';
 
-    async function saveCustomerChange() {
-        if (isSubmittingAction) return;
-        const newCust = document.getElementById('modalCustomerSelect').value;
-        isSubmittingAction = true;
-        closeCustomerModal();
-        const item = rawDatabase.find(i => String(i[0]) === String(activeEditMoldId));
-        if (item) {
-            item[2] = newCust;
-            refreshUI();
-        }
-        showToast(`Zákazník byl změněn na ${newCust}`);
+            const custStyle = getCustomerStyle(cust);
+            const statusPill = renderStatusPill(status);
+            const commentsHtml = renderCommentsListHtml(num);
 
-        try {
-            await Promise.all([
-                fetch(`${API_URL}/rest/v1/molds?id=eq.${activeEditMoldId}`, {
-                    method: 'PATCH',
-                    headers: { 'apikey': API_KEY, 'Authorization': `Bearer ${API_KEY}`, 'Content-Type': 'application/json', 'Prefer': 'return=minimal' },
-                    body: JSON.stringify({ customer: newCust })
-                }),
-                fetch(`${API_URL}/rest/v1/mold_logs`, {
-                    method: 'POST',
-                    headers: { 'apikey': API_KEY, 'Authorization': `Bearer ${API_KEY}`, 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ 
-                        mold_id: activeEditMoldId, 
-                        old_position: `Zákazník: ${activeEditOldCust}`, 
-                        new_position: `Zákazník: ${newCust}`, 
-                        user_name: currentUser 
-                    })
-                })
-            ]);
-        } catch (e) { console.error(e); }
-        finally { 
-            setTimeout(() => { isSubmittingAction = false; }, 800);
-        }
-    }
+            let cameraIconHtml = '';
+            if (photosArr.length > 0) {
+                cameraIconHtml = `<span style="font-size: 0.72rem; color: #3b82f6; font-weight: bold; margin-left: 0.2rem;" title="${photosArr.length} fotek">📷 ${photosArr.length}</span>`;
+            }
 
-    function escapeHtml(str) {
-        return String(str).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
+            return `
+                <tr id="accordion-trigger-${rowKey}" oncontextmenu="handleMoldRowRightClick(event, '${escapeHtml(num)}')">
+                    <td>
+                        <div class="mold-cell-content">
+                            <button id="accordion-btn-${rowKey}" class="toggle-accordion-btn ${btnExpandedClass}" onclick="toggleAccordion('${rowKey}', '${escapeHtml(num)}')">▼</button>
+                            <strong class="mold-clickable-id" onclick="toggleAccordion('${rowKey}', '${escapeHtml(num)}')" style="cursor: pointer;">${escapeHtml(num)}</strong>
+                            ${cameraIconHtml}
+                        </div>
+                        <div class="product-name-sub">${productName ? escapeHtml(productName) : ''}</div>
+                    </td>
+                    <td style="text-align: center;">
+                        <span class="tag-customer" style="${custStyle}" oncontextmenu="handleTagRightClick(event, '${escapeHtml(cust)}')">${escapeHtml(cust)}</span>
+                        ${statusPill}
+                        ${commentsHtml}
+                    </td>
+                    <td>${renderPositionCellHtml(num, pos, status, productName, prevPos)}</td>
+                </tr>
+            `;
+        }).join('');
     }
 </script>
 </body>
