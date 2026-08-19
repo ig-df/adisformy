@@ -660,6 +660,39 @@
                 border-radius: 0;
                 border: none;
             }
+
+            /* Оптимизация хедера для мобильных устройств (уменьшены размеры иконок чтобы не залезали на логотип) */
+            .header-logo {
+                padding: 0.75rem 0.35rem 0.35rem 0.35rem !important;
+            }
+            .header-logo img#siteLogo {
+                max-height: 28px !important;
+            }
+            .header-auth-left {
+                top: 0.45rem !important;
+                left: 0.25rem !important;
+                gap: 0.2rem !important;
+            }
+            .header-buttons-right {
+                top: 0.45rem !important;
+                right: 0.25rem !important;
+                gap: 0.2rem !important;
+            }
+            .top-icon-btn, .superuser-badge-btn, .auth-btn {
+                width: 28px !important;
+                height: 28px !important;
+                padding: 0.15rem !important;
+                border-radius: 6px !important;
+            }
+            .top-icon-btn img, 
+            .top-icon-btn svg, 
+            .superuser-badge-btn svg, 
+            .auth-btn svg, 
+            .auth-btn img {
+                width: 13px !important;
+                height: 13px !important;
+            }
+
             .content { 
                 padding: 0.75rem 0.5rem !important; 
                 display: flex;
@@ -679,10 +712,6 @@
             .table-container {
                 flex: 1;
                 max-height: none !important;
-            }
-            .auth-btn { 
-                padding: 0.35rem 0.5rem !important; 
-                height: 36px !important;
             }
             .auth-btn span#authBtnText { display: none !important; }
             .dashboard-grid { grid-template-columns: repeat(2, 1fr); }
@@ -1582,7 +1611,8 @@
                 </svg>
             </button>
 
-            <button class="top-icon-btn" id="onlineUsersToggleBtn" tabindex="0" onclick="toggleOnlineUsersPopover(event)" title="Aktivní uživatelé" style="position: relative; padding: 0.4rem; display: flex; align-items: center; justify-content: center;">
+            <!-- Кнопка активности пользователей видна исключительно суперпользователю -->
+            <button class="top-icon-btn" id="onlineUsersToggleBtn" tabindex="0" onclick="toggleOnlineUsersPopover(event)" title="Aktivní uživatelé" style="position: relative; padding: 0.4rem; display: none; align-items: center; justify-content: center;">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width: 18px; height: 18px; color: var(--text-main);">
                     <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
                     <circle cx="9" cy="7" r="4"></circle>
@@ -2317,7 +2347,7 @@
         const normalizedUser = currentUser.trim();
 
         const device = /Android|webOS|iPhone|iPad|iPod/i.test(navigator.userAgent) 
-            ? 'Smartphone' 
+            ? 'Mobile' 
             : 'PC';
 
         try {
@@ -2329,8 +2359,43 @@
                     device_type: device,
                     role: isSuperUser ? 'superuser' : 'operator'
                 }, { onConflict: 'user_name' });
+
+            updateOnlineBadge();
         } catch (err) {
             console.warn('Presence ping error:', err);
+        }
+    }
+
+    // Автоматическое обновление зеленой точки (Badge) активных пользователей за 24 часа
+    async function updateOnlineBadge() {
+        const badge = document.getElementById('onlineCountBadge');
+        if (!badge) return;
+
+        if (!currentUser || !isSuperUser) {
+            badge.style.display = 'none';
+            return;
+        }
+
+        try {
+            const { data: sessions, error } = await supabaseClient
+                .from('active_sessions')
+                .select('last_seen');
+
+            if (error || !sessions || sessions.length === 0) {
+                badge.style.display = 'none';
+                return;
+            }
+
+            const now = new Date();
+            const activeIn24h = sessions.filter(session => {
+                const lastSeen = new Date(session.last_seen);
+                const diffMinutes = Math.floor((now - lastSeen) / 60000);
+                return diffMinutes <= 1440; // Активен за последние 24 часа
+            }).length;
+
+            badge.style.display = activeIn24h > 0 ? 'block' : 'none';
+        } catch (e) {
+            console.warn("Badge calculation error:", e);
         }
     }
 
@@ -2355,7 +2420,6 @@
 
     async function renderOnlineUsers() {
         const container = document.getElementById('onlineUsersContainer');
-        const badge = document.getElementById('onlineCountBadge');
         if (!container) return;
 
         try {
@@ -2366,23 +2430,23 @@
 
             if (error || !sessions || sessions.length === 0) {
                 container.innerHTML = '<div style="font-size: 0.78rem; color: var(--text-muted);">Žádní aktivní uživatelé.</div>';
-                if (badge) badge.style.display = 'none';
+                updateOnlineBadge();
                 return;
             }
 
             const now = new Date();
-            let activeCount = 0;
 
             container.innerHTML = sessions.map(session => {
                 const lastSeen = new Date(session.last_seen);
                 const diffMinutes = Math.floor((now - lastSeen) / 60000);
+                const diffHours = (diffMinutes / 60).toFixed(1);
 
                 let statusBadge = '';
-                if (diffMinutes < 3) {
-                    activeCount++;
+                if (diffMinutes < 30) {
                     statusBadge = '<span class="status-pill" style="border-color: #bbf7d0; background: #f0fdf4; color: #15803d; font-size: 0.7rem; padding: 2px 6px; border-radius: 4px; border: 1px solid;"><span class="status-dot dot-green" style="display:inline-block; width:6px; height:6px; background:#22c55e; border-radius:50%; margin-right:4px;"></span>Online</span>';
-                } else if (diffMinutes < 15) {
-                    statusBadge = `<span class="status-pill" style="border-color: #fef08a; background: #fefce8; color: #a16207; font-size: 0.7rem; padding: 2px 6px; border-radius: 4px; border: 1px solid;"><span class="status-dot dot-yellow" style="display:inline-block; width:6px; height:6px; background:#eab308; border-radius:50%; margin-right:4px;"></span>${diffMinutes}m</span>`;
+                } else if (diffMinutes <= 1440) { 
+                    const timeLabel = diffMinutes < 60 ? `${diffMinutes}m` : `${diffHours}h`;
+                    statusBadge = `<span class="status-pill" style="border-color: #fef08a; background: #fefce8; color: #a16207; font-size: 0.7rem; padding: 2px 6px; border-radius: 4px; border: 1px solid;"><span class="status-dot dot-yellow" style="display:inline-block; width:6px; height:6px; background:#eab308; border-radius:50%; margin-right:4px;"></span>${timeLabel}</span>`;
                 } else {
                     statusBadge = `<span class="status-pill" style="border-color: #e2e8f0; background: #f8fafc; color: var(--text-muted, #64748b); font-size: 0.7rem; padding: 2px 6px; border-radius: 4px; border: 1px solid;"><span class="status-dot" style="display:inline-block; width:6px; height:6px; background:#cbd5e1; border-radius:50%; margin-right:4px;"></span>Off</span>`;
                 }
@@ -2393,8 +2457,8 @@
                 let deviceSvg = '';
                 let deviceLabel = 'PC';
 
-                if (devStr.includes('smart') || devStr.includes('mobil') || devStr.includes('phone') || devStr.includes('android') || devStr.includes('iphone')) {
-                    deviceLabel = 'Smartphone';
+                if (devStr.includes('smart') || devStr.includes('mobil') || devStr.includes('mobile') || devStr.includes('phone') || devStr.includes('android') || devStr.includes('iphone')) {
+                    deviceLabel = 'Mobile';
                     deviceSvg = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width: 13px; height: 13px; color: var(--text-muted); display: inline-block; vertical-align: -2px; margin-right: 3px;"><rect x="5" y="2" width="14" height="20" rx="2" ry="2"></rect><line x1="12" y1="18" x2="12.01" y2="18"></line></svg>`;
                 } else {
                     deviceLabel = 'PC';
@@ -2414,12 +2478,10 @@
                 `;
             }).join('');
 
-            if (badge) {
-                badge.style.display = activeCount > 0 ? 'block' : 'none';
-            }
+            updateOnlineBadge();
 
         } catch (e) {
-            console.error("Chyba při načítání сессиí:", e);
+            console.error("Chyba při načítání relací:", e);
             container.innerHTML = '<div style="font-size: 0.78rem; color: var(--error-badge);">Chyba načítání dat.</div>';
         }
     }
@@ -2690,9 +2752,14 @@
         initSmartHaptics();
 
         pingUserPresence();
+        updateOnlineBadge();
+
         setInterval(pingUserPresence, 2 * 60 * 1000);
         document.addEventListener('visibilitychange', () => {
-            if (document.visibilityState === 'visible') pingUserPresence();
+            if (document.visibilityState === 'visible') {
+                pingUserPresence();
+                updateOnlineBadge();
+            }
         });
 
         document.getElementById('btn-search').addEventListener('click', () => switchTab('search'));
@@ -2871,18 +2938,27 @@
     function updateAuthUI() {
         const authBtn = document.getElementById('authCornerBtn');
         const superuserBtn = document.getElementById('superuserBadgeBtn');
+        const onlineBtn = document.getElementById('onlineUsersToggleBtn');
 
         if (currentUser) {
             authBtn.title = `Přihlášen jako: ${currentUser} (Klikněte pro odhlášení)`;
             authBtn.classList.add('logged-in');
 
-            if (isSuperUser) superuserBtn.style.display = 'flex';
-            else superuserBtn.style.display = 'none';
+            if (isSuperUser) {
+                superuserBtn.style.display = 'flex';
+                if (onlineBtn) onlineBtn.style.display = 'flex'; // Кнопка видна ТОЛЬКО суперпользователю
+            } else {
+                superuserBtn.style.display = 'none';
+                if (onlineBtn) onlineBtn.style.display = 'none';
+            }
         } else {
             authBtn.title = 'Přihlášení uživatele';
             authBtn.classList.remove('logged-in');
             superuserBtn.style.display = 'none';
+            if (onlineBtn) onlineBtn.style.display = 'none';
         }
+
+        updateOnlineBadge();
     }
 
     function handleAuthClick() {
@@ -3206,6 +3282,7 @@
             .on('postgres_changes', { event: '*', schema: 'public', table: 'customers' }, debouncedFetch)
             .on('postgres_changes', { event: '*', schema: 'public', table: 'app_settings' }, debouncedFetch)
             .on('postgres_changes', { event: '*', schema: 'public', table: 'active_sessions' }, () => {
+                updateOnlineBadge();
                 const popover = document.getElementById('onlineUsersPopover');
                 if (popover && popover.style.display === 'block') renderOnlineUsers();
             })
@@ -3585,7 +3662,6 @@
             if (!moldsRes.ok) throw new Error("Chyba API");
             const data = await moldsRes.json();
             
-            // Натуральная сортировка Natural Sort по ID формы (сохраняет человеческий порядок: 1, 2, 10, 49Am)
             rawDatabase = data.map(item => {
                 let photosArr = [];
                 if (item.photo_url) {
@@ -4472,7 +4548,6 @@
         closeAddModal();
         rawDatabase.push([id, position, customer, status, false, productName, [], '', '']);
         
-        // Автоматически сортируем массив с новой формой
         rawDatabase.sort((a, b) => String(a[0]).localeCompare(String(b[0]), undefined, { numeric: true, sensitivity: 'base' }));
         
         refreshUI();
@@ -4824,91 +4899,57 @@
                             ${cameraIconHtml}
                         </div>
                         <div class="product-name-sub">${productName ? escapeHtml(productName) : ''}</div>
-                    </td>
-                    <td style="text-align: center;">
-                        <span class="tag-customer" style="${custStyle}" oncontextmenu="handleTagRightClick(event, '${escapeHtml(cust)}')">${escapeHtml(cust)}</span>
                         ${statusPill}
                         ${commentsHtml}
                     </td>
-                    <td>${renderPositionCellHtml(num, pos, status, productName, prevPos)}</td>
+                    <td style="text-align: center;">
+                        <span class="tag-customer" style="${custStyle}" onclick="filterCustomer('${escapeHtml(cust)}')" oncontextmenu="handleTagRightClick(event, '${escapeHtml(cust)}')">${escapeHtml(cust)}</span>
+                    </td>
+                    <td>
+                        ${renderPositionCellHtml(num, pos, status, productName, prevPos)}
+                    </td>
                 </tr>
             `;
         }).join('');
     }
 
-    function filterCustomer(customerName, element) {
-        triggerHapticFeedback([12]);
-        currentCustomerFilter = customerName;
-        document.querySelectorAll('#customerFilters .filter-chip').forEach(chip => chip.classList.remove('active'));
-        if (element) element.classList.add('active');
-        renderFullDatabase();
-    }
-
     function renderDashboard() {
-        const activeMolds = rawDatabase.filter(item => item[4] !== true);
-
-        const counts = {
-            active: 0,
-            fronteUdrzbu: 0,
-            fronteOpravu: 0,
-            udrzbe: 0,
-            opravePryc: 0
-        };
-
-        activeMolds.forEach(item => {
-            const s = String(item[3] || '').toLowerCase();
-            if (s.includes('ve frontě na údržbu') || s.includes('ve fronte na udrzbu')) counts.fronteUdrzbu++;
-            else if (s.includes('ve frontě na opravu') || s.includes('ve fronte na opravu')) counts.fronteOpravu++;
-            else if (s.includes('na údržbě') || s.includes('na udrzbe') || s.includes('na opravě / na údržbě')) counts.udrzbe++;
-            else if (s.includes('na opravě pryč') || s.includes('na oprave pryc')) counts.opravePryc++;
+        const dashboardMolds = rawDatabase.filter(item => {
+            if (item[4] === true) return false;
+            const s = String(item[3] || '').trim();
+            return s !== '';
         });
 
-        counts.active = counts.fronteUdrzbu + counts.fronteOpravu + counts.udrzbe + counts.opravePryc;
+        const activeList = dashboardMolds.filter(item => {
+            const s = String(item[3] || '').trim();
+            if (currentDashboardStatusFilter === 'ALL') return true;
+            return s.toLowerCase() === currentDashboardStatusFilter.toLowerCase();
+        });
 
-        if (document.getElementById('dash-count-active')) document.getElementById('dash-count-active').textContent = counts.active;
-        if (document.getElementById('dash-count-fronte-udrzbu')) document.getElementById('dash-count-fronte-udrzbu').textContent = counts.fronteUdrzbu;
-        if (document.getElementById('dash-count-fronte-opravu')) document.getElementById('dash-count-fronte-opravu').textContent = counts.fronteOpravu;
-        if (document.getElementById('dash-count-udrzbe')) document.getElementById('dash-count-udrzbe').textContent = counts.udrzbe;
-        if (document.getElementById('dash-count-oprave-pryc')) document.getElementById('dash-count-oprave-pryc').textContent = counts.opravePryc;
+        const countActiveElem = document.getElementById('dash-count-active');
+        const countUdrzbuElem = document.getElementById('dash-count-fronte-udrzbu');
+        const countOpravuElem = document.getElementById('dash-count-fronte-opravu');
+        const countNaUdrzbeElem = document.getElementById('dash-count-udrzbe');
+        const countPrycElem = document.getElementById('dash-count-oprave-pryc');
 
-        renderDashboardTable();
-    }
+        if (countActiveElem) countActiveElem.textContent = dashboardMolds.length;
+        if (countUdrzbuElem) countUdrzbuElem.textContent = dashboardMolds.filter(i => String(i[3]).trim().toLowerCase() === 've frontě na údržbu'.toLowerCase()).length;
+        if (countOpravuElem) countOpravuElem.textContent = dashboardMolds.filter(i => String(i[3]).trim().toLowerCase() === 've frontě na opravu'.toLowerCase()).length;
+        if (countNaUdrzbeElem) countNaUdrzbeElem.textContent = dashboardMolds.filter(i => String(i[3]).trim().toLowerCase() === 'na údržbě / na opravě'.toLowerCase()).length;
+        if (countPrycElem) countPrycElem.textContent = dashboardMolds.filter(i => String(i[3]).trim().toLowerCase() === 'na opravě pryč'.toLowerCase()).length;
 
-    function filterDashboardStatus(statusGroup, cardElement) {
-        triggerHapticFeedback([12]);
-        currentDashboardStatusFilter = statusGroup;
-        document.querySelectorAll('.dashboard-grid .dash-card').forEach(card => card.classList.remove('active'));
-        if (cardElement) cardElement.classList.add('active');
-        renderDashboardTable();
-    }
+        const countSpan = document.getElementById('dashStats');
+        if (countSpan) countSpan.textContent = `Zobrazeno forem: ${activeList.length}`;
 
-    function renderDashboardTable() {
         const tbody = document.getElementById('dashboardTable');
         if (!tbody) return;
 
-        let activeMolds = rawDatabase.filter(item => item[4] !== true && item[3] && item[3].trim() !== '' && item[3] !== 'Po údržbě');
-
-        if (currentDashboardStatusFilter !== 'ALL') {
-            activeMolds = activeMolds.filter(item => {
-                const s = String(item[3] || '').toLowerCase();
-                const filter = currentDashboardStatusFilter.toLowerCase();
-                if (filter.includes('fronte na udrzbe') || filter.includes('frontě na údržbu')) return s.includes('frontě na údržbu') || s.includes('fronte na udrzbe');
-                if (filter.includes('fronte na opravu') || filter.includes('frontě na opravu')) return s.includes('frontě na opravu') || s.includes('fronte na opravu');
-                if (filter.includes('na udrzbe') || filter.includes('na údržbě')) return s.includes('na údržbě') || s.includes('na udrzbe');
-                if (filter.includes('oprave pryc') || filter.includes('opravě pryč')) return s.includes('na opravě pryč') || s.includes('na oprave pryc');
-                return s === filter;
-            });
-        }
-
-        const statsBar = document.getElementById('dashStats');
-        if (statsBar) statsBar.textContent = `Nalezeno forem: ${activeMolds.length}`;
-
-        if (activeMolds.length === 0) {
-            tbody.innerHTML = `<tr><td colspan="3" class="no-data-centered" style="text-align: center !important;">V této kategorii nejsou žádné formy</td></tr>`;
+        if (activeList.length === 0) {
+            tbody.innerHTML = `<tr><td colspan="3" class="no-data-centered" style="text-align: center !important;">V tomto stavu nejsou žádné formy</td></tr>`;
             return;
         }
 
-        tbody.innerHTML = activeMolds.map(item => {
+        tbody.innerHTML = activeList.map(item => {
             const [num, pos, cust, status, isDel, productName, photosArr, navodkaUrl, prevPos] = item;
             const rowKey = `dash_${num}`;
             const isExpanded = Boolean(expandedMoldsMap[rowKey]);
@@ -4932,52 +4973,75 @@
                             ${cameraIconHtml}
                         </div>
                         <div class="product-name-sub">${productName ? escapeHtml(productName) : ''}</div>
-                    </td>
-                    <td style="text-align: center;">
-                        <span class="tag-customer" style="${custStyle}" oncontextmenu="handleTagRightClick(event, '${escapeHtml(cust)}')">${escapeHtml(cust)}</span>
                         ${statusPill}
                         ${commentsHtml}
                     </td>
-                    <td>${renderPositionCellHtml(num, pos, status, productName, prevPos)}</td>
+                    <td style="text-align: center;">
+                        <span class="tag-customer" style="${custStyle}" onclick="filterCustomer('${escapeHtml(cust)}')" oncontextmenu="handleTagRightClick(event, '${escapeHtml(cust)}')">${escapeHtml(cust)}</span>
+                    </td>
+                    <td>
+                        ${renderPositionCellHtml(num, pos, status, productName, prevPos)}
+                    </td>
                 </tr>
             `;
         }).join('');
     }
 
+    function filterCustomer(customerName, element) {
+        triggerHapticFeedback([12]);
+        currentCustomerFilter = customerName;
+        renderCustomerFilters();
+        renderFullDatabase();
+        
+        if (element) {
+            const wrapper = document.querySelector('.customer-filters');
+            if (wrapper) {
+                const rect = element.getBoundingClientRect();
+                const wrapperRect = wrapper.getBoundingClientRect();
+                const scrollLeftTarget = wrapper.scrollLeft + (rect.left - wrapperRect.left) - (wrapperRect.width / 2) + (rect.width / 2);
+                wrapper.scrollTo({ left: scrollLeftTarget, behavior: 'smooth' });
+            }
+        }
+    }
+
+    function filterDashboardStatus(statusName, cardElement) {
+        triggerHapticFeedback([12]);
+        currentDashboardStatusFilter = statusName;
+        document.querySelectorAll('.dash-card').forEach(c => c.classList.remove('active'));
+        if (cardElement) cardElement.classList.add('active');
+        renderDashboard();
+    }
+
     function handleSearch() {
         const query = document.getElementById('searchInput').value.trim().toLowerCase();
         const tbody = document.getElementById('searchResults');
-        const statsSpan = document.getElementById('searchStats');
+        const countSpan = document.getElementById('searchStats');
         if (!tbody) return;
 
         if (!query) {
             tbody.innerHTML = `<tr><td colspan="3" class="no-data-centered" style="text-align: center !important;">Začněte psát do pole výše</td></tr>`;
-            if (statsSpan) statsSpan.textContent = '';
+            if (countSpan) countSpan.textContent = '';
             return;
         }
 
-        const activeMolds = rawDatabase.filter(item => item[4] !== true);
-        const filtered = activeMolds.filter(item => {
+        const matches = rawDatabase.filter(item => {
+            if (item[4] === true) return false;
             const [num, pos, cust, status, isDel, productName] = item;
-            const moldComments = allComments.filter(c => String(c.mold_id) === String(num));
-            const commentsText = moldComments.map(c => c.comment || '').join(' ').toLowerCase();
-
-            return String(num).toLowerCase().includes(query) ||
-                   String(pos).toLowerCase().includes(query) ||
-                   String(cust).toLowerCase().includes(query) ||
-                   String(status).toLowerCase().includes(query) ||
-                   String(productName).toLowerCase().includes(query) ||
-                   commentsText.includes(query);
+            const matchId = String(num).toLowerCase().includes(query);
+            const matchProd = String(productName || '').toLowerCase().includes(query);
+            const matchPos = String(pos).toLowerCase().includes(query);
+            const matchCust = String(cust).toLowerCase().includes(query);
+            return matchId || matchProd || matchPos || matchCust;
         });
 
-        if (statsSpan) statsSpan.textContent = `Nalezeno: ${filtered.length}`;
+        if (countSpan) countSpan.textContent = `Nalezeno forem: ${matches.length}`;
 
-        if (filtered.length === 0) {
+        if (matches.length === 0) {
             tbody.innerHTML = `<tr><td colspan="3" class="no-data-centered" style="text-align: center !important;">Nic nenalezeno</td></tr>`;
             return;
         }
 
-        tbody.innerHTML = filtered.map(item => {
+        tbody.innerHTML = matches.map(item => {
             const [num, pos, cust, status, isDel, productName, photosArr, navodkaUrl, prevPos] = item;
             const rowKey = `search_${num}`;
             const isExpanded = Boolean(expandedMoldsMap[rowKey]);
@@ -5001,13 +5065,15 @@
                             ${cameraIconHtml}
                         </div>
                         <div class="product-name-sub">${productName ? escapeHtml(productName) : ''}</div>
-                    </td>
-                    <td style="text-align: center;">
-                        <span class="tag-customer" style="${custStyle}" oncontextmenu="handleTagRightClick(event, '${escapeHtml(cust)}')">${escapeHtml(cust)}</span>
                         ${statusPill}
                         ${commentsHtml}
                     </td>
-                    <td>${renderPositionCellHtml(num, pos, status, productName, prevPos)}</td>
+                    <td style="text-align: center;">
+                        <span class="tag-customer" style="${custStyle}" onclick="filterCustomer('${escapeHtml(cust)}')" oncontextmenu="handleTagRightClick(event, '${escapeHtml(cust)}')">${escapeHtml(cust)}</span>
+                    </td>
+                    <td>
+                        ${renderPositionCellHtml(num, pos, status, productName, prevPos)}
+                    </td>
                 </tr>
             `;
         }).join('');
