@@ -3597,7 +3597,7 @@
 
             <div class="cabinet-stats-grid">
                 <div class="cabinet-stat-card">
-                    <span class="cabinet-stat-label">Dnes nasazeno</span>
+                    <span class="cabinet-stat-label">Dnes</span>
                     <span class="cabinet-stat-val" id="cabinetStatToday">0</span>
                 </div>
                 <div class="cabinet-stat-card">
@@ -3606,12 +3606,12 @@
                 </div>
                 <div class="cabinet-stat-card">
                     <span class="cabinet-stat-label">Tento měsíc</span>
-                    <span class="cabinet-stat-val" id="cabinetStatDays">0</span>
+                    <span class="cabinet-stat-val" id="cabinetStatMonth">0</span>
                 </div>
             </div>
 
-            <div style="display: flex; justify-content: space-between; align-items: center; margin: 0.45rem 0 0.2rem 0;">
-                <span style="font-size: 0.74rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.03em;">Výběr směny</span>
+            <div style="display: flex; justify-content: space-between; align-items: center; margin: 0.55rem 0 0.25rem 0;">
+                <span style="font-size: 0.74rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.03em;">Aktivita</span>
                 <span id="cabinetSelectedDaySummary" style="font-size: 0.74rem; color: var(--text-muted);">Nasazené formy</span>
             </div>
 
@@ -3620,21 +3620,30 @@
                 <div class="no-data" style="padding: 0.4rem 0; font-size: 0.8rem;">Načítání směn...</div>
             </div>
 
-            <!-- Drill-down list of molds for selected day -->
+            <!-- Drill-down checklist of molds for selected day -->
             <div class="cabinet-molds-drilldown" id="cabinetMoldsDrilldown">
-                <!-- Injected dynamically -->
+                <!-- Injected dynamically as checklist -->
             </div>
         </div>
         <div class="modal-footer" style="display: flex; justify-content: space-between; align-items: center; padding-top: 0.65rem; flex-shrink: 0;">
-            <button class="btn-secondary" style="display: flex; align-items: center; gap: 0.4rem; font-size: 0.82rem; padding: 0.45rem 0.85rem;" onclick="openShiftPlanFromCabinet()">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width: 14px; height: 14px;">
-                    <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path>
-                    <rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect>
-                    <path d="m9 14 2 2 4-4"></path>
+            <button class="btn-secondary" style="color: #ef4444; border-color: rgba(239, 68, 68, 0.3); background: rgba(239, 68, 68, 0.05); font-size: 0.8rem; padding: 0.45rem 0.75rem; display: inline-flex; align-items: center; gap: 0.35rem;" onclick="promptClearUserCabinetHistory()" title="Очистить историю активности текущего пользователя">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="3 6 5 6 21 6"></polyline>
+                    <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
                 </svg>
-                <span>Plán na směnu</span>
+                <span>Vymazat historii</span>
             </button>
-            <button class="btn-primary" style="font-size: 0.82rem; padding: 0.45rem 1rem;" onclick="closeUserCabinetModal()">Zavřít</button>
+            <div style="display: flex; gap: 0.5rem; align-items: center;">
+                <button class="btn-secondary" style="display: flex; align-items: center; gap: 0.4rem; font-size: 0.82rem; padding: 0.45rem 0.85rem;" onclick="openShiftPlanFromCabinet()">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width: 14px; height: 14px;">
+                        <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path>
+                        <rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect>
+                        <path d="m9 14 2 2 4-4"></path>
+                    </svg>
+                    <span>Plán na směnu</span>
+                </button>
+                <button class="btn-primary" style="font-size: 0.82rem; padding: 0.45rem 1rem;" onclick="closeUserCabinetModal()">Zavřít</button>
+            </div>
         </div>
     </div>
 </div>
@@ -7846,6 +7855,7 @@ CRITICAL INSTRUCTION FOR EUROPEAN HANDWRITTEN NUMBERS & TEXT:
 - European handwritten '7' ALWAYS has a horizontal crossbar/line through the vertical stem (7 with horizontal line). This MUST be recognized as digit '7' (SEVEN). DO NOT misread it as 1, 4, 9, or 3!
 - European handwritten '1' usually has a top diagonal hook/flag.
 - European handwritten '4' has a closed or open top.
+- IGNORE faint ghost text or translucent numbers bleeding through from the reverse side of paper! Extract ONLY prominent foreground written numbers.
 - Include all read text in raw_text.
 
 Return strictly valid JSON only without markdown formatting with this schema:
@@ -7866,8 +7876,8 @@ Return strictly valid JSON only without markdown formatting with this schema:
                     }
                 ],
                 generationConfig: {
-                    temperature: 0.05,
-                    maxOutputTokens: 1000
+                    temperature: 0.0,
+                    maxOutputTokens: 256
                 }
             };
 
@@ -8945,6 +8955,41 @@ Return strictly valid JSON only without markdown formatting with this schema:
         }
 
         return null;
+    }
+
+    function matchGeminiPlanBatch(geminiResult, barcodeValues = [], cropCanvas = null) {
+        const activeMolds = rawDatabase.filter(item => !item[4]);
+        if (activeMolds.length === 0) return [];
+
+        const foundMoldsMap = new Map();
+
+        // 1. Direct exact match from geminiResult.numbers array
+        if (geminiResult && Array.isArray(geminiResult.numbers)) {
+            for (const numStr of geminiResult.numbers) {
+                const cleanNum = String(numStr).trim();
+                const mold = activeMolds.find(m => String(m[0]).trim() === cleanNum);
+                if (mold && !foundMoldsMap.has(String(mold[0]))) {
+                    foundMoldsMap.set(String(mold[0]), mold);
+                }
+            }
+        }
+
+        // 2. Direct exact match from geminiResult.primaryNumber if present
+        if (geminiResult && geminiResult.primaryNumber) {
+            const cleanPrim = String(geminiResult.primaryNumber).trim();
+            const mold = activeMolds.find(m => String(m[0]).trim() === cleanPrim);
+            if (mold && !foundMoldsMap.has(String(mold[0]))) {
+                foundMoldsMap.set(String(mold[0]), mold);
+            }
+        }
+
+        // If Gemini Vision directly found matching molds, return them without fuzzy mutations (e.g. turning 7 into 1)
+        if (foundMoldsMap.size > 0) {
+            return Array.from(foundMoldsMap.values());
+        }
+
+        // Otherwise fallback to legacy OCR parser
+        return matchScannedPlanBatch(geminiResult?.rawText || '', barcodeValues, cropCanvas);
     }
 
     function matchScannedPlanBatch(rawOcrText, barcodeValues = [], cropCanvas = null) {
@@ -10540,10 +10585,38 @@ Return strictly valid JSON only without markdown formatting with this schema:
     let cabinetDaysData = new Map();
     let cabinetSelectedDayKey = null;
 
+    async function promptClearUserCabinetHistory() {
+        if (!currentUser) return;
+        triggerHapticFeedback([18]);
+        showCustomConfirm("Vymazat historii", `Opravdu chcete vymazat historii aktivity pro uživatele ${currentUser}?`, "Vymazat", async () => {
+            try {
+                const res = await fetch(`${API_URL}/rest/v1/mold_logs?user_name=eq.${encodeURIComponent(currentUser)}`, {
+                    method: 'DELETE',
+                    headers: { 
+                        'apikey': API_KEY, 
+                        'Authorization': `Bearer ${API_KEY}`,
+                        'Prefer': 'return=minimal' 
+                    }
+                });
+
+                if (!res.ok) throw new Error("Chyba databáze");
+
+                cabinetDaysData.clear();
+                cabinetSelectedDayKey = null;
+
+                showToast(`Historie uživatele ${currentUser} byla vyčištěna`);
+                await loadAndRenderUserCabinetStats();
+            } catch (err) {
+                console.error("Chyba při mazání historie:", err);
+                showToast("Chyba při mazání historie", true);
+            }
+        });
+    }
+
     async function loadAndRenderUserCabinetStats() {
         const todayStatEl = document.getElementById('cabinetStatToday');
         const weekStatEl = document.getElementById('cabinetStatWeek');
-        const monthStatEl = document.getElementById('cabinetStatDays');
+        const monthStatEl = document.getElementById('cabinetStatMonth');
         const chipsBar = document.getElementById('cabinetDaysChipsBar');
         const drilldownContainer = document.getElementById('cabinetMoldsDrilldown');
 
@@ -10577,26 +10650,18 @@ Return strictly valid JSON only without markdown formatting with this schema:
             let weekCount = 0;
             let monthCount = 0;
 
-            // Filter ONLY shift plan generated items
-            const planLogs = userLogs.filter(log => {
-                if (!log.created_at) return false;
-                const moldIdStr = String(log.mold_id || '').toUpperCase();
-                if (moldIdStr === 'HLEDÁNÍ' || moldIdStr === 'SYSTEM' || moldIdStr === 'NÁVODKA' || moldIdStr === 'SKENER') return false;
-                const oldPos = String(log.old_position || '').toLowerCase();
-                const newPos = String(log.new_position || '').toLowerCase();
-                
-                // Pure shift plan actions or production positioning
-                return oldPos.includes('plán na směnu') || newPos.includes('do plánu') || newPos.includes('nasazeno');
-            });
-
-            // Also include active shift plan items from local storage if not yet in logs
             const seenKeys = new Set();
 
-            planLogs.forEach(log => {
+            userLogs.forEach(log => {
+                if (!log.created_at) return;
+                const moldIdStr = String(log.mold_id || '').toUpperCase();
+                if (moldIdStr === 'HLEDÁNÍ' || moldIdStr === 'SYSTEM' || moldIdStr === 'NÁVODKA' || moldIdStr === 'SKENER') return;
+
                 const logDate = new Date(log.created_at);
                 const dayKey = toLocalDateStr(logDate);
                 const moldId = String(log.mold_id || '').trim();
-                const dedupeKey = `${dayKey}_${moldId}_${log.new_position}`;
+                const dedupeKey = `${dayKey}_${moldId}_${log.new_position}_${log.created_at}`;
+                if (seenKeys.has(dedupeKey)) return;
                 seenKeys.add(dedupeKey);
 
                 if (!cabinetDaysData.has(dayKey)) {
@@ -10609,7 +10674,6 @@ Return strictly valid JSON only without markdown formatting with this schema:
 
                 const dayObj = cabinetDaysData.get(dayKey);
                 dayObj.moves++;
-
                 dayObj.molds.push({
                     mold_id: moldId,
                     old_position: log.old_position,
@@ -10628,14 +10692,13 @@ Return strictly valid JSON only without markdown formatting with this schema:
                 }
             });
 
-            // Integrate current active shift plan items for today
+            // Integrate current active shift plan items for today if present
             if (Array.isArray(currentShiftPlan) && currentShiftPlan.length > 0) {
                 currentShiftPlan.forEach(item => {
                     const cleanNum = String(item.num || '').trim();
-                    const dedupeKey = `${todayStr}_${cleanNum}_Nasazeno do výroby`;
-                    const dedupeKey2 = `${todayStr}_${cleanNum}_Přidáno do plánu na směnu`;
+                    const dedupeKey = `${todayStr}_${cleanNum}_shiftplan_active`;
                     
-                    if (!seenKeys.has(dedupeKey) && !seenKeys.has(dedupeKey2)) {
+                    if (!seenKeys.has(dedupeKey)) {
                         if (!cabinetDaysData.has(todayStr)) {
                             cabinetDaysData.set(todayStr, {
                                 date: now,
@@ -10644,17 +10707,20 @@ Return strictly valid JSON only without markdown formatting with this schema:
                             });
                         }
                         const dayObj = cabinetDaysData.get(todayStr);
-                        dayObj.moves++;
-                        dayObj.molds.unshift({
-                            mold_id: cleanNum,
-                            old_position: 'Plán na směnu',
-                            new_position: item.checked ? 'Nasazeno do výroby' : 'V plánu na směnu',
-                            created_at: item.addedAt ? new Date(item.addedAt).toISOString() : now.toISOString()
-                        });
-                        todayCount++;
-                        weekCount++;
-                        monthCount++;
-                        seenKeys.add(dedupeKey);
+                        const alreadyExists = dayObj.molds.some(m => String(m.mold_id).trim() === cleanNum);
+                        if (!alreadyExists) {
+                            dayObj.moves++;
+                            dayObj.molds.unshift({
+                                mold_id: cleanNum,
+                                old_position: 'Plán na směnu',
+                                new_position: item.checked ? 'Nasazeno do výroby' : 'V plánu na směnu',
+                                created_at: item.addedAt ? new Date(item.addedAt).toISOString() : now.toISOString()
+                            });
+                            todayCount++;
+                            weekCount++;
+                            monthCount++;
+                            seenKeys.add(dedupeKey);
+                        }
                     }
                 });
             }
@@ -10664,7 +10730,7 @@ Return strictly valid JSON only without markdown formatting with this schema:
             if (monthStatEl) monthStatEl.textContent = monthCount;
 
             if (cabinetDaysData.size === 0) {
-                chipsBar.innerHTML = `<span style="font-size: 0.8rem; color: var(--text-muted); padding: 0.2rem 0;">Zatím žádné formy z plánu na směnu</span>`;
+                chipsBar.innerHTML = `<span style="font-size: 0.8rem; color: var(--text-muted); padding: 0.2rem 0;">Zatím žádná historie aktivit</span>`;
                 drilldownContainer.innerHTML = `
                     <div class="empty-state-card" style="padding: 1.5rem 1rem; border-color: var(--border-color); box-shadow: none;">
                         <div class="empty-state-icon-box">
@@ -10674,8 +10740,8 @@ Return strictly valid JSON only without markdown formatting with this schema:
                                 <path d="m9 14 2 2 4-4"></path>
                             </svg>
                         </div>
-                        <div class="empty-state-title" style="font-size: 0.95rem;">Žádné formy z plánu</div>
-                        <div class="empty-state-desc" style="font-size: 0.8rem;">Formy, které zařadíte a nasadíte přes Plán na směnu, se zobrazí zde.</div>
+                        <div class="empty-state-title" style="font-size: 0.95rem;">Žádné zpracované formy</div>
+                        <div class="empty-state-desc" style="font-size: 0.8rem;">Zde se zobrazuje přehled forem zpracovaných během vaší směny.</div>
                     </div>
                 `;
                 return;
@@ -10684,7 +10750,6 @@ Return strictly valid JSON only without markdown formatting with this schema:
             // Sort days descending
             const sortedDays = Array.from(cabinetDaysData.entries()).sort((a, b) => b[0].localeCompare(a[0]));
 
-            // Set default selected day to today (if present) or latest active day
             if (!cabinetSelectedDayKey || !cabinetDaysData.has(cabinetSelectedDayKey)) {
                 cabinetSelectedDayKey = sortedDays[0][0];
             }
@@ -10694,7 +10759,7 @@ Return strictly valid JSON only without markdown formatting with this schema:
 
         } catch (err) {
             console.warn('Error loading cabinet stats:', err);
-            chipsBar.innerHTML = `<div class="no-data">Chyba směn</div>`;
+            chipsBar.innerHTML = `<div class="no-data">Chyba historie</div>`;
         }
     }
 
@@ -10758,11 +10823,11 @@ Return strictly valid JSON only without markdown formatting with this schema:
         const molds = dayData.molds || [];
 
         if (summaryEl) {
-            summaryEl.textContent = `${dayData.moves} ${dayData.moves === 1 ? 'forma' : (dayData.moves < 5 ? 'formy' : 'forem')} v plánu`;
+            summaryEl.textContent = `Zpracované formy: ${dayData.moves}`;
         }
 
         if (molds.length === 0) {
-            container.innerHTML = `<div class="no-data" style="padding: 1.5rem 0;">V této směně nebyly zaznamenány žádné formy z plánu</div>`;
+            container.innerHTML = `<div class="no-data" style="padding: 1.5rem 0;">V této směně nebyly zaznamenány žádné formy</div>`;
             return;
         }
 
@@ -10774,13 +10839,10 @@ Return strictly valid JSON only without markdown formatting with this schema:
 
             // Format time HH:MM
             const timeStr = item.created_at ? new Date(item.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : '';
-            
-            // Clean action text for shift plan
-            let actionText = item.new_position || 'Nasazeno do výroby';
-            const isNasazeno = actionText.toLowerCase().includes('nasazeno');
+            const actionText = item.new_position || 'Zpracováno';
 
             return `
-                <div class="cabinet-mold-row" onclick="inspectMoldFromCabinet('${escapeHtml(moldId)}')">
+                <div class="cabinet-mold-row" style="cursor: default;">
                     <div class="cabinet-mold-row-left">
                         <div class="cabinet-mold-id-line">
                             <span>Forma #${escapeHtml(moldId)}</span>
@@ -10788,14 +10850,11 @@ Return strictly valid JSON only without markdown formatting with this schema:
                         </div>
                         <div class="cabinet-mold-time-meta">
                             ${prodName ? `<span>${escapeHtml(prodName)}</span> • ` : ''}
-                            <span style="color: ${isNasazeno ? '#16a34a' : 'var(--text-main)'}; font-weight: 500;">${escapeHtml(actionText)}</span>
+                            <span style="color: var(--text-main); font-weight: 500;">${escapeHtml(actionText)}</span>
                         </div>
                     </div>
-                    <div class="cabinet-mold-row-right">
-                        <span style="font-size: 0.74rem; color: var(--text-muted); font-variant-numeric: tabular-nums;">${escapeHtml(timeStr)}</span>
-                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color: var(--text-muted);">
-                            <polyline points="9 18 15 12 9 6"></polyline>
-                        </svg>
+                    <div class="cabinet-mold-row-right" style="font-size: 0.75rem; color: var(--text-muted); font-variant-numeric: tabular-nums;">
+                        ${escapeHtml(timeStr)}
                     </div>
                 </div>
             `;
