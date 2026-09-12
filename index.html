@@ -7468,12 +7468,40 @@
         }
     }
 
+    function sanitizeGeminiApiKey(raw) {
+        if (!raw) return '';
+        let str = String(raw).trim();
+        // If user pasted multi-line text (e.g. copied UI blocks with titles and status)
+        if (str.includes('\n') || str.includes('\r') || str.includes(' ')) {
+            const tokens = str.split(/[\s\r\n]+/);
+            const candidate = tokens.find(t => t.startsWith('AIzaSy') || t.startsWith('AQ') || (t.length >= 25 && /^[A-Za-z0-9_\.-]+$/.test(t)));
+            if (candidate) return candidate;
+        }
+        return str;
+    }
+
     function getGeminiApiKey() {
         try {
-            return localStorage.getItem('gemini_api_key') || '';
+            const raw = localStorage.getItem('gemini_api_key') || '';
+            return sanitizeGeminiApiKey(raw);
         } catch (e) {
             return '';
         }
+    }
+
+    async function fetchAvailableGeminiModels(key) {
+        const cleanKey = sanitizeGeminiApiKey(key);
+        if (!cleanKey) throw new Error("API klíč je prázdný");
+        const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models?key=${encodeURIComponent(cleanKey)}`);
+        if (!res.ok) {
+            const errJson = await res.json().catch(() => ({}));
+            throw new Error(errJson?.error?.message || `HTTP ${res.status}`);
+        }
+        const data = await res.json();
+        const models = (data?.models || [])
+            .filter(m => Array.isArray(m.supportedGenerationMethods) && m.supportedGenerationMethods.includes("generateContent"))
+            .map(m => m.name.replace(/^models\//, ''));
+        return models;
     }
 
     function updateGeminiAiUiState() {
@@ -7568,7 +7596,11 @@
 
         const input = document.getElementById('geminiApiKeyInput');
         const saveBtn = document.getElementById('geminiSaveKeyBtn');
-        const key = (input ? input.value : '').trim();
+        const raw = input ? input.value : '';
+        const key = sanitizeGeminiApiKey(raw);
+        if (input && key) {
+            input.value = key;
+        }
 
         if (saveBtn) saveBtn.disabled = true;
 
@@ -7639,7 +7671,12 @@
         const input = document.getElementById('geminiApiKeyInput');
         const statusEl = document.getElementById('geminiTestStatus');
         const testBtn = document.getElementById('geminiTestBtn');
-        const key = (input ? input.value : '').trim() || getGeminiApiKey();
+        const rawKey = (input ? input.value : '').trim() || getGeminiApiKey();
+        const key = sanitizeGeminiApiKey(rawKey);
+
+        if (input && key) {
+            input.value = key;
+        }
 
         if (!key) {
             if (statusEl) {
@@ -7653,53 +7690,25 @@
         }
         if (testBtn) testBtn.disabled = true;
 
-        const modelsToTest = ['gemini-2.0-flash', 'gemini-2.0-flash-lite', 'gemini-1.5-flash-latest', 'gemini-1.5-pro-latest'];
-        let success = false;
-        let lastErrorMsg = '';
-
         try {
-            const payload = {
-                contents: [{ parts: [{ text: "ping" }] }]
-            };
-
-            for (const modelName of modelsToTest) {
-                try {
-                    const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${modelName}:generateContent?key=${encodeURIComponent(key)}`, {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify(payload)
-                    });
-
-                    if (res.ok) {
-                        success = true;
-                        break;
-                    } else {
-                        const errData = await res.json().catch(() => ({}));
-                        lastErrorMsg = errData?.error?.message || `HTTP ${res.status}`;
-                        if (res.status === 400 || res.status === 403) {
-                            break;
-                        }
-                    }
-                } catch (err) {
-                    lastErrorMsg = err.message || 'Fetch error';
-                }
-            }
-
-            if (success) {
+            const availableModels = await fetchAvailableGeminiModels(key);
+            if (availableModels.length > 0) {
+                const primary = availableModels.find(m => m.includes('2.0-flash') || m.includes('1.5-flash') || m.includes('flash')) || availableModels[0];
                 if (statusEl) {
-                    statusEl.innerHTML = '<span style="color: #22c55e; font-weight: 600;">✓ Spojení navázáno! Klíč je platný.</span>';
+                    statusEl.innerHTML = `<span style="color: #22c55e; font-weight: 600;">✓ Spojení navázáno! Klíč je platný (${primary}).</span>`;
                 }
                 triggerHapticFeedback([20]);
             } else {
                 if (statusEl) {
-                    statusEl.innerHTML = `<span style="color: #ef4444;">✕ Neplatný klíč: ${escapeHtml(lastErrorMsg)}</span>`;
+                    statusEl.innerHTML = '<span style="color: #ef4444;">✕ Pro tento klíč nebyly nalezeny žádné dostupné Gemini modely.</span>';
                 }
                 triggerHapticFeedback([40, 50, 40]);
             }
-        } catch (e) {
+        } catch (err) {
             if (statusEl) {
-                statusEl.innerHTML = `<span style="color: #ef4444;">✕ Chyba připojení k serveru Google.</span>`;
+                statusEl.innerHTML = `<span style="color: #ef4444;">✕ Neplatný klíč: ${escapeHtml(err.message)}</span>`;
             }
+            triggerHapticFeedback([40, 50, 40]);
         } finally {
             if (testBtn) testBtn.disabled = false;
         }
@@ -7775,7 +7784,23 @@ Return strictly valid JSON only without markdown formatting with this schema:
                 }
             };
 
-            const modelsToTry = ['gemini-2.0-flash', 'gemini-2.0-flash-lite', 'gemini-1.5-flash-latest', 'gemini-1.5-pro-latest'];
+            let availableModels = [];
+            try {
+                availableModels = await fetchAvailableGeminiModels(apiKey);
+            } catch (e) {}
+
+            let modelsToTry = [];
+            if (availableModels.length > 0) {
+                const flash20 = availableModels.filter(m => m.includes('2.0-flash'));
+                const flash15 = availableModels.filter(m => m.includes('1.5-flash'));
+                const otherFlash = availableModels.filter(m => m.includes('flash') && !flash20.includes(m) && !flash15.includes(m));
+                const remaining = availableModels.filter(m => !m.includes('flash'));
+                modelsToTry = [...flash20, ...flash15, ...otherFlash, ...remaining];
+            }
+            if (modelsToTry.length === 0) {
+                modelsToTry = ['gemini-2.0-flash', 'gemini-1.5-flash', 'gemini-2.0-flash-lite'];
+            }
+
             let res = null;
             let lastErrData = null;
 
