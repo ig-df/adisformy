@@ -7653,34 +7653,43 @@
         }
         if (testBtn) testBtn.disabled = true;
 
+        const modelsToTest = ['gemini-2.0-flash', 'gemini-2.0-flash-lite', 'gemini-1.5-flash-latest', 'gemini-1.5-pro-latest', 'gemini-1.5-flash'];
+        let success = false;
+        let lastErrorMsg = '';
+
         try {
             const payload = {
                 contents: [{ parts: [{ text: "ping" }] }]
             };
-            let res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${encodeURIComponent(key)}`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(payload)
-            });
 
-            if (!res.ok && res.status === 404) {
-                res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${encodeURIComponent(key)}`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(payload)
-                });
+            for (const modelName of modelsToTest) {
+                try {
+                    const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${modelName}:generateContent?key=${encodeURIComponent(key)}`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(payload)
+                    });
+
+                    if (res.ok) {
+                        success = true;
+                        break;
+                    } else {
+                        const errData = await res.json().catch(() => ({}));
+                        lastErrorMsg = errData?.error?.message || `HTTP ${res.status}`;
+                    }
+                } catch (err) {
+                    lastErrorMsg = err.message || 'Fetch error';
+                }
             }
 
-            if (res.ok) {
+            if (success) {
                 if (statusEl) {
                     statusEl.innerHTML = '<span style="color: #22c55e; font-weight: 600;">✓ Spojení navázáno! Klíč je platný.</span>';
                 }
                 triggerHapticFeedback([20]);
             } else {
-                const errData = await res.json().catch(() => ({}));
-                const msg = errData?.error?.message || `Chyba HTTP ${res.status}`;
                 if (statusEl) {
-                    statusEl.innerHTML = `<span style="color: #ef4444;">✕ Neplatný klíč: ${escapeHtml(msg)}</span>`;
+                    statusEl.innerHTML = `<span style="color: #ef4444;">✕ Neplatný klíč: ${escapeHtml(lastErrorMsg)}</span>`;
                 }
                 triggerHapticFeedback([40, 50, 40]);
             }
@@ -7716,30 +7725,32 @@
 
             const promptText = (mode === 'plan')
                 ? `You are an expert industrial vision and OCR system for an injection mold factory warehouse.
-Look at this photo containing a shift plan sheet, paper schedule, or production table with multiple injection mold numbers.
-Extract ALL mold numbers (which are typically 2 to 5 digits, e.g. 765, 764, 976, 808, 668) strictly in vertical order from top to bottom.
+Look at this photo containing a shift plan sheet, paper schedule, or production table with multiple injection mold numbers or product names.
+Extract ALL mold numbers (typically 2 to 5 digits, e.g. 765, 764, 976, 808, 668) and visible product/part names from top to bottom.
 
-CRITICAL INSTRUCTION FOR EUROPEAN HANDWRITTEN NUMBERS:
+CRITICAL INSTRUCTION FOR EUROPEAN HANDWRITTEN NUMBERS & TEXT:
 - European handwritten '7' ALWAYS has a horizontal crossbar/line through the vertical stem (7 with horizontal line). It is a DIGIT 7 (SEVEN). DO NOT misread it as 1, 4, or 9!
 - European handwritten '1' usually has a top diagonal hook/flag.
 - European handwritten '4' has a closed or open top.
-- Extract digits only for each mold number.
+- Transcribe all text and numbers accurately.
 
 Return strictly valid JSON only without markdown formatting with this schema:
 {"numbers":["765","764","976"],"raw_text":"..."}`
                 : `You are an expert industrial OCR and vision system for injection mold factory warehouse tracking.
-Look at this photo of an injection mold tag, physical metal mold plate, paper sticker, or handwritten note.
-Carefully identify the PRIMARY injection mold number (číslo formy). Mold numbers are typically 2 to 5 digits (such as 765, 764, 976, 808, 668).
+Look at this photo of an injection mold tag, physical metal mold plate, paper sticker, product sample, or handwritten note.
+Carefully identify:
+1. PRIMARY injection mold number (číslo formy), typically 2 to 5 digits (such as 765, 764, 976, 808, 668).
+2. Product or part name (název výrobku/dílu, e.g. "Steckdeckel", "Kryt", "Adapter", "VW", etc.).
+3. Customer name (zákazník) or any visible text.
 
-CRITICAL INSTRUCTION FOR EUROPEAN HANDWRITTEN NUMBERS:
+CRITICAL INSTRUCTION FOR EUROPEAN HANDWRITTEN NUMBERS & TEXT:
 - European handwritten '7' ALWAYS has a horizontal crossbar/line through the vertical stem (7 with horizontal line). This MUST be recognized as digit '7' (SEVEN). DO NOT misread it as 1, 4, or 9!
 - European handwritten '1' usually has a top diagonal hook/flag.
 - European handwritten '4' has a closed or open top.
-- Output ONLY the clean numeric digits for primary_number (e.g. "765").
+- Include all read text in raw_text.
 
-If a part or product name is visible, extract it as well.
 Return strictly valid JSON only without markdown formatting with this schema:
-{"primary_number":"765","numbers":["765"],"product_name":"","raw_text":"765"}`;
+{"primary_number":"765","numbers":["765"],"product_name":"Steckdeckel","raw_text":"765 Steckdeckel"}`;
 
             const payload = {
                 contents: [
@@ -7761,7 +7772,7 @@ Return strictly valid JSON only without markdown formatting with this schema:
                 }
             };
 
-            const modelsToTry = ['gemini-1.5-flash', 'gemini-2.0-flash', 'gemini-1.5-pro'];
+            const modelsToTry = ['gemini-2.0-flash', 'gemini-2.0-flash-lite', 'gemini-1.5-flash-latest', 'gemini-1.5-pro-latest', 'gemini-1.5-flash'];
             let res = null;
             let lastErrData = null;
 
@@ -7827,104 +7838,34 @@ Return strictly valid JSON only without markdown formatting with this schema:
         }
     }
 
-    function matchGeminiPlanBatch(geminiResult, barcodeValues = []) {
+    function matchGeminiPlanBatch(geminiResult, barcodeValues = [], cropCanvas = null) {
         if (!geminiResult || geminiResult.error) return [];
         const activeMolds = rawDatabase.filter(item => !item[4]);
         if (activeMolds.length === 0) return [];
 
-        const foundMoldsMap = new Map();
+        const textParts = [];
+        if (Array.isArray(geminiResult.numbers)) textParts.push(...geminiResult.numbers);
+        if (geminiResult.primaryNumber) textParts.push(geminiResult.primaryNumber);
+        if (geminiResult.productName) textParts.push(geminiResult.productName);
+        if (geminiResult.rawText) textParts.push(geminiResult.rawText);
 
-        // 1. Barcodes
-        for (const b of barcodeValues) {
-            const cleanB = String(b || '').trim();
-            if (cleanB) {
-                const mold = activeMolds.find(m => String(m[0]).trim() === cleanB);
-                if (mold && !foundMoldsMap.has(String(mold[0]))) {
-                    foundMoldsMap.set(String(mold[0]), mold);
-                }
-            }
-        }
-
-        // 2. Direct Gemini Numbers & Candidates
-        let candidates = [];
-        if (Array.isArray(geminiResult.numbers)) candidates.push(...geminiResult.numbers);
-        if (geminiResult.primaryNumber) candidates.push(geminiResult.primaryNumber);
-        if (geminiResult.rawText) {
-            const matches = String(geminiResult.rawText).match(/\b\d{2,5}\b/g);
-            if (matches) candidates.push(...matches);
-        }
-
-        for (const num of candidates) {
-            if (!num) continue;
-            const cleanRaw = String(num).trim();
-            const cleanDigits = cleanRaw.replace(/\D/g, '');
-
-            const mold = activeMolds.find(m => {
-                const idStr = String(m[0]).trim();
-                return idStr === cleanRaw || (cleanDigits && idStr === cleanDigits);
-            });
-
-            if (mold && !foundMoldsMap.has(String(mold[0]))) {
-                foundMoldsMap.set(String(mold[0]), mold);
-            }
-        }
-
-        return Array.from(foundMoldsMap.values());
+        const combinedText = textParts.filter(Boolean).join('\n');
+        return matchScannedPlanBatch(combinedText, barcodeValues, cropCanvas);
     }
 
-    function matchGeminiData(geminiResult, barcodeValues = []) {
+    function matchGeminiData(geminiResult, barcodeValues = [], cropCanvas = null) {
         if (!geminiResult || geminiResult.error) return null;
         const activeMolds = rawDatabase.filter(item => !item[4]);
         if (activeMolds.length === 0) return null;
 
-        // 1. Barcode first if present
-        for (const b of barcodeValues) {
-            const cleanB = String(b || '').trim();
-            if (cleanB) {
-                const mold = activeMolds.find(m => String(m[0]).trim() === cleanB);
-                if (mold) return { type: 'single', mold: mold, source: 'barcode' };
-            }
-        }
+        const textParts = [];
+        if (geminiResult.primaryNumber) textParts.push(geminiResult.primaryNumber);
+        if (Array.isArray(geminiResult.numbers)) textParts.push(...geminiResult.numbers);
+        if (geminiResult.productName) textParts.push(geminiResult.productName);
+        if (geminiResult.rawText) textParts.push(geminiResult.rawText);
 
-        // Collect all potential number candidates from Gemini
-        let candidates = [];
-        if (geminiResult.primaryNumber) candidates.push(geminiResult.primaryNumber);
-        if (Array.isArray(geminiResult.numbers)) candidates.push(...geminiResult.numbers);
-        if (geminiResult.rawText) {
-            const matches = String(geminiResult.rawText).match(/\b\d{2,5}\b/g);
-            if (matches) candidates.push(...matches);
-        }
-
-        // Try exact candidate match, then digits-only candidate match against mold IDs
-        for (const cand of candidates) {
-            if (!cand) continue;
-            const cleanRaw = String(cand).trim();
-            const cleanDigits = cleanRaw.replace(/\D/g, '');
-
-            const mold = activeMolds.find(m => {
-                const idStr = String(m[0]).trim();
-                return idStr === cleanRaw || (cleanDigits && idStr === cleanDigits);
-            });
-            if (mold) return { type: 'single', mold: mold, source: 'gemini' };
-        }
-
-        // 4. Product name match if identified by Gemini
-        if (geminiResult.productName) {
-            const prodClean = String(geminiResult.productName).trim().toLowerCase();
-            if (prodClean.length >= 3) {
-                const matchedByProd = activeMolds.filter(m => {
-                    const mProd = String(m[5] || '').trim().toLowerCase();
-                    return mProd && (mProd === prodClean || mProd.includes(prodClean) || prodClean.includes(mProd));
-                });
-                if (matchedByProd.length === 1) {
-                    return { type: 'single', mold: matchedByProd[0], source: 'gemini_product' };
-                } else if (matchedByProd.length > 1) {
-                    return { type: 'multi', molds: matchedByProd, productName: geminiResult.productName, source: 'gemini_product' };
-                }
-            }
-        }
-
-        return null;
+        const combinedText = textParts.filter(Boolean).join('\n');
+        return matchScannedData(combinedText, barcodeValues, cropCanvas);
     }
 
     function setScannerMode(mode) {
@@ -9098,7 +9039,7 @@ Return strictly valid JSON only without markdown formatting with this schema:
                     // Gemini Vision processed the image successfully:
                     // Under no circumstances do we call Tesseract here!
                     if (scannerActiveMode === 'plan') {
-                        const batchMolds = matchGeminiPlanBatch(geminiResult, barcodeValues);
+                        const batchMolds = matchGeminiPlanBatch(geminiResult, barcodeValues, cropCanvas);
                         if (batchMolds && batchMolds.length > 0) {
                             handleBatchMoldMatchFound(batchMolds);
                             return;
@@ -9109,7 +9050,7 @@ Return strictly valid JSON only without markdown formatting with this schema:
                             return;
                         }
                     } else {
-                        const matchResult = matchGeminiData(geminiResult, barcodeValues);
+                        const matchResult = matchGeminiData(geminiResult, barcodeValues, cropCanvas);
                         if (matchResult) {
                             if (matchResult.type === 'single') {
                                 const moldNum = matchResult.mold[0];
