@@ -10443,9 +10443,13 @@ Return strictly valid JSON only without markdown formatting with this schema:
             renderShiftPlanList();
             triggerHapticFeedback(item.checked ? [12, 45] : [16]);
             if (item.checked) {
-                logUserAction(cleanNum, 'Plán na směnu', 'Nasazeno do výroby');
+                logUserAction(cleanNum, 'Plán na směnu', 'Nasazeno do výroby').then(() => {
+                    if (document.getElementById('cabinetDaysChipsBar')) loadAndRenderUserCabinetStats();
+                });
             } else {
-                logUserAction(cleanNum, 'Plán na směnu', 'Odebráno z výroby');
+                logUserAction(cleanNum, 'Plán na směnu', 'Odebráno z výroby').then(() => {
+                    if (document.getElementById('cabinetDaysChipsBar')) loadAndRenderUserCabinetStats();
+                });
             }
         }
     }
@@ -10673,7 +10677,7 @@ Return strictly valid JSON only without markdown formatting with this schema:
                 // Exclude raw scan logs, searches, system events, and guide views
                 if (moldIdStr === 'HLEDÁNÍ' || moldIdStr === 'SYSTEM' || moldIdStr === 'NÁVODKA' || moldIdStr === 'SKENER' || moldIdStr === 'PLÁN') return;
                 if (oldPos === 'Skenování' || oldPos === 'Dávkový sken' || oldPos === 'Vyhledávání' || oldPos === 'Návodka' || oldPos === 'Detail formy') return;
-                if (newPos.includes('Forma rozpoznána') || newPos.includes('rozpoznána') || newPos.includes('Otevřen detail') || newPos.includes('Naskenován plán') || newPos.includes('Hledal:') || newPos.includes('Přidáno do plánu')) return;
+                if (newPos.includes('Forma rozpoznána') || newPos.includes('rozpoznána') || newPos.includes('Otevřen detail') || newPos.includes('Naskenován plán') || newPos.includes('Hledal:') || newPos.includes('Přidáno do plánu') || newPos.includes('Odebráno z výroby')) return;
 
                 const logDate = new Date(log.created_at);
                 const dayKey = toLocalDateStr(logDate);
@@ -10709,40 +10713,6 @@ Return strictly valid JSON only without markdown formatting with this schema:
                     monthCount++;
                 }
             });
-
-            // Integrate ONLY CHECKED (completed) shift plan items for today
-            if (Array.isArray(currentShiftPlan) && currentShiftPlan.length > 0) {
-                currentShiftPlan.forEach(item => {
-                    if (!item.checked) return; // ONLY completed checklist items count!
-                    const cleanNum = String(item.num || '').trim();
-                    const dedupeKey = `${todayStr}_${cleanNum}_shiftplan_checked`;
-                    
-                    if (!seenKeys.has(dedupeKey)) {
-                        if (!cabinetDaysData.has(todayStr)) {
-                            cabinetDaysData.set(todayStr, {
-                                date: now,
-                                moves: 0,
-                                molds: []
-                            });
-                        }
-                        const dayObj = cabinetDaysData.get(todayStr);
-                        const alreadyExists = dayObj.molds.some(m => String(m.mold_id).trim() === cleanNum);
-                        if (!alreadyExists) {
-                            dayObj.moves++;
-                            dayObj.molds.unshift({
-                                mold_id: cleanNum,
-                                old_position: 'Plán na směnu',
-                                new_position: 'Nasazeno do výroby',
-                                created_at: item.addedAt ? new Date(item.addedAt).toISOString() : now.toISOString()
-                            });
-                            todayCount++;
-                            weekCount++;
-                            monthCount++;
-                            seenKeys.add(dedupeKey);
-                        }
-                    }
-                });
-            }
 
             if (todayStatEl) todayStatEl.textContent = todayCount;
             if (weekStatEl) weekStatEl.textContent = weekCount;
