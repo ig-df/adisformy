@@ -7548,9 +7548,19 @@
         return lastRes;
     }
 
+    let _cachedGeminiModelsList = null;
+    let _cachedGeminiKey = null;
+    let _cachedGeminiTime = 0;
+
     async function fetchAvailableGeminiModels(key) {
         const cleanKey = sanitizeGeminiApiKey(key);
         if (!cleanKey) throw new Error("API klíč je prázdný");
+
+        const now = Date.now();
+        if (_cachedGeminiModelsList && _cachedGeminiKey === cleanKey && (now - _cachedGeminiTime < 300000)) {
+            return _cachedGeminiModelsList;
+        }
+
         const res = await fetchGeminiApi(`https://generativelanguage.googleapis.com/v1beta/models`, cleanKey);
         if (!res.ok) {
             const errJson = await res.json().catch(() => ({}));
@@ -7560,6 +7570,12 @@
         const models = (data?.models || [])
             .filter(m => Array.isArray(m.supportedGenerationMethods) && m.supportedGenerationMethods.includes("generateContent"))
             .map(m => m.name.replace(/^models\//, ''));
+
+        if (models.length > 0) {
+            _cachedGeminiModelsList = models;
+            _cachedGeminiKey = cleanKey;
+            _cachedGeminiTime = now;
+        }
         return models;
     }
 
@@ -7782,16 +7798,24 @@
         if (!apiKey || !canvas) return null;
 
         try {
-            // Downscale to max 1024px for swift upload & high accuracy
-            let uploadCanvas = canvas;
+            // Downscale to max 1024px for swift upload & high accuracy, boost contrast for handwritten text
+            let uploadCanvas = document.createElement('canvas');
             const maxDim = 1024;
-            if (canvas.width > maxDim || canvas.height > maxDim) {
-                const scale = Math.min(maxDim / canvas.width, maxDim / canvas.height);
-                uploadCanvas = document.createElement('canvas');
-                uploadCanvas.width = Math.round(canvas.width * scale);
-                uploadCanvas.height = Math.round(canvas.height * scale);
-                const ctx = uploadCanvas.getContext('2d');
-                ctx.drawImage(canvas, 0, 0, uploadCanvas.width, uploadCanvas.height);
+            let width = canvas.width;
+            let height = canvas.height;
+            if (width > maxDim || height > maxDim) {
+                const scale = Math.min(maxDim / width, maxDim / height);
+                width = Math.round(width * scale);
+                height = Math.round(height * scale);
+            }
+            uploadCanvas.width = width;
+            uploadCanvas.height = height;
+            const ctx = uploadCanvas.getContext('2d');
+            if (ctx) {
+                ctx.filter = 'contrast(1.15) brightness(1.03)';
+                ctx.drawImage(canvas, 0, 0, width, height);
+            } else {
+                uploadCanvas = canvas;
             }
 
             const dataUrl = uploadCanvas.toDataURL('image/jpeg', 0.88);
@@ -7804,8 +7828,8 @@ Look at this photo containing a shift plan sheet, paper schedule, or production 
 Extract ALL mold numbers (typically 2 to 5 digits, e.g. 765, 764, 976, 808, 668) and visible product/part names from top to bottom.
 
 CRITICAL INSTRUCTION FOR EUROPEAN HANDWRITTEN NUMBERS & TEXT:
-- European handwritten '7' ALWAYS has a horizontal crossbar/line through the vertical stem (7 with horizontal line). It is a DIGIT 7 (SEVEN). DO NOT misread it as 1, 4, or 9!
-- European handwritten '1' usually has a top diagonal hook/flag.
+- European handwritten '7' ALWAYS has a horizontal crossbar/line through the vertical stem (7 with horizontal bar). It MUST be recognized as DIGIT '7' (SEVEN). DO NOT misread it as 1, 4, 9, or 3!
+- European handwritten '1' usually has a top diagonal hook without a middle bar.
 - European handwritten '4' has a closed or open top.
 - Transcribe all text and numbers accurately.
 
@@ -7819,7 +7843,7 @@ Carefully identify:
 3. Customer name (zákazník) or any visible text.
 
 CRITICAL INSTRUCTION FOR EUROPEAN HANDWRITTEN NUMBERS & TEXT:
-- European handwritten '7' ALWAYS has a horizontal crossbar/line through the vertical stem (7 with horizontal line). This MUST be recognized as digit '7' (SEVEN). DO NOT misread it as 1, 4, or 9!
+- European handwritten '7' ALWAYS has a horizontal crossbar/line through the vertical stem (7 with horizontal line). This MUST be recognized as digit '7' (SEVEN). DO NOT misread it as 1, 4, 9, or 3!
 - European handwritten '1' usually has a top diagonal hook/flag.
 - European handwritten '4' has a closed or open top.
 - Include all read text in raw_text.
@@ -7881,12 +7905,8 @@ Return strictly valid JSON only without markdown formatting with this schema:
                     } else {
                         const errJson = await response.json().catch(() => ({}));
                         lastErrData = { status: response.status, data: errJson };
-                        if (response.status === 429) {
-                            return { error: 'quota_exceeded', message: errJson?.error?.message || 'Quota exceeded' };
-                        }
-                        if (response.status === 400 || response.status === 403) {
-                            return { error: 'api_error', status: response.status, message: errJson?.error?.message || 'Neplatný API klíč' };
-                        }
+                        console.warn(`Gemini Vision model ${modelName} returned status ${response.status}:`, errJson);
+                        // Continue trying next candidate model instead of breaking prematurely
                     }
                 } catch (fetchErr) {
                     console.warn(`Fetch error trying ${modelName}:`, fetchErr);
@@ -7895,6 +7915,9 @@ Return strictly valid JSON only without markdown formatting with this schema:
 
             if (!res) {
                 console.warn("All Gemini Vision models failed:", lastErrData);
+                if (lastErrData?.status === 429) {
+                    return { error: 'quota_exceeded', message: lastErrData?.data?.error?.message || 'Quota exceeded' };
+                }
                 return { error: 'api_error', status: lastErrData?.status || 500, message: lastErrData?.data?.error?.message || 'Gemini request failed' };
             }
 
