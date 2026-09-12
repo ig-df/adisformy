@@ -7653,7 +7653,7 @@
         }
         if (testBtn) testBtn.disabled = true;
 
-        const modelsToTest = ['gemini-2.0-flash', 'gemini-2.0-flash-lite', 'gemini-1.5-flash-latest', 'gemini-1.5-pro-latest', 'gemini-1.5-flash'];
+        const modelsToTest = ['gemini-2.0-flash', 'gemini-2.0-flash-lite', 'gemini-1.5-flash-latest', 'gemini-1.5-pro-latest'];
         let success = false;
         let lastErrorMsg = '';
 
@@ -7676,6 +7676,9 @@
                     } else {
                         const errData = await res.json().catch(() => ({}));
                         lastErrorMsg = errData?.error?.message || `HTTP ${res.status}`;
+                        if (res.status === 400 || res.status === 403) {
+                            break;
+                        }
                     }
                 } catch (err) {
                     lastErrorMsg = err.message || 'Fetch error';
@@ -7772,7 +7775,7 @@ Return strictly valid JSON only without markdown formatting with this schema:
                 }
             };
 
-            const modelsToTry = ['gemini-2.0-flash', 'gemini-2.0-flash-lite', 'gemini-1.5-flash-latest', 'gemini-1.5-pro-latest', 'gemini-1.5-flash'];
+            const modelsToTry = ['gemini-2.0-flash', 'gemini-2.0-flash-lite', 'gemini-1.5-flash-latest', 'gemini-1.5-pro-latest'];
             let res = null;
             let lastErrData = null;
 
@@ -7792,6 +7795,9 @@ Return strictly valid JSON only without markdown formatting with this schema:
                         lastErrData = { status: response.status, data: errJson };
                         if (response.status === 429) {
                             return { error: 'quota_exceeded', message: errJson?.error?.message || 'Quota exceeded' };
+                        }
+                        if (response.status === 400 || response.status === 403) {
+                            return { error: 'api_error', status: response.status, message: errJson?.error?.message || 'Neplatný API klíč' };
                         }
                     }
                 } catch (fetchErr) {
