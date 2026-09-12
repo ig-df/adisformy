@@ -7480,14 +7480,22 @@
         const key = getGeminiApiKey();
         const hasKey = Boolean(key && key.trim().length > 10);
         
+        // Header button and green dot: visible ONLY for SuperUser
+        const headerBtn = document.getElementById('scannerAiConfigBtn');
+        if (headerBtn) {
+            headerBtn.style.display = isSuperUser ? 'flex' : 'none';
+        }
+
         const dot = document.getElementById('scannerAiHeaderDot');
         if (dot) {
             dot.style.display = hasKey ? 'block' : 'none';
         }
 
+        // Bottom AI pill button: visible ONLY for SuperUser
         const pillBtn = document.getElementById('scannerAiPillBtn');
         const pillLabel = document.getElementById('scannerAiPillLabel');
         if (pillBtn && pillLabel) {
+            pillBtn.style.display = isSuperUser ? 'inline-flex' : 'none';
             if (hasKey) {
                 pillBtn.classList.remove('needs-key');
                 pillBtn.classList.add('active');
@@ -7495,7 +7503,7 @@
             } else {
                 pillBtn.classList.remove('active');
                 pillBtn.classList.add('needs-key');
-                pillLabel.textContent = isSuperUser ? "Gemini AI: Nastavit" : "Gemini AI: Neaktivní";
+                pillLabel.textContent = "Gemini AI: Nastavit";
             }
         }
 
@@ -7685,7 +7693,7 @@
         }
     }
 
-    async function recognizeWithGeminiVision(canvas) {
+    async function recognizeWithGeminiVision(canvas, mode = 'tag') {
         const apiKey = getGeminiApiKey();
         if (!apiKey || !canvas) return null;
 
@@ -7706,12 +7714,22 @@
             const base64Data = dataUrl.split(',')[1];
             if (!base64Data) return null;
 
-            const promptText = `You are an expert industrial OCR and vision system for injection mold factory warehouse tracking.
-Look at this photo containing handwritten and/or printed injection mold numbers, shift plans, or mold tags.
-Extract ALL mold numbers (which are typically 2 to 5 digits, e.g. 765, 764, 976, 808, 668) strictly in the vertical order they appear from top to bottom.
-Extract any part or product names if visible.
+            const promptText = (mode === 'plan')
+                ? `You are an expert industrial vision and OCR system for an injection mold factory warehouse.
+Look at this photo containing a shift plan sheet, paper schedule, or production table with multiple injection mold numbers.
+Extract ALL mold numbers (which are typically 2 to 5 digits, e.g. 765, 764, 976, 808, 668) strictly in vertical order from top to bottom.
 Return strictly valid JSON only without markdown formatting with this schema:
-{"numbers":["765","764","976","808","668"],"raw_text":"765\\n764\\n976\\n808\\n668"}`;
+{"numbers":["765","764","976"],"raw_text":"..."}`
+                : `You are an expert industrial OCR and vision system for injection mold factory warehouse tracking.
+Look at this photo of an injection mold tag, physical metal mold plate, paper sticker, or handwritten note.
+Carefully identify the PRIMARY injection mold number (číslo formy). Mold numbers are typically 2 to 5 digits (such as 765, 764, 976, 808, 668).
+Pay strict attention to handwritten European digits:
+- A European handwritten '7' typically has a horizontal crossbar (do NOT confuse with 1 or 4).
+- Distinguish '1' from '7' and '4'.
+- Distinguish '8' from '6' or '0'.
+If a part or product name is visible, extract it as well.
+Return strictly valid JSON only without markdown formatting with this schema:
+{"primary_number":"765","numbers":["765"],"product_name":"","raw_text":"765"}`;
 
             const payload = {
                 contents: [
@@ -7728,7 +7746,7 @@ Return strictly valid JSON only without markdown formatting with this schema:
                     }
                 ],
                 generationConfig: {
-                    temperature: 0.1,
+                    temperature: 0.05,
                     maxOutputTokens: 1000
                 }
             };
@@ -7738,6 +7756,14 @@ Return strictly valid JSON only without markdown formatting with this schema:
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(payload)
             });
+
+            if (!res.ok && res.status === 404) {
+                res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${encodeURIComponent(apiKey)}`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+            }
 
             if (!res.ok && res.status === 404) {
                 res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${encodeURIComponent(apiKey)}`, {
@@ -7750,7 +7776,10 @@ Return strictly valid JSON only without markdown formatting with this schema:
             if (!res.ok) {
                 const errData = await res.json().catch(() => ({}));
                 console.warn("Gemini Vision API Error:", res.status, errData);
-                return null;
+                if (res.status === 429) {
+                    return { error: 'quota_exceeded', message: errData?.error?.message || 'Quota exceeded' };
+                }
+                return { error: 'api_error', status: res.status, message: errData?.error?.message };
             }
 
             const data = await res.json();
@@ -7763,22 +7792,32 @@ Return strictly valid JSON only without markdown formatting with this schema:
             } catch (pErr) {
                 const digitMatches = textResponse.match(/\b\d{2,5}\b/g) || [];
                 parsed = {
+                    primary_number: digitMatches[0] || '',
                     numbers: Array.from(new Set(digitMatches)),
                     raw_text: textResponse
                 };
             }
 
+            const primaryNum = parsed.primary_number ? String(parsed.primary_number).trim() : '';
+            let numList = Array.isArray(parsed.numbers) ? parsed.numbers.map(n => String(n).trim()).filter(Boolean) : [];
+            if (primaryNum && !numList.includes(primaryNum)) {
+                numList.unshift(primaryNum);
+            }
+
             return {
-                numbers: Array.isArray(parsed.numbers) ? parsed.numbers.map(n => String(n).trim()).filter(Boolean) : [],
+                primaryNumber: primaryNum,
+                numbers: numList,
+                productName: parsed.product_name ? String(parsed.product_name).trim() : '',
                 rawText: parsed.raw_text || textResponse
             };
         } catch (e) {
             console.warn("Gemini Vision exception:", e);
-            return null;
+            return { error: 'exception', message: e.message };
         }
     }
 
     function matchGeminiPlanBatch(geminiResult, barcodeValues = []) {
+        if (!geminiResult || geminiResult.error) return [];
         const activeMolds = rawDatabase.filter(item => !item[4]);
         if (activeMolds.length === 0) return [];
 
@@ -7806,24 +7845,15 @@ Return strictly valid JSON only without markdown formatting with this schema:
             }
         }
 
-        // 3. Raw text fallback through fuzzy plan matcher
-        if (geminiResult.rawText) {
-            const extraMolds = matchScannedPlanBatch(geminiResult.rawText, barcodeValues);
-            for (const m of extraMolds) {
-                if (!foundMoldsMap.has(String(m[0]))) {
-                    foundMoldsMap.set(String(m[0]), m);
-                }
-            }
-        }
-
         return Array.from(foundMoldsMap.values());
     }
 
     function matchGeminiData(geminiResult, barcodeValues = []) {
+        if (!geminiResult || geminiResult.error) return null;
         const activeMolds = rawDatabase.filter(item => !item[4]);
         if (activeMolds.length === 0) return null;
 
-        // Barcode first
+        // 1. Barcode first if present
         for (const b of barcodeValues) {
             const cleanB = String(b || '').trim();
             if (cleanB) {
@@ -7832,7 +7862,14 @@ Return strictly valid JSON only without markdown formatting with this schema:
             }
         }
 
-        // Gemini AI numbers
+        // 2. Direct primary number from Gemini
+        if (geminiResult.primaryNumber) {
+            const cleanP = String(geminiResult.primaryNumber).trim();
+            const mold = activeMolds.find(m => String(m[0]).trim() === cleanP);
+            if (mold) return { type: 'single', mold: mold, source: 'gemini' };
+        }
+
+        // 3. Gemini detected numbers list in order
         const numbers = Array.isArray(geminiResult.numbers) ? geminiResult.numbers : [];
         for (const num of numbers) {
             const cleanNum = String(num).trim();
@@ -7841,9 +7878,20 @@ Return strictly valid JSON only without markdown formatting with this schema:
             if (mold) return { type: 'single', mold: mold, source: 'gemini' };
         }
 
-        // Raw text search
-        if (geminiResult.rawText) {
-            return matchScannedData(geminiResult.rawText, barcodeValues);
+        // 4. Product name match if identified by Gemini
+        if (geminiResult.productName) {
+            const prodClean = String(geminiResult.productName).trim().toLowerCase();
+            if (prodClean.length >= 3) {
+                const matchedByProd = activeMolds.filter(m => {
+                    const mProd = String(m[5] || '').trim().toLowerCase();
+                    return mProd && (mProd === prodClean || mProd.includes(prodClean) || prodClean.includes(mProd));
+                });
+                if (matchedByProd.length === 1) {
+                    return { type: 'single', mold: matchedByProd[0], source: 'gemini_product' };
+                } else if (matchedByProd.length > 1) {
+                    return { type: 'multi', molds: matchedByProd, productName: geminiResult.productName, source: 'gemini_product' };
+                }
+            }
         }
 
         return null;
@@ -7976,7 +8024,7 @@ Return strictly valid JSON only without markdown formatting with this schema:
         }
     }
 
-    function updateScannerSnapBtnState(isLoading) {
+    function updateScannerSnapBtnState(isLoading, customText = '') {
         const snapBtn = document.getElementById('scannerSnapBtn');
         const snapBtnText = document.getElementById('scannerSnapBtnText');
         const snapBtnIcon = document.getElementById('scannerSnapBtnIcon');
@@ -7984,7 +8032,7 @@ Return strictly valid JSON only without markdown formatting with this schema:
         if (isLoading) {
             snapBtn.style.pointerEvents = 'none';
             snapBtn.style.opacity = '0.85';
-            if (snapBtnText) snapBtnText.textContent = "Rozpoznávám...";
+            if (snapBtnText) snapBtnText.textContent = customText || "Rozpoznávám...";
             if (snapBtnIcon) snapBtnIcon.style.animation = "pulseDot 0.8s infinite ease-in-out";
         } else {
             snapBtn.style.pointerEvents = '';
@@ -8992,13 +9040,17 @@ Return strictly valid JSON only without markdown formatting with this schema:
             return;
         }
         isScannerProcessing = true;
+
+        // If user pressed manual snapshot button:
+        // Pause continuous background interval to prevent race conditions or duplicate OCR tasks
         if (isManualSnap) {
-            updateScannerSnapBtnState(true);
+            clearInterval(scannerScanInterval);
+            updateScannerSnapBtnState(true, "🧠 Gemini AI...");
         }
 
         const statusText = document.getElementById('scannerStatusText');
         if (isManualSnap && statusText) {
-            statusText.textContent = "Rozpoznávám štítek / plán...";
+            statusText.textContent = "🧠 Gemini Vision AI čte...";
         }
 
         try {
@@ -9010,7 +9062,176 @@ Return strictly valid JSON only without markdown formatting with this schema:
             let barcodeValues = [];
             let detectedText = '';
 
-            // Tier 1: Check Barcode / DataMatrix / QR if supported
+            // ==========================================
+            // SCENARIO 1: MANUAL SNAPSHOT (User tapped button)
+            // Tier 1 Priority: Gemini Vision AI (Instant recognition & open)
+            // Tier 2 Fallback: Barcode + Tesseract OCR (Offline / quota exceeded)
+            // ==========================================
+            if (isManualSnap) {
+                const apiKey = getGeminiApiKey();
+                let geminiMatched = false;
+
+                if (apiKey) {
+                    if (statusText) {
+                        statusText.textContent = (scannerActiveMode === 'plan')
+                            ? "🧠 Gemini Vision AI čte plán výroby..."
+                            : "🧠 Gemini Vision AI čte štítek formy...";
+                    }
+                    const geminiResult = await recognizeWithGeminiVision(cropCanvas, scannerActiveMode);
+
+                    if (geminiResult && geminiResult.error === 'quota_exceeded') {
+                        showToast("Gemini AI: vyčerpán limit kót, spouštím záložní OCR...", 3200);
+                        if (statusText) statusText.textContent = "Limit AI vyčerpán, spouštím záložní OCR...";
+                    } else if (geminiResult && !geminiResult.error) {
+                        if (scannerActiveMode === 'plan') {
+                            const batchMolds = matchGeminiPlanBatch(geminiResult, barcodeValues);
+                            if (batchMolds && batchMolds.length > 0) {
+                                geminiMatched = true;
+                                scannerStableCandidate = null;
+                                handleBatchMoldMatchFound(batchMolds);
+                                return;
+                            }
+                        } else {
+                            const matchResult = matchGeminiData(geminiResult, barcodeValues);
+                            if (matchResult) {
+                                geminiMatched = true;
+                                scannerStableCandidate = null;
+                                if (matchResult.type === 'single') {
+                                    // ARCHITECTURAL GOLD STANDARD:
+                                    // Exact mold match immediately opens the mold card without delay
+                                    const moldNum = matchResult.mold[0];
+                                    logUserAction(moldNum, 'Skenování', 'Forma rozpoznána a otevřena přes Gemini Vision AI');
+                                    haptic.cameraSuccess();
+                                    playScannerAudioBeep(true);
+                                    showToast(`✓ Gemini AI: Forma #${moldNum} nalezena`);
+                                    scannerOpenSpecificMold(moldNum);
+                                    return;
+                                } else if (matchResult.type === 'multi') {
+                                    handleMultiMoldMatchFound(matchResult);
+                                    return;
+                                }
+                            }
+                        }
+                    }
+                }
+
+                // If Gemini didn't find a matching mold, had no API key, or quota/network failed:
+                // Transparently engage Tier 2 Fallback (Barcode + Tesseract OCR)
+                if (!geminiMatched) {
+                    if (statusText) statusText.textContent = "Záložní čtení (Kód / OCR)...";
+                    updateScannerSnapBtnState(true, "Záložní OCR...");
+
+                    // 1. Fallback: Barcode / QR detector
+                    if (scannerBarcodeDetector) {
+                        try {
+                            const barcodes = await scannerBarcodeDetector.detect(cropCanvas);
+                            if (barcodes && barcodes.length > 0) {
+                                for (const b of barcodes) {
+                                    const val = (b.rawValue || '').trim();
+                                    if (val) barcodeValues.push(val);
+                                }
+                            }
+                        } catch (bErr) {}
+                    }
+
+                    // 2. Fallback: Local Tesseract worker
+                    const worker = await getTesseractWorker();
+                    if (worker) {
+                        try {
+                            const desiredPsm = (scannerActiveMode === 'plan') ? '6' : '11';
+                            if (scannerCurrentPsm !== desiredPsm) {
+                                await worker.setParameters({ tessedit_pageseg_mode: desiredPsm });
+                                scannerCurrentPsm = desiredPsm;
+                            }
+
+                            const ret = await worker.recognize(cropCanvas);
+                            if (ret && ret.data && ret.data.text) {
+                                detectedText = ret.data.text.trim();
+                            }
+
+                            // Extra slice pass in plan mode if tall
+                            if (scannerActiveMode === 'plan' && cropCanvas.height > 350) {
+                                try {
+                                    const halfH = Math.floor(cropCanvas.height / 2);
+                                    const topCanvas = document.createElement('canvas');
+                                    topCanvas.width = cropCanvas.width;
+                                    topCanvas.height = halfH + 40;
+                                    const topCtx = topCanvas.getContext('2d');
+                                    topCtx.drawImage(cropCanvas, 0, 0, cropCanvas.width, halfH + 40, 0, 0, topCanvas.width, halfH + 40);
+
+                                    const botCanvas = document.createElement('canvas');
+                                    botCanvas.width = cropCanvas.width;
+                                    botCanvas.height = halfH + 40;
+                                    const botCtx = botCanvas.getContext('2d');
+                                    botCtx.drawImage(cropCanvas, 0, halfH - 40, cropCanvas.width, halfH + 40, 0, 0, botCanvas.width, halfH + 40);
+
+                                    const [topRet, botRet] = await Promise.all([
+                                        worker.recognize(topCanvas),
+                                        worker.recognize(botCanvas)
+                                    ]);
+                                    if (topRet?.data?.text) detectedText += '\n' + topRet.data.text;
+                                    if (botRet?.data?.text) detectedText += '\n' + botRet.data.text;
+                                } catch (sliceErr) {
+                                    console.warn("Slice OCR error:", sliceErr);
+                                }
+                            }
+                        } catch (ocrErr) {
+                            console.warn("Chyba záložního OCR:", ocrErr);
+                        }
+                    }
+
+                    // Evaluate fallback result
+                    if (scannerActiveMode === 'plan') {
+                        const batchMolds = matchScannedPlanBatch(detectedText, barcodeValues, cropCanvas);
+                        if (batchMolds && batchMolds.length > 0) {
+                            scannerStableCandidate = null;
+                            handleBatchMoldMatchFound(batchMolds);
+                            return;
+                        } else {
+                            showToast("Na listu nebyly nalezeny žádné formy z databáze.");
+                            if (statusText) statusText.textContent = "Žádné formy nerozpoznány. Zkuste přiblížit.";
+                            playScannerAudioBeep(false);
+                            return;
+                        }
+                    } else {
+                        const matchResult = matchScannedData(detectedText, barcodeValues, cropCanvas);
+                        if (matchResult) {
+                            scannerStableCandidate = null;
+                            if (matchResult.type === 'single') {
+                                const moldNum = matchResult.mold[0];
+                                logUserAction(moldNum, 'Skenování', 'Forma rozpoznána a otevřena přes záložní OCR');
+                                haptic.cameraSuccess();
+                                playScannerAudioBeep(true);
+                                showToast(`✓ Záložní OCR: Forma #${moldNum} nalezena`);
+                                scannerOpenSpecificMold(moldNum);
+                                return;
+                            } else if (matchResult.type === 'multi') {
+                                handleMultiMoldMatchFound(matchResult);
+                                return;
+                            }
+                        } else {
+                            const sampleFound = (barcodeValues[0] || detectedText || '').trim().replace(/\s+/g, ' ');
+                            if (sampleFound) {
+                                const previewText = sampleFound.length > 28 ? sampleFound.substring(0, 28) + '...' : sampleFound;
+                                showToast(`Rozpoznáno: "${previewText}", ale v databázi nebyla nalezena shoda.`);
+                                if (statusText) statusText.textContent = `Nenalezeno v databázi: "${previewText}"`;
+                            } else {
+                                showToast("Text ani číslo se nepodařilo rozpoznat. Zkuste zaostřit nebo použít svítilnu.");
+                                if (statusText) statusText.textContent = "Nerozpoznáno. Zkuste zaostřit.";
+                            }
+                            playScannerAudioBeep(false);
+                            return;
+                        }
+                    }
+                }
+                return;
+            }
+
+            // ==========================================
+            // SCENARIO 2: LIVE CONTINUOUS VIDEO SCANNING
+            // Strictly local: BarcodeDetector + lightweight Tesseract
+            // ZERO calls to Gemini AI (Preserves quota & eliminates latency)
+            // ==========================================
             if (scannerBarcodeDetector) {
                 try {
                     const barcodes = await scannerBarcodeDetector.detect(cropCanvas);
@@ -9023,38 +9244,9 @@ Return strictly valid JSON only without markdown formatting with this schema:
                 } catch (bErr) {}
             }
 
-            // Tier 1.5: Gemini Vision AI on manual snap if API key configured
-            if (isManualSnap && getGeminiApiKey()) {
-                if (statusText) statusText.textContent = "🧠 Gemini Vision AI čte rukopis...";
-                const geminiResult = await recognizeWithGeminiVision(cropCanvas);
-                if (geminiResult && ((geminiResult.numbers && geminiResult.numbers.length > 0) || (geminiResult.rawText && geminiResult.rawText.length > 0))) {
-                    if (scannerActiveMode === 'plan') {
-                        const batchMolds = matchGeminiPlanBatch(geminiResult, barcodeValues);
-                        if (batchMolds && batchMolds.length > 0) {
-                            scannerStableCandidate = null;
-                            handleBatchMoldMatchFound(batchMolds);
-                            return;
-                        }
-                    } else {
-                        const matchResult = matchGeminiData(geminiResult, barcodeValues);
-                        if (matchResult) {
-                            scannerStableCandidate = null;
-                            if (matchResult.type === 'single') {
-                                handleSingleMoldMatchFound(matchResult);
-                            } else if (matchResult.type === 'multi') {
-                                handleMultiMoldMatchFound(matchResult);
-                            }
-                            return;
-                        }
-                    }
-                }
-            }
-
-            // Tier 2: OCR with Tesseract
             const worker = await getTesseractWorker();
             if (worker) {
                 try {
-                    // Set PSM: PSM 6 (uniform block of text / lines) for shift plan sheet; PSM 11 for single tag
                     const desiredPsm = (scannerActiveMode === 'plan') ? '6' : '11';
                     if (scannerCurrentPsm !== desiredPsm) {
                         await worker.setParameters({ tessedit_pageseg_mode: desiredPsm });
@@ -9065,47 +9257,16 @@ Return strictly valid JSON only without markdown formatting with this schema:
                     if (ret && ret.data && ret.data.text) {
                         detectedText = ret.data.text.trim();
                     }
-
-                    // On manual snap in plan mode, if the image is tall, do an extra pass on top/bottom slices to catch all rows
-                    if (isManualSnap && scannerActiveMode === 'plan' && cropCanvas.height > 350) {
-                        try {
-                            const halfH = Math.floor(cropCanvas.height / 2);
-                            const topCanvas = document.createElement('canvas');
-                            topCanvas.width = cropCanvas.width;
-                            topCanvas.height = halfH + 40;
-                            const topCtx = topCanvas.getContext('2d');
-                            topCtx.drawImage(cropCanvas, 0, 0, cropCanvas.width, halfH + 40, 0, 0, topCanvas.width, halfH + 40);
-
-                            const botCanvas = document.createElement('canvas');
-                            botCanvas.width = cropCanvas.width;
-                            botCanvas.height = halfH + 40;
-                            const botCtx = botCanvas.getContext('2d');
-                            botCtx.drawImage(cropCanvas, 0, halfH - 40, cropCanvas.width, halfH + 40, 0, 0, botCanvas.width, halfH + 40);
-
-                            const [topRet, botRet] = await Promise.all([
-                                worker.recognize(topCanvas),
-                                worker.recognize(botCanvas)
-                            ]);
-                            if (topRet?.data?.text) detectedText += '\n' + topRet.data.text;
-                            if (botRet?.data?.text) detectedText += '\n' + botRet.data.text;
-                        } catch (sliceErr) {
-                            console.warn("Slice OCR error:", sliceErr);
-                        }
-                    }
                 } catch (ocrErr) {
-                    console.warn("Chyba OCR:", ocrErr);
+                    console.warn("Chyba live OCR:", ocrErr);
                 }
             }
 
-            // Mode check: Shift plan sheet vs Single tag
+            // Continuous scanning stability guard:
+            // Require candidate to be confirmed on 2 consecutive frames within 1600ms to eliminate optical jitter & spurious matches
             if (scannerActiveMode === 'plan') {
                 const batchMolds = matchScannedPlanBatch(detectedText, barcodeValues, cropCanvas);
                 if (batchMolds && batchMolds.length > 0) {
-                    if (isManualSnap) {
-                        scannerStableCandidate = null;
-                        handleBatchMoldMatchFound(batchMolds);
-                        return;
-                    }
                     const batchKey = 'batch_' + batchMolds.map(m => m[0]).sort().join('_');
                     const now = Date.now();
                     if (scannerStableCandidate && scannerStableCandidate.key === batchKey && (now - scannerStableCandidate.time < 1600)) {
@@ -9126,78 +9287,44 @@ Return strictly valid JSON only without markdown formatting with this schema:
                         }
                     }
                     return;
-                } else {
-                    if (isManualSnap) {
-                        showToast("Na listu nebyly nalezeny žádné formy z databáze. Zkuste přiblížit nebo zaostřit.");
-                        if (statusText) statusText.textContent = "Žádné formy nerozpoznány. Zkuste přiblížit.";
-                        playScannerAudioBeep(false);
-                    }
-                    return;
                 }
-            }
-
-            // Intelligent matching against database (Tag mode)
-            const matchResult = matchScannedData(detectedText, barcodeValues, cropCanvas);
-
-            if (matchResult) {
-                // If user pressed manual snap button, trigger immediately without waiting
-                if (isManualSnap) {
-                    scannerStableCandidate = null;
-                    if (matchResult.type === 'single') {
-                        handleSingleMoldMatchFound(matchResult);
-                    } else if (matchResult.type === 'multi') {
-                        handleMultiMoldMatchFound(matchResult);
-                    }
-                    return;
-                }
-
-                // Continuous scanning stability guard:
-                // Require candidate to be confirmed on 2 consecutive frames within 1600ms to eliminate optical jitter & spurious matches
-                const matchKey = matchResult.type === 'single'
-                    ? ('single_' + String(matchResult.mold[0]))
-                    : ('multi_' + String(matchResult.productName || ''));
-
-                const now = Date.now();
-                if (scannerStableCandidate && scannerStableCandidate.key === matchKey && (now - scannerStableCandidate.time < 1600)) {
-                    scannerStableCandidate.count++;
-                    if (scannerStableCandidate.count >= 2) {
-                        scannerStableCandidate = null;
-                        if (matchResult.type === 'single') {
-                            handleSingleMoldMatchFound(matchResult);
-                        } else if (matchResult.type === 'multi') {
-                            handleMultiMoldMatchFound(matchResult);
-                        }
-                        return;
-                    }
-                } else {
-                    scannerStableCandidate = {
-                        key: matchKey,
-                        count: 1,
-                        time: now
-                    };
-                    if (statusText) {
-                        statusText.textContent = "Zaměřuji...";
-                    }
-                }
-                return;
             } else {
-                if (scannerStableCandidate && (Date.now() - scannerStableCandidate.time > 800)) {
-                    scannerStableCandidate = null;
-                    if (statusText && !isManualSnap) {
-                        statusText.textContent = "Namiřte rámeček na číslo formy nebo název výroby";
-                    }
-                }
-                if (isManualSnap) {
-                    const sampleFound = (barcodeValues[0] || detectedText || '').trim().replace(/\s+/g, ' ');
-                    if (sampleFound) {
-                        const previewText = sampleFound.length > 28 ? sampleFound.substring(0, 28) + '...' : sampleFound;
-                        showToast(`Rozpoznáno: "${previewText}", ale v databázi nebyla nalezena shoda.`);
-                        if (statusText) statusText.textContent = `Nenalezeno v databázi: "${previewText}"`;
+                const matchResult = matchScannedData(detectedText, barcodeValues, cropCanvas);
+                if (matchResult) {
+                    const matchKey = matchResult.type === 'single'
+                        ? ('single_' + String(matchResult.mold[0]))
+                        : ('multi_' + String(matchResult.productName || ''));
+
+                    const now = Date.now();
+                    if (scannerStableCandidate && scannerStableCandidate.key === matchKey && (now - scannerStableCandidate.time < 1600)) {
+                        scannerStableCandidate.count++;
+                        if (scannerStableCandidate.count >= 2) {
+                            scannerStableCandidate = null;
+                            if (matchResult.type === 'single') {
+                                handleSingleMoldMatchFound(matchResult);
+                            } else if (matchResult.type === 'multi') {
+                                handleMultiMoldMatchFound(matchResult);
+                            }
+                            return;
+                        }
                     } else {
-                        showToast("Text ani číslo se nepodařilo rozpoznat. Zkuste zaostřit nebo použít svítilnu.");
-                        if (statusText) statusText.textContent = "Nerozpoznáno. Zkuste zaostřit.";
+                        scannerStableCandidate = {
+                            key: matchKey,
+                            count: 1,
+                            time: now
+                        };
+                        if (statusText) {
+                            statusText.textContent = "Zaměřuji...";
+                        }
                     }
-                    playScannerAudioBeep(false);
+                    return;
+                } else {
+                    if (scannerStableCandidate && (Date.now() - scannerStableCandidate.time > 800)) {
+                        scannerStableCandidate = null;
+                        if (statusText) {
+                            statusText.textContent = "Namiřte rámeček na číslo formy nebo název výroby";
+                        }
+                    }
                 }
             }
         } catch (e) {
@@ -9206,6 +9333,15 @@ Return strictly valid JSON only without markdown formatting with this schema:
             isScannerProcessing = false;
             if (isManualSnap) {
                 updateScannerSnapBtnState(false);
+                // Restart background live scan loop if scanner modal is still active & running
+                if (isScannerRunning && !isScannerLocked && isModalOpen('numberScannerModal')) {
+                    clearInterval(scannerScanInterval);
+                    scannerScanInterval = setInterval(() => {
+                        if (isScannerRunning && !isScannerLocked && !isScannerProcessing) {
+                            scanVideoFrame(false);
+                        }
+                    }, 420);
+                }
             }
             if (pendingManualSnap && !isScannerLocked) {
                 pendingManualSnap = false;
