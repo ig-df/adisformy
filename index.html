@@ -7474,8 +7474,7 @@
         // If user pasted multi-line text (e.g. copied UI blocks with titles and status)
         if (str.includes('\n') || str.includes('\r') || str.includes(' ')) {
             const tokens = str.split(/[\s\r\n]+/);
-            // AI Studio keys strictly start with AIzaSy
-            const candidate = tokens.find(t => t.startsWith('AIzaSy') || (t.length >= 25 && /^[A-Za-z0-9_\.-]+$/.test(t)));
+            const candidate = tokens.find(t => t.startsWith('AIzaSy') || t.startsWith('AQ.') || t.startsWith('ya29.') || (t.length >= 20 && /^[A-Za-z0-9_\.-]+$/.test(t)));
             if (candidate) return candidate;
         }
         return str;
@@ -7493,29 +7492,60 @@
     async function fetchGeminiApi(endpointUrl, cleanKey, options = {}) {
         if (!cleanKey) throw new Error("API klíč je prázdný");
         
-        // Method 1: Query parameter ?key=
-        const urlWithKey = endpointUrl.includes('?') 
-            ? `${endpointUrl}&key=${encodeURIComponent(cleanKey)}` 
-            : `${endpointUrl}?key=${encodeURIComponent(cleanKey)}`;
-        
-        let res = await fetch(urlWithKey, options);
-        if (res.ok) return res;
+        const attempts = [];
 
-        // Method 2: Authorization: Bearer <key>
-        try {
-            const headersBearer = { ...(options.headers || {}), 'Authorization': `Bearer ${cleanKey}` };
-            const resBearer = await fetch(endpointUrl, { ...options, headers: headersBearer });
-            if (resBearer.ok) return resBearer;
-        } catch (e) {}
+        // OAuth Bearer tokens (e.g. AQ.Ab8... or ya29....)
+        if (cleanKey.startsWith('AQ.') || cleanKey.startsWith('ya29.') || !cleanKey.startsWith('AIzaSy')) {
+            attempts.push({
+                url: endpointUrl,
+                opts: {
+                    ...options,
+                    headers: { ...(options.headers || {}), 'Authorization': `Bearer ${cleanKey}` }
+                }
+            });
+            attempts.push({
+                url: endpointUrl,
+                opts: {
+                    ...options,
+                    headers: { ...(options.headers || {}), 'X-Goog-Api-Key': cleanKey }
+                }
+            });
+            const urlWithKey = endpointUrl.includes('?') 
+                ? `${endpointUrl}&key=${encodeURIComponent(cleanKey)}` 
+                : `${endpointUrl}?key=${encodeURIComponent(cleanKey)}`;
+            attempts.push({ url: urlWithKey, opts: options });
+        } else {
+            // Standard AIzaSy API key
+            const urlWithKey = endpointUrl.includes('?') 
+                ? `${endpointUrl}&key=${encodeURIComponent(cleanKey)}` 
+                : `${endpointUrl}?key=${encodeURIComponent(cleanKey)}`;
+            attempts.push({ url: urlWithKey, opts: options });
+            attempts.push({
+                url: endpointUrl,
+                opts: {
+                    ...options,
+                    headers: { ...(options.headers || {}), 'X-Goog-Api-Key': cleanKey }
+                }
+            });
+            attempts.push({
+                url: endpointUrl,
+                opts: {
+                    ...options,
+                    headers: { ...(options.headers || {}), 'Authorization': `Bearer ${cleanKey}` }
+                }
+            });
+        }
 
-        // Method 3: X-Goog-Api-Key: <key>
-        try {
-            const headersKey = { ...(options.headers || {}), 'X-Goog-Api-Key': cleanKey };
-            const resHeader = await fetch(endpointUrl, { ...options, headers: headersKey });
-            if (resHeader.ok) return resHeader;
-        } catch (e) {}
+        let lastRes = null;
+        for (const attempt of attempts) {
+            try {
+                const res = await fetch(attempt.url, attempt.opts);
+                if (res.ok) return res;
+                lastRes = res;
+            } catch (e) {}
+        }
 
-        return res;
+        return lastRes;
     }
 
     async function fetchAvailableGeminiModels(key) {
