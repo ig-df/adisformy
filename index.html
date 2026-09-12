@@ -7474,7 +7474,8 @@
         // If user pasted multi-line text (e.g. copied UI blocks with titles and status)
         if (str.includes('\n') || str.includes('\r') || str.includes(' ')) {
             const tokens = str.split(/[\s\r\n]+/);
-            const candidate = tokens.find(t => t.startsWith('AIzaSy') || t.startsWith('AQ') || (t.length >= 25 && /^[A-Za-z0-9_\.-]+$/.test(t)));
+            // AI Studio keys strictly start with AIzaSy
+            const candidate = tokens.find(t => t.startsWith('AIzaSy') || (t.length >= 25 && /^[A-Za-z0-9_\.-]+$/.test(t)));
             if (candidate) return candidate;
         }
         return str;
@@ -7681,6 +7682,13 @@
         if (!key) {
             if (statusEl) {
                 statusEl.innerHTML = '<span style="color: #ef4444;">⚠️ Zadejte prosím API klíč.</span>';
+            }
+            return;
+        }
+
+        if (!key.startsWith('AIzaSy')) {
+            if (statusEl) {
+                statusEl.innerHTML = '<span style="color: #f59e0b; font-weight: 500;">⚠️ API klíč Google AI Studio musí začínat na <strong>AIzaSy...</strong>. Řetězec (AQ...) je systémový token, ne API klíč. Získejte klíč na <a href="https://aistudio.google.com/app/apikey" target="_blank" style="color: #38bdf8; text-decoration: underline;">aistudio.google.com/app/apikey</a>.</span>';
             }
             return;
         }
