@@ -7955,12 +7955,12 @@ Return strictly valid JSON only without markdown formatting with this schema:
                 if (parsed.primary_number) rawNumList.push(parsed.primary_number);
                 if (parsed.cislo_formy) rawNumList.push(parsed.cislo_formy);
             }
-            // Always regex match over full text response to capture all 2-5 digit numbers found anywhere in output
-            const regexDigits = textResponse.match(/\b\d{2,5}\b/g) || [];
+            // Always regex match over full text response to capture all 1-6 digit numbers found anywhere in output
+            const regexDigits = textResponse.match(/\b\d{1,6}\b/g) || [];
             rawNumList.push(...regexDigits);
 
             const numList = Array.from(new Set(
-                rawNumList.map(n => String(n).trim()).filter(n => /^\d{2,5}$/.test(n))
+                rawNumList.map(n => String(n).trim()).filter(n => /^\d{1,6}$/.test(n))
             ));
             const finalPrimary = primaryNum || (numList[0] || '');
 
@@ -8938,7 +8938,51 @@ Return strictly valid JSON only without markdown formatting with this schema:
         return null;
     }
 
+    function matchGeminiData(geminiResult, barcodeValues = [], cropCanvas = null) {
+        if (!geminiResult || geminiResult.error) return null;
+        const activeMolds = rawDatabase.filter(item => !item[4]);
+        if (activeMolds.length === 0) return null;
+
+        if (geminiResult.primaryNumber) {
+            const cleanPrim = String(geminiResult.primaryNumber).trim();
+            const mold = activeMolds.find(m => String(m[0]).trim() === cleanPrim);
+            if (mold) {
+                return {
+                    type: 'single',
+                    mold: mold,
+                    matchType: 'direct_id',
+                    productName: mold[5] || ''
+                };
+            }
+        }
+
+        if (Array.isArray(geminiResult.numbers)) {
+            for (const numStr of geminiResult.numbers) {
+                const cleanNum = String(numStr).trim();
+                const mold = activeMolds.find(m => String(m[0]).trim() === cleanNum);
+                if (mold) {
+                    return {
+                        type: 'single',
+                        mold: mold,
+                        matchType: 'direct_id',
+                        productName: mold[5] || ''
+                    };
+                }
+            }
+        }
+
+        const textParts = [];
+        if (geminiResult.primaryNumber) textParts.push(geminiResult.primaryNumber);
+        if (Array.isArray(geminiResult.numbers)) textParts.push(...geminiResult.numbers);
+        if (geminiResult.productName) textParts.push(geminiResult.productName);
+        if (geminiResult.rawText) textParts.push(geminiResult.rawText);
+
+        const combinedText = textParts.filter(Boolean).join('\n');
+        return matchScannedData(combinedText, barcodeValues, cropCanvas);
+    }
+
     function matchGeminiPlanBatch(geminiResult, barcodeValues = [], cropCanvas = null) {
+        if (!geminiResult || geminiResult.error) return [];
         const activeMolds = rawDatabase.filter(item => !item[4]);
         if (activeMolds.length === 0) return [];
 
@@ -8964,13 +9008,24 @@ Return strictly valid JSON only without markdown formatting with this schema:
             }
         }
 
-        // If Gemini Vision directly found matching molds, return them without fuzzy mutations (e.g. turning 7 into 1)
-        if (foundMoldsMap.size > 0) {
-            return Array.from(foundMoldsMap.values());
+        // 3. Always run secondary check via matchScannedPlanBatch to catch product names & fuzzy text
+        const textParts = [];
+        if (Array.isArray(geminiResult.numbers)) textParts.push(...geminiResult.numbers);
+        if (geminiResult.primaryNumber) textParts.push(geminiResult.primaryNumber);
+        if (geminiResult.productName) textParts.push(geminiResult.productName);
+        if (geminiResult.rawText) textParts.push(geminiResult.rawText);
+
+        const combinedText = textParts.filter(Boolean).join('\n');
+        const secondaryMatches = matchScannedPlanBatch(combinedText, barcodeValues, cropCanvas);
+        if (Array.isArray(secondaryMatches)) {
+            secondaryMatches.forEach(mold => {
+                if (mold && !foundMoldsMap.has(String(mold[0]))) {
+                    foundMoldsMap.set(String(mold[0]), mold);
+                }
+            });
         }
 
-        // Otherwise fallback to legacy OCR parser
-        return matchScannedPlanBatch(geminiResult?.rawText || '', barcodeValues, cropCanvas);
+        return Array.from(foundMoldsMap.values());
     }
 
     function matchScannedPlanBatch(rawOcrText, barcodeValues = [], cropCanvas = null) {
