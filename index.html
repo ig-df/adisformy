@@ -2651,16 +2651,16 @@
             box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
         }
 
-        /* Rich bounce & radial ripple pulse on corner button upon batch receipt */
+        /* Pure physical spring bounce on corner button upon batch receipt (no dark/gray glow) */
         .floating-corner-btn-list.pulse-receive {
-            animation: shiftBtnBounceJump 0.85s cubic-bezier(0.2, 1.25, 0.35, 1);
+            animation: shiftBtnBounceJump 0.7s cubic-bezier(0.2, 1.35, 0.35, 1);
         }
         @keyframes shiftBtnBounceJump {
             0% { transform: scale(1) translateY(0); }
-            20% { transform: scale(0.92) translateY(2px); }
-            45% { transform: scale(1.28) translateY(-14px); box-shadow: 0 0 0 1px rgba(16, 185, 129, 0.5), 0 0 0 12px rgba(16, 185, 129, 0.18), 0 12px 28px rgba(16, 185, 129, 0.35); }
-            70% { transform: scale(0.96) translateY(2px); box-shadow: 0 0 0 1px rgba(16, 185, 129, 0.25), 0 0 0 20px rgba(16, 185, 129, 0), 0 4px 12px rgba(0, 0, 0, 0.18); }
-            85% { transform: scale(1.06) translateY(-2px); }
+            22% { transform: scale(0.92) translateY(2px); }
+            48% { transform: scale(1.22) translateY(-10px); }
+            72% { transform: scale(0.95) translateY(2px); }
+            86% { transform: scale(1.05) translateY(-1px); }
             100% { transform: scale(1) translateY(0); }
         }
 
@@ -2673,12 +2673,12 @@
             align-items: center;
             gap: 0.65rem;
             padding: 0.75rem 1.35rem;
-            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+            background: #0f172a;
             color: #ffffff;
-            font-size: 1.05rem;
+            font-size: 1.02rem;
             font-weight: 700;
             border-radius: 999px;
-            box-shadow: 0 20px 45px rgba(15, 23, 42, 0.45), 0 0 0 2px rgba(255, 255, 255, 0.3), 0 0 35px rgba(16, 185, 129, 0.35);
+            box-shadow: 0 12px 28px rgba(15, 23, 42, 0.35);
             transition: transform 1.05s cubic-bezier(0.19, 1, 0.22, 1), opacity 1.05s cubic-bezier(0.3, 0, 0.8, 1);
             will-change: transform, opacity;
             letter-spacing: -0.01em;
@@ -2882,7 +2882,19 @@
             font-variant-numeric: tabular-nums;
             display: flex;
             align-items: center;
-            gap: 0.4rem;
+            gap: 0.45rem;
+            flex-wrap: wrap;
+        }
+        .shift-plan-mold-num .tag-customer {
+            font-size: 0.68rem;
+            font-weight: 600;
+            padding: 0.12rem 0.42rem;
+            border-radius: 4px;
+            display: inline-flex;
+            align-items: center;
+            line-height: 1.2;
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+            white-space: nowrap;
         }
         .shift-plan-product {
             font-size: 0.78rem;
@@ -9814,12 +9826,15 @@ Return strictly valid JSON only without markdown formatting with this schema:
             saveShiftPlan();
             logUserAction('PLÁN', 'Dávkový sken', `Přidáno ${addedCount} forem z listu do plánu na směnu`);
             showToast(`Přidáno ${addedCount} forem do plánu směny!`);
-            animateFlyToShiftPlanButton(addedCount);
+            closeNumberScanner();
+            // Start flight animation cleanly after the scanner has closed and faded out
+            setTimeout(() => {
+                animateFlyToShiftPlanButton(addedCount);
+            }, 320);
         } else {
             showToast("Všechny vybrané formy již v plánu jsou.");
+            closeNumberScanner();
         }
-
-        closeNumberScanner();
     }
 
     // Smooth industrial fly-to-cart animation for scanned shift plan items
@@ -9833,14 +9848,14 @@ Return strictly valid JSON only without markdown formatting with this schema:
             const targetX = targetRect.left + (targetRect.width / 2);
             const targetY = targetRect.top + (targetRect.height / 2);
 
-            // Starting point: comfortable center-upper viewing position
+            // Starting point: clean center-screen position
             const startX = window.innerWidth / 2;
-            const startY = Math.max(160, window.innerHeight / 2 - 70);
+            const startY = Math.max(160, window.innerHeight / 2 - 40);
 
             const particle = document.createElement('div');
             particle.className = 'scan-fly-particle';
             particle.innerHTML = `
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round" style="width: 20px; height: 20px; color: #10b981;">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round" style="width: 22px; height: 22px; color: #10b981; flex-shrink: 0;">
                     <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path>
                     <rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect>
                     <path d="m9 14 2 2 4-4"></path>
@@ -9850,36 +9865,36 @@ Return strictly valid JSON only without markdown formatting with this schema:
 
             particle.style.left = `${startX}px`;
             particle.style.top = `${startY}px`;
-            particle.style.transform = 'translate(-50%, -50%) scale(0.7)';
+            particle.style.transform = 'translate(-50%, -50%) scale(0.6)';
             particle.style.opacity = '0';
             document.body.appendChild(particle);
 
-            // Phase 1: Presentation (rich appearance, expands in center)
+            // Phase 1: Clear, crisp presentation in center
             requestAnimationFrame(() => {
-                particle.style.transition = 'transform 0.3s cubic-bezier(0.18, 0.9, 0.3, 1.2), opacity 0.25s ease';
-                particle.style.transform = 'translate(-50%, -50%) scale(1.18)';
+                particle.style.transition = 'transform 0.35s cubic-bezier(0.18, 0.9, 0.3, 1.25), opacity 0.28s ease';
+                particle.style.transform = 'translate(-50%, -50%) scale(1.15)';
                 particle.style.opacity = '1';
 
-                // Phase 2: Beautiful arced flight into the corner basket button
+                // Phase 2: Distinct flight arc into corner list button
                 setTimeout(() => {
                     const deltaX = targetX - startX;
                     const deltaY = targetY - startY;
-                    particle.style.transition = 'transform 0.9s cubic-bezier(0.25, 0.8, 0.25, 1), opacity 0.9s cubic-bezier(0.4, 0, 0.9, 1)';
-                    particle.style.transform = `translate(calc(-50% + ${deltaX}px), calc(-50% + ${deltaY}px)) scale(0.38)`;
-                    particle.style.opacity = '0.35';
+                    particle.style.transition = 'transform 0.95s cubic-bezier(0.22, 0.85, 0.3, 1), opacity 0.95s cubic-bezier(0.4, 0, 0.85, 1)';
+                    particle.style.transform = `translate(calc(-50% + ${deltaX}px), calc(-50% + ${deltaY}px)) scale(0.4)`;
+                    particle.style.opacity = '0.45';
 
-                    // Phase 3: Landing, button bounce, radial pulse and badge refresh
+                    // Phase 3: Landing into basket button with spring bounce
                     setTimeout(() => {
                         if (particle.parentNode) {
                             particle.parentNode.removeChild(particle);
                         }
                         targetBtn.classList.remove('pulse-receive');
-                        void targetBtn.offsetWidth; // trigger layout reflow
+                        void targetBtn.offsetWidth; // trigger reflow
                         targetBtn.classList.add('pulse-receive');
                         triggerHapticFeedback([30, 45]);
                         updateShiftPlanBadge();
-                    }, 880);
-                }, 380);
+                    }, 930);
+                }, 420);
             });
         } catch (e) {
             console.warn('Fly animation error:', e);
