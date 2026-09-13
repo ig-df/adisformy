@@ -1,260 +1,196 @@
-import React, { useRef, useState, useEffect } from 'react';
-import { Plus, ChevronLeft, ChevronRight } from 'lucide-react';
-import { Mold, MoldComment, Customer } from '../types';
-import { MoldRow } from './MoldRow';
+import React, { useState } from 'react';
+import { PressMold } from '../types';
+import { SwipeableRow } from './SwipeableRow';
+import { Database, Plus, Trash2, RotateCcw, Download, Sparkles, Filter, Archive } from 'lucide-react';
+import { triggerHaptic } from '../utils/haptic';
 
 interface DatabaseTabProps {
-  currentCustomerFilter: string;
-  onFilterCustomer: (customerName: string) => void;
-  onOpenAddCustomerModal: () => void;
-  customers: Customer[];
-  filteredMolds: Mold[];
-  totalActiveCount: number;
-  comments: MoldComment[];
-  isSuperUser: boolean;
-  currentUser: string | null;
-  onEditPosition: (moldId: string, currentPos: string) => void;
-  onEditCustomer: (moldId: string, currentCust: string) => void;
-  onOpenCommentModal: (moldId: string) => void;
-  onOpenFullEdit: (moldId: string, currentPos: string, currentStatus: string, currentProdName: string) => void;
-  onOpenPhotoModal: (url: string, title: string) => void;
-  onOpenPdfModal: (url: string, title: string) => void;
-  onOpenViewComment: (comment: MoldComment) => void;
-  onCommentRightClick: (e: React.MouseEvent, commentId: string | number) => void;
-  onRowRightClick: (e: React.MouseEvent, moldId: string) => void;
-  onCustomerRightClick: (e: React.MouseEvent, customerName: string) => void;
-  onSaveAccordionChanges: (
-    moldId: string,
-    newProductName: string,
-    newPhotos: string[],
-    newNavodkaUrl: string
-  ) => Promise<void>;
+  molds: PressMold[];
+  onAddMold: () => void;
+  onAddNote: (mold: PressMold) => void;
+  onEdit: (mold: PressMold) => void;
+  onDeleteToTrash: (mold: PressMold) => void;
+  onRestoreFromTrash: (mold: PressMold) => void;
+  onOpenPdf: (mold: PressMold) => void;
+  onViewDetails: (mold: PressMold) => void;
+  onOpenScanner: () => void;
 }
 
 export const DatabaseTab: React.FC<DatabaseTabProps> = ({
-  currentCustomerFilter,
-  onFilterCustomer,
-  onOpenAddCustomerModal,
-  customers,
-  filteredMolds,
-  totalActiveCount,
-  comments,
-  isSuperUser,
-  currentUser,
-  onEditPosition,
-  onEditCustomer,
-  onOpenCommentModal,
-  onOpenFullEdit,
-  onOpenPhotoModal,
-  onOpenPdfModal,
-  onOpenViewComment,
-  onCommentRightClick,
-  onRowRightClick,
-  onCustomerRightClick,
-  onSaveAccordionChanges,
+  molds,
+  onAddMold,
+  onAddNote,
+  onEdit,
+  onDeleteToTrash,
+  onRestoreFromTrash,
+  onOpenPdf,
+  onViewDetails,
+  onOpenScanner,
 }) => {
-  const scrollContainerRef = useRef<HTMLDivElement | null>(null);
-  const isMouseDownRef = useRef(false);
-  const startXRef = useRef(0);
-  const scrollLeftRef = useRef(0);
-  const hasDraggedRef = useRef(false);
-  const [canScrollLeft, setCanScrollLeft] = useState(false);
-  const [canScrollRight, setCanScrollRight] = useState(false);
+  const [viewMode, setViewMode] = useState<'active' | 'trash'>('active');
+  const [filterShop, setFilterShop] = useState<string>('all');
+  const [searchQuery, setSearchQuery] = useState<string>('');
 
-  const checkScroll = () => {
-    const el = scrollContainerRef.current;
-    if (!el) return;
-    setCanScrollLeft(el.scrollLeft > 4);
-    setCanScrollRight(el.scrollLeft + el.clientWidth < el.scrollWidth - 4);
-  };
+  const activeMolds = molds.filter((m) => !m.inTrash);
+  const trashMolds = molds.filter((m) => m.inTrash);
 
-  useEffect(() => {
-    checkScroll();
-    window.addEventListener('resize', checkScroll);
-    return () => window.removeEventListener('resize', checkScroll);
-  }, [customers]);
+  const displayedMolds = (viewMode === 'active' ? activeMolds : trashMolds).filter((m) => {
+    const matchesShop = filterShop === 'all' || m.shop === filterShop;
+    const matchesQuery =
+      m.code.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      m.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      m.pressType.toLowerCase().includes(searchQuery.toLowerCase());
+    return matchesShop && matchesQuery;
+  });
 
-  const handleMouseDown = (e: React.MouseEvent) => {
-    const el = scrollContainerRef.current;
-    if (!el) return;
-    isMouseDownRef.current = true;
-    hasDraggedRef.current = false;
-    startXRef.current = e.pageX - el.offsetLeft;
-    scrollLeftRef.current = el.scrollLeft;
-  };
-
-  const handleMouseMove = (e: React.MouseEvent) => {
-    if (!isMouseDownRef.current) return;
-    const el = scrollContainerRef.current;
-    if (!el) return;
-    const x = e.pageX - el.offsetLeft;
-    const walk = x - startXRef.current;
-    if (Math.abs(walk) > 5) {
-      hasDraggedRef.current = true;
-    }
-    el.scrollLeft = scrollLeftRef.current - walk;
-    checkScroll();
-  };
-
-  const handleMouseUpOrLeave = () => {
-    isMouseDownRef.current = false;
-    // Keep hasDraggedRef true for a short moment so click handlers know not to fire
-    if (hasDraggedRef.current) {
-      setTimeout(() => {
-        hasDraggedRef.current = false;
-      }, 50);
-    }
-  };
-
-  const handleWheel = (e: React.WheelEvent) => {
-    const el = scrollContainerRef.current;
-    if (!el) return;
-    if (e.deltaY !== 0) {
-      el.scrollLeft += e.deltaY;
-      checkScroll();
-    }
-  };
-
-  const scrollByAmount = (amount: number) => {
-    const el = scrollContainerRef.current;
-    if (!el) return;
-    el.scrollBy({ left: amount, behavior: 'smooth' });
-    setTimeout(checkScroll, 250);
-  };
-
-  const handleTagClick = (action: () => void) => {
-    if (hasDraggedRef.current) return;
-    action();
+  const handleExportData = () => {
+    triggerHaptic('medium');
+    const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(molds, null, 2));
+    const downloadAnchor = document.createElement('a');
+    downloadAnchor.setAttribute("href", dataStr);
+    downloadAnchor.setAttribute("download", `adis_formy_database_${new Date().toISOString().split('T')[0]}.json`);
+    document.body.appendChild(downloadAnchor);
+    downloadAnchor.click();
+    downloadAnchor.remove();
   };
 
   return (
-    <div className="flex flex-col h-full space-y-2.5">
-      {/* Customer Filter Chips Bar */}
-      <div className="relative flex items-center group">
-        {canScrollLeft && (
+    <div className="space-y-6 animate-fade-in">
+      
+      {/* Top Toolbar */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-slate-900 border border-slate-800 p-5 rounded-2xl shadow-xl">
+        
+        {/* Left Toggle active / trash */}
+        <div className="flex items-center gap-2">
+          <div className="flex items-center gap-1 bg-slate-950 p-1 rounded-xl border border-slate-800">
+            <button
+              onClick={() => {
+                triggerHaptic('light');
+                setViewMode('active');
+              }}
+              className={`flex items-center gap-2 px-4 py-2 rounded-lg text-xs font-bold transition-all ${
+                viewMode === 'active'
+                  ? 'bg-amber-500 text-slate-950 shadow-md shadow-amber-500/20'
+                  : 'text-slate-400 hover:text-slate-200'
+              }`}
+            >
+              <Database className="w-4 h-4" />
+              <span>Реестр ({activeMolds.length})</span>
+            </button>
+
+            <button
+              onClick={() => {
+                triggerHaptic('light');
+                setViewMode('trash');
+              }}
+              className={`flex items-center gap-2 px-4 py-2 rounded-lg text-xs font-bold transition-all ${
+                viewMode === 'trash'
+                  ? 'bg-rose-500 text-white shadow-md shadow-rose-500/20'
+                  : 'text-slate-400 hover:text-slate-200'
+              }`}
+            >
+              <Trash2 className="w-4 h-4" />
+              <span>Корзина ({trashMolds.length})</span>
+            </button>
+          </div>
+        </div>
+
+        {/* Right Action Buttons */}
+        <div className="flex items-center gap-2 flex-wrap">
           <button
-            type="button"
-            onClick={() => scrollByAmount(-180)}
-            className="hidden sm:flex absolute left-0 z-20 w-6 h-6 items-center justify-center rounded-full bg-white/95 shadow-md border border-slate-200 text-slate-700 hover:bg-slate-100 hover:text-slate-900 transition-colors -translate-x-1"
-            title="Posunout doleva"
+            onClick={onOpenScanner}
+            className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-amber-400 font-semibold text-xs border border-slate-700 transition-all"
           >
-            <ChevronLeft className="w-3.5 h-3.5" />
+            <Sparkles className="w-4 h-4" />
+            <span>AI Сканер бирки</span>
           </button>
-        )}
 
-        <div
-          ref={scrollContainerRef}
-          onMouseDown={handleMouseDown}
-          onMouseMove={handleMouseMove}
-          onMouseUp={handleMouseUpOrLeave}
-          onMouseLeave={handleMouseUpOrLeave}
-          onWheel={handleWheel}
-          onScroll={checkScroll}
-          className="flex-1 flex items-center gap-1.5 overflow-x-auto pb-1.5 scrollbar-none select-none cursor-grab active:cursor-grabbing"
-        >
           <button
-            onClick={() => handleTagClick(() => onFilterCustomer('ALL'))}
-            className={`px-2.5 py-1 rounded-lg text-xs font-semibold border transition shrink-0 ${
-              currentCustomerFilter === 'ALL'
-                ? 'bg-slate-900 text-white border-slate-900 shadow-xs'
-                : 'bg-white text-slate-700 border-slate-200 hover:bg-slate-100'
-            }`}
+            onClick={handleExportData}
+            className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 font-semibold text-xs border border-slate-700 transition-all"
+            title="Экспорт базы в JSON для бэкапа GitHub"
           >
-            Vše
+            <Download className="w-4 h-4" />
+            <span className="hidden sm:inline">Экспорт JSON</span>
           </button>
 
-          <span className="w-px h-5 bg-slate-200 shrink-0 mx-0.5" />
-
-          {customers.map((c) => {
-            const isActive = currentCustomerFilter === c.name;
-            return (
-              <button
-                key={c.name}
-                onClick={() => handleTagClick(() => onFilterCustomer(c.name))}
-                onContextMenu={(e) => onCustomerRightClick(e, c.name)}
-                style={{ backgroundColor: c.bg }}
-                className={`px-2.5 py-1 rounded-lg text-xs font-semibold border text-slate-950 transition shrink-0 hover:scale-105 ${
-                  isActive
-                    ? 'border-slate-900 ring-2 ring-slate-400/40 shadow-xs'
-                    : 'border-slate-300'
-                }`}
-              >
-                {c.name}
-              </button>
-            );
-          })}
-
           <button
-            onClick={() => handleTagClick(onOpenAddCustomerModal)}
-            title="Přidat nového zákazníka"
-            className="w-7 h-7 rounded-lg border border-dashed border-slate-300 bg-white hover:bg-slate-100 text-slate-600 flex items-center justify-center shrink-0 transition"
+            onClick={() => {
+              triggerHaptic('medium');
+              onAddMold();
+            }}
+            className="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold text-xs shadow-lg shadow-amber-500/20 transition-all active:scale-95"
           >
-            <Plus className="w-3.5 h-3.5" />
+            <Plus className="w-4 h-4" />
+            <span>Новая пресс-форма</span>
           </button>
         </div>
 
-        {canScrollRight && (
-          <button
-            type="button"
-            onClick={() => scrollByAmount(180)}
-            className="hidden sm:flex absolute right-0 z-20 w-6 h-6 items-center justify-center rounded-full bg-white/95 shadow-md border border-slate-200 text-slate-700 hover:bg-slate-100 hover:text-slate-900 transition-colors translate-x-1"
-            title="Posunout doprava"
-          >
-            <ChevronRight className="w-3.5 h-3.5" />
-          </button>
+      </div>
+
+      {/* Filter and Search Row */}
+      <div className="flex flex-col sm:flex-row items-center justify-between gap-3">
+        <div className="w-full sm:w-72 relative">
+          <input
+            type="text"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            placeholder="Фильтр списка по шифру..."
+            className="w-full pl-3 pr-8 py-2.5 rounded-xl bg-slate-900 border border-slate-800 text-slate-200 placeholder-slate-500 text-xs focus:outline-none focus:border-amber-500"
+          />
+        </div>
+
+        <div className="flex items-center gap-2 w-full sm:w-auto overflow-x-auto pb-1">
+          <span className="text-xs font-mono text-slate-500 shrink-0">Цех:</span>
+          {['all', 'Цех №1 (Штамповка)', 'Цех №2 (Литье под давлением)', 'Цех №3 (Механообработка)'].map((shop, idx) => (
+            <button
+              key={idx}
+              onClick={() => {
+                triggerHaptic('light');
+                setFilterShop(shop);
+              }}
+              className={`px-3 py-1.5 rounded-lg text-xs font-mono whitespace-nowrap transition-all ${
+                filterShop === shop
+                  ? 'bg-slate-800 text-amber-400 border border-amber-500/30 font-bold'
+                  : 'bg-slate-900/80 text-slate-400 hover:text-slate-200 border border-slate-800'
+              }`}
+            >
+              {shop === 'all' ? 'Все цеха' : shop.split(' ')[0]}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {/* Gmail-Style Swipeable Items List */}
+      <div className="space-y-1">
+        {displayedMolds.length === 0 ? (
+          <div className="p-12 text-center bg-slate-900/60 border border-slate-800 rounded-2xl">
+            <Archive className="w-12 h-12 text-slate-600 mx-auto mb-3" />
+            <h4 className="font-semibold text-slate-300 text-sm">
+              {viewMode === 'active' ? 'Пресс-формы отсутствуют' : 'Корзина пуста'}
+            </h4>
+            <p className="text-xs text-slate-400 mt-1">
+              {viewMode === 'active'
+                ? 'Нажмите "Новая пресс-форма" или отсканируйте бирку'
+                : 'Удаленные пресс-формы отображаются в этом разделе'}
+            </p>
+          </div>
+        ) : (
+          displayedMolds.map((mold) => (
+            <SwipeableRow
+              key={mold.id}
+              mold={mold}
+              onAddNote={onAddNote}
+              onEdit={onEdit}
+              onDeleteToTrash={onDeleteToTrash}
+              onRestoreFromTrash={onRestoreFromTrash}
+              onOpenPdf={onOpenPdf}
+              onViewDetails={onViewDetails}
+            />
+          ))
         )}
       </div>
 
-      {/* Stats bar */}
-      <div className="flex justify-between items-center text-xs text-slate-500 px-1">
-        <span id="dbStats">
-          Zobrazeno forem: {filteredMolds.length} z {totalActiveCount}
-        </span>
-      </div>
-
-      {/* Table Container */}
-      <div className="flex-1 overflow-y-auto border border-slate-200 rounded-lg bg-white shadow-xs max-h-[520px]">
-        <table className="w-full border-collapse text-left table-fixed">
-          <thead className="sticky top-0 z-10 bg-slate-50 border-b border-slate-200 text-[11px] uppercase tracking-wider text-slate-500 font-semibold">
-            <tr>
-              <th className="p-2 sm:p-3 w-[40%] text-left">Číslo formy</th>
-              <th className="p-2 sm:p-3 w-[30%] text-center">Zákazník</th>
-              <th className="p-2 sm:p-3 w-[30%] text-right">Pozice</th>
-            </tr>
-          </thead>
-          <tbody>
-            {filteredMolds.length === 0 ? (
-              <tr>
-                <td colSpan={3} className="p-8 text-center text-slate-400 text-sm">
-                  Žádné formy v databázi pro tento filtr
-                </td>
-              </tr>
-            ) : (
-              filteredMolds.map(mold => (
-                <MoldRow
-                  key={mold.id}
-                  mold={mold}
-                  comments={comments.filter(c => String(c.mold_id) === String(mold.id))}
-                  customers={customers}
-                  isSuperUser={isSuperUser}
-                  currentUser={currentUser}
-                  onEditPosition={onEditPosition}
-                  onEditCustomer={onEditCustomer}
-                  onOpenCommentModal={onOpenCommentModal}
-                  onOpenFullEdit={onOpenFullEdit}
-                  onOpenPhotoModal={onOpenPhotoModal}
-                  onOpenPdfModal={onOpenPdfModal}
-                  onOpenViewComment={onOpenViewComment}
-                  onCommentRightClick={onCommentRightClick}
-                  onRowRightClick={onRowRightClick}
-                  onCustomerRightClick={onCustomerRightClick}
-                  onSaveAccordionChanges={onSaveAccordionChanges}
-                />
-              ))
-            )}
-          </tbody>
-        </table>
-      </div>
     </div>
   );
 };

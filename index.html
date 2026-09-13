@@ -7812,7 +7812,7 @@
         if (!apiKey || !canvas) return null;
 
         try {
-            // Downscale to max 1024px for swift upload & high accuracy, boost contrast for handwritten text
+            // Downscale to max 1024px for swift upload & high accuracy, boost contrast and clarity for handwritten text on tags
             let uploadCanvas = document.createElement('canvas');
             const maxDim = 1024;
             let width = canvas.width;
@@ -7826,7 +7826,7 @@
             uploadCanvas.height = height;
             const ctx = uploadCanvas.getContext('2d');
             if (ctx) {
-                ctx.filter = 'contrast(1.15) brightness(1.03)';
+                ctx.filter = 'contrast(1.24) brightness(1.04) saturate(0.85)';
                 ctx.drawImage(canvas, 0, 0, width, height);
             } else {
                 uploadCanvas = canvas;
@@ -7839,12 +7839,14 @@
             const promptText = (mode === 'plan')
                 ? `You are an expert industrial vision and OCR system for an injection mold factory warehouse.
 Look at this photo containing a shift plan sheet, paper schedule, or production table with multiple injection mold numbers or product names.
-Extract ALL mold numbers (typically 2 to 5 digits, e.g. 765, 764, 976, 808, 668) and visible product/part names from top to bottom.
+Extract ALL mold numbers (typically 2 to 5 digits, e.g. 765, 764, 976, 808, 668, 10425) and visible product/part names from top to bottom.
 
-CRITICAL INSTRUCTION FOR EUROPEAN HANDWRITTEN NUMBERS & TEXT:
+CRITICAL INDUSTRIAL CONTEXT & HANDWRITTEN DISAMBIGUATION:
+- Industrial context: Injection mold parts (kryt, lišta, držák, výztuha, těsnění, panel, rám, záslepka, víčko, Steckdeckel, Gehäuse, Halter, Blende) and automotive brands (Škoda, VW, Audi, Hella, Bosch).
 - European handwritten '7' ALWAYS has a horizontal crossbar/line through the vertical stem (7 with horizontal bar). It MUST be recognized as DIGIT '7' (SEVEN). DO NOT misread it as 1, 4, 9, or 3!
-- European handwritten '1' usually has a top diagonal hook without a middle bar.
-- European handwritten '4' has a closed or open top.
+- European handwritten '1' usually has a top diagonal hook/flag without a middle crossbar.
+- Hand-drawn zeros '0' and letter 'O'/'D': in mold numbers they are always numeric digit '0'.
+- Hand-drawn digit '5' vs letter 'S': in numeric codes always treat as digit '5'.
 - Transcribe all text and numbers accurately.
 
 Return strictly valid JSON only without markdown formatting with this schema:
@@ -7852,14 +7854,17 @@ Return strictly valid JSON only without markdown formatting with this schema:
                 : `You are an expert industrial OCR and vision system for injection mold factory warehouse tracking.
 Look at this photo of an injection mold tag, physical metal mold plate, paper sticker, product sample, or handwritten note.
 Carefully identify:
-1. PRIMARY injection mold number (číslo formy), typically 2 to 5 digits (such as 765, 764, 976, 808, 668).
-2. Product or part name (název výrobku/dílu, e.g. "Steckdeckel", "Kryt", "Adapter", "VW", etc.).
+1. PRIMARY injection mold number (číslo formy), typically 2 to 5 digits (such as 765, 764, 976, 808, 668, 10425).
+2. Product or part name (název výrobku/dílu, e.g. "Steckdeckel", "Kryt", "Adapter", "Lišta", "Držák", "Panel", "VW", etc.).
 3. Customer name (zákazník) or any visible text.
 
-CRITICAL INSTRUCTION FOR EUROPEAN HANDWRITTEN NUMBERS & TEXT:
+CRITICAL INDUSTRIAL CONTEXT & HANDWRITTEN DISAMBIGUATION:
+- Industrial context: Injection mold parts (kryt, lišta, držák, výztuha, těsnění, panel, rám, záslepka, víčko, Steckdeckel, Gehäuse, Halter, Blende) and automotive brands (Škoda, VW, Audi, Hella, Bosch).
 - European handwritten '7' ALWAYS has a horizontal crossbar/line through the vertical stem (7 with horizontal line). This MUST be recognized as digit '7' (SEVEN). DO NOT misread it as 1, 4, 9, or 3!
-- European handwritten '1' usually has a top diagonal hook/flag.
+- European handwritten '1' usually has a top diagonal hook/flag without a middle bar.
 - European handwritten '4' has a closed or open top.
+- Hand-drawn zeros '0' and letter 'O'/'D': in mold numbers they are always numeric digit '0'.
+- Hand-drawn digit '5' vs letter 'S': in numeric codes always treat as digit '5'.
 - IGNORE faint ghost text or translucent numbers bleeding through from the reverse side of paper! Extract ONLY prominent foreground written numbers.
 - Include all read text in raw_text.
 
@@ -8938,34 +8943,71 @@ Return strictly valid JSON only without markdown formatting with this schema:
         return null;
     }
 
+    function findFuzzyOrDisambiguatedMold(candidateStr, activeMolds) {
+        if (!candidateStr || !Array.isArray(activeMolds) || activeMolds.length === 0) return null;
+        const raw = String(candidateStr).trim();
+        if (!raw) return null;
+
+        // 1. Direct exact check
+        let found = activeMolds.find(m => String(m[0]).trim() === raw);
+        if (found) return { mold: found, isAutoCorrected: false, orig: raw };
+
+        // 2. Optical character substitution (common OCR confusions on handwriting)
+        // O/D -> 0, S -> 5, I/l/| -> 1, B -> 8, Z -> 2
+        let fixed = raw
+            .replace(/[oOdD]/g, '0')
+            .replace(/[sS]/g, '5')
+            .replace(/[Il|!]/g, '1')
+            .replace(/[bB]/g, '8')
+            .replace(/[zZ]/g, '2');
+        
+        found = activeMolds.find(m => String(m[0]).trim() === fixed);
+        if (found) return { mold: found, isAutoCorrected: true, orig: raw, fixed };
+
+        // 3. Levenshtein edit distance = 1 for numeric codes of length >= 3
+        if (/^\d{3,6}$/.test(raw) || /^\d{3,6}$/.test(fixed)) {
+            const checkNum = /^\d+$/.test(raw) ? raw : fixed;
+            const singleDistanceMatches = activeMolds.filter(m => {
+                const moldId = String(m[0]).trim();
+                return /^\d+$/.test(moldId) && damerauLevenshtein(checkNum, moldId) === 1;
+            });
+            // Only accept if exactly 1 unambiguous match
+            if (singleDistanceMatches.length === 1) {
+                return { mold: singleDistanceMatches[0], isAutoCorrected: true, orig: raw, fixed: String(singleDistanceMatches[0][0]) };
+            }
+        }
+
+        return null;
+    }
+
     function matchGeminiData(geminiResult, barcodeValues = [], cropCanvas = null) {
         if (!geminiResult || geminiResult.error) return null;
         const activeMolds = rawDatabase.filter(item => !item[4]);
         if (activeMolds.length === 0) return null;
 
         if (geminiResult.primaryNumber) {
-            const cleanPrim = String(geminiResult.primaryNumber).trim();
-            const mold = activeMolds.find(m => String(m[0]).trim() === cleanPrim);
-            if (mold) {
+            const match = findFuzzyOrDisambiguatedMold(geminiResult.primaryNumber, activeMolds);
+            if (match && match.mold) {
                 return {
                     type: 'single',
-                    mold: mold,
-                    matchType: 'direct_id',
-                    productName: mold[5] || ''
+                    mold: match.mold,
+                    matchType: match.isAutoCorrected ? 'auto_corrected_id' : 'direct_id',
+                    productName: match.mold[5] || '',
+                    autoCorrectedFrom: match.isAutoCorrected ? match.orig : null
                 };
             }
         }
 
         if (Array.isArray(geminiResult.numbers)) {
             for (const numStr of geminiResult.numbers) {
-                const cleanNum = String(numStr).trim();
-                const mold = activeMolds.find(m => String(m[0]).trim() === cleanNum);
-                if (mold) {
+                const match = findFuzzyOrDisambiguatedMold(numStr, activeMolds);
+                if (match && match.mold) {
                     return {
                         type: 'single',
-                        mold: mold,
-                        matchType: 'direct_id',
-                        productName: mold[5] || ''
+                        mold: match.mold,
+                        matchType: match.isAutoCorrected ? 'auto_corrected_id' : 'direct_id',
+                        productName: match.mold[5] || '',
+                        autoCorrectedFrom: match.isAutoCorrected ? match.orig : null
                     };
                 }
             }
@@ -8988,23 +9030,21 @@ Return strictly valid JSON only without markdown formatting with this schema:
 
         const foundMoldsMap = new Map();
 
-        // 1. Direct exact match from geminiResult.numbers array
+        // 1. Direct / Fuzzy match from geminiResult.numbers array
         if (geminiResult && Array.isArray(geminiResult.numbers)) {
             for (const numStr of geminiResult.numbers) {
-                const cleanNum = String(numStr).trim();
-                const mold = activeMolds.find(m => String(m[0]).trim() === cleanNum);
-                if (mold && !foundMoldsMap.has(String(mold[0]))) {
-                    foundMoldsMap.set(String(mold[0]), mold);
+                const match = findFuzzyOrDisambiguatedMold(numStr, activeMolds);
+                if (match && match.mold && !foundMoldsMap.has(String(match.mold[0]))) {
+                    foundMoldsMap.set(String(match.mold[0]), match.mold);
                 }
             }
         }
 
-        // 2. Direct exact match from geminiResult.primaryNumber if present
+        // 2. Direct / Fuzzy match from geminiResult.primaryNumber if present
         if (geminiResult && geminiResult.primaryNumber) {
-            const cleanPrim = String(geminiResult.primaryNumber).trim();
-            const mold = activeMolds.find(m => String(m[0]).trim() === cleanPrim);
-            if (mold && !foundMoldsMap.has(String(mold[0]))) {
-                foundMoldsMap.set(String(mold[0]), mold);
+            const match = findFuzzyOrDisambiguatedMold(geminiResult.primaryNumber, activeMolds);
+            if (match && match.mold && !foundMoldsMap.has(String(match.mold[0]))) {
+                foundMoldsMap.set(String(match.mold[0]), match.mold);
             }
         }
 
