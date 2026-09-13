@@ -4461,7 +4461,7 @@
         impact: () => triggerHapticFeedback([25]),
         threshold: () => triggerHapticFeedback([32]),
         success: () => triggerHapticFeedback([20, 45, 25]),
-        cameraSuccess: () => triggerHapticFeedback([30, 50, 30]),
+        cameraSuccess: () => triggerHapticFeedback([25, 50, 30]),
         warning: () => triggerHapticFeedback([35, 55, 30]),
         error: () => triggerHapticFeedback([50, 65, 40])
     };
@@ -7812,29 +7812,27 @@
         if (!apiKey || !canvas) return null;
 
         try {
-            // Smart downsampling (max 1280px, aspect-ratio preserved) & contrast binarization for instant network upload & laser-sharp OCR
+            // Downscale to max 1024px for swift upload & high accuracy, boost contrast and clarity for handwritten text on tags
             let uploadCanvas = document.createElement('canvas');
-            const maxDim = 1280;
+            const maxDim = 1024;
             let width = canvas.width;
             let height = canvas.height;
             if (width > maxDim || height > maxDim) {
                 const scale = Math.min(maxDim / width, maxDim / height);
-                width = Math.max(1, Math.round(width * scale));
-                height = Math.max(1, Math.round(height * scale));
+                width = Math.round(width * scale);
+                height = Math.round(height * scale);
             }
             uploadCanvas.width = width;
             uploadCanvas.height = height;
             const ctx = uploadCanvas.getContext('2d');
             if (ctx) {
-                // CLAHE-like contrast enhancement & slight gamma correction for pencil/ink strokes on industrial paper
-                ctx.filter = 'contrast(1.28) brightness(1.03) saturate(0.80)';
+                ctx.filter = 'contrast(1.24) brightness(1.04) saturate(0.85)';
                 ctx.drawImage(canvas, 0, 0, width, height);
             } else {
                 uploadCanvas = canvas;
             }
 
-            // Quality 0.85: eliminates 65% of payload weight while preserving pristine stroke contours
-            const dataUrl = uploadCanvas.toDataURL('image/jpeg', 0.85);
+            const dataUrl = uploadCanvas.toDataURL('image/jpeg', 0.88);
             const base64Data = dataUrl.split(',')[1];
             if (!base64Data) return null;
 
@@ -8028,46 +8026,31 @@ Return strictly valid JSON only without markdown formatting with this schema:
         openNumberScanner('plan');
     }
 
-    // Industrial audio chime feedback (crystal clear dual-tone chord)
+    // Pleasant audio feedback
     function playScannerAudioBeep(isSuccess = true) {
         try {
-            const AudioCtx = window.AudioContext || window.webkitAudioContext;
-            if (!AudioCtx) return;
-            const ctx = new AudioCtx();
+            const AudioContext = window.AudioContext || window.webkitAudioContext;
+            if (!AudioContext) return;
+            const ctx = new AudioContext();
+            const osc = ctx.createOscillator();
             const gain = ctx.createGain();
+            osc.connect(gain);
             gain.connect(ctx.destination);
-
             if (isSuccess) {
-                // Harmonic dual tone (659Hz E5 -> 880Hz A5) for clean industrial confirmation
-                const now = ctx.currentTime;
-                const osc1 = ctx.createOscillator();
-                const osc2 = ctx.createOscillator();
-                osc1.type = 'sine';
-                osc2.type = 'sine';
-                osc1.frequency.setValueAtTime(659.25, now);
-                osc2.frequency.setValueAtTime(880.00, now + 0.04);
-                
-                osc1.connect(gain);
-                osc2.connect(gain);
-                
-                gain.gain.setValueAtTime(0.01, now);
-                gain.gain.linearRampToValueAtTime(0.18, now + 0.02);
-                gain.gain.exponentialRampToValueAtTime(0.001, now + 0.16);
-
-                osc1.start(now);
-                osc2.start(now + 0.04);
-                osc1.stop(now + 0.16);
-                osc2.stop(now + 0.16);
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(780, ctx.currentTime);
+                osc.frequency.exponentialRampToValueAtTime(1320, ctx.currentTime + 0.12);
+                gain.gain.setValueAtTime(0.2, ctx.currentTime);
+                gain.gain.linearRampToValueAtTime(0.01, ctx.currentTime + 0.18);
+                osc.start(ctx.currentTime);
+                osc.stop(ctx.currentTime + 0.18);
             } else {
-                const now = ctx.currentTime;
-                const osc = ctx.createOscillator();
                 osc.type = 'triangle';
-                osc.frequency.setValueAtTime(320, now);
-                osc.connect(gain);
-                gain.gain.setValueAtTime(0.12, now);
-                gain.gain.linearRampToValueAtTime(0.001, now + 0.18);
-                osc.start(now);
-                osc.stop(now + 0.18);
+                osc.frequency.setValueAtTime(350, ctx.currentTime);
+                gain.gain.setValueAtTime(0.18, ctx.currentTime);
+                gain.gain.linearRampToValueAtTime(0.01, ctx.currentTime + 0.2);
+                osc.start(ctx.currentTime);
+                osc.stop(ctx.currentTime + 0.2);
             }
         } catch (e) {}
     }
