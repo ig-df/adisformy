@@ -2672,13 +2672,14 @@
             display: inline-flex;
             align-items: center;
             gap: 0.65rem;
-            padding: 0.75rem 1.35rem;
-            background: #0f172a;
-            color: #ffffff;
+            padding: 0.72rem 1.35rem;
+            background: #ffffff;
+            color: #0f172a;
             font-size: 1.02rem;
             font-weight: 700;
             border-radius: 999px;
-            box-shadow: 0 12px 28px rgba(15, 23, 42, 0.35);
+            border: 1px solid #e2e8f0;
+            box-shadow: 0 16px 36px rgba(15, 23, 42, 0.16), 0 4px 12px rgba(15, 23, 42, 0.08);
             transition: transform 1.05s cubic-bezier(0.19, 1, 0.22, 1), opacity 1.05s cubic-bezier(0.3, 0, 0.8, 1);
             will-change: transform, opacity;
             letter-spacing: -0.01em;
@@ -9855,7 +9856,7 @@ Return strictly valid JSON only without markdown formatting with this schema:
             const particle = document.createElement('div');
             particle.className = 'scan-fly-particle';
             particle.innerHTML = `
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round" style="width: 22px; height: 22px; color: #10b981; flex-shrink: 0;">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="width: 20px; height: 20px; color: #10b981; flex-shrink: 0;">
                     <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path>
                     <rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect>
                     <path d="m9 14 2 2 4-4"></path>
