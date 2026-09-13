@@ -2651,34 +2651,37 @@
             box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
         }
 
-        /* Pulse burst on corner button upon batch receipt */
+        /* Rich bounce & radial ripple pulse on corner button upon batch receipt */
         .floating-corner-btn-list.pulse-receive {
-            animation: shiftBtnReceivePulse 0.65s cubic-bezier(0.16, 1, 0.3, 1);
+            animation: shiftBtnBounceJump 0.85s cubic-bezier(0.2, 1.25, 0.35, 1);
         }
-        @keyframes shiftBtnReceivePulse {
-            0% { transform: scale(1); }
-            35% { transform: scale(1.24); box-shadow: 0 0 0 10px rgba(15, 23, 42, 0.15), 0 8px 24px rgba(0, 0, 0, 0.28); }
-            70% { transform: scale(0.95); }
-            100% { transform: scale(1); }
+        @keyframes shiftBtnBounceJump {
+            0% { transform: scale(1) translateY(0); }
+            20% { transform: scale(0.92) translateY(2px); }
+            45% { transform: scale(1.28) translateY(-14px); box-shadow: 0 0 0 1px rgba(16, 185, 129, 0.5), 0 0 0 12px rgba(16, 185, 129, 0.18), 0 12px 28px rgba(16, 185, 129, 0.35); }
+            70% { transform: scale(0.96) translateY(2px); box-shadow: 0 0 0 1px rgba(16, 185, 129, 0.25), 0 0 0 20px rgba(16, 185, 129, 0), 0 4px 12px rgba(0, 0, 0, 0.18); }
+            85% { transform: scale(1.06) translateY(-2px); }
+            100% { transform: scale(1) translateY(0); }
         }
 
-        /* Flying chip / particle towards corner list button */
+        /* Flying chip / card towards corner list button */
         .scan-fly-particle {
             position: fixed;
             z-index: 99999;
             pointer-events: none;
             display: inline-flex;
             align-items: center;
-            gap: 0.45rem;
-            padding: 0.5rem 0.95rem;
-            background: #0f172a;
+            gap: 0.65rem;
+            padding: 0.75rem 1.35rem;
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
             color: #ffffff;
-            font-size: 0.88rem;
+            font-size: 1.05rem;
             font-weight: 700;
             border-radius: 999px;
-            box-shadow: 0 12px 28px rgba(0, 0, 0, 0.35), 0 0 0 1.5px rgba(255, 255, 255, 0.25);
-            transition: transform 0.62s cubic-bezier(0.2, 0.8, 0.25, 1), opacity 0.62s cubic-bezier(0.4, 0, 1, 1);
+            box-shadow: 0 20px 45px rgba(15, 23, 42, 0.45), 0 0 0 2px rgba(255, 255, 255, 0.3), 0 0 35px rgba(16, 185, 129, 0.35);
+            transition: transform 1.05s cubic-bezier(0.19, 1, 0.22, 1), opacity 1.05s cubic-bezier(0.3, 0, 0.8, 1);
             will-change: transform, opacity;
+            letter-spacing: -0.01em;
         }
 
         .corner-badge-counter {
@@ -9830,50 +9833,53 @@ Return strictly valid JSON only without markdown formatting with this schema:
             const targetX = targetRect.left + (targetRect.width / 2);
             const targetY = targetRect.top + (targetRect.height / 2);
 
-            // Starting point: center of screen (or center of scanner/batch list)
+            // Starting point: comfortable center-upper viewing position
             const startX = window.innerWidth / 2;
-            const startY = window.innerHeight / 2 - 40;
+            const startY = Math.max(160, window.innerHeight / 2 - 70);
 
             const particle = document.createElement('div');
             particle.className = 'scan-fly-particle';
             particle.innerHTML = `
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="width: 17px; height: 17px;">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round" style="width: 20px; height: 20px; color: #10b981;">
                     <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path>
                     <rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect>
                     <path d="m9 14 2 2 4-4"></path>
                 </svg>
-                <span>+${count}</span>
+                <span>+${count} do plánu</span>
             `;
 
             particle.style.left = `${startX}px`;
             particle.style.top = `${startY}px`;
-            particle.style.transform = 'translate(-50%, -50%) scale(1.15)';
+            particle.style.transform = 'translate(-50%, -50%) scale(0.7)';
             particle.style.opacity = '0';
             document.body.appendChild(particle);
 
-            // Trigger enter
+            // Phase 1: Presentation (rich appearance, expands in center)
             requestAnimationFrame(() => {
+                particle.style.transition = 'transform 0.3s cubic-bezier(0.18, 0.9, 0.3, 1.2), opacity 0.25s ease';
+                particle.style.transform = 'translate(-50%, -50%) scale(1.18)';
                 particle.style.opacity = '1';
-                
-                // Fly trajectory
+
+                // Phase 2: Beautiful arced flight into the corner basket button
                 setTimeout(() => {
                     const deltaX = targetX - startX;
                     const deltaY = targetY - startY;
-                    particle.style.transform = `translate(calc(-50% + ${deltaX}px), calc(-50% + ${deltaY}px)) scale(0.35)`;
-                    particle.style.opacity = '0.15';
+                    particle.style.transition = 'transform 0.9s cubic-bezier(0.25, 0.8, 0.25, 1), opacity 0.9s cubic-bezier(0.4, 0, 0.9, 1)';
+                    particle.style.transform = `translate(calc(-50% + ${deltaX}px), calc(-50% + ${deltaY}px)) scale(0.38)`;
+                    particle.style.opacity = '0.35';
 
-                    // Land on button
+                    // Phase 3: Landing, button bounce, radial pulse and badge refresh
                     setTimeout(() => {
                         if (particle.parentNode) {
                             particle.parentNode.removeChild(particle);
                         }
                         targetBtn.classList.remove('pulse-receive');
-                        void targetBtn.offsetWidth; // trigger reflow
+                        void targetBtn.offsetWidth; // trigger layout reflow
                         targetBtn.classList.add('pulse-receive');
-                        triggerHapticFeedback([22, 35]);
+                        triggerHapticFeedback([30, 45]);
                         updateShiftPlanBadge();
-                    }, 580);
-                }, 40);
+                    }, 880);
+                }, 380);
             });
         } catch (e) {
             console.warn('Fly animation error:', e);
@@ -10596,6 +10602,7 @@ Return strictly valid JSON only without markdown formatting with this schema:
             const displayPos = formatPositionDisplay(pos);
 
             const isChecked = Boolean(item.checked);
+            const custStyle = getCustomerStyle(cust);
             const checkIcon = isChecked ? `
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
                     <polyline points="20 6 9 17 4 12"></polyline>
@@ -10611,7 +10618,7 @@ Return strictly valid JSON only without markdown formatting with this schema:
                         <div class="shift-plan-info">
                             <div class="shift-plan-mold-num">
                                 <span style="cursor: pointer;" onclick="event.stopPropagation(); inspectMoldFromPlan('${escapeHtml(cleanNum)}')" title="Zobrazit v databázi">Forma #${escapeHtml(cleanNum)}</span>
-                                ${cust ? `<span class="tag-customer" style="font-size: 0.68rem; padding: 0.1rem 0.35rem;">${escapeHtml(cust)}</span>` : ''}
+                                ${cust ? `<span class="tag-customer" style="${custStyle}; font-size: 0.68rem; padding: 0.1rem 0.38rem;">${escapeHtml(cust)}</span>` : ''}
                             </div>
                             <div class="shift-plan-product" title="${escapeHtml(prodName)}">${escapeHtml(prodName)}</div>
                         </div>
