@@ -7839,29 +7839,33 @@
             const promptText = (mode === 'plan')
                 ? `You are an expert industrial vision and OCR system for an injection mold factory warehouse.
 Look at this photo containing a shift plan sheet, paper schedule, or production table with multiple injection mold numbers or product names.
-Extract ALL mold numbers (typically 2 to 5 digits, e.g. 765, 764, 976, 808, 668, 10425) and visible product/part names from top to bottom.
+Extract ALL mold numbers (typically 2 to 5 digits, e.g. 765, 976, 808, 668, 10425) and visible product/part names from top to bottom.
 
 CRITICAL INDUSTRIAL CONTEXT & HANDWRITTEN DISAMBIGUATION:
 - Industrial context: Injection mold parts (kryt, lišta, držák, výztuha, těsnění, panel, rám, záslepka, víčko, Steckdeckel, Gehäuse, Halter, Blende) and automotive brands (Škoda, VW, Audi, Hella, Bosch).
-- European handwritten '7' ALWAYS has a horizontal crossbar/line through the vertical stem (7 with horizontal bar). It MUST be recognized as DIGIT '7' (SEVEN). DO NOT misread it as 1, 4, 9, or 3!
-- European handwritten '1' usually has a top diagonal hook/flag without a middle crossbar.
+- STRICT EUROPEAN HANDWRITTEN '7' VS '1' DISAMBIGUATION:
+  * In Czech / European handwriting, digit '7' ALWAYS has a distinct horizontal crossbar through the vertical/slanted stem (7̵). Any digit with a middle crossbar is strictly '7' (SEVEN). DO NOT transcribe it as '1', '4', '9', or '3'!
+  * Digit '1' in European handwriting has an acute top diagonal hook/roof and a vertical stroke WITHOUT any middle crossbar.
+  * Extract ONLY the exact numbers physically written on the paper. DO NOT hallucinate, infer, or add synthetic alternative numbers (do NOT substitute 7 with 1, and do NOT substitute 1 with 7).
 - Hand-drawn zeros '0' and letter 'O'/'D': in mold numbers they are always numeric digit '0'.
 - Hand-drawn digit '5' vs letter 'S': in numeric codes always treat as digit '5'.
-- Transcribe all text and numbers accurately.
+- Transcribe all text and numbers accurately without duplicates.
 
 Return strictly valid JSON only without markdown formatting with this schema:
-{"numbers":["765","764","976"],"raw_text":"..."}`
+{"numbers":["765","976"],"raw_text":"..."}`
                 : `You are an expert industrial OCR and vision system for injection mold factory warehouse tracking.
 Look at this photo of an injection mold tag, physical metal mold plate, paper sticker, product sample, or handwritten note.
 Carefully identify:
-1. PRIMARY injection mold number (číslo formy), typically 2 to 5 digits (such as 765, 764, 976, 808, 668, 10425).
+1. PRIMARY injection mold number (číslo formy), typically 2 to 5 digits (such as 765, 976, 808, 668, 10425).
 2. Product or part name (název výrobku/dílu, e.g. "Steckdeckel", "Kryt", "Adapter", "Lišta", "Držák", "Panel", "VW", etc.).
 3. Customer name (zákazník) or any visible text.
 
 CRITICAL INDUSTRIAL CONTEXT & HANDWRITTEN DISAMBIGUATION:
 - Industrial context: Injection mold parts (kryt, lišta, držák, výztuha, těsnění, panel, rám, záslepka, víčko, Steckdeckel, Gehäuse, Halter, Blende) and automotive brands (Škoda, VW, Audi, Hella, Bosch).
-- European handwritten '7' ALWAYS has a horizontal crossbar/line through the vertical stem (7 with horizontal line). This MUST be recognized as digit '7' (SEVEN). DO NOT misread it as 1, 4, 9, or 3!
-- European handwritten '1' usually has a top diagonal hook/flag without a middle bar.
+- STRICT EUROPEAN HANDWRITTEN '7' VS '1' DISAMBIGUATION:
+  * In Czech / European handwriting, digit '7' ALWAYS has a horizontal crossbar through the stem (7̵). This is strictly digit '7' (SEVEN). DO NOT misread it as 1, 4, 9, or 3!
+  * Digit '1' has a top diagonal hook without a middle bar.
+  * DO NOT guess or add alternative number substitutions. Extract only what is written.
 - European handwritten '4' has a closed or open top.
 - Hand-drawn zeros '0' and letter 'O'/'D': in mold numbers they are always numeric digit '0'.
 - Hand-drawn digit '5' vs letter 'S': in numeric codes always treat as digit '5'.
@@ -7960,12 +7964,14 @@ Return strictly valid JSON only without markdown formatting with this schema:
                 if (parsed.primary_number) rawNumList.push(parsed.primary_number);
                 if (parsed.cislo_formy) rawNumList.push(parsed.cislo_formy);
             }
-            // Always regex match over full text response to capture all 1-6 digit numbers found anywhere in output
-            const regexDigits = textResponse.match(/\b\d{1,6}\b/g) || [];
-            rawNumList.push(...regexDigits);
+            // Only fallback to regex matching over text response if structured JSON parsing yielded no numbers
+            if (rawNumList.length === 0) {
+                const regexDigits = textResponse.match(/\b\d{2,6}\b/g) || [];
+                rawNumList.push(...regexDigits);
+            }
 
             const numList = Array.from(new Set(
-                rawNumList.map(n => String(n).trim()).filter(n => /^\d{1,6}$/.test(n))
+                rawNumList.map(n => String(n).trim()).filter(n => /^\d{2,6}$/.test(n))
             ));
             const finalPrimary = primaryNum || (numList[0] || '');
 
@@ -9048,21 +9054,31 @@ Return strictly valid JSON only without markdown formatting with this schema:
             }
         }
 
-        // 3. Always run secondary check via matchScannedPlanBatch to catch product names & fuzzy text
-        const textParts = [];
-        if (Array.isArray(geminiResult.numbers)) textParts.push(...geminiResult.numbers);
-        if (geminiResult.primaryNumber) textParts.push(geminiResult.primaryNumber);
-        if (geminiResult.productName) textParts.push(geminiResult.productName);
-        if (geminiResult.rawText) textParts.push(geminiResult.rawText);
+        // 3. Optional secondary check for product names (only if explicit product name exists or no molds matched yet)
+        if (foundMoldsMap.size === 0) {
+            const textParts = [];
+            if (geminiResult.productName) textParts.push(geminiResult.productName);
+            if (geminiResult.rawText) textParts.push(geminiResult.rawText);
 
-        const combinedText = textParts.filter(Boolean).join('\n');
-        const secondaryMatches = matchScannedPlanBatch(combinedText, barcodeValues, cropCanvas);
-        if (Array.isArray(secondaryMatches)) {
-            secondaryMatches.forEach(mold => {
-                if (mold && !foundMoldsMap.has(String(mold[0]))) {
-                    foundMoldsMap.set(String(mold[0]), mold);
-                }
-            });
+            const combinedText = textParts.filter(Boolean).join('\n');
+            const secondaryMatches = matchScannedPlanBatch(combinedText, barcodeValues, cropCanvas);
+            if (Array.isArray(secondaryMatches)) {
+                secondaryMatches.forEach(mold => {
+                    if (mold && !foundMoldsMap.has(String(mold[0]))) {
+                        foundMoldsMap.set(String(mold[0]), mold);
+                    }
+                });
+            }
+        } else if (geminiResult.productName) {
+            // If mold numbers were already recognized with high confidence, only check explicit product name without mutating numbers
+            const prodMatches = matchScannedPlanBatch(geminiResult.productName, barcodeValues, cropCanvas);
+            if (Array.isArray(prodMatches)) {
+                prodMatches.forEach(mold => {
+                    if (mold && !foundMoldsMap.has(String(mold[0]))) {
+                        foundMoldsMap.set(String(mold[0]), mold);
+                    }
+                });
+            }
         }
 
         return Array.from(foundMoldsMap.values());
@@ -9179,14 +9195,10 @@ Return strictly valid JSON only without markdown formatting with this schema:
 
             for (const num of currentArr) {
                 if (num.length >= 3 && num.length <= 4) {
-                    // If starts with 4 (e.g. 465 -> 765, 464 -> 764): test with 7
+                    // If OCR read '4' instead of '7' with crossbar (e.g. 465 -> 765): test with 7
                     if (num.startsWith('4')) list.add('7' + num.slice(1));
-                    // If starts with 1 (e.g. 165 -> 765, 164 -> 764): test with 7
+                    // If OCR read '1' instead of '7' with crossbar (e.g. 165 -> 765): test with 7 only for fallback
                     if (num.startsWith('1')) list.add('7' + num.slice(1));
-                    // If contains 1 anywhere: test with 7 (e.g. 916 -> 976)
-                    if (num.includes('1')) list.add(num.replace(/1/g, '7'));
-                    // If contains 7 anywhere: test with 1 (e.g. 976 -> 916)
-                    if (num.includes('7')) list.add(num.replace(/7/g, '1'));
                 }
             }
 
