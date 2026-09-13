@@ -2651,6 +2651,36 @@
             box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
         }
 
+        /* Pulse burst on corner button upon batch receipt */
+        .floating-corner-btn-list.pulse-receive {
+            animation: shiftBtnReceivePulse 0.65s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        @keyframes shiftBtnReceivePulse {
+            0% { transform: scale(1); }
+            35% { transform: scale(1.24); box-shadow: 0 0 0 10px rgba(15, 23, 42, 0.15), 0 8px 24px rgba(0, 0, 0, 0.28); }
+            70% { transform: scale(0.95); }
+            100% { transform: scale(1); }
+        }
+
+        /* Flying chip / particle towards corner list button */
+        .scan-fly-particle {
+            position: fixed;
+            z-index: 99999;
+            pointer-events: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.45rem;
+            padding: 0.5rem 0.95rem;
+            background: #0f172a;
+            color: #ffffff;
+            font-size: 0.88rem;
+            font-weight: 700;
+            border-radius: 999px;
+            box-shadow: 0 12px 28px rgba(0, 0, 0, 0.35), 0 0 0 1.5px rgba(255, 255, 255, 0.25);
+            transition: transform 0.62s cubic-bezier(0.2, 0.8, 0.25, 1), opacity 0.62s cubic-bezier(0.4, 0, 1, 1);
+            will-change: transform, opacity;
+        }
+
         .corner-badge-counter {
             position: absolute;
             top: -4px;
@@ -2772,9 +2802,12 @@
             display: flex;
             flex-direction: column;
             gap: 0.45rem;
-            max-height: 52vh;
+            max-height: 48vh;
             overflow-y: auto;
-            padding-right: 0.15rem;
+            overflow-x: hidden;
+            padding-right: 0.25rem;
+            margin-bottom: 0.15rem;
+            -webkit-overflow-scrolling: touch;
         }
         .shift-plan-item {
             display: flex;
@@ -3706,7 +3739,7 @@
 </div>
 
 <div class="modal-overlay" id="shiftPlanModal">
-    <div class="modal-card" style="max-width: 520px;">
+    <div class="modal-card" style="max-width: 520px; overflow: hidden;">
         <div class="modal-header">
             <div style="display: flex; align-items: center; gap: 0.55rem;">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width: 20px; height: 20px; color: var(--text-main);">
@@ -9778,12 +9811,73 @@ Return strictly valid JSON only without markdown formatting with this schema:
             saveShiftPlan();
             logUserAction('PLÁN', 'Dávkový sken', `Přidáno ${addedCount} forem z listu do plánu na směnu`);
             showToast(`Přidáno ${addedCount} forem do plánu směny!`);
+            animateFlyToShiftPlanButton(addedCount);
         } else {
             showToast("Všechny vybrané formy již v plánu jsou.");
         }
 
         closeNumberScanner();
-        openShiftPlanModal();
+    }
+
+    // Smooth industrial fly-to-cart animation for scanned shift plan items
+    function animateFlyToShiftPlanButton(count) {
+        try {
+            const targetBtn = document.getElementById('shiftPlanCornerBtn');
+            if (!targetBtn) return;
+            const targetRect = targetBtn.getBoundingClientRect();
+            if (targetRect.width === 0 && targetRect.height === 0) return;
+
+            const targetX = targetRect.left + (targetRect.width / 2);
+            const targetY = targetRect.top + (targetRect.height / 2);
+
+            // Starting point: center of screen (or center of scanner/batch list)
+            const startX = window.innerWidth / 2;
+            const startY = window.innerHeight / 2 - 40;
+
+            const particle = document.createElement('div');
+            particle.className = 'scan-fly-particle';
+            particle.innerHTML = `
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="width: 17px; height: 17px;">
+                    <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path>
+                    <rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect>
+                    <path d="m9 14 2 2 4-4"></path>
+                </svg>
+                <span>+${count}</span>
+            `;
+
+            particle.style.left = `${startX}px`;
+            particle.style.top = `${startY}px`;
+            particle.style.transform = 'translate(-50%, -50%) scale(1.15)';
+            particle.style.opacity = '0';
+            document.body.appendChild(particle);
+
+            // Trigger enter
+            requestAnimationFrame(() => {
+                particle.style.opacity = '1';
+                
+                // Fly trajectory
+                setTimeout(() => {
+                    const deltaX = targetX - startX;
+                    const deltaY = targetY - startY;
+                    particle.style.transform = `translate(calc(-50% + ${deltaX}px), calc(-50% + ${deltaY}px)) scale(0.35)`;
+                    particle.style.opacity = '0.15';
+
+                    // Land on button
+                    setTimeout(() => {
+                        if (particle.parentNode) {
+                            particle.parentNode.removeChild(particle);
+                        }
+                        targetBtn.classList.remove('pulse-receive');
+                        void targetBtn.offsetWidth; // trigger reflow
+                        targetBtn.classList.add('pulse-receive');
+                        triggerHapticFeedback([22, 35]);
+                        updateShiftPlanBadge();
+                    }, 580);
+                }, 40);
+            });
+        } catch (e) {
+            console.warn('Fly animation error:', e);
+        }
     }
 
     function scannerResumeScanning() {
