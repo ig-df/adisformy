@@ -8006,7 +8006,8 @@
 Look at this photo containing a handwritten shift plan sheet, paper schedule, or production table created by workshop mechanics/planners.
 
 STANDARD HANDWRITTEN LAYOUT PATTERN:
-Mechanics typically write items in lines formatted as: [Machine Number] - [Mold Number]
+Mechanics typically write items in lines formatted as: [Machine Number] [Separator] [Mold Number]
+Separators can be any horizontal stroke, dash, hyphen (-, –, —), underscore (_), slash (/), colon (:), tilde (~), or spaces with indentation.
 Examples:
   "11 - 867"  -> Machine 11, Mold 867
   "6 - 808"   -> Machine 6, Mold 808
@@ -8018,7 +8019,7 @@ Examples:
 CRITICAL DISAMBIGUATION RULES FOR MACHINES VS MOLDS:
 1. WORKSHOP MACHINE NUMBERS:
    The workshop has specific machines: 1, 2, 3, 4, 5, 6, 7, 8, 10, 11, 12, 18, 19, 20, 23, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38.
-2. In lines written as "X - Y" or "X : Y" or "X Y" (where X is a machine number and Y is a mold number):
+2. In lines written as "X - Y", "X – Y", "X — Y", "X : Y", "X / Y", or "X Y" (where X is a machine number and Y is a mold number):
    - X is STRICTLY the MACHINE NUMBER (e.g. in "29 - 649", "29" before the dash is Machine 29, NOT Mold 29!).
    - Y is STRICTLY the MOLD NUMBER (e.g. "649" after the dash is Mold 649).
 3. Even if X happens to be a valid mold number in the database (like 19, 20, 23, 26, 28, 29, 30, 33, 34, 35, 36, 38), when written as the FIRST number before the dash in "X - Y", X is STRICTLY the MACHINE NUMBER for Mold Y.
@@ -8143,6 +8144,50 @@ Return strictly valid JSON only without markdown formatting with this schema:
                 parsed = null;
             }
 
+            const textSource = (parsed?.raw_text ? parsed.raw_text + '\n' : '') + textResponse;
+
+            let parsedPairs = [];
+            const machineNumbersSet = new Set();
+            const pairKeys = new Set();
+
+            function addExtractedPair(m, f) {
+                const cleanM = String(m || '').replace(/[^\d]/g, '').trim();
+                const cleanF = String(f || '').replace(/[^\d]/g, '').trim();
+                if (cleanF && cleanM && isWorkshopMachine(cleanM)) {
+                    const key = `${cleanM}_${cleanF}`;
+                    if (!pairKeys.has(key)) {
+                        pairKeys.add(key);
+                        parsedPairs.push({ machine: cleanM, mold: cleanF });
+                        machineNumbersSet.add(cleanM);
+                    }
+                }
+            }
+
+            // 1. Extract pairs from JSON objects if returned by Gemini
+            if (parsed && typeof parsed === 'object') {
+                const candidateArrays = [parsed.pairs, parsed.list, parsed.items, parsed.schedule, parsed.data, parsed.molds].filter(Array.isArray);
+                for (const arr of candidateArrays) {
+                    for (const item of arr) {
+                        if (item && typeof item === 'object') {
+                            const m = item.machine || item.stroj || item.m || item.station;
+                            const f = item.mold || item.mold_id || item.forma || item.id || item.cislo || item.f;
+                            if (m && f) addExtractedPair(m, f);
+                        }
+                    }
+                }
+            }
+
+            // 2. Regex scan raw text lines for [Machine] [Separator] [Mold] patterns (e.g. "11 - 867", "6 - 808", "29 - 649", "3 – 748", "20/971", "2 412")
+            if (textSource) {
+                const lineRegex = /(?:stroj|machine|st)?\s*(\d{1,2})\s*[-:—–―_~=/~\s]\s*(\d{2,6})\b/gi;
+                let match;
+                while ((match = lineRegex.exec(textSource)) !== null) {
+                    const m = match[1];
+                    const f = match[2];
+                    addExtractedPair(m, f);
+                }
+            }
+
             const primaryNum = parsed && parsed.primary_number ? String(parsed.primary_number).trim() : '';
             let rawNumList = [];
             if (parsed) {
@@ -8153,39 +8198,32 @@ Return strictly valid JSON only without markdown formatting with this schema:
                 if (parsed.cislo_formy) rawNumList.push(parsed.cislo_formy);
             }
 
-            // Extract numeric tokens from raw_text or textResponse as supplementary candidates (e.g. "050 C", "584", "00765", "050")
-            const textSource = (parsed?.raw_text ? parsed.raw_text + '\n' : '') + textResponse;
+            // Extract numeric tokens from raw_text or textResponse as supplementary candidates (excluding known machine numbers)
             const extraDigits = textSource.match(/\b\d{2,6}\b/g) || [];
             rawNumList.push(...extraDigits);
 
-            // Also check tokens that might have adjacent letters attached (e.g. "050C" -> "050", "C050" -> "050")
             const embeddedDigits = textSource.match(/\d{2,6}/g) || [];
             rawNumList.push(...embeddedDigits);
 
-            // Expand each entry: strip non-digits if string contains digits + letters
+            // Sanitize candidates
             const sanitizedNumList = [];
             for (const item of rawNumList) {
                 const str = String(item).trim();
-                if (/^\d{2,6}$/.test(str)) {
-                    sanitizedNumList.push(str);
-                } else {
+                let clean = str;
+                if (!/^\d{2,6}$/.test(str)) {
                     const match = str.match(/\d{2,6}/);
-                    if (match) sanitizedNumList.push(match[0]);
+                    clean = match ? match[0] : '';
+                }
+                // EXCLUDE any number identified as a machine number when pairs are detected
+                if (clean && /^\d{2,6}$/.test(clean)) {
+                    if (machineNumbersSet.size === 0 || !machineNumbersSet.has(clean)) {
+                        sanitizedNumList.push(clean);
+                    }
                 }
             }
 
-            const numList = Array.from(new Set(
-                sanitizedNumList.filter(n => /^\d{2,6}$/.test(n))
-            ));
-            const finalPrimary = (primaryNum && /^\d{2,6}$/.test(primaryNum.replace(/[^\d]/g, '')) ? primaryNum.replace(/[^\d]/g, '') : '') || (numList[0] || '');
-
-            let parsedPairs = [];
-            if (parsed && Array.isArray(parsed.pairs)) {
-                parsedPairs = parsed.pairs.map(p => ({
-                    machine: String(p.machine || p.stroj || '').replace(/[^\d]/g, '').trim(),
-                    mold: String(p.mold || p.mold_id || p.id || '').replace(/[^\d]/g, '').trim()
-                })).filter(p => p.mold);
-            }
+            const numList = Array.from(new Set(sanitizedNumList));
+            const finalPrimary = (primaryNum && /^\d{2,6}$/.test(primaryNum.replace(/[^\d]/g, '')) && !machineNumbersSet.has(primaryNum.replace(/[^\d]/g, '')) ? primaryNum.replace(/[^\d]/g, '') : '') || (numList[0] || '');
 
             return {
                 primaryNumber: finalPrimary,
