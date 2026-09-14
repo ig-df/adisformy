@@ -4123,8 +4123,8 @@
                 <div class="form-group" style="margin-top: 0.45rem;">
                     <label style="font-weight: 600; font-size: 0.85rem;">Firemní Gemini API Key:</label>
                     <div style="display: flex; gap: 0.4rem; position: relative;">
-                        <input type="password" id="geminiApiKeyInput" placeholder="AIzaSy..." autocomplete="off" style="flex: 1; font-family: monospace; font-size: 0.85rem; padding-right: 2.2rem;">
-                        <button type="button" class="top-icon-btn" onclick="toggleGeminiKeyVisibility()" title="Zobrazit/skrýt klíč" style="position: absolute; right: 6px; top: 50%; transform: translateY(-50%); background: none; border: none; padding: 4px; color: var(--text-muted);">
+                        <input type="password" id="geminiApiKeyInput" placeholder="AIzaSy..." autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" data-lpignore="true" data-form-type="other" style="flex: 1; font-family: monospace; font-size: 0.85rem; padding-right: 2.2rem; user-select: text; -webkit-user-select: text;">
+                        <button type="button" class="top-icon-btn" onclick="toggleGeminiKeyVisibility()" title="Zobrazit/skrýt klíč" style="position: absolute; right: 6px; top: 50%; transform: translateY(-50%); background: none; border: none; padding: 4px; color: var(--text-muted); cursor: pointer;">
                             <svg id="geminiEyeIcon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg>
                         </button>
                     </div>
@@ -7756,6 +7756,10 @@
                 input.value = key;
                 input.type = 'password';
             }
+            const eyeIcon = document.getElementById('geminiEyeIcon');
+            if (eyeIcon) {
+                eyeIcon.innerHTML = '<path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/>';
+            }
         } else {
             if (superSection) superSection.style.display = 'none';
             if (userSection) userSection.style.display = 'block';
@@ -7775,8 +7779,19 @@
 
     function toggleGeminiKeyVisibility() {
         const input = document.getElementById('geminiApiKeyInput');
+        const eyeIcon = document.getElementById('geminiEyeIcon');
         if (!input) return;
-        input.type = input.type === 'password' ? 'text' : 'password';
+        if (input.type === 'password') {
+            input.type = 'text';
+            if (eyeIcon) {
+                eyeIcon.innerHTML = '<path d="M9.88 9.88a3 3 0 1 0 4.24 4.24"/><path d="M10.73 5.08A10.43 10.43 0 0 1 12 5c7 0 10 7 10 7a13.16 13.16 0 0 1-1.67 2.68"/><path d="M6.61 6.61A13.526 13.526 0 0 0 2 12s3 7 10 7a9.74 9.74 0 0 0 5.39-1.61"/><line x1="2" x2="22" y1="2" y2="22"/>';
+            }
+        } else {
+            input.type = 'password';
+            if (eyeIcon) {
+                eyeIcon.innerHTML = '<path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/>';
+            }
+        }
         triggerHapticFeedback([10]);
     }
 
@@ -7971,8 +7986,8 @@ Carefully identify:
 CRITICAL INDUSTRIAL CONTEXT & HANDWRITTEN DISAMBIGUATION:
 - ROBUST TO ANY HANDWRITING SIZE & STYLE: Numbers may be written exceptionally large filling the frame with a wide marker, or written very small in pencil or fine pen in a corner or table box. Read digits reliably at any physical size, stroke width, cursive or print style, and orientation.
 - ALL WRITING INSTRUMENTS: Supports pencil, blue/black ballpoint pen, fountain ink, felt-tip marker, chalk, or grease pencil.
-- SEPARATE TEXT FROM NUMBER: If text or words appear right next to or above/below the number (e.g. "forma 0584", "kryt zadní 765", "VW držák 124"), strictly extract the pure numeric digits into 'primary_number' and 'numbers', and keep all letters/words in 'product_name' and 'raw_text'. Do NOT merge letters into the number.
-- LEADING ZEROS: Mold numbers are frequently written with leading zeros (such as "000584", "00584", "0584"). Preserve the exact digits in primary_number.
+- SEPARATE TEXT & ZONE LETTERS FROM NUMBER: If letters, words, or zone markers appear adjacent to the number (e.g. "050 C", "765 Z", "0584 H", "forma 0584", "kryt 765"), strictly extract the pure numeric digits into 'primary_number' (e.g. "050") and 'numbers', and keep all letters/words in 'product_name' and 'raw_text'. Never merge letters or zone letters into primary_number.
+- LEADING ZEROS: Mold numbers are frequently written with leading zeros (such as "000584", "00584", "0584", "050"). Preserve the exact digits in primary_number.
 - Industrial context: Injection mold parts (kryt, lišta, držák, výztuha, těsnění, panel, rám, záslepka, víčko, Steckdeckel, Gehäuse, Halter, Blende) and automotive brands (Škoda, VW, Audi, Hella, Bosch).
 - STRICT EUROPEAN HANDWRITTEN '7' VS '1' DISAMBIGUATION:
   * In Czech / European handwriting, digit '7' ALWAYS has a horizontal crossbar through the stem (7̵). This is strictly digit '7' (SEVEN). DO NOT misread it as 1, 4, 9, or 3!
@@ -9105,7 +9120,7 @@ Return strictly valid JSON only without markdown formatting with this schema:
         let found = activeMolds.find(m => String(m[0]).trim() === raw);
         if (found) return { mold: found, isAutoCorrected: false, orig: raw };
 
-        // 2. Leading zero normalization (e.g. 000584, 00584, 0584 -> 584)
+        // 2. Leading zero normalization (e.g. 000584, 00584, 0584 -> 584, 050 -> 50)
         if (/^\d+$/.test(raw)) {
             const strippedZero = raw.replace(/^0+/, '') || '0';
             if (strippedZero !== raw) {
@@ -9117,7 +9132,19 @@ Return strictly valid JSON only without markdown formatting with this schema:
             }
         }
 
-        // 3. Optical character substitution (common OCR confusions on handwriting)
+        // 3. Embedded numeric token extraction if string contains adjacent letters/suffixes (e.g. "050 C", "050-C", "F-050", "poz. 0584")
+        const embeddedNumMatch = raw.match(/\b\d{2,6}\b/) || raw.match(/\d{2,6}/);
+        if (embeddedNumMatch) {
+            const extractedNum = embeddedNumMatch[0];
+            const strippedExtracted = extractedNum.replace(/^0+/, '') || '0';
+            found = activeMolds.find(m => {
+                const mId = String(m[0]).trim();
+                return mId === extractedNum || mId === strippedExtracted || (/^\d+$/.test(mId) && (mId.replace(/^0+/, '') || '0') === strippedExtracted);
+            });
+            if (found) return { mold: found, isAutoCorrected: true, orig: raw, fixed: String(found[0]) };
+        }
+
+        // 4. Optical character substitution (common OCR confusions on handwriting)
         // O/D -> 0, S -> 5, I/l/| -> 1, B -> 8, Z -> 2
         let fixed = raw
             .replace(/[oOdD]/g, '0')
@@ -9129,7 +9156,7 @@ Return strictly valid JSON only without markdown formatting with this schema:
         found = activeMolds.find(m => String(m[0]).trim() === fixed);
         if (found) return { mold: found, isAutoCorrected: true, orig: raw, fixed };
 
-        // Leading zero normalization after OCR character substitution (e.g. "O584" -> "0584" -> "584")
+        // Leading zero normalization after OCR character substitution (e.g. "O584" -> "0584" -> "584", "O5O" -> "050" -> "50")
         if (/^\d+$/.test(fixed)) {
             const strippedFixed = fixed.replace(/^0+/, '') || '0';
             if (strippedFixed !== fixed) {
@@ -9141,7 +9168,19 @@ Return strictly valid JSON only without markdown formatting with this schema:
             }
         }
 
-        // 4. Levenshtein edit distance = 1 for numeric codes of length >= 3
+        // Embedded numbers in fixed string
+        const fixedEmbedded = fixed.match(/\b\d{2,6}\b/) || fixed.match(/\d{2,6}/);
+        if (fixedEmbedded) {
+            const extFixed = fixedEmbedded[0];
+            const strippedExtFixed = extFixed.replace(/^0+/, '') || '0';
+            found = activeMolds.find(m => {
+                const mId = String(m[0]).trim();
+                return mId === extFixed || mId === strippedExtFixed || (/^\d+$/.test(mId) && (mId.replace(/^0+/, '') || '0') === strippedExtFixed);
+            });
+            if (found) return { mold: found, isAutoCorrected: true, orig: raw, fixed: String(found[0]) };
+        }
+
+        // 5. Levenshtein edit distance = 1 for numeric codes of length >= 3
         if (/^\d{3,6}$/.test(raw) || /^\d{3,6}$/.test(fixed)) {
             const checkNum = /^\d+$/.test(raw) ? raw : fixed;
             const singleDistanceMatches = activeMolds.filter(m => {
