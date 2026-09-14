@@ -8127,12 +8127,23 @@ Return ONLY valid JSON without markdown:
             const data = await res.json();
             const textResponse = data?.candidates?.[0]?.content?.parts?.[0]?.text || '';
             
-            const cleanJsonStr = textResponse.replace(/^```(?:json)?\s*/i, '').replace(/\s*```$/i, '').trim();
+            let cleanJsonStr = textResponse.trim();
+            const codeBlockMatch = textResponse.match(/```(?:json)?\s*([\s\S]*?)\s*```/i);
+            if (codeBlockMatch && codeBlockMatch[1]) {
+                cleanJsonStr = codeBlockMatch[1].trim();
+            } else {
+                const jsonObjectMatch = textResponse.match(/\{[\s\S]*\}/);
+                if (jsonObjectMatch) {
+                    cleanJsonStr = jsonObjectMatch[0].trim();
+                }
+            }
+            cleanJsonStr = cleanJsonStr.replace(/,\s*([\}\]])/g, '$1');
+
             let parsed = null;
             try {
                 parsed = JSON.parse(cleanJsonStr);
             } catch (pErr) {
-                parsed = null;
+                console.warn("Gemini Vision JSON parse failed:", pErr, cleanJsonStr);
             }
 
             let extractedItems = [];
@@ -8145,6 +8156,12 @@ Return ONLY valid JSON without markdown:
                             extractedItems.push({ machine: machStr, mold: mStr });
                         }
                     }
+                }
+            } else {
+                const itemRegex = /"machine"\s*:\s*"?(\d{1,2})"?\s*,\s*"mold"\s*:\s*"?(\d{1,6})"?/gi;
+                let match;
+                while ((match = itemRegex.exec(textResponse)) !== null) {
+                    extractedItems.push({ machine: match[1], mold: match[2] });
                 }
             }
 
@@ -8161,31 +8178,30 @@ Return ONLY valid JSON without markdown:
                 }
             }
 
-            // Extract numeric tokens from raw_text or textResponse as supplementary candidates (e.g. "050 C", "584", "00765", "050")
+            // Extract numeric tokens from raw_text or textResponse as supplementary candidates
             const textSource = (parsed?.raw_text ? parsed.raw_text + '\n' : '') + textResponse;
-            const extraDigits = textSource.match(/\b\d{2,6}\b/g) || [];
+            const extraDigits = textSource.match(/\b\d{1,6}\b/g) || [];
             rawNumList.push(...extraDigits);
 
-            // Also check tokens that might have adjacent letters attached (e.g. "050C" -> "050", "C050" -> "050")
-            const embeddedDigits = textSource.match(/\d{2,6}/g) || [];
+            const embeddedDigits = textSource.match(/\d{1,6}/g) || [];
             rawNumList.push(...embeddedDigits);
 
-            // Expand each entry: strip non-digits if string contains digits + letters
+            // Expand each entry: allow 1-6 digit mold numbers
             const sanitizedNumList = [];
             for (const item of rawNumList) {
                 const str = String(item).trim();
-                if (/^\d{2,6}$/.test(str)) {
+                if (/^\d{1,6}$/.test(str)) {
                     sanitizedNumList.push(str);
                 } else {
-                    const match = str.match(/\d{2,6}/);
+                    const match = str.match(/\d{1,6}/);
                     if (match) sanitizedNumList.push(match[0]);
                 }
             }
 
             const numList = Array.from(new Set(
-                sanitizedNumList.filter(n => /^\d{2,6}$/.test(n))
+                sanitizedNumList.filter(n => /^\d{1,6}$/.test(n))
             ));
-            const finalPrimary = (primaryNum && /^\d{2,6}$/.test(primaryNum.replace(/[^\d]/g, '')) ? primaryNum.replace(/[^\d]/g, '') : '') || (numList[0] || '');
+            const finalPrimary = (primaryNum && /^\d{1,6}$/.test(primaryNum.replace(/[^\d]/g, '')) ? primaryNum.replace(/[^\d]/g, '') : '') || (numList[0] || '');
 
             return {
                 primaryNumber: finalPrimary,
@@ -9338,15 +9354,21 @@ Return ONLY valid JSON without markdown:
 
         const foundMoldsMap = new Map();
         const machineMap = new Map();
+        const explicitMachineNumbers = new Set();
+        const explicitMoldNumbers = new Set();
 
         // 1. Build machine map from extracted items
         if (geminiResult && Array.isArray(geminiResult.items)) {
             for (const item of geminiResult.items) {
                 const mStr = String(item.mold || '').trim();
                 const machStr = String(item.machine || '').trim();
+                if (mStr) {
+                    explicitMoldNumbers.add(mStr);
+                }
                 if (machStr) {
                     const parsedM = parseInt(machStr, 10);
-                    if (!isNaN(parsedM) && parsedM >= 1 && parsedM <= 99) {
+                    if (!isNaN(parsedM) && (WORKSHOP_MACHINES.includes(parsedM) || (parsedM >= 1 && parsedM <= 99))) {
+                        explicitMachineNumbers.add(machStr);
                         if (mStr) machineMap.set(mStr, String(parsedM));
                     }
                 }
@@ -9358,11 +9380,13 @@ Return ONLY valid JSON without markdown:
         if (rawTextStr) {
             const lines = rawTextStr.split(/\r?\n/);
             for (const line of lines) {
-                const lineMatch = line.match(/\b(\d{1,2})\b\s*[-–:/,.\s]\s*\b(\d{2,6})\b/) || line.match(/\((\d{1,2})\)\s*[-–:]?\s*\b(\d{2,6})\b/);
+                const lineMatch = line.match(/\b(\d{1,2})\b\s*[-–:/,.\s]\s*\b(\d{1,6})\b/) || line.match(/\((\d{1,2})\)\s*[-–:]?\s*\b(\d{1,6})\b/);
                 if (lineMatch) {
                     const machNum = parseInt(lineMatch[1], 10);
                     const moldNumStr = lineMatch[2];
-                    if (!isNaN(machNum) && machNum >= 1 && machNum <= 99) {
+                    if (!isNaN(machNum) && (WORKSHOP_MACHINES.includes(machNum) || (machNum >= 1 && machNum <= 99))) {
+                        explicitMachineNumbers.add(String(machNum));
+                        explicitMoldNumbers.add(moldNumStr);
                         if (!machineMap.has(moldNumStr)) {
                             machineMap.set(moldNumStr, String(machNum));
                         }
@@ -9376,6 +9400,11 @@ Return ONLY valid JSON without markdown:
             if (!numStr) return;
             const cleanStr = String(numStr).trim();
             if (!cleanStr) return;
+
+            // Do not treat a number as a mold ID if it was explicitly identified as a machine number and not listed as a mold
+            if (explicitMachineNumbers.has(cleanStr) && !explicitMoldNumbers.has(cleanStr)) {
+                return;
+            }
 
             const match = findFuzzyOrDisambiguatedMold(cleanStr, activeMolds);
             if (match && match.mold) {
@@ -9402,7 +9431,7 @@ Return ONLY valid JSON without markdown:
                 let validM = '';
                 if (machStr) {
                     const pM = parseInt(machStr, 10);
-                    if (!isNaN(pM) && pM >= 1 && pM <= 99) validM = String(pM);
+                    if (!isNaN(pM) && (WORKSHOP_MACHINES.includes(pM) || (pM >= 1 && pM <= 99))) validM = String(pM);
                 }
                 tryAddMoldMatch(moldStr, validM);
             }
@@ -9420,9 +9449,9 @@ Return ONLY valid JSON without markdown:
             tryAddMoldMatch(geminiResult.primaryNumber);
         }
 
-        // 6. Scan rawText for all 2-6 digit tokens to ensure no molds on paper are missed
+        // 6. Scan rawText for numeric tokens to ensure no molds on paper are missed
         if (rawTextStr) {
-            const digitTokens = rawTextStr.match(/\b\d{2,6}\b/g);
+            const digitTokens = rawTextStr.match(/\b\d{1,6}\b/g);
             if (digitTokens) {
                 for (const token of digitTokens) {
                     tryAddMoldMatch(token);
