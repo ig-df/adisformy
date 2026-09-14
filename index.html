@@ -66,10 +66,7 @@
 
         button:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-visible, [tabindex]:focus-visible {
             outline: none !important;
-            box-shadow: 0 6px 16px -2px rgba(59, 130, 246, 0.6) !important;
-            border-color: #3b82f6 !important;
-            transform: translateY(-1px);
-            transition: all 0.2s ease;
+            box-shadow: none !important;
         }
 
         * {
@@ -2808,6 +2805,28 @@
             border-color: #0f172a;
             box-shadow: 0 0 0 2px rgba(15, 23, 42, 0.08);
         }
+        .shift-plan-machine-input {
+            width: 105px;
+            padding: 0.55rem 0.65rem;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            font-size: 0.9rem;
+            font-weight: 400;
+            background: var(--card-bg);
+            color: var(--text-main);
+            outline: none;
+            transition: border-color 0.2s ease, box-shadow 0.2s ease;
+            flex-shrink: 0;
+        }
+        .shift-plan-machine-input::-webkit-calendar-picker-indicator,
+        .shift-plan-machine-input::-webkit-clear-button {
+            display: none !important;
+            -webkit-appearance: none;
+        }
+        .shift-plan-machine-input:focus {
+            border-color: #0f172a;
+            box-shadow: 0 0 0 2px rgba(15, 23, 42, 0.08);
+        }
         .shift-plan-scan-btn {
             display: inline-flex;
             align-items: center;
@@ -2855,12 +2874,16 @@
             display: flex;
             flex-direction: column;
             gap: 0.45rem;
-            max-height: 48vh;
+            height: 360px;
+            max-height: 50vh;
             overflow-y: auto;
             overflow-x: hidden;
             padding-right: 0.25rem;
             margin-bottom: 0.15rem;
             -webkit-overflow-scrolling: touch;
+        }
+        .shift-plan-list .empty-state-card {
+            margin: auto 0;
         }
         .shift-plan-item {
             display: flex;
@@ -2872,12 +2895,10 @@
             border-radius: 8px;
             transition: background-color 0.2s ease, opacity 0.2s ease, border-color 0.2s ease;
             gap: 0.75rem;
-            cursor: pointer;
             user-select: none;
         }
         .shift-plan-item:hover {
             border-color: #cbd5e1;
-            background: var(--row-hover);
         }
         .shift-plan-item.is-checked {
             opacity: 0.55;
@@ -2896,8 +2917,8 @@
             min-width: 0;
         }
         .shift-plan-checkbox {
-            width: 22px;
-            height: 22px;
+            width: 26px;
+            height: 26px;
             border-radius: 6px;
             border: 2px solid var(--border-color);
             display: flex;
@@ -2905,8 +2926,17 @@
             justify-content: center;
             flex-shrink: 0;
             background: var(--card-bg);
-            transition: all 0.18s cubic-bezier(0.34, 1.56, 0.64, 1);
+            transition: all 0.15s cubic-bezier(0.34, 1.56, 0.64, 1);
             color: transparent;
+            cursor: pointer;
+            -webkit-tap-highlight-color: transparent;
+        }
+        .shift-plan-checkbox:hover {
+            border-color: #0f172a;
+            transform: scale(1.06);
+        }
+        .shift-plan-checkbox:active {
+            transform: scale(0.92);
         }
         .shift-plan-item.is-checked .shift-plan-checkbox {
             background: #0f172a;
@@ -2914,9 +2944,10 @@
             color: #ffffff;
         }
         .shift-plan-checkbox svg {
-            width: 14px;
-            height: 14px;
+            width: 15px;
+            height: 15px;
             stroke-width: 2.5;
+            pointer-events: none;
         }
         .shift-plan-info {
             display: flex;
@@ -2965,16 +2996,29 @@
             border: none;
             color: var(--text-muted);
             cursor: pointer;
-            padding: 0.35rem;
+            width: 34px;
+            height: 34px;
+            padding: 0;
             border-radius: 6px;
             display: flex;
             align-items: center;
             justify-content: center;
-            transition: color 0.15s ease, background-color 0.15s ease;
+            flex-shrink: 0;
+            position: relative;
+            z-index: 2;
+            transition: color 0.15s ease, background-color 0.15s ease, transform 0.1s ease;
         }
         .shift-plan-del-btn:hover {
             color: #ef4444;
             background-color: rgba(239, 68, 68, 0.08);
+        }
+        .shift-plan-del-btn:active {
+            transform: scale(0.9);
+            color: #dc2626;
+            background-color: rgba(239, 68, 68, 0.16);
+        }
+        .shift-plan-del-btn svg {
+            pointer-events: none;
         }
 
         /* Cabinet Seřizovače Minimal Chic Styles */
@@ -3825,6 +3869,7 @@
         <div class="modal-body" style="padding-top: 0.75rem;">
             <div class="shift-plan-container">
                 <div class="shift-plan-add-bar">
+                    <input type="text" id="shiftPlanAddMachineInput" class="shift-plan-machine-input" placeholder="Stroj" autocomplete="off" onkeydown="if(event.key==='Enter') document.getElementById('shiftPlanAddInput').focus()">
                     <input type="text" id="shiftPlanAddInput" class="shift-plan-add-input" placeholder="Číslo formy (např. 765)..." autocomplete="off" onkeydown="if(event.key==='Enter') submitShiftPlanManualAdd()">
                     <button type="button" class="shift-plan-scan-btn" onclick="startScannerFromShiftPlan()" title="Skenovat denní plán z kamery" aria-label="Skenovat denní plán z kamery">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -7925,6 +7970,8 @@
         }
     }
 
+    const WORKSHOP_MACHINES = [1, 2, 3, 4, 5, 6, 7, 8, 10, 11, 12, 18, 19, 20, 23, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38];
+
     async function recognizeWithGeminiVision(canvas, mode = 'tag') {
         const apiKey = getGeminiApiKey();
         if (!apiKey || !canvas) return null;
@@ -7958,8 +8005,15 @@
 
             const promptText = (mode === 'plan')
                 ? `You are an expert industrial vision and OCR system for an injection mold factory warehouse.
-Look at this photo containing a shift plan sheet, paper schedule, or production table with multiple injection mold numbers or product names.
-Extract ALL mold numbers (typically 2 to 6 digits, e.g. 765, 976, 808, 668, 0584, 000584, 050, 50, 10425) and visible product/part names from top to bottom.
+Look at this photo containing a shift plan sheet, paper schedule, handwritten list, or production table with injection mold numbers and machine assignments.
+
+CRITICAL HANDWRITTEN PATTERN & MACHINE ASSIGNMENTS:
+- Mechanics write entries line by line in the format:
+  [MACHINE NUMBER] - [MOLD NUMBER] (e.g. "11 - 867", "6 - 808", "29 - 649", "3 - 748", "20 - 971", "2 - 412") or circled machine numbers e.g. "(11) 867" or "11: 867".
+- MACHINE NUMBER (Stroj): The number on the LEFT of the hyphen/dash/colon or inside a drawn circle. Valid workshop machines: 1, 2, 3, 4, 5, 6, 7, 8, 10, 11, 12, 18, 19, 20, 23, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38.
+- MOLD NUMBER (Forma): The number on the RIGHT of the hyphen/dash/colon or after the machine number (typically 2 to 6 digits, e.g. 867, 808, 649, 748, 971, 412).
+- Extract ALL pairs line by line into 'items': [{"machine": "11", "mold": "867"}, {"machine": "6", "mold": "808"}].
+- Also collect ALL mold numbers into 'numbers': ["867", "808", "649", "748", "971", "412"].
 
 CRITICAL INDUSTRIAL CONTEXT & HANDWRITTEN DISAMBIGUATION:
 - ROBUST TO ANY HANDWRITING SIZE & STYLE: Numbers may be written very large across the sheet with a thick permanent marker, or very small and compact in pencil or fine ballpoint pen inside tight table cells. Identify digits of all scales, stroke thicknesses, and slants.
@@ -7975,7 +8029,7 @@ CRITICAL INDUSTRIAL CONTEXT & HANDWRITTEN DISAMBIGUATION:
 - Transcribe all text and numbers accurately without duplicates.
 
 Return strictly valid JSON only without markdown formatting with this schema:
-{"numbers":["765","584","976","050"],"raw_text":"..."}`
+{"items":[{"machine":"11","mold":"867"},{"machine":"6","mold":"808"}],"numbers":["867","808"],"raw_text":"..."}`
                 : `You are an expert industrial OCR and vision system for injection mold factory warehouse tracking.
 Look at this photo of an injection mold tag, physical metal mold plate, paper sticker, product sample, or handwritten note.
 Carefully identify:
@@ -8083,6 +8137,19 @@ Return strictly valid JSON only without markdown formatting with this schema:
                 parsed = null;
             }
 
+            let extractedItems = [];
+            if (parsed && Array.isArray(parsed.items)) {
+                for (const it of parsed.items) {
+                    if (it && typeof it === 'object') {
+                        const mStr = String(it.mold || it.mold_number || it.forma || '').trim();
+                        const machStr = String(it.machine || it.stroj || '').trim();
+                        if (mStr) {
+                            extractedItems.push({ machine: machStr, mold: mStr });
+                        }
+                    }
+                }
+            }
+
             const primaryNum = parsed && parsed.primary_number ? String(parsed.primary_number).trim() : '';
             let rawNumList = [];
             if (parsed) {
@@ -8091,6 +8158,9 @@ Return strictly valid JSON only without markdown formatting with this schema:
                 if (Array.isArray(parsed.mold_numbers)) rawNumList.push(...parsed.mold_numbers);
                 if (parsed.primary_number) rawNumList.push(parsed.primary_number);
                 if (parsed.cislo_formy) rawNumList.push(parsed.cislo_formy);
+                if (extractedItems.length > 0) {
+                    extractedItems.forEach(it => { if (it.mold) rawNumList.push(it.mold); });
+                }
             }
 
             // Extract numeric tokens from raw_text or textResponse as supplementary candidates (e.g. "050 C", "584", "00765", "050")
@@ -8122,6 +8192,7 @@ Return strictly valid JSON only without markdown formatting with this schema:
             return {
                 primaryNumber: finalPrimary,
                 numbers: numList,
+                items: extractedItems,
                 productName: parsed?.product_name ? String(parsed.product_name).trim() : '',
                 rawText: parsed?.raw_text || textResponse
             };
@@ -9269,26 +9340,111 @@ Return strictly valid JSON only without markdown formatting with this schema:
         if (activeMolds.length === 0) return [];
 
         const foundMoldsMap = new Map();
+        const machineMap = new Map();
 
-        // 1. Direct / Fuzzy match from geminiResult.numbers array
-        if (geminiResult && Array.isArray(geminiResult.numbers)) {
-            for (const numStr of geminiResult.numbers) {
-                const match = findFuzzyOrDisambiguatedMold(numStr, activeMolds);
-                if (match && match.mold && !foundMoldsMap.has(String(match.mold[0]))) {
-                    foundMoldsMap.set(String(match.mold[0]), match.mold);
+        // Build machineMap from parsed items and rawText regex patterns
+        if (geminiResult && Array.isArray(geminiResult.items)) {
+            for (const item of geminiResult.items) {
+                const mStr = String(item.mold || '').trim();
+                const machStr = String(item.machine || '').trim();
+                if (mStr && machStr) {
+                    const parsedM = parseInt(machStr, 10);
+                    if (!isNaN(parsedM) && WORKSHOP_MACHINES.includes(parsedM)) {
+                        machineMap.set(mStr, String(parsedM));
+                    }
                 }
             }
         }
 
-        // 2. Direct / Fuzzy match from geminiResult.primaryNumber if present
-        if (geminiResult && geminiResult.primaryNumber) {
-            const match = findFuzzyOrDisambiguatedMold(geminiResult.primaryNumber, activeMolds);
-            if (match && match.mold && !foundMoldsMap.has(String(match.mold[0]))) {
-                foundMoldsMap.set(String(match.mold[0]), match.mold);
+        const rawTextStr = String(geminiResult?.rawText || '');
+        if (rawTextStr) {
+            const lines = rawTextStr.split(/\r?\n/);
+            for (const line of lines) {
+                const lineMatch = line.match(/\b(\d{1,2})\b\s*[-–:]\s*\b(\d{2,6})\b/) || line.match(/\((\d{1,2})\)\s*[-–:]?\s*\b(\d{2,6})\b/);
+                if (lineMatch) {
+                    const machNum = parseInt(lineMatch[1], 10);
+                    const moldNumStr = lineMatch[2];
+                    if (!isNaN(machNum) && WORKSHOP_MACHINES.includes(machNum)) {
+                        if (!machineMap.has(moldNumStr)) {
+                            machineMap.set(moldNumStr, String(machNum));
+                        }
+                    }
+                }
             }
         }
 
-        // 3. Optional secondary check for product names (only if explicit product name exists or no molds matched yet)
+        // 1. Direct match from geminiResult.items first
+        if (geminiResult && Array.isArray(geminiResult.items)) {
+            for (const item of geminiResult.items) {
+                const moldStr = String(item.mold || '').trim();
+                const machStr = String(item.machine || '').trim();
+                if (moldStr) {
+                    const match = findFuzzyOrDisambiguatedMold(moldStr, activeMolds);
+                    if (match && match.mold) {
+                        const moldId = String(match.mold[0]).trim();
+                        let validMachine = '';
+                        if (machStr) {
+                            const parsedM = parseInt(machStr, 10);
+                            if (!isNaN(parsedM) && WORKSHOP_MACHINES.includes(parsedM)) {
+                                validMachine = String(parsedM);
+                            }
+                        }
+                        if (!foundMoldsMap.has(moldId)) {
+                            const moldCopy = [...match.mold];
+                            moldCopy.detectedMachine = validMachine;
+                            foundMoldsMap.set(moldId, moldCopy);
+                        } else {
+                            const existing = foundMoldsMap.get(moldId);
+                            if (validMachine && !existing.detectedMachine) {
+                                existing.detectedMachine = validMachine;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        // 2. Direct / Fuzzy match from geminiResult.numbers array
+        if (geminiResult && Array.isArray(geminiResult.numbers)) {
+            for (const numStr of geminiResult.numbers) {
+                const match = findFuzzyOrDisambiguatedMold(numStr, activeMolds);
+                if (match && match.mold) {
+                    const moldId = String(match.mold[0]).trim();
+                    const assignedMachine = machineMap.get(numStr) || machineMap.get(moldId) || '';
+                    if (!foundMoldsMap.has(moldId)) {
+                        const moldCopy = [...match.mold];
+                        moldCopy.detectedMachine = assignedMachine;
+                        foundMoldsMap.set(moldId, moldCopy);
+                    } else {
+                        const existing = foundMoldsMap.get(moldId);
+                        if (assignedMachine && !existing.detectedMachine) {
+                            existing.detectedMachine = assignedMachine;
+                        }
+                    }
+                }
+            }
+        }
+
+        // 3. Direct / Fuzzy match from geminiResult.primaryNumber if present
+        if (geminiResult && geminiResult.primaryNumber) {
+            const match = findFuzzyOrDisambiguatedMold(geminiResult.primaryNumber, activeMolds);
+            if (match && match.mold) {
+                const moldId = String(match.mold[0]).trim();
+                const assignedMachine = machineMap.get(geminiResult.primaryNumber) || machineMap.get(moldId) || '';
+                if (!foundMoldsMap.has(moldId)) {
+                    const moldCopy = [...match.mold];
+                    moldCopy.detectedMachine = assignedMachine;
+                    foundMoldsMap.set(moldId, moldCopy);
+                } else {
+                    const existing = foundMoldsMap.get(moldId);
+                    if (assignedMachine && !existing.detectedMachine) {
+                        existing.detectedMachine = assignedMachine;
+                    }
+                }
+            }
+        }
+
+        // 4. Optional secondary check for product names
         if (foundMoldsMap.size === 0) {
             const textParts = [];
             if (geminiResult.productName) textParts.push(geminiResult.productName);
@@ -9298,18 +9454,29 @@ Return strictly valid JSON only without markdown formatting with this schema:
             const secondaryMatches = matchScannedPlanBatch(combinedText, barcodeValues, cropCanvas);
             if (Array.isArray(secondaryMatches)) {
                 secondaryMatches.forEach(mold => {
-                    if (mold && !foundMoldsMap.has(String(mold[0]))) {
-                        foundMoldsMap.set(String(mold[0]), mold);
+                    if (mold) {
+                        const moldId = String(mold[0]).trim();
+                        if (!foundMoldsMap.has(moldId)) {
+                            const moldCopy = [...mold];
+                            const assignedMachine = machineMap.get(moldId) || '';
+                            moldCopy.detectedMachine = assignedMachine;
+                            foundMoldsMap.set(moldId, moldCopy);
+                        }
                     }
                 });
             }
         } else if (geminiResult.productName) {
-            // If mold numbers were already recognized with high confidence, only check explicit product name without mutating numbers
             const prodMatches = matchScannedPlanBatch(geminiResult.productName, barcodeValues, cropCanvas);
             if (Array.isArray(prodMatches)) {
                 prodMatches.forEach(mold => {
-                    if (mold && !foundMoldsMap.has(String(mold[0]))) {
-                        foundMoldsMap.set(String(mold[0]), mold);
+                    if (mold) {
+                        const moldId = String(mold[0]).trim();
+                        if (!foundMoldsMap.has(moldId)) {
+                            const moldCopy = [...mold];
+                            const assignedMachine = machineMap.get(moldId) || '';
+                            moldCopy.detectedMachine = assignedMachine;
+                            foundMoldsMap.set(moldId, moldCopy);
+                        }
                     }
                 });
             }
@@ -9942,14 +10109,16 @@ Return strictly valid JSON only without markdown formatting with this schema:
             const isSelected = scannerSelectedBatchMoldIds.has(idStr);
             const badgeClass = getPositionBadgeClass(pos);
             const displayPos = formatPositionDisplay(pos);
+            const detectedMachine = m.detectedMachine ? String(m.detectedMachine) : '';
 
             return `
                 <div class="scanner-batch-item ${isSelected ? 'selected' : ''}" onclick="toggleBatchMoldSelection('${escapeHtml(idStr)}')">
                     <div style="display: flex; align-items: center; gap: 0.65rem;">
                         <input type="checkbox" ${isSelected ? 'checked' : ''} style="width: 18px; height: 18px; accent-color: #16a34a; cursor: pointer;" onclick="event.stopPropagation(); toggleBatchMoldSelection('${escapeHtml(idStr)}')">
                         <div>
-                            <div style="display: flex; align-items: center; gap: 0.4rem;">
+                            <div style="display: flex; align-items: center; gap: 0.4rem; flex-wrap: wrap;">
                                 <span style="font-weight: 800; font-size: 0.96rem; color: #f8fafc; font-family: monospace;">#${escapeHtml(idStr)}</span>
+                                ${detectedMachine ? `<span style="background: rgba(37,99,235,0.22); border: 1px solid rgba(59,130,246,0.45); color: #60a5fa; font-size: 0.72rem; font-weight: 700; padding: 1px 7px; border-radius: 4px; display: inline-flex; align-items: center; gap: 3px;">⚙️ Stroj ${escapeHtml(detectedMachine)}</span>` : ''}
                                 <span class="${badgeClass}" style="margin: 0; font-size: 0.74rem;">${escapeHtml(displayPos)}</span>
                             </div>
                             <div style="font-size: 0.78rem; color: #94a3b8; margin-top: 2px;">
@@ -9989,14 +10158,18 @@ Return strictly valid JSON only without markdown formatting with this schema:
             const cleanId = String(mId).trim();
             const exists = currentShiftPlan.some(item => String(item.num || item.id).trim() === cleanId);
             if (!exists) {
-                const moldData = rawDatabase.find(m => String(m[0]).trim() === cleanId);
+                const batchMold = scannerBatchMolds.find(m => String(m[0]).trim() === cleanId);
+                const moldData = batchMold || rawDatabase.find(m => String(m[0]).trim() === cleanId);
                 if (moldData) {
+                    const machineVal = (batchMold && batchMold.detectedMachine) ? String(batchMold.detectedMachine) : (moldData.detectedMachine ? String(moldData.detectedMachine) : '');
                     currentShiftPlan.push({
                         num: cleanId,
                         id: cleanId,
                         pos: moldData[1] || 'Mezisklad',
                         customer: moldData[2] || '',
                         product: moldData[5] || '',
+                        machine: machineVal,
+                        stroj: machineVal,
                         checked: false,
                         addedAt: Date.now()
                     });
@@ -10669,6 +10842,30 @@ Return strictly valid JSON only without markdown formatting with this schema:
     // ==========================================
     // SEZNAM FOREM NA SMĚNU (DENNÍ PLÁN SEŘIZOVAČE)
     // ==========================================
+
+    async function logUserAction(moldId, oldPos, newPos) {
+        if (!currentUser) return;
+        try {
+            await fetch(`${API_URL}/rest/v1/mold_logs`, {
+                method: 'POST',
+                headers: { 
+                    'apikey': API_KEY, 
+                    'Authorization': `Bearer ${API_KEY}`, 
+                    'Content-Type': 'application/json',
+                    'Prefer': 'return=minimal'
+                },
+                body: JSON.stringify({ 
+                    mold_id: String(moldId || '').trim(), 
+                    old_position: String(oldPos || '').trim(), 
+                    new_position: String(newPos || '').trim(), 
+                    user_name: String(currentUser || '').trim() 
+                })
+            });
+        } catch (err) {
+            console.warn('logUserAction failed:', err);
+        }
+    }
+
     function getShiftPlanStorageKey() {
         return 'adis_shift_plan_' + (currentUser ? encodeURIComponent(currentUser.trim()) : 'default');
     }
@@ -10688,6 +10885,8 @@ Return strictly valid JSON only without markdown formatting with this schema:
                             pos: mold ? (mold[1] || item.pos || 'Mezisklad') : (item.pos || 'Mezisklad'),
                             customer: mold ? (mold[2] || item.customer || '') : (item.customer || ''),
                             product: mold ? (mold[5] || item.product || '') : (item.product || ''),
+                            machine: String(item.machine || item.stroj || '').trim(),
+                            stroj: String(item.machine || item.stroj || '').trim(),
                             checked: Boolean(item.checked),
                             addedAt: item.addedAt || Date.now()
                         };
@@ -10785,6 +10984,7 @@ Return strictly valid JSON only without markdown formatting with this schema:
             let pos = item.pos || 'Mezisklad';
             let cust = item.customer || '';
             let prodName = item.product || '';
+            let machine = String(item.machine || '').trim();
 
             if (mold) {
                 pos = mold[1] || pos;
@@ -10808,54 +11008,52 @@ Return strictly valid JSON only without markdown formatting with this schema:
             ` : '';
 
             return `
-                <div class="shift-plan-item ${isChecked ? 'is-checked' : ''}" onclick="toggleShiftPlanItem('${escapeHtml(cleanNum)}')">
-                    <div class="shift-plan-left">
-                        <div class="shift-plan-checkbox" title="${isChecked ? 'Odebráno ze stojanu' : 'Označit jako odebrané'}">
+                <div class="shift-plan-item ${isChecked ? 'is-checked' : ''}" onclick="toggleShiftPlanItem('${escapeHtml(cleanNum)}', event)" style="cursor: pointer;">
+                    <div class="shift-plan-left" style="pointer-events: none;">
+                        <div class="shift-plan-checkbox" title="${isChecked ? 'Odebráno ze stojanu' : 'Označit jako odebrané'}" role="checkbox" aria-checked="${isChecked}">
                             ${checkIcon}
                         </div>
                         <div class="shift-plan-info">
                             <div class="shift-plan-mold-num">
-                                <span style="cursor: pointer;" onclick="event.stopPropagation(); inspectMoldFromPlan('${escapeHtml(cleanNum)}')" title="Zobrazit v databázi">Forma #${escapeHtml(cleanNum)}</span>
+                                <span>Forma #${escapeHtml(cleanNum)}</span>
                                 ${cust ? `<span class="tag-customer" style="${custStyle}; font-size: 0.68rem; padding: 0.1rem 0.38rem;">${escapeHtml(cust)}</span>` : ''}
+                                ${machine ? `<span class="tag-machine" style="background: #0f172a; color: #ffffff; font-weight: 700; font-size: 0.68rem; padding: 0.12rem 0.45rem; border-radius: 4px; font-family: monospace; letter-spacing: 0.02em;" title="Stroj ${escapeHtml(machine)}">STROJ ${escapeHtml(machine)}</span>` : ''}
                             </div>
                             <div class="shift-plan-product" title="${escapeHtml(prodName)}">${escapeHtml(prodName)}</div>
                         </div>
                     </div>
                     <div class="shift-plan-right">
-                        <span class="${badgeClass}" style="font-size: 0.78rem;" title="Pozice: ${escapeHtml(pos)}">${escapeHtml(displayPos)}</span>
-                        <button class="shift-plan-del-btn" onclick="removeShiftPlanItem('${escapeHtml(cleanNum)}', event)" title="Odebrat ze seznamu">
-                            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                <line x1="18" y1="6" x2="6" y2="18"></line>
-                                <line x1="6" y1="6" x2="18" y2="18"></line>
-                            </svg>
-                        </button>
+                        <span class="${badgeClass}" style="font-size: 0.78rem; pointer-events: none;" title="Pozice: ${escapeHtml(pos)}">${escapeHtml(displayPos)}</span>
                     </div>
                 </div>
             `;
         }).join('');
     }
 
-    function toggleShiftPlanItem(moldNum) {
+    function toggleShiftPlanItem(moldNum, e) {
+        if (e && typeof e.stopPropagation === 'function') {
+            e.stopPropagation();
+        }
         const cleanNum = String(moldNum || '').trim();
+        if (!cleanNum) return;
+
         const item = currentShiftPlan.find(p => String(p.num || p.id).trim() === cleanNum);
         if (item) {
             item.checked = !item.checked;
             saveShiftPlan();
             renderShiftPlanList();
             triggerHapticFeedback(item.checked ? [12, 45] : [16]);
-            if (item.checked) {
-                logUserAction(cleanNum, 'Plán na směnu', 'Nasazeno do výroby').then(() => {
-                    if (document.getElementById('cabinetDaysChipsBar')) loadAndRenderUserCabinetStats();
-                });
-            } else {
-                logUserAction(cleanNum, 'Plán na směnu', 'Odebráno z výroby').then(() => {
-                    if (document.getElementById('cabinetDaysChipsBar')) loadAndRenderUserCabinetStats();
-                });
-            }
+            const logAction = item.checked ? 'Nasazeno do výroby' : 'Odebráno z výroby';
+            logUserAction(cleanNum, 'Plán na směnu', logAction).then(() => {
+                const chipsBar = document.getElementById('cabinetDaysChipsBar');
+                if (chipsBar && typeof loadAndRenderUserCabinetStats === 'function') {
+                    loadAndRenderUserCabinetStats();
+                }
+            }).catch(err => console.warn(err));
         }
     }
 
-    function addMoldToShiftPlan(moldNum, suppressToast = false) {
+    function addMoldToShiftPlan(moldNum, machineNum = '', suppressToast = false) {
         const cleanNum = String(moldNum || '').trim();
         if (!cleanNum) return false;
 
@@ -10876,45 +11074,60 @@ Return strictly valid JSON only without markdown formatting with this schema:
             pos: mold[1] || 'Mezisklad',
             customer: mold[2] || '',
             product: mold[5] || '',
+            machine: String(machineNum || '').trim(),
+            stroj: String(machineNum || '').trim(),
             checked: false,
             addedAt: Date.now()
         });
         saveShiftPlan();
         renderShiftPlanList();
         triggerHapticFeedback([18]);
-        logUserAction(cleanNum, 'Plán na směnu', 'Přidáno do plánu na směnu');
+        logUserAction(cleanNum, 'Plán na směnu', `Přidáno do plánu na směnu${machineNum ? ' (STROJ ' + machineNum + ')' : ''}`);
         if (!suppressToast) showToast(`Forma #${cleanNum} přidána do plánu`);
         return true;
     }
 
     function submitShiftPlanManualAdd() {
         const input = document.getElementById('shiftPlanAddInput');
+        const machineInput = document.getElementById('shiftPlanAddMachineInput');
         if (!input) return;
         const val = input.value.trim();
         if (!val) return;
-        const success = addMoldToShiftPlan(val);
+        const machine = machineInput ? machineInput.value.trim() : '';
+        const success = addMoldToShiftPlan(val, machine);
         if (success) {
             input.value = '';
+            if (machineInput) machineInput.value = '';
+            input.focus();
         }
     }
 
     function removeShiftPlanItem(moldNum, e) {
-        if (e && typeof e.stopPropagation === 'function') e.stopPropagation();
-        triggerHapticFeedback([14]);
+        if (e && typeof e.stopPropagation === 'function') {
+            e.stopPropagation();
+        }
+        triggerHapticFeedback([20]);
         const cleanNum = String(moldNum || '').trim();
+        if (!cleanNum) return;
         currentShiftPlan = currentShiftPlan.filter(p => String(p.num || p.id).trim() !== cleanNum);
         saveShiftPlan();
         renderShiftPlanList();
+        showToast(`Forma #${cleanNum} odebrána z plánu`);
     }
 
     function clearShiftPlan() {
         if (!currentShiftPlan || currentShiftPlan.length === 0) return;
+        const checkedItems = currentShiftPlan.filter(item => item.checked);
+        if (checkedItems.length === 0) {
+            showToast("Žádné hotové (označené) formy k vyčištění");
+            return;
+        }
         triggerHapticFeedback([18]);
-        showCustomConfirm("Vyčistit seznam", "Opravdu chcete smazat celý seznam forem na směnu?", "Vyčistit", () => {
-            currentShiftPlan = [];
+        showCustomConfirm("Vyčistit hotové", `Opravdu chcete odebrat ${checkedItems.length} hotové (označené) formy ze seznamu?`, "Vyčistit", () => {
+            currentShiftPlan = currentShiftPlan.filter(item => !item.checked);
             saveShiftPlan();
             renderShiftPlanList();
-            showToast("Seznam byl vyčištěn");
+            showToast("Hotové formy byly odebrány ze seznamu");
         });
     }
 
