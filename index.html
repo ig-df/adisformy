@@ -7993,9 +7993,9 @@
         if (!apiKey || !canvas) return null;
 
         try {
-            // Optimized lightweight resolution (max 960px, JPEG quality 0.82) - cuts transmission time by ~50% while preserving sub-pixel stroke clarity
+            // Higher resolution for shift plan lists and small handwritten/printed font (max 1600px)
             let uploadCanvas = document.createElement('canvas');
-            const maxDim = 960;
+            const maxDim = (mode === 'plan') ? 1600 : 1200;
             let width = canvas.width;
             let height = canvas.height;
             if (width > maxDim || height > maxDim) {
@@ -8007,31 +8007,32 @@
             uploadCanvas.height = height;
             const ctx = uploadCanvas.getContext('2d');
             if (ctx) {
-                // CLAHE-like contrast enhancement & slight gamma correction for pencil/ink strokes on industrial paper
-                ctx.filter = 'contrast(1.28) brightness(1.03) saturate(0.80)';
+                // High contrast enhancement for pencil/ink strokes & fine small fonts
+                ctx.filter = 'contrast(1.35) brightness(1.02) saturate(0.85)';
                 ctx.drawImage(canvas, 0, 0, width, height);
             } else {
                 uploadCanvas = canvas;
             }
 
-            // Quality 0.82: minimal payload weight, instantaneous upload
-            const dataUrl = uploadCanvas.toDataURL('image/jpeg', 0.82);
+            const dataUrl = uploadCanvas.toDataURL('image/jpeg', 0.88);
             const base64Data = dataUrl.split(',')[1];
             if (!base64Data) return null;
 
             const promptText = (mode === 'plan')
                 ? `You are an industrial OCR scanner for an injection mold factory.
-Look at this shift plan sheet or handwritten list.
-Identify ALL injection mold numbers (2 to 6 digits, e.g. 867, 808, 0584, 765, 050).
-If a machine number (Stroj: 1-8, 10-12, 18-20, 23, 25-38) is written before/next to a mold number (e.g. "11 - 867", "(11) 867", "11: 867", "11 867"), record machine as "11". If NO machine number is present, set machine to "".
+Look at this shift plan sheet, handwritten list, or printed table/list of molds and machines.
+Identify ALL injection mold numbers (2 to 6 digits, e.g. 867, 808, 649, 748, 971, 412, 0584, 765, 050).
+If a machine/line number (1 to 99) is written before or next to a mold number (e.g. "11 - 867", "6 - 808", "29 - 649", "3 - 748", "20 - 971", "2 - 412", "(11) 867", "11: 867", "Stroj 11: 867"), record machine as "11" and mold as "867".
+If NO machine number is present, set machine to "".
 
 CRITICAL RULES:
-1. Extract EVERY mold number written on the sheet, whether it has a machine number or NOT!
-2. European '7' has a horizontal crossbar (7̵). It is strictly '7' (SEVEN), NEVER '1'.
-3. Preserve leading zeros (e.g. "050", "0584").
+1. Extract EVERY SINGLE mold number written or printed on the sheet, no matter how small the font is!
+2. Do NOT confuse machine number with mold number. In "11 - 867", 11 is the machine and 867 is the mold number.
+3. European '7' has a horizontal crossbar (7̵) -> strictly '7' (SEVEN), NEVER '1'.
+4. Include all extracted mold numbers in the "numbers" array as well.
 
 Return ONLY valid JSON without markdown:
-{"items":[{"machine":"11","mold":"867"},{"machine":"","mold":"0584"}],"numbers":["867","0584"],"raw_text":"..."}`
+{"items":[{"machine":"11","mold":"867"},{"machine":"6","mold":"808"},{"machine":"29","mold":"649"}],"numbers":["867","808","649","748","971","412"],"raw_text":"..."}`
                 : `You are an industrial OCR scanner.
 Read primary injection mold number (2 to 6 digits, e.g. 765, 050, 0584) and product name.
 European '7' has a middle crossbar (7̵) -> strictly '7'. Preserve leading zeros.
@@ -9212,26 +9213,26 @@ Return ONLY valid JSON without markdown:
         let found = activeMolds.find(m => String(m[0]).trim() === raw);
         if (found) return { mold: found, isAutoCorrected: false, orig: raw };
 
-        // 2. Leading zero normalization (e.g. 000584, 00584, 0584 -> 584, 050 -> 50)
+        // 2. Numeric leading zero normalization (e.g. "867" vs "0867", "050" vs "50")
         if (/^\d+$/.test(raw)) {
             const strippedZero = raw.replace(/^0+/, '') || '0';
-            if (strippedZero !== raw) {
-                found = activeMolds.find(m => {
-                    const mId = String(m[0]).trim();
-                    return mId === strippedZero || (/^\d+$/.test(mId) && (mId.replace(/^0+/, '') || '0') === strippedZero);
-                });
-                if (found) return { mold: found, isAutoCorrected: true, orig: raw, fixed: String(found[0]) };
-            }
+            found = activeMolds.find(m => {
+                const mId = String(m[0]).trim();
+                const mStripped = mId.replace(/^0+/, '') || '0';
+                return mId === raw || mId === strippedZero || mStripped === strippedZero;
+            });
+            if (found) return { mold: found, isAutoCorrected: true, orig: raw, fixed: String(found[0]) };
         }
 
-        // 3. Embedded numeric token extraction if string contains adjacent letters/suffixes (e.g. "050 C", "050-C", "F-050", "poz. 0584")
+        // 3. Embedded numeric token extraction if string contains adjacent letters/suffixes (e.g. "050 C", "050-C", "F-050", "poz. 0584", "11 - 867")
         const embeddedNumMatch = raw.match(/\b\d{2,6}\b/) || raw.match(/\d{2,6}/);
         if (embeddedNumMatch) {
             const extractedNum = embeddedNumMatch[0];
             const strippedExtracted = extractedNum.replace(/^0+/, '') || '0';
             found = activeMolds.find(m => {
                 const mId = String(m[0]).trim();
-                return mId === extractedNum || mId === strippedExtracted || (/^\d+$/.test(mId) && (mId.replace(/^0+/, '') || '0') === strippedExtracted);
+                const mStripped = mId.replace(/^0+/, '') || '0';
+                return mId === extractedNum || mId === strippedExtracted || mStripped === strippedExtracted;
             });
             if (found) return { mold: found, isAutoCorrected: true, orig: raw, fixed: String(found[0]) };
         }
@@ -9248,16 +9249,14 @@ Return ONLY valid JSON without markdown:
         found = activeMolds.find(m => String(m[0]).trim() === fixed);
         if (found) return { mold: found, isAutoCorrected: true, orig: raw, fixed };
 
-        // Leading zero normalization after OCR character substitution (e.g. "O584" -> "0584" -> "584", "O5O" -> "050" -> "50")
         if (/^\d+$/.test(fixed)) {
             const strippedFixed = fixed.replace(/^0+/, '') || '0';
-            if (strippedFixed !== fixed) {
-                found = activeMolds.find(m => {
-                    const mId = String(m[0]).trim();
-                    return mId === strippedFixed || (/^\d+$/.test(mId) && (mId.replace(/^0+/, '') || '0') === strippedFixed);
-                });
-                if (found) return { mold: found, isAutoCorrected: true, orig: raw, fixed: String(found[0]) };
-            }
+            found = activeMolds.find(m => {
+                const mId = String(m[0]).trim();
+                const mStripped = mId.replace(/^0+/, '') || '0';
+                return mId === fixed || mId === strippedFixed || mStripped === strippedFixed;
+            });
+            if (found) return { mold: found, isAutoCorrected: true, orig: raw, fixed: String(found[0]) };
         }
 
         // Embedded numbers in fixed string
@@ -9267,7 +9266,8 @@ Return ONLY valid JSON without markdown:
             const strippedExtFixed = extFixed.replace(/^0+/, '') || '0';
             found = activeMolds.find(m => {
                 const mId = String(m[0]).trim();
-                return mId === extFixed || mId === strippedExtFixed || (/^\d+$/.test(mId) && (mId.replace(/^0+/, '') || '0') === strippedExtFixed);
+                const mStripped = mId.replace(/^0+/, '') || '0';
+                return mId === extFixed || mId === strippedExtFixed || mStripped === strippedExtFixed;
             });
             if (found) return { mold: found, isAutoCorrected: true, orig: raw, fixed: String(found[0]) };
         }
@@ -9338,39 +9338,31 @@ Return ONLY valid JSON without markdown:
 
         const foundMoldsMap = new Map();
         const machineMap = new Map();
-        const explicitMachineNumbers = new Set();
-        const explicitMoldNumbers = new Set();
 
         // 1. Build machine map from extracted items
         if (geminiResult && Array.isArray(geminiResult.items)) {
             for (const item of geminiResult.items) {
                 const mStr = String(item.mold || '').trim();
                 const machStr = String(item.machine || '').trim();
-                if (mStr) {
-                    explicitMoldNumbers.add(mStr);
-                }
                 if (machStr) {
                     const parsedM = parseInt(machStr, 10);
-                    if (!isNaN(parsedM) && WORKSHOP_MACHINES.includes(parsedM)) {
-                        explicitMachineNumbers.add(machStr);
+                    if (!isNaN(parsedM) && parsedM >= 1 && parsedM <= 99) {
                         if (mStr) machineMap.set(mStr, String(parsedM));
                     }
                 }
             }
         }
 
-        // 2. Parse rawText regex line patterns (e.g. "11 - 867", "(11) 867")
+        // 2. Parse rawText regex line patterns (e.g. "11 - 867", "6 - 808", "29 - 649", "3 - 748", "20 - 971", "2 - 412")
         const rawTextStr = String(geminiResult?.rawText || '');
         if (rawTextStr) {
             const lines = rawTextStr.split(/\r?\n/);
             for (const line of lines) {
-                const lineMatch = line.match(/\b(\d{1,2})\b\s*[-–:]\s*\b(\d{2,6})\b/) || line.match(/\((\d{1,2})\)\s*[-–:]?\s*\b(\d{2,6})\b/);
+                const lineMatch = line.match(/\b(\d{1,2})\b\s*[-–:/,.\s]\s*\b(\d{2,6})\b/) || line.match(/\((\d{1,2})\)\s*[-–:]?\s*\b(\d{2,6})\b/);
                 if (lineMatch) {
                     const machNum = parseInt(lineMatch[1], 10);
                     const moldNumStr = lineMatch[2];
-                    if (!isNaN(machNum) && WORKSHOP_MACHINES.includes(machNum)) {
-                        explicitMachineNumbers.add(String(machNum));
-                        explicitMoldNumbers.add(moldNumStr);
+                    if (!isNaN(machNum) && machNum >= 1 && machNum <= 99) {
                         if (!machineMap.has(moldNumStr)) {
                             machineMap.set(moldNumStr, String(machNum));
                         }
@@ -9384,10 +9376,7 @@ Return ONLY valid JSON without markdown:
             if (!numStr) return;
             const cleanStr = String(numStr).trim();
             if (!cleanStr) return;
-            // Skip if this number was identified purely as a machine number and never listed as a mold number
-            if (explicitMachineNumbers.has(cleanStr) && !explicitMoldNumbers.has(cleanStr)) {
-                return;
-            }
+
             const match = findFuzzyOrDisambiguatedMold(cleanStr, activeMolds);
             if (match && match.mold) {
                 const moldId = String(match.mold[0]).trim();
@@ -9413,7 +9402,7 @@ Return ONLY valid JSON without markdown:
                 let validM = '';
                 if (machStr) {
                     const pM = parseInt(machStr, 10);
-                    if (!isNaN(pM) && WORKSHOP_MACHINES.includes(pM)) validM = String(pM);
+                    if (!isNaN(pM) && pM >= 1 && pM <= 99) validM = String(pM);
                 }
                 tryAddMoldMatch(moldStr, validM);
             }
@@ -9429,6 +9418,16 @@ Return ONLY valid JSON without markdown:
         // 5. Process primaryNumber if present
         if (geminiResult && geminiResult.primaryNumber) {
             tryAddMoldMatch(geminiResult.primaryNumber);
+        }
+
+        // 6. Scan rawText for all 2-6 digit tokens to ensure no molds on paper are missed
+        if (rawTextStr) {
+            const digitTokens = rawTextStr.match(/\b\d{2,6}\b/g);
+            if (digitTokens) {
+                for (const token of digitTokens) {
+                    tryAddMoldMatch(token);
+                }
+            }
         }
 
         // 6. Secondary fallback for product names if no molds matched yet
