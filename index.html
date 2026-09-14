@@ -8003,24 +8003,39 @@
 
             const promptText = (mode === 'plan')
                 ? `You are an expert industrial vision and OCR system for an injection mold factory warehouse.
-Look at this photo containing a shift plan sheet, paper schedule, or production table with multiple injection mold numbers or product names.
-Extract ALL mold numbers (typically 2 to 6 digits, e.g. 765, 976, 808, 668, 0584, 000584, 050, 50, 10425) and visible product/part names from top to bottom.
+Look at this photo containing a handwritten shift plan sheet, paper schedule, or production table created by workshop mechanics/planners.
+
+STANDARD HANDWRITTEN LAYOUT PATTERN:
+Mechanics typically write items in lines formatted as: [Machine Number] - [Mold Number]
+Examples:
+  "11 - 867"  -> Machine 11, Mold 867
+  "6 - 808"   -> Machine 6, Mold 808
+  "29 - 649"  -> Machine 29, Mold 649
+  "3 - 748"   -> Machine 3, Mold 748
+  "20 - 971"  -> Machine 20, Mold 971
+  "2 - 412"   -> Machine 2, Mold 412
+
+CRITICAL DISAMBIGUATION RULES FOR MACHINES VS MOLDS:
+1. WORKSHOP MACHINE NUMBERS:
+   The workshop has specific machines: 1, 2, 3, 4, 5, 6, 7, 8, 10, 11, 12, 18, 19, 20, 23, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38.
+2. In lines written as "X - Y" or "X : Y" or "X Y" (where X is a machine number and Y is a mold number):
+   - X is STRICTLY the MACHINE NUMBER (e.g. in "29 - 649", "29" before the dash is Machine 29, NOT Mold 29!).
+   - Y is STRICTLY the MOLD NUMBER (e.g. "649" after the dash is Mold 649).
+3. Even if X happens to be a valid mold number in the database (like 19, 20, 23, 26, 28, 29, 30, 33, 34, 35, 36, 38), when written as the FIRST number before the dash in "X - Y", X is STRICTLY the MACHINE NUMBER for Mold Y.
+4. Extract each line into a pair object: {"machine": "X", "mold": "Y"}.
+5. Put all extracted MOLD numbers Y into the 'numbers' array.
 
 CRITICAL INDUSTRIAL CONTEXT & HANDWRITTEN DISAMBIGUATION:
-- ROBUST TO ANY HANDWRITING SIZE & STYLE: Numbers may be written very large across the sheet with a thick permanent marker, or very small and compact in pencil or fine ballpoint pen inside tight table cells. Identify digits of all scales, stroke thicknesses, and slants.
-- MULTIPLE WRITING INSTRUMENTS: Detect handwriting in ballpoint pen (blue, black), pencil/graphite, felt-tip marker, chalk, or industrial paint marker on paper or plastic.
-- ISOLATE NUMBERS FROM TEXT & ZONE LETTERS: Mold numbers frequently have single zone letters, words, or symbols written immediately next to them (e.g. "050 C" -> number is "050", "0584 H" -> "0584", "765 Z" -> "765", "50 C" -> "50", "KRYT 584" -> "584", "forma 00584" -> "00584", "VW 765 lišta" -> "765"). ALWAYS cleanly isolate and extract the pure numeric digits into 'numbers' and all adjacent letters/words into raw_text. Never omit a number just because it has a letter next to it!
-- LEADING ZEROS: Mold numbers may be written with leading zeros (e.g. "000584", "00584", "0584", "050", "00765", "000976"). Preserve all digits in numbers/raw_text.
+- ROBUST TO ANY HANDWRITING SIZE & STYLE: Numbers may be written with thick marker or fine pen/pencil.
 - STRICT EUROPEAN HANDWRITTEN '7' VS '1' DISAMBIGUATION:
-  * In Czech / European handwriting, digit '7' ALWAYS has a distinct horizontal crossbar through the vertical/slanted stem (7̵). Any digit with a middle crossbar is strictly '7' (SEVEN). DO NOT transcribe it as '1', '4', '9', or '3'!
-  * Digit '1' in European handwriting has an acute top diagonal hook/roof and a vertical stroke WITHOUT any middle crossbar.
-  * Extract ONLY the exact numbers physically written on the paper. DO NOT hallucinate, infer, or add synthetic alternative numbers (do NOT substitute 7 with 1, and do NOT substitute 1 with 7).
-- Hand-drawn zeros '0' and letter 'O'/'D': in mold numbers they are always numeric digit '0'.
-- Hand-drawn digit '5' vs letter 'S': in numeric codes always treat as digit '5'.
-- Transcribe all text and numbers accurately without duplicates.
+  * Digit '7' in Czech/European handwriting ALWAYS has a horizontal crossbar through the stem (7̵).
+  * Digit '1' has a top hook without a middle bar.
+  * Extract ONLY the exact numbers physically written on the paper without hallucinating or substituting digits.
+- Hand-drawn zeros '0' and letter 'O': always treat as digit '0'.
+- Hand-drawn '5' vs 'S': always treat as digit '5'.
 
 Return strictly valid JSON only without markdown formatting with this schema:
-{"numbers":["765","584","976","050"],"raw_text":"..."}`
+{"pairs":[{"machine":"11","mold":"867"},{"machine":"6","mold":"808"},{"machine":"29","mold":"649"},{"machine":"3","mold":"748"},{"machine":"20","mold":"971"},{"machine":"2","mold":"412"}],"numbers":["867","808","649","748","971","412"],"raw_text":"11-867\n6-808\n29-649\n3-748\n20-971\n2-412"}`
                 : `You are an expert industrial OCR and vision system for injection mold factory warehouse tracking.
 Look at this photo of an injection mold tag, physical metal mold plate, paper sticker, product sample, or handwritten note.
 Carefully identify:
@@ -8164,11 +8179,20 @@ Return strictly valid JSON only without markdown formatting with this schema:
             ));
             const finalPrimary = (primaryNum && /^\d{2,6}$/.test(primaryNum.replace(/[^\d]/g, '')) ? primaryNum.replace(/[^\d]/g, '') : '') || (numList[0] || '');
 
+            let parsedPairs = [];
+            if (parsed && Array.isArray(parsed.pairs)) {
+                parsedPairs = parsed.pairs.map(p => ({
+                    machine: String(p.machine || p.stroj || '').replace(/[^\d]/g, '').trim(),
+                    mold: String(p.mold || p.mold_id || p.id || '').replace(/[^\d]/g, '').trim()
+                })).filter(p => p.mold);
+            }
+
             return {
                 primaryNumber: finalPrimary,
                 numbers: numList,
                 productName: parsed?.product_name ? String(parsed.product_name).trim() : '',
-                rawText: parsed?.raw_text || textResponse
+                rawText: parsed?.raw_text || textResponse,
+                pairs: parsedPairs
             };
         } catch (e) {
             console.warn("Gemini Vision exception:", e);
@@ -9314,11 +9338,37 @@ Return strictly valid JSON only without markdown formatting with this schema:
         if (activeMolds.length === 0) return [];
 
         const foundMoldsMap = new Map();
+        const machineUsedSet = new Set();
+
+        // 0. Structured pairs matching [Machine Number - Mold Number]
+        if (geminiResult && Array.isArray(geminiResult.pairs) && geminiResult.pairs.length > 0) {
+            for (const pair of geminiResult.pairs) {
+                if (!pair || !pair.mold) continue;
+                const moldStr = String(pair.mold).trim();
+                const machineStr = String(pair.machine || '').trim();
+
+                const match = findFuzzyOrDisambiguatedMold(moldStr, activeMolds);
+                if (match && match.mold) {
+                    const idStr = String(match.mold[0]);
+                    if (!foundMoldsMap.has(idStr)) {
+                        const moldItem = [...match.mold];
+                        if (machineStr && isWorkshopMachine(machineStr)) {
+                            moldItem._machine = machineStr;
+                            machineUsedSet.add(machineStr);
+                        }
+                        foundMoldsMap.set(idStr, moldItem);
+                    }
+                }
+            }
+        }
 
         // 1. Direct / Fuzzy match from geminiResult.numbers array
         if (geminiResult && Array.isArray(geminiResult.numbers)) {
             for (const numStr of geminiResult.numbers) {
-                const match = findFuzzyOrDisambiguatedMold(numStr, activeMolds);
+                const cleanNum = String(numStr).trim();
+                if (machineUsedSet.has(cleanNum)) continue;
+
+                const match = findFuzzyOrDisambiguatedMold(cleanNum, activeMolds);
                 if (match && match.mold && !foundMoldsMap.has(String(match.mold[0]))) {
                     foundMoldsMap.set(String(match.mold[0]), match.mold);
                 }
@@ -9327,9 +9377,12 @@ Return strictly valid JSON only without markdown formatting with this schema:
 
         // 2. Direct / Fuzzy match from geminiResult.primaryNumber if present
         if (geminiResult && geminiResult.primaryNumber) {
-            const match = findFuzzyOrDisambiguatedMold(geminiResult.primaryNumber, activeMolds);
-            if (match && match.mold && !foundMoldsMap.has(String(match.mold[0]))) {
-                foundMoldsMap.set(String(match.mold[0]), match.mold);
+            const cleanNum = String(geminiResult.primaryNumber).trim();
+            if (!machineUsedSet.has(cleanNum)) {
+                const match = findFuzzyOrDisambiguatedMold(cleanNum, activeMolds);
+                if (match && match.mold && !foundMoldsMap.has(String(match.mold[0]))) {
+                    foundMoldsMap.set(String(match.mold[0]), match.mold);
+                }
             }
         }
 
@@ -9987,15 +10040,17 @@ Return strictly valid JSON only without markdown formatting with this schema:
             const isSelected = scannerSelectedBatchMoldIds.has(idStr);
             const badgeClass = getPositionBadgeClass(pos);
             const displayPos = formatPositionDisplay(pos);
+            const machineNum = m._machine ? String(m._machine) : '';
 
             return `
                 <div class="scanner-batch-item ${isSelected ? 'selected' : ''}" onclick="toggleBatchMoldSelection('${escapeHtml(idStr)}')">
                     <div style="display: flex; align-items: center; gap: 0.65rem;">
                         <input type="checkbox" ${isSelected ? 'checked' : ''} style="width: 18px; height: 18px; accent-color: #16a34a; cursor: pointer;" onclick="event.stopPropagation(); toggleBatchMoldSelection('${escapeHtml(idStr)}')">
                         <div>
-                            <div style="display: flex; align-items: center; gap: 0.4rem;">
+                            <div style="display: flex; align-items: center; gap: 0.4rem; flex-wrap: wrap;">
                                 <span style="font-weight: 800; font-size: 0.96rem; color: #f8fafc; font-family: monospace;">#${escapeHtml(idStr)}</span>
                                 <span class="${badgeClass}" style="margin: 0; font-size: 0.74rem;">${escapeHtml(displayPos)}</span>
+                                ${machineNum ? `<span style="background: #0f172a; color: #38bdf8; font-weight: 700; font-size: 0.7rem; padding: 0.12rem 0.45rem; border-radius: 4px; font-family: monospace; border: 1px solid #334155;">STROJ ${escapeHtml(machineNum)}</span>` : ''}
                             </div>
                             <div style="font-size: 0.78rem; color: #94a3b8; margin-top: 2px;">
                                 ${escapeHtml(pName || cust || 'Bez názvu')}
@@ -10036,12 +10091,16 @@ Return strictly valid JSON only without markdown formatting with this schema:
             if (!exists) {
                 const moldData = rawDatabase.find(m => String(m[0]).trim() === cleanId);
                 if (moldData) {
+                    const batchItem = scannerBatchMolds.find(b => String(b[0]).trim() === cleanId);
+                    const machineNum = (batchItem && batchItem._machine) ? String(batchItem._machine) : '';
+
                     currentShiftPlan.push({
                         num: cleanId,
                         id: cleanId,
                         pos: moldData[1] || 'Mezisklad',
                         customer: moldData[2] || '',
                         product: moldData[5] || '',
+                        machine: machineNum,
                         checked: false,
                         addedAt: Date.now()
                     });
@@ -10715,6 +10774,31 @@ Return strictly valid JSON only without markdown formatting with this schema:
     // SEZNAM FOREM NA SMĚNU (DENNÍ PLÁN SEŘIZOVAČE)
     // ==========================================
     const WORKSHOP_MACHINES = [1, 2, 3, 4, 5, 6, 7, 8, 10, 11, 12, 18, 19, 20, 23, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38];
+
+    // Reference mapping: Molds whose IDs match machine numbers directly (12 direct matches in DB)
+    // Used for disambiguating Mold ID vs Machine ID during AI camera OCR / scanner parsing and machine binding
+    const MACHINE_MOLD_EXACT_OVERLAPS = {
+        "19": { moldId: "19", name: "Vedení rola elektro", customer: "Škoda" },
+        "20": { moldId: "20", name: "Nosič motoru", customer: "Škoda" },
+        "23": { moldId: "23", name: "Fixační díl spodní", customer: "Škoda" },
+        "26": { moldId: "26", name: "Facade AV", customer: "Novares" },
+        "28": { moldId: "28", name: "Deckel F39", customer: "Novares" },
+        "29": { moldId: "29", name: "Antriebshebel", customer: "Witte" },
+        "30": { moldId: "30", name: "Austellhebel", customer: "Witte" },
+        "33": { moldId: "33", name: "Haltering", customer: "Witte" },
+        "34": { moldId: "34", name: "Odpadkový koš - Pevný díl", customer: "Škoda" },
+        "35": { moldId: "35", name: "Ubertragungshebel", customer: "Witte" },
+        "36": { moldId: "36", name: "Potting dam", customer: "Others" },
+        "38": { moldId: "38", name: "Talíř  58,3 mm", customer: "Others" }
+    };
+
+    /**
+     * Helper to check if a value corresponds to a valid workshop machine
+     */
+    function isWorkshopMachine(val) {
+        const num = parseInt(val, 10);
+        return WORKSHOP_MACHINES.includes(num);
+    }
 
     async function logUserAction(moldId, oldPos, newPos) {
         if (!currentUser) return;
