@@ -6527,8 +6527,8 @@
         try {
             const res = await fetch(`${API_URL}/rest/v1/customers?select=*`, {
                 headers: { 'apikey': API_KEY, 'Authorization': `Bearer ${API_KEY}` }
-            });
-            if (res.ok) {
+            }).catch(() => null);
+            if (res && res.ok) {
                 const data = await res.json();
                 if (data && data.length > 0) {
                     let fetchedList = data.map(c => ({ name: c.name, bg: c.bg_color || '#ffffff' }));
@@ -6551,9 +6551,26 @@
                     if (othersObj) listWithoutOthers.push(othersObj);
                     else listWithoutOthers.push({ name: "Others", bg: "#fdfbf7" });
                     customersList = listWithoutOthers;
+                    try { localStorage.setItem('adis_customers_cache', JSON.stringify(customersList)); } catch (cacheErr) {}
+                }
+            } else {
+                const cached = localStorage.getItem('adis_customers_cache');
+                if (cached) {
+                    try {
+                        const parsed = JSON.parse(cached);
+                        if (Array.isArray(parsed) && parsed.length > 0) customersList = parsed;
+                    } catch (err) {}
                 }
             }
-        } catch (e) { console.error("Error fetching customers:", e); }
+        } catch (e) {
+            const cached = localStorage.getItem('adis_customers_cache');
+            if (cached) {
+                try {
+                    const parsed = JSON.parse(cached);
+                    if (Array.isArray(parsed) && parsed.length > 0) customersList = parsed;
+                } catch (err) {}
+            }
+        }
     }
 
     let isCustomerDragging = false;
@@ -8004,57 +8021,24 @@
             if (!base64Data) return null;
 
             const promptText = (mode === 'plan')
-                ? `You are an expert industrial vision and OCR system for an injection mold factory warehouse.
-Look at this photo containing a shift plan sheet, paper schedule, handwritten list, or production table with injection mold numbers and machine assignments.
+                ? `You are an industrial OCR scanner for an injection mold factory.
+Look at this shift plan sheet or handwritten list.
+Identify ALL injection mold numbers (2 to 6 digits, e.g. 867, 808, 0584, 765, 050).
+If a machine number (Stroj: 1-8, 10-12, 18-20, 23, 25-38) is written before/next to a mold number (e.g. "11 - 867", "(11) 867", "11: 867", "11 867"), record machine as "11". If NO machine number is present, set machine to "".
 
-CRITICAL HANDWRITTEN PATTERN & MACHINE ASSIGNMENTS:
-- Mechanics write entries line by line in the format:
-  [MACHINE NUMBER] - [MOLD NUMBER] (e.g. "11 - 867", "6 - 808", "29 - 649", "3 - 748", "20 - 971", "2 - 412") or circled machine numbers e.g. "(11) 867" or "11: 867".
-- MACHINE NUMBER (Stroj): The number on the LEFT of the hyphen/dash/colon or inside a drawn circle. Valid workshop machines: 1, 2, 3, 4, 5, 6, 7, 8, 10, 11, 12, 18, 19, 20, 23, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38.
-- MOLD NUMBER (Forma): The number on the RIGHT of the hyphen/dash/colon or after the machine number (typically 2 to 6 digits, e.g. 867, 808, 649, 748, 971, 412).
-- Extract ALL pairs line by line into 'items': [{"machine": "11", "mold": "867"}, {"machine": "6", "mold": "808"}].
-- Also collect ALL mold numbers into 'numbers': ["867", "808", "649", "748", "971", "412"].
+CRITICAL RULES:
+1. Extract EVERY mold number written on the sheet, whether it has a machine number or NOT!
+2. European '7' has a horizontal crossbar (7̵). It is strictly '7' (SEVEN), NEVER '1'.
+3. Preserve leading zeros (e.g. "050", "0584").
 
-CRITICAL INDUSTRIAL CONTEXT & HANDWRITTEN DISAMBIGUATION:
-- ROBUST TO ANY HANDWRITING SIZE & STYLE: Numbers may be written very large across the sheet with a thick permanent marker, or very small and compact in pencil or fine ballpoint pen inside tight table cells. Identify digits of all scales, stroke thicknesses, and slants.
-- MULTIPLE WRITING INSTRUMENTS: Detect handwriting in ballpoint pen (blue, black), pencil/graphite, felt-tip marker, chalk, or industrial paint marker on paper or plastic.
-- ISOLATE NUMBERS FROM TEXT & ZONE LETTERS: Mold numbers frequently have single zone letters, words, or symbols written immediately next to them (e.g. "050 C" -> number is "050", "0584 H" -> "0584", "765 Z" -> "765", "50 C" -> "50", "KRYT 584" -> "584", "forma 00584" -> "00584", "VW 765 lišta" -> "765"). ALWAYS cleanly isolate and extract the pure numeric digits into 'numbers' and all adjacent letters/words into raw_text. Never omit a number just because it has a letter next to it!
-- LEADING ZEROS: Mold numbers may be written with leading zeros (e.g. "000584", "00584", "0584", "050", "00765", "000976"). Preserve all digits in numbers/raw_text.
-- STRICT EUROPEAN HANDWRITTEN '7' VS '1' DISAMBIGUATION:
-  * In Czech / European handwriting, digit '7' ALWAYS has a distinct horizontal crossbar through the vertical/slanted stem (7̵). Any digit with a middle crossbar is strictly '7' (SEVEN). DO NOT transcribe it as '1', '4', '9', or '3'!
-  * Digit '1' in European handwriting has an acute top diagonal hook/roof and a vertical stroke WITHOUT any middle crossbar.
-  * Extract ONLY the exact numbers physically written on the paper. DO NOT hallucinate, infer, or add synthetic alternative numbers (do NOT substitute 7 with 1, and do NOT substitute 1 with 7).
-- Hand-drawn zeros '0' and letter 'O'/'D': in mold numbers they are always numeric digit '0'.
-- Hand-drawn digit '5' vs letter 'S': in numeric codes always treat as digit '5'.
-- Transcribe all text and numbers accurately without duplicates.
+Return ONLY valid JSON without markdown:
+{"items":[{"machine":"11","mold":"867"},{"machine":"","mold":"0584"}],"numbers":["867","0584"],"raw_text":"..."}`
+                : `You are an industrial OCR scanner.
+Read primary injection mold number (2 to 6 digits, e.g. 765, 050, 0584) and product name.
+European '7' has a middle crossbar (7̵) -> strictly '7'. Preserve leading zeros.
 
-Return strictly valid JSON only without markdown formatting with this schema:
-{"items":[{"machine":"11","mold":"867"},{"machine":"6","mold":"808"}],"numbers":["867","808"],"raw_text":"..."}`
-                : `You are an expert industrial OCR and vision system for injection mold factory warehouse tracking.
-Look at this photo of an injection mold tag, physical metal mold plate, paper sticker, product sample, or handwritten note.
-Carefully identify:
-1. PRIMARY injection mold number (číslo formy), typically 2 to 6 digits (e.g. 765, 976, 808, 0584, 000584, 050, 50, 10425).
-2. Product or part name (název výrobku/dílu, e.g. "Steckdeckel", "Kryt", "Adapter", "Lišta", "Držák", "Panel", "VW", etc.).
-3. Customer name (zákazník) or any visible text.
-
-CRITICAL INDUSTRIAL CONTEXT & HANDWRITTEN DISAMBIGUATION:
-- ROBUST TO ANY HANDWRITING SIZE & STYLE: Numbers may be written exceptionally large filling the frame with a wide marker, or written very small in pencil or fine pen in a corner or table box. Read digits reliably at any physical size, stroke width, cursive or print style, and orientation.
-- ALL WRITING INSTRUMENTS: Supports pencil, blue/black ballpoint pen, fountain ink, felt-tip marker, chalk, or grease pencil.
-- SEPARATE TEXT & ZONE LETTERS FROM NUMBER: If letters, words, or zone markers appear adjacent to the number (e.g. "050 C", "50 C", "765 Z", "0584 H", "forma 0584", "kryt 765"), strictly extract the pure numeric digits into 'primary_number' (e.g. "050") and 'numbers', and keep all letters/words in 'product_name' and 'raw_text'. Never merge letters or zone letters into primary_number.
-- LEADING ZEROS: Mold numbers are frequently written with leading zeros (such as "000584", "00584", "0584", "050", "00765", "000976"). Preserve the exact digits in primary_number.
-- Industrial context: Injection mold parts (kryt, lišta, držák, výztuha, těsnění, panel, rám, záslepka, víčko, Steckdeckel, Gehäuse, Halter, Blende) and automotive brands (Škoda, VW, Audi, Hella, Bosch).
-- STRICT EUROPEAN HANDWRITTEN '7' VS '1' DISAMBIGUATION:
-  * In Czech / European handwriting, digit '7' ALWAYS has a horizontal crossbar through the stem (7̵). This is strictly digit '7' (SEVEN). DO NOT misread it as 1, 4, 9, or 3!
-  * Digit '1' has a top diagonal hook without a middle bar.
-  * DO NOT guess or add alternative number substitutions. Extract only what is written.
-- European handwritten '4' has a closed or open top.
-- Hand-drawn zeros '0' and letter 'O'/'D': in mold numbers they are always numeric digit '0'.
-- Hand-drawn digit '5' vs letter 'S': in numeric codes always treat as digit '5'.
-- IGNORE faint ghost text or translucent numbers bleeding through from the reverse side of paper! Extract ONLY prominent foreground written numbers.
-- Include all read text in raw_text.
-
-Return strictly valid JSON only without markdown formatting with this schema:
-{"primary_number":"050","numbers":["050"],"product_name":"Steckdeckel","raw_text":"050 C Steckdeckel"}`;
+Return ONLY valid JSON without markdown:
+{"primary_number":"050","numbers":["050"],"product_name":"...","raw_text":"..."}`;
 
             const payload = {
                 contents: [
@@ -8072,27 +8056,11 @@ Return strictly valid JSON only without markdown formatting with this schema:
                 ],
                 generationConfig: {
                     temperature: 0.0,
-                    maxOutputTokens: 1024
+                    maxOutputTokens: 512
                 }
             };
 
-            let availableModels = [];
-            try {
-                availableModels = await fetchAvailableGeminiModels(apiKey);
-            } catch (e) {}
-
-            let modelsToTry = [];
-            if (availableModels.length > 0) {
-                const flash25 = availableModels.filter(m => m.includes('2.5-flash'));
-                const flash20 = availableModels.filter(m => m.includes('2.0-flash'));
-                const flash15 = availableModels.filter(m => m.includes('1.5-flash'));
-                const otherFlash = availableModels.filter(m => m.includes('flash') && !flash25.includes(m) && !flash20.includes(m) && !flash15.includes(m));
-                const remaining = availableModels.filter(m => !m.includes('flash'));
-                modelsToTry = [...flash25, ...flash20, ...flash15, ...otherFlash, ...remaining];
-            }
-            if (modelsToTry.length === 0) {
-                modelsToTry = ['gemini-2.5-flash', 'gemini-2.0-flash', 'gemini-1.5-flash', 'gemini-2.0-flash-lite'];
-            }
+            const modelsToTry = ['gemini-2.5-flash', 'gemini-2.0-flash', 'gemini-1.5-flash', 'gemini-2.0-flash-lite'];
 
             let res = null;
             let lastErrData = null;
@@ -9341,21 +9309,28 @@ Return strictly valid JSON only without markdown formatting with this schema:
 
         const foundMoldsMap = new Map();
         const machineMap = new Map();
+        const explicitMachineNumbers = new Set();
+        const explicitMoldNumbers = new Set();
 
-        // Build machineMap from parsed items and rawText regex patterns
+        // 1. Build machine map from extracted items
         if (geminiResult && Array.isArray(geminiResult.items)) {
             for (const item of geminiResult.items) {
                 const mStr = String(item.mold || '').trim();
                 const machStr = String(item.machine || '').trim();
-                if (mStr && machStr) {
+                if (mStr) {
+                    explicitMoldNumbers.add(mStr);
+                }
+                if (machStr) {
                     const parsedM = parseInt(machStr, 10);
                     if (!isNaN(parsedM) && WORKSHOP_MACHINES.includes(parsedM)) {
-                        machineMap.set(mStr, String(parsedM));
+                        explicitMachineNumbers.add(machStr);
+                        if (mStr) machineMap.set(mStr, String(parsedM));
                     }
                 }
             }
         }
 
+        // 2. Parse rawText regex line patterns (e.g. "11 - 867", "(11) 867")
         const rawTextStr = String(geminiResult?.rawText || '');
         if (rawTextStr) {
             const lines = rawTextStr.split(/\r?\n/);
@@ -9365,6 +9340,8 @@ Return strictly valid JSON only without markdown formatting with this schema:
                     const machNum = parseInt(lineMatch[1], 10);
                     const moldNumStr = lineMatch[2];
                     if (!isNaN(machNum) && WORKSHOP_MACHINES.includes(machNum)) {
+                        explicitMachineNumbers.add(String(machNum));
+                        explicitMoldNumbers.add(moldNumStr);
                         if (!machineMap.has(moldNumStr)) {
                             machineMap.set(moldNumStr, String(machNum));
                         }
@@ -9373,78 +9350,59 @@ Return strictly valid JSON only without markdown formatting with this schema:
             }
         }
 
-        // 1. Direct match from geminiResult.items first
+        // Helper to add mold match
+        const tryAddMoldMatch = (numStr, forcedMachine = '') => {
+            if (!numStr) return;
+            const cleanStr = String(numStr).trim();
+            if (!cleanStr) return;
+            // Skip if this number was identified purely as a machine number and never listed as a mold number
+            if (explicitMachineNumbers.has(cleanStr) && !explicitMoldNumbers.has(cleanStr)) {
+                return;
+            }
+            const match = findFuzzyOrDisambiguatedMold(cleanStr, activeMolds);
+            if (match && match.mold) {
+                const moldId = String(match.mold[0]).trim();
+                const machineVal = forcedMachine || machineMap.get(cleanStr) || machineMap.get(moldId) || '';
+                if (!foundMoldsMap.has(moldId)) {
+                    const moldCopy = [...match.mold];
+                    moldCopy.detectedMachine = machineVal;
+                    foundMoldsMap.set(moldId, moldCopy);
+                } else if (machineVal) {
+                    const existing = foundMoldsMap.get(moldId);
+                    if (!existing.detectedMachine) {
+                        existing.detectedMachine = machineVal;
+                    }
+                }
+            }
+        };
+
+        // 3. Process items first
         if (geminiResult && Array.isArray(geminiResult.items)) {
             for (const item of geminiResult.items) {
                 const moldStr = String(item.mold || '').trim();
                 const machStr = String(item.machine || '').trim();
-                if (moldStr) {
-                    const match = findFuzzyOrDisambiguatedMold(moldStr, activeMolds);
-                    if (match && match.mold) {
-                        const moldId = String(match.mold[0]).trim();
-                        let validMachine = '';
-                        if (machStr) {
-                            const parsedM = parseInt(machStr, 10);
-                            if (!isNaN(parsedM) && WORKSHOP_MACHINES.includes(parsedM)) {
-                                validMachine = String(parsedM);
-                            }
-                        }
-                        if (!foundMoldsMap.has(moldId)) {
-                            const moldCopy = [...match.mold];
-                            moldCopy.detectedMachine = validMachine;
-                            foundMoldsMap.set(moldId, moldCopy);
-                        } else {
-                            const existing = foundMoldsMap.get(moldId);
-                            if (validMachine && !existing.detectedMachine) {
-                                existing.detectedMachine = validMachine;
-                            }
-                        }
-                    }
+                let validM = '';
+                if (machStr) {
+                    const pM = parseInt(machStr, 10);
+                    if (!isNaN(pM) && WORKSHOP_MACHINES.includes(pM)) validM = String(pM);
                 }
+                tryAddMoldMatch(moldStr, validM);
             }
         }
 
-        // 2. Direct / Fuzzy match from geminiResult.numbers array
+        // 4. Process numbers array
         if (geminiResult && Array.isArray(geminiResult.numbers)) {
             for (const numStr of geminiResult.numbers) {
-                const match = findFuzzyOrDisambiguatedMold(numStr, activeMolds);
-                if (match && match.mold) {
-                    const moldId = String(match.mold[0]).trim();
-                    const assignedMachine = machineMap.get(numStr) || machineMap.get(moldId) || '';
-                    if (!foundMoldsMap.has(moldId)) {
-                        const moldCopy = [...match.mold];
-                        moldCopy.detectedMachine = assignedMachine;
-                        foundMoldsMap.set(moldId, moldCopy);
-                    } else {
-                        const existing = foundMoldsMap.get(moldId);
-                        if (assignedMachine && !existing.detectedMachine) {
-                            existing.detectedMachine = assignedMachine;
-                        }
-                    }
-                }
+                tryAddMoldMatch(numStr);
             }
         }
 
-        // 3. Direct / Fuzzy match from geminiResult.primaryNumber if present
+        // 5. Process primaryNumber if present
         if (geminiResult && geminiResult.primaryNumber) {
-            const match = findFuzzyOrDisambiguatedMold(geminiResult.primaryNumber, activeMolds);
-            if (match && match.mold) {
-                const moldId = String(match.mold[0]).trim();
-                const assignedMachine = machineMap.get(geminiResult.primaryNumber) || machineMap.get(moldId) || '';
-                if (!foundMoldsMap.has(moldId)) {
-                    const moldCopy = [...match.mold];
-                    moldCopy.detectedMachine = assignedMachine;
-                    foundMoldsMap.set(moldId, moldCopy);
-                } else {
-                    const existing = foundMoldsMap.get(moldId);
-                    if (assignedMachine && !existing.detectedMachine) {
-                        existing.detectedMachine = assignedMachine;
-                    }
-                }
-            }
+            tryAddMoldMatch(geminiResult.primaryNumber);
         }
 
-        // 4. Optional secondary check for product names
+        // 6. Secondary fallback for product names if no molds matched yet
         if (foundMoldsMap.size === 0) {
             const textParts = [];
             if (geminiResult.productName) textParts.push(geminiResult.productName);
@@ -9458,23 +9416,7 @@ Return strictly valid JSON only without markdown formatting with this schema:
                         const moldId = String(mold[0]).trim();
                         if (!foundMoldsMap.has(moldId)) {
                             const moldCopy = [...mold];
-                            const assignedMachine = machineMap.get(moldId) || '';
-                            moldCopy.detectedMachine = assignedMachine;
-                            foundMoldsMap.set(moldId, moldCopy);
-                        }
-                    }
-                });
-            }
-        } else if (geminiResult.productName) {
-            const prodMatches = matchScannedPlanBatch(geminiResult.productName, barcodeValues, cropCanvas);
-            if (Array.isArray(prodMatches)) {
-                prodMatches.forEach(mold => {
-                    if (mold) {
-                        const moldId = String(mold[0]).trim();
-                        if (!foundMoldsMap.has(moldId)) {
-                            const moldCopy = [...mold];
-                            const assignedMachine = machineMap.get(moldId) || '';
-                            moldCopy.detectedMachine = assignedMachine;
+                            moldCopy.detectedMachine = machineMap.get(moldId) || '';
                             foundMoldsMap.set(moldId, moldCopy);
                         }
                     }
