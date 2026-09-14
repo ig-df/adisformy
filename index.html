@@ -7721,6 +7721,7 @@
                 const res = await fetch(attempt.url, attempt.opts);
                 if (res.ok) return res;
                 lastRes = res;
+                if (res.status === 404 || res.status === 429 || res.status === 400) break;
             } catch (e) {}
         }
 
@@ -8060,7 +8061,7 @@ Return ONLY valid JSON without markdown:
                 }
             };
 
-            const modelsToTry = ['gemini-2.5-flash', 'gemini-2.0-flash', 'gemini-1.5-flash', 'gemini-2.0-flash-lite'];
+            const modelsToTry = ['gemini-2.0-flash', 'gemini-1.5-flash', 'gemini-2.0-flash-lite', 'gemini-2.5-flash'];
 
             let res = null;
             let lastErrData = null;
