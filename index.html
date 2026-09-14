@@ -8061,7 +8061,7 @@ Return ONLY valid JSON without markdown:
                 }
             };
 
-            const modelsToTry = ['gemini-2.0-flash', 'gemini-1.5-flash', 'gemini-2.0-flash-lite', 'gemini-2.5-flash'];
+            const modelsToTry = ['gemini-2.0-flash', 'gemini-1.5-flash', 'gemini-2.0-flash-lite'];
 
             let res = null;
             let lastErrData = null;
@@ -8074,10 +8074,10 @@ Return ONLY valid JSON without markdown:
                         body: JSON.stringify(payload)
                     });
 
-                    if (response.ok) {
+                    if (response && response.ok) {
                         res = response;
                         break;
-                    } else {
+                    } else if (response) {
                         const errJson = await response.json().catch(() => ({}));
                         lastErrData = { status: response.status, data: errJson };
                         console.warn(`Gemini Vision model ${modelName} returned status ${response.status}:`, errJson);
@@ -8089,10 +8089,11 @@ Return ONLY valid JSON without markdown:
 
             if (!res) {
                 console.warn("All Gemini Vision models failed:", lastErrData);
-                if (lastErrData?.status === 429) {
-                    return { error: 'quota_exceeded', message: lastErrData?.data?.error?.message || 'Quota exceeded' };
+                const apiErrMsg = lastErrData?.data?.error?.message || (lastErrData?.status ? `HTTP ${lastErrData.status}` : 'Chyba sieci');
+                if (lastErrData?.status === 429 || apiErrMsg.toLowerCase().includes('quota')) {
+                    return { error: 'quota_exceeded', message: apiErrMsg };
                 }
-                return { error: 'api_error', status: lastErrData?.status || 500, message: lastErrData?.data?.error?.message || 'Gemini request failed' };
+                return { error: 'api_error', status: lastErrData?.status || 500, message: apiErrMsg };
             }
 
             const data = await res.json();
@@ -9641,9 +9642,13 @@ Return ONLY valid JSON without markdown:
                 if (geminiResult && geminiResult.error) {
                     // Actual Gemini failure / problem
                     geminiProblem = true;
-                    geminiErrorMessage = (geminiResult.error === 'quota_exceeded')
-                        ? "Limit Gemini AI vyčerpán"
-                        : "Chyba připojení k Gemini AI";
+                    if (geminiResult.error === 'quota_exceeded') {
+                        geminiErrorMessage = "Limit Gemini AI vyčerpán";
+                    } else if (geminiResult.message) {
+                        geminiErrorMessage = `Gemini AI (${geminiResult.message})`;
+                    } else {
+                        geminiErrorMessage = "Chyba připojení k Gemini AI";
+                    }
                     console.warn("Gemini Vision selhalo, spouštím záložní OCR:", geminiResult);
                 } else if (geminiResult) {
                     // Gemini Vision processed the image successfully:
