@@ -582,6 +582,44 @@
             box-shadow: none;
         }
 
+        .search-clear-btn {
+            position: relative;
+            flex-shrink: 0;
+            margin-right: 0.15rem;
+            background: transparent;
+            border: none;
+            color: var(--text-muted);
+            cursor: pointer;
+            width: 32px;
+            height: 32px;
+            min-width: 32px;
+            min-height: 32px;
+            padding: 0;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            transition: color 0.15s ease, transform 0.12s ease, background-color 0.15s ease, opacity 0.15s ease;
+            z-index: 10;
+            touch-action: manipulation;
+            user-select: none;
+            -webkit-user-select: none;
+            -webkit-tap-highlight-color: transparent;
+            opacity: 0.75;
+        }
+
+        .search-clear-btn:hover {
+            color: var(--text-main);
+            background-color: var(--border-color);
+            opacity: 1;
+        }
+
+        .search-clear-btn:active {
+            transform: scale(0.9) !important;
+            background-color: var(--border-color);
+            opacity: 1;
+        }
+
         .search-scan-icon-btn {
             position: relative;
             flex-shrink: 0;
@@ -2214,8 +2252,13 @@
             max-height: 58vh;
             border-color: rgba(255, 255, 255, 0.4);
         }
-        .scanner-reticle.plan-mode ~ .scanner-guide-text {
-            bottom: calc(50% + 205px);
+        .scanner-status-pill.plan-mode {
+            bottom: calc(50% + 204px);
+        }
+        @media (max-height: 700px) {
+            .scanner-status-pill.plan-mode {
+                bottom: calc(50% + 185px);
+            }
         }
         .scanner-batch-item {
             display: flex;
@@ -2237,22 +2280,40 @@
             background: rgba(255, 255, 255, 0.1);
             border-color: rgba(255, 255, 255, 0.35);
         }
-        .scanner-guide-text {
+        .scanner-status-pill {
             position: absolute;
-            bottom: calc(50% + 80px);
+            bottom: calc(50% + 76px);
             color: #f1f5f9;
-            font-size: 0.85rem;
+            font-size: 0.82rem;
             font-weight: 600;
-            text-align: center;
-            background: rgba(15, 23, 42, 0.8);
-            padding: 0.45rem 1rem;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.45rem;
+            background: rgba(15, 23, 42, 0.88);
+            padding: 0.42rem 0.95rem;
             border-radius: 24px;
-            backdrop-filter: blur(8px);
-            border: 1px solid rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.18);
             letter-spacing: 0.01em;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+            box-shadow: 0 4px 14px rgba(0, 0, 0, 0.4);
             z-index: 20;
             transition: bottom 0.25s ease;
+            pointer-events: none;
+            white-space: nowrap;
+            max-width: 90%;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        @media (max-width: 480px) {
+            .scanner-status-pill {
+                font-size: 0.76rem;
+                padding: 0.35rem 0.8rem;
+                bottom: calc(50% + 72px);
+            }
+            .scanner-status-pill.plan-mode {
+                bottom: calc(50% + 198px);
+            }
         }
 
         .scanner-controls-bottom {
@@ -2267,18 +2328,6 @@
             align-items: center;
             gap: 0.75rem;
             z-index: 25;
-        }
-
-        .scanner-status-pill {
-            font-size: 0.82rem;
-            color: #94a3b8;
-            display: inline-flex;
-            align-items: center;
-            gap: 0.45rem;
-            background: rgba(30, 41, 59, 0.7);
-            padding: 0.3rem 0.85rem;
-            border-radius: 20px;
-            border: 1px solid rgba(255, 255, 255, 0.08);
         }
 
         .scanner-ai-pill-btn {
@@ -3437,6 +3486,12 @@
         <div id="tab-search" class="tab-content active">
             <div class="search-box">
                 <input type="text" id="searchInput" class="search-input" tabindex="0" placeholder="Zadejte číslo formy, výrobu, pozici nebo zákazníka..." oninput="handleSearch()" autocomplete="off" autocapitalization="sentences" autocapitalize="sentences">
+                <button type="button" id="btnClearSearch" class="search-clear-btn" style="display: none;" onclick="clearSearchInput()" title="Vymazat hledání" aria-label="Vymazat hledání">
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="18" y1="6" x2="6" y2="18"></line>
+                        <line x1="6" y1="6" x2="18" y2="18"></line>
+                    </svg>
+                </button>
                 <button type="button" id="btnOpenScannerSearch" class="search-scan-icon-btn" onpointerdown="handleScanButtonPointerDown(event)" onclick="handleScanButtonTrigger(event)" title="Skenovat číslo formy nebo název výroby" aria-label="Skenovat číslo formy nebo název výroby">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                         <path d="M3 7V5a2 2 0 0 1 2-2h2"></path>
@@ -3957,7 +4012,10 @@
             </div>
             
             <div class="scanner-overlay-mask">
-                <div class="scanner-guide-text" id="scannerGuideText">Namiřte rámeček na číslo formy nebo název výroby</div>
+                <div class="scanner-status-pill" id="scannerStatusPill">
+                    <span class="scanner-status-dot" id="scannerStatusDot"></span>
+                    <span id="scannerStatusText">Namiřte rámeček na štítek a stiskněte tlačítko</span>
+                </div>
                 <div class="scanner-reticle" id="scannerReticle">
                     <div class="reticle-corner tl"></div>
                     <div class="reticle-corner tr"></div>
@@ -3969,10 +4027,6 @@
 
             <div class="scanner-controls-bottom" id="scannerControlsBottom">
                 <div style="display: flex; align-items: center; justify-content: center; gap: 0.5rem; flex-wrap: wrap; max-width: 96%;">
-                    <div class="scanner-status-pill" id="scannerStatusPill">
-                        <span class="scanner-status-dot" id="scannerStatusDot"></span>
-                        <span id="scannerStatusText">Hledám číslo nebo název výroby...</span>
-                    </div>
                     <button type="button" id="scannerAiPillBtn" class="scanner-ai-pill-btn" onclick="openGeminiConfigModal()" title="Nastavení Gemini AI pro čtení ručního písma">
                         <span style="display: inline-flex; align-items: center; gap: 4px;">
                             <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"/></svg>
@@ -7861,9 +7915,9 @@
         if (!apiKey || !canvas) return null;
 
         try {
-            // Smart downsampling (max 1280px, aspect-ratio preserved) & contrast binarization for instant network upload & laser-sharp OCR
+            // Optimized lightweight resolution (max 960px, JPEG quality 0.82) - cuts transmission time by ~50% while preserving sub-pixel stroke clarity
             let uploadCanvas = document.createElement('canvas');
-            const maxDim = 1280;
+            const maxDim = 960;
             let width = canvas.width;
             let height = canvas.height;
             if (width > maxDim || height > maxDim) {
@@ -7882,18 +7936,21 @@
                 uploadCanvas = canvas;
             }
 
-            // Quality 0.85: eliminates 65% of payload weight while preserving pristine stroke contours
-            const dataUrl = uploadCanvas.toDataURL('image/jpeg', 0.85);
+            // Quality 0.82: minimal payload weight, instantaneous upload
+            const dataUrl = uploadCanvas.toDataURL('image/jpeg', 0.82);
             const base64Data = dataUrl.split(',')[1];
             if (!base64Data) return null;
 
             const promptText = (mode === 'plan')
                 ? `You are an expert industrial vision and OCR system for an injection mold factory warehouse.
 Look at this photo containing a shift plan sheet, paper schedule, or production table with multiple injection mold numbers or product names.
-Extract ALL mold numbers (typically 2 to 5 digits, e.g. 765, 976, 808, 668, 10425) and visible product/part names from top to bottom.
+Extract ALL mold numbers (typically 2 to 6 digits, e.g. 765, 976, 808, 668, 0584, 000584, 10425) and visible product/part names from top to bottom.
 
 CRITICAL INDUSTRIAL CONTEXT & HANDWRITTEN DISAMBIGUATION:
-- Industrial context: Injection mold parts (kryt, lišta, držák, výztuha, těsnění, panel, rám, záslepka, víčko, Steckdeckel, Gehäuse, Halter, Blende) and automotive brands (Škoda, VW, Audi, Hella, Bosch).
+- ROBUST TO ANY HANDWRITING SIZE & STYLE: Numbers may be written very large across the sheet with a thick permanent marker, or very small and compact in pencil or fine ballpoint pen inside tight table cells. Identify digits of all scales, stroke thicknesses, and slants.
+- MULTIPLE WRITING INSTRUMENTS: Detect handwriting in ballpoint pen (blue, black), pencil/graphite, felt-tip marker, chalk, or industrial paint marker on paper or plastic.
+- ISOLATE NUMBERS FROM TEXT: Mold numbers often sit immediately adjacent to words or abbreviations (e.g. "KRYT 584", "forma 00584", "VW 765 lišta"). Cleanly separate the pure numeric digits into 'numbers' and all textual descriptions/names into product_name or raw_text.
+- LEADING ZEROS: Mold numbers may be written with leading zeros (e.g. "000584", "00584", "0584"). Preserve all digits in numbers/raw_text.
 - STRICT EUROPEAN HANDWRITTEN '7' VS '1' DISAMBIGUATION:
   * In Czech / European handwriting, digit '7' ALWAYS has a distinct horizontal crossbar through the vertical/slanted stem (7̵). Any digit with a middle crossbar is strictly '7' (SEVEN). DO NOT transcribe it as '1', '4', '9', or '3'!
   * Digit '1' in European handwriting has an acute top diagonal hook/roof and a vertical stroke WITHOUT any middle crossbar.
@@ -7903,15 +7960,19 @@ CRITICAL INDUSTRIAL CONTEXT & HANDWRITTEN DISAMBIGUATION:
 - Transcribe all text and numbers accurately without duplicates.
 
 Return strictly valid JSON only without markdown formatting with this schema:
-{"numbers":["765","976"],"raw_text":"..."}`
+{"numbers":["765","976","0584"],"raw_text":"..."}`
                 : `You are an expert industrial OCR and vision system for injection mold factory warehouse tracking.
 Look at this photo of an injection mold tag, physical metal mold plate, paper sticker, product sample, or handwritten note.
 Carefully identify:
-1. PRIMARY injection mold number (číslo formy), typically 2 to 5 digits (such as 765, 976, 808, 668, 10425).
+1. PRIMARY injection mold number (číslo formy), typically 2 to 6 digits (e.g. 765, 976, 808, 0584, 000584, 10425).
 2. Product or part name (název výrobku/dílu, e.g. "Steckdeckel", "Kryt", "Adapter", "Lišta", "Držák", "Panel", "VW", etc.).
 3. Customer name (zákazník) or any visible text.
 
 CRITICAL INDUSTRIAL CONTEXT & HANDWRITTEN DISAMBIGUATION:
+- ROBUST TO ANY HANDWRITING SIZE & STYLE: Numbers may be written exceptionally large filling the frame with a wide marker, or written very small in pencil or fine pen in a corner or table box. Read digits reliably at any physical size, stroke width, cursive or print style, and orientation.
+- ALL WRITING INSTRUMENTS: Supports pencil, blue/black ballpoint pen, fountain ink, felt-tip marker, chalk, or grease pencil.
+- SEPARATE TEXT FROM NUMBER: If text or words appear right next to or above/below the number (e.g. "forma 0584", "kryt zadní 765", "VW držák 124"), strictly extract the pure numeric digits into 'primary_number' and 'numbers', and keep all letters/words in 'product_name' and 'raw_text'. Do NOT merge letters into the number.
+- LEADING ZEROS: Mold numbers are frequently written with leading zeros (such as "000584", "00584", "0584"). Preserve the exact digits in primary_number.
 - Industrial context: Injection mold parts (kryt, lišta, držák, výztuha, těsnění, panel, rám, záslepka, víčko, Steckdeckel, Gehäuse, Halter, Blende) and automotive brands (Škoda, VW, Audi, Hella, Bosch).
 - STRICT EUROPEAN HANDWRITTEN '7' VS '1' DISAMBIGUATION:
   * In Czech / European handwriting, digit '7' ALWAYS has a horizontal crossbar through the stem (7̵). This is strictly digit '7' (SEVEN). DO NOT misread it as 1, 4, 9, or 3!
@@ -7953,14 +8014,15 @@ Return strictly valid JSON only without markdown formatting with this schema:
 
             let modelsToTry = [];
             if (availableModels.length > 0) {
+                const flash25 = availableModels.filter(m => m.includes('2.5-flash'));
                 const flash20 = availableModels.filter(m => m.includes('2.0-flash'));
                 const flash15 = availableModels.filter(m => m.includes('1.5-flash'));
-                const otherFlash = availableModels.filter(m => m.includes('flash') && !flash20.includes(m) && !flash15.includes(m));
+                const otherFlash = availableModels.filter(m => m.includes('flash') && !flash25.includes(m) && !flash20.includes(m) && !flash15.includes(m));
                 const remaining = availableModels.filter(m => !m.includes('flash'));
-                modelsToTry = [...flash20, ...flash15, ...otherFlash, ...remaining];
+                modelsToTry = [...flash25, ...flash20, ...flash15, ...otherFlash, ...remaining];
             }
             if (modelsToTry.length === 0) {
-                modelsToTry = ['gemini-2.0-flash', 'gemini-1.5-flash', 'gemini-2.0-flash-lite'];
+                modelsToTry = ['gemini-2.5-flash', 'gemini-2.0-flash', 'gemini-1.5-flash', 'gemini-2.0-flash-lite'];
             }
 
             let res = null;
@@ -8038,15 +8100,15 @@ Return strictly valid JSON only without markdown formatting with this schema:
         }
     }
 
-    function setScannerMode(mode) {
-        if (scannerActiveMode === mode) return;
+    function setScannerMode(mode, force = false) {
+        if (!force && scannerActiveMode === mode) return;
         scannerActiveMode = mode;
         triggerHapticFeedback([14]);
 
         const tagBtn = document.getElementById('scannerModeTagBtn');
         const planBtn = document.getElementById('scannerModePlanBtn');
         const reticle = document.getElementById('scannerReticle');
-        const guideText = document.getElementById('scannerGuideText');
+        const statusPill = document.getElementById('scannerStatusPill');
         const statusText = document.getElementById('scannerStatusText');
 
         if (tagBtn) tagBtn.classList.toggle('active', mode === 'tag');
@@ -8056,15 +8118,13 @@ Return strictly valid JSON only without markdown formatting with this schema:
             reticle.classList.toggle('plan-mode', mode === 'plan');
         }
 
-        if (guideText) {
-            guideText.textContent = mode === 'plan'
-                ? "Namiřte rámeček na denní plán a stiskněte tlačítko"
-                : "Namiřte rámeček na štítek a stiskněte tlačítko";
+        if (statusPill) {
+            statusPill.classList.toggle('plan-mode', mode === 'plan');
         }
 
         if (statusText) {
             statusText.textContent = mode === 'plan'
-                ? "Namiřte rámeček na plán a stiskněte tlačítko"
+                ? "Namiřte rámeček na denní plán a stiskněte tlačítko"
                 : "Namiřte rámeček na štítek a stiskněte tlačítko";
         }
 
@@ -8203,7 +8263,7 @@ Return strictly valid JSON only without markdown formatting with this schema:
     async function openNumberScanner(initialMode = 'tag') {
         triggerHapticFeedback([16]);
         if (initialMode) {
-            setScannerMode(initialMode);
+            setScannerMode(initialMode, true);
         }
         if (document.activeElement && typeof document.activeElement.blur === 'function') {
             document.activeElement.blur();
@@ -8324,7 +8384,7 @@ Return strictly valid JSON only without markdown formatting with this schema:
             const statusText = document.getElementById('scannerStatusText');
             if (statusText) {
                 statusText.textContent = (scannerActiveMode === 'plan')
-                    ? "Namiřte rámeček na plán a stiskněte tlačítko"
+                    ? "Namiřte rámeček na denní plán a stiskněte tlačítko"
                     : "Namiřte rámeček na štítek a stiskněte tlačítko";
             }
         } catch (err) {
@@ -8404,10 +8464,19 @@ Return strictly valid JSON only without markdown formatting with this schema:
         const scaleX = video.videoWidth / videoRect.width;
         const scaleY = video.videoHeight / videoRect.height;
 
-        const cropX = Math.max(0, (reticleRect.left - videoRect.left) * scaleX);
-        const cropY = Math.max(0, (reticleRect.top - videoRect.top) * scaleY);
-        const cropW = Math.min(video.videoWidth - cropX, reticleRect.width * scaleX);
-        const cropH = Math.min(video.videoHeight - cropY, reticleRect.height * scaleY);
+        // Add 6% context margin around reticle so large handwritten characters or digits touching the border are not clipped
+        const padX = reticleRect.width * scaleX * 0.06;
+        const padY = reticleRect.height * scaleY * 0.06;
+
+        const rawCropX = (reticleRect.left - videoRect.left) * scaleX - padX;
+        const rawCropY = (reticleRect.top - videoRect.top) * scaleY - padY;
+        const rawCropW = reticleRect.width * scaleX + (padX * 2);
+        const rawCropH = reticleRect.height * scaleY + (padY * 2);
+
+        const cropX = Math.max(0, rawCropX);
+        const cropY = Math.max(0, rawCropY);
+        const cropW = Math.min(video.videoWidth - cropX, rawCropW);
+        const cropH = Math.min(video.videoHeight - cropY, rawCropH);
 
         if (cropW <= 0 || cropH <= 0 || isNaN(cropW) || isNaN(cropH)) return null;
 
@@ -8487,14 +8556,15 @@ Return strictly valid JSON only without markdown formatting with this schema:
 
                     const ratio = effectiveLum / localBg;
                     let enhanced;
-                    if (ratio < 0.82) {
-                        // Dark ink stroke - push darker with quadratic curve
-                        const normInk = ratio / 0.82;
-                        enhanced = Math.max(0, Math.round(normInk * normInk * 120));
-                    } else if (ratio < 0.92) {
-                        enhanced = Math.min(255, Math.round(120 + (ratio - 0.82) * 1350));
+                    if (ratio < 0.85) {
+                        // Dark & medium ink stroke - push darker with smooth quadratic curve (supports light pencil to heavy marker)
+                        const normInk = ratio / 0.85;
+                        enhanced = Math.max(0, Math.round(normInk * normInk * 115));
+                    } else if (ratio < 0.94) {
+                        // Soft edge anti-aliasing transition (fine ballpoint pen & pencil stroke preservation)
+                        enhanced = Math.min(255, Math.round(115 + (ratio - 0.85) * 1550));
                     } else {
-                        // Paper background - clean white
+                        // Paper background - clean bright white
                         enhanced = 255;
                     }
 
@@ -8528,9 +8598,9 @@ Return strictly valid JSON only without markdown formatting with this schema:
                 if (lum > maxLum) maxLum = lum;
             }
 
-            if (maxLum - minLum < 30) return null; // image too flat
+            if (maxLum - minLum < 24) return null; // image too flat
 
-            const threshold = minLum + (maxLum - minLum) * 0.45;
+            const threshold = minLum + (maxLum - minLum) * 0.48;
 
             // Find ink bounding box
             let minX = w, maxX = 0, minY = h, maxY = 0;
@@ -8547,15 +8617,16 @@ Return strictly valid JSON only without markdown formatting with this schema:
                 }
             }
 
-            if (inkCount < 25 || maxX <= minX || maxY <= minY) return null;
+            // Adaptive ink threshold for tiny pencil writing (min 12 px) up to large marker
+            if (inkCount < 12 || maxX <= minX || maxY <= minY) return null;
 
             const boxW = maxX - minX + 1;
             const boxH = maxY - minY + 1;
             const aspectRatio = boxW / boxH;
 
-            // 1. Top Bar test (Top 22% of height)
+            // 1. Top Bar test (Top 24% of height)
             let topMinX = w, topMaxX = 0;
-            const topLimitY = minY + Math.round(boxH * 0.22);
+            const topLimitY = minY + Math.round(boxH * 0.24);
             for (let y = minY; y <= topLimitY; y++) {
                 for (let x = minX; x <= maxX; x++) {
                     if (lumArr[y * w + x] < threshold) {
@@ -8566,10 +8637,11 @@ Return strictly valid JSON only without markdown formatting with this schema:
             }
             const topSpan = (topMaxX >= topMinX) ? (topMaxX - topMinX + 1) / boxW : 0;
 
-            // 2. Middle Crossbar test (38% to 62% of height)
+            // 2. Middle Crossbar test (35% to 65% of height)
             let hasCrossbar = false;
-            const midStartY = minY + Math.round(boxH * 0.38);
-            const midEndY = minY + Math.round(boxH * 0.62);
+            const midStartY = minY + Math.round(boxH * 0.35);
+            const midEndY = minY + Math.round(boxH * 0.65);
+            const minCrossbarPixels = Math.max(2, Math.round(boxW * 0.20));
             for (let y = midStartY; y <= midEndY; y++) {
                 let rowMinX = w, rowMaxX = 0;
                 let rowInk = 0;
@@ -8582,8 +8654,8 @@ Return strictly valid JSON only without markdown formatting with this schema:
                 }
                 if (rowMaxX > rowMinX) {
                     const rowSpan = (rowMaxX - rowMinX + 1) / boxW;
-                    // Horizontal crossbar across the center (classic European 7)
-                    if (rowSpan > 0.40 && rowInk >= 4) {
+                    // Horizontal crossbar across the center (classic European 7, scale-independent)
+                    if (rowSpan > 0.38 && rowInk >= minCrossbarPixels) {
                         hasCrossbar = true;
                         break;
                     }
@@ -8592,7 +8664,7 @@ Return strictly valid JSON only without markdown formatting with this schema:
 
             // European handwritten '7': has crossbar OR (wide top bar and wider aspect ratio)
             // European handwritten '1': narrow vertical stroke, narrow top (topSpan < 0.45), no crossbar
-            const isSeven = hasCrossbar || (topSpan > 0.52 && aspectRatio > 0.36);
+            const isSeven = hasCrossbar || (topSpan > 0.50 && aspectRatio > 0.35);
 
             return {
                 isSeven,
@@ -8823,7 +8895,16 @@ Return strictly valid JSON only without markdown formatting with this schema:
             const cleanCand = cand.trim();
             if (!cleanCand) continue;
 
-            directMold = activeMolds.find(m => String(m[0]).trim() === cleanCand);
+            directMold = activeMolds.find(m => {
+                const mId = String(m[0]).trim();
+                if (mId === cleanCand) return true;
+                if (/^\d+$/.test(cleanCand) && /^\d+$/.test(mId)) {
+                    const sc = cleanCand.replace(/^0+/, '') || '0';
+                    const sm = mId.replace(/^0+/, '') || '0';
+                    return sc === sm;
+                }
+                return false;
+            });
             if (directMold) break;
         }
 
@@ -9024,7 +9105,19 @@ Return strictly valid JSON only without markdown formatting with this schema:
         let found = activeMolds.find(m => String(m[0]).trim() === raw);
         if (found) return { mold: found, isAutoCorrected: false, orig: raw };
 
-        // 2. Optical character substitution (common OCR confusions on handwriting)
+        // 2. Leading zero normalization (e.g. 000584, 00584, 0584 -> 584)
+        if (/^\d+$/.test(raw)) {
+            const strippedZero = raw.replace(/^0+/, '') || '0';
+            if (strippedZero !== raw) {
+                found = activeMolds.find(m => {
+                    const mId = String(m[0]).trim();
+                    return mId === strippedZero || (/^\d+$/.test(mId) && (mId.replace(/^0+/, '') || '0') === strippedZero);
+                });
+                if (found) return { mold: found, isAutoCorrected: true, orig: raw, fixed: String(found[0]) };
+            }
+        }
+
+        // 3. Optical character substitution (common OCR confusions on handwriting)
         // O/D -> 0, S -> 5, I/l/| -> 1, B -> 8, Z -> 2
         let fixed = raw
             .replace(/[oOdD]/g, '0')
@@ -9036,7 +9129,19 @@ Return strictly valid JSON only without markdown formatting with this schema:
         found = activeMolds.find(m => String(m[0]).trim() === fixed);
         if (found) return { mold: found, isAutoCorrected: true, orig: raw, fixed };
 
-        // 3. Levenshtein edit distance = 1 for numeric codes of length >= 3
+        // Leading zero normalization after OCR character substitution (e.g. "O584" -> "0584" -> "584")
+        if (/^\d+$/.test(fixed)) {
+            const strippedFixed = fixed.replace(/^0+/, '') || '0';
+            if (strippedFixed !== fixed) {
+                found = activeMolds.find(m => {
+                    const mId = String(m[0]).trim();
+                    return mId === strippedFixed || (/^\d+$/.test(mId) && (mId.replace(/^0+/, '') || '0') === strippedFixed);
+                });
+                if (found) return { mold: found, isAutoCorrected: true, orig: raw, fixed: String(found[0]) };
+            }
+        }
+
+        // 4. Levenshtein edit distance = 1 for numeric codes of length >= 3
         if (/^\d{3,6}$/.test(raw) || /^\d{3,6}$/.test(fixed)) {
             const checkNum = /^\d+$/.test(raw) ? raw : fixed;
             const singleDistanceMatches = activeMolds.filter(m => {
@@ -9283,7 +9388,14 @@ Return strictly valid JSON only without markdown formatting with this schema:
 
         for (const cand of sortedCandidates) {
             if (cand.length >= 3) {
-                const mold = activeMolds.find(m => String(m[0]).trim() === cand);
+                const mold = activeMolds.find(m => {
+                    const mId = String(m[0]).trim();
+                    if (mId === cand) return true;
+                    if (/^\d+$/.test(cand) && /^\d+$/.test(mId)) {
+                        return (cand.replace(/^0+/, '') || '0') === (mId.replace(/^0+/, '') || '0');
+                    }
+                    return false;
+                });
                 if (mold && !foundMoldsMap.has(String(mold[0]))) {
                     foundMoldsMap.set(String(mold[0]), mold);
                     hasLongMolds = true;
@@ -9299,7 +9411,14 @@ Return strictly valid JSON only without markdown formatting with this schema:
 
                 const isIsolated = new RegExp(`(^|\\s)#?${cand}(\\s|$)`).test(cleanedOcr);
                 if (isIsolated) {
-                    const mold = activeMolds.find(m => String(m[0]).trim() === cand);
+                    const mold = activeMolds.find(m => {
+                        const mId = String(m[0]).trim();
+                        if (mId === cand) return true;
+                        if (/^\d+$/.test(cand) && /^\d+$/.test(mId)) {
+                            return (cand.replace(/^0+/, '') || '0') === (mId.replace(/^0+/, '') || '0');
+                        }
+                        return false;
+                    });
                     if (mold && !foundMoldsMap.has(String(mold[0]))) {
                         foundMoldsMap.set(String(mold[0]), mold);
                     }
@@ -11590,23 +11709,46 @@ Return strictly valid JSON only without markdown formatting with this schema:
 
     let searchLogDebounceTimer = null;
 
+    function clearSearchInput() {
+        const input = document.getElementById('searchInput');
+        if (!input) return;
+        input.value = '';
+        const clearBtn = document.getElementById('btnClearSearch');
+        if (clearBtn) clearBtn.style.display = 'none';
+        triggerHapticFeedback([10]);
+        handleSearch();
+        input.focus();
+    }
+
     function handleSearch() {
-        const query = document.getElementById('searchInput').value.trim().toLowerCase();
+        const searchInputEl = document.getElementById('searchInput');
+        const rawQuery = searchInputEl ? searchInputEl.value : '';
+        const query = rawQuery.trim().toLowerCase();
         const tbody = document.getElementById('searchResults');
         const stats = document.getElementById('searchStats');
+        const clearBtn = document.getElementById('btnClearSearch');
+
+        if (clearBtn) {
+            clearBtn.style.display = query.length > 0 ? 'inline-flex' : 'none';
+        }
+
         if (!tbody) return;
 
         if (!query) {
-            stats.textContent = '';
+            if (stats) stats.textContent = '';
             tbody.innerHTML = `<tr><td colspan="3" class="no-data-centered" style="text-align: center !important; color: var(--text-muted); font-size: 0.85rem; padding: 2rem 1rem !important;">Začněte psát do pole výše</td></tr>`;
             return;
         }
+
+        // Leading zeros normalization for mold numbers (e.g. "000584", "00584", "0584" -> "584")
+        const strippedZerosQuery = /^\d+$/.test(query) ? query.replace(/^0+/, '') || '0' : null;
 
         const activeMolds = rawDatabase.filter(item => !item[4]);
         const scoredMatches = [];
         for (const item of activeMolds) {
             const [num, pos, cust, status, isDel, productName] = item;
             const strNum = String(num).toLowerCase();
+            const strippedMoldNum = /^\d+$/.test(strNum) ? strNum.replace(/^0+/, '') || '0' : null;
             const strPos = String(pos).toLowerCase();
             const strCust = String(cust).toLowerCase();
             const strProd = String(productName || '').toLowerCase();
@@ -11614,11 +11756,15 @@ Return strictly valid JSON only without markdown formatting with this schema:
 
             let score = 0;
 
-            // 1. Exact ID match (highest priority)
+            // 1. Exact ID match (highest priority), including leading zero normalization
             if (strNum === query) {
                 score += 1000;
+            } else if (strippedZerosQuery && strippedMoldNum && strippedMoldNum === strippedZerosQuery) {
+                score += 990;
             } else if (strNum.startsWith(query)) {
                 score += 500;
+            } else if (strippedZerosQuery && strippedMoldNum && strippedMoldNum.startsWith(strippedZerosQuery)) {
+                score += 480;
             } else if (strNum.includes(query)) {
                 score += 200;
             }
