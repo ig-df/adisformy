@@ -7671,10 +7671,14 @@
     async function fetchGeminiApi(endpointUrl, cleanKey, options = {}) {
         if (!cleanKey) throw new Error("API klíč je prázdný");
         
-        const attempts = [];
+        const isBearer = cleanKey.startsWith('AQ.') || cleanKey.startsWith('ya29.') || (!cleanKey.startsWith('AIzaSy') && cleanKey.length > 30);
 
-        // OAuth Bearer tokens (e.g. AQ.Ab8... or ya29....)
-        if (cleanKey.startsWith('AQ.') || cleanKey.startsWith('ya29.') || !cleanKey.startsWith('AIzaSy')) {
+        const attempts = [];
+        const urlWithKey = endpointUrl.includes('?') 
+            ? `${endpointUrl}&key=${encodeURIComponent(cleanKey)}` 
+            : `${endpointUrl}?key=${encodeURIComponent(cleanKey)}`;
+
+        if (isBearer) {
             attempts.push({
                 url: endpointUrl,
                 opts: {
@@ -7682,6 +7686,7 @@
                     headers: { ...(options.headers || {}), 'Authorization': `Bearer ${cleanKey}` }
                 }
             });
+            attempts.push({ url: urlWithKey, opts: options });
             attempts.push({
                 url: endpointUrl,
                 opts: {
@@ -7689,15 +7694,7 @@
                     headers: { ...(options.headers || {}), 'X-Goog-Api-Key': cleanKey }
                 }
             });
-            const urlWithKey = endpointUrl.includes('?') 
-                ? `${endpointUrl}&key=${encodeURIComponent(cleanKey)}` 
-                : `${endpointUrl}?key=${encodeURIComponent(cleanKey)}`;
-            attempts.push({ url: urlWithKey, opts: options });
         } else {
-            // Standard AIzaSy API key
-            const urlWithKey = endpointUrl.includes('?') 
-                ? `${endpointUrl}&key=${encodeURIComponent(cleanKey)}` 
-                : `${endpointUrl}?key=${encodeURIComponent(cleanKey)}`;
             attempts.push({ url: urlWithKey, opts: options });
             attempts.push({
                 url: endpointUrl,
@@ -7719,12 +7716,13 @@
         for (const attempt of attempts) {
             try {
                 const res = await fetch(attempt.url, attempt.opts);
-                if (res.ok) return res;
+                if (res && res.ok) return res;
                 lastRes = res;
-                if (res.status === 404 || res.status === 429 || res.status === 400) break;
-            } catch (e) {}
+                if (res && (res.status === 404 || res.status === 429)) break;
+            } catch (e) {
+                console.warn("Gemini API fetch attempt error:", e);
+            }
         }
-
         return lastRes;
     }
 
@@ -7742,9 +7740,9 @@
         }
 
         const res = await fetchGeminiApi(`https://generativelanguage.googleapis.com/v1beta/models`, cleanKey);
-        if (!res.ok) {
-            const errJson = await res.json().catch(() => ({}));
-            throw new Error(errJson?.error?.message || `HTTP ${res.status}`);
+        if (!res || !res.ok) {
+            const errJson = res ? await res.json().catch(() => ({})) : {};
+            throw new Error(errJson?.error?.message || (res?.status ? `HTTP ${res.status}` : 'Chyba připojení k API'));
         }
         const data = await res.json();
         const models = (data?.models || [])
@@ -8061,7 +8059,36 @@ Return ONLY valid JSON without markdown:
                 }
             };
 
-            const modelsToTry = ['gemini-2.0-flash', 'gemini-1.5-flash', 'gemini-2.0-flash-lite'];
+            let modelsToTry = [];
+            try {
+                const fetched = await fetchAvailableGeminiModels(apiKey);
+                if (Array.isArray(fetched) && fetched.length > 0) {
+                    const preferredOrder = [
+                        'gemini-3.6-flash',
+                        'gemini-3.5-flash',
+                        'gemini-2.5-flash',
+                        'gemini-1.5-flash',
+                        'gemini-3.5-flash-lite',
+                        'gemini-1.5-flash-8b',
+                        'gemini-2.5-pro',
+                        'gemini-1.5-pro'
+                    ];
+                    for (const pref of preferredOrder) {
+                        if (fetched.includes(pref)) modelsToTry.push(pref);
+                    }
+                    for (const m of fetched) {
+                        if (!modelsToTry.includes(m) && m.includes('flash')) {
+                            modelsToTry.push(m);
+                        }
+                    }
+                }
+            } catch (e) {
+                console.warn("Dynamic model fetching failed, using fallback models:", e);
+            }
+
+            if (modelsToTry.length === 0) {
+                modelsToTry = ['gemini-3.6-flash', 'gemini-3.5-flash', 'gemini-2.5-flash', 'gemini-1.5-flash', 'gemini-3.5-flash-lite'];
+            }
 
             let res = null;
             let lastErrData = null;
