@@ -3869,7 +3869,7 @@
         <div class="modal-body" style="padding-top: 0.75rem;">
             <div class="shift-plan-container">
                 <div class="shift-plan-add-bar">
-                    <input type="text" id="shiftPlanAddMachineInput" class="shift-plan-machine-input" placeholder="Stroj" autocomplete="off" onkeydown="if(event.key==='Enter') document.getElementById('shiftPlanAddInput').focus()">
+                    <input type="text" id="shiftPlanAddMachineInput" class="shift-plan-machine-input" placeholder="Lis č." autocomplete="off" onkeydown="if(event.key==='Enter') document.getElementById('shiftPlanAddInput').focus()">
                     <input type="text" id="shiftPlanAddInput" class="shift-plan-add-input" placeholder="Číslo formy" autocomplete="off" onkeydown="if(event.key==='Enter') submitShiftPlanManualAdd()">
                     <button type="button" class="shift-plan-scan-btn" onclick="startScannerFromShiftPlan()" title="Skenovat denní plán z kamery" aria-label="Skenovat denní plán z kamery">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -3885,7 +3885,7 @@
                 </div>
 
                 <div class="shift-plan-stats-bar" id="shiftPlanStatsBar">
-                    <span>Odebráno ze stojanů: <strong class="shift-plan-stats-count" id="shiftPlanCheckedCount">0 / 0</strong></span>
+                    <span>Odebráno z regálů: <strong class="shift-plan-stats-count" id="shiftPlanCheckedCount">0 / 0</strong></span>
                     <span id="shiftPlanPercent" style="font-weight: 600;">0 %</span>
                 </div>
 
@@ -11004,15 +11004,15 @@ Return strictly valid JSON only without markdown formatting with this schema:
             return `
                 <div class="shift-plan-item ${isChecked ? 'is-checked' : ''}" onclick="toggleShiftPlanItem('${escapeHtml(cleanNum)}', event)" style="cursor: pointer;">
                     <div class="shift-plan-left" style="pointer-events: none;">
-                        <div class="shift-plan-checkbox" title="${isChecked ? 'Odebráno ze stojanu' : 'Označit jako odebrané'}" role="checkbox" aria-checked="${isChecked}">
+                        <div class="shift-plan-checkbox" title="${isChecked ? 'Odebráno z regálu' : 'Označit jako odebrané'}" role="checkbox" aria-checked="${isChecked}">
                             ${checkIcon}
                         </div>
                         <div class="shift-plan-info">
                             <div class="shift-plan-mold-num">
                                 <span>Forma #${escapeHtml(cleanNum)}</span>
                                 ${cust ? `<span class="tag-customer" style="${custStyle}; font-size: 0.68rem; padding: 0.1rem 0.38rem;">${escapeHtml(cust)}</span>` : ''}
-                                ${machine ? `<span class="tag-machine" style="background: #0f172a; color: #ffffff; font-weight: 700; font-size: 0.68rem; padding: 0.12rem 0.45rem; border-radius: 4px; font-family: monospace; letter-spacing: 0.02em;" title="Stroj ${escapeHtml(machine)}">STROJ ${escapeHtml(machine)}</span>` : ''}
                             </div>
+                            ${machine ? `<div class="shift-plan-machine-row" style="margin-top: 0.12rem; margin-bottom: 0.04rem;"><span class="tag-machine" style="background: #0f172a; color: #ffffff; font-weight: 700; font-size: 0.68rem; padding: 0.12rem 0.45rem; border-radius: 4px; font-family: monospace; letter-spacing: 0.02em; display: inline-block;" title="Lis č. ${escapeHtml(machine)}">LIS Č. ${escapeHtml(machine)}</span></div>` : ''}
                             <div class="shift-plan-product" title="${escapeHtml(prodName)}">${escapeHtml(prodName)}</div>
                         </div>
                     </div>
@@ -11075,7 +11075,7 @@ Return strictly valid JSON only without markdown formatting with this schema:
         saveShiftPlan();
         renderShiftPlanList();
         triggerHapticFeedback([18]);
-        logUserAction(cleanNum, 'Plán na směnu', `Přidáno do plánu na směnu${machineNum ? ' (STROJ ' + machineNum + ')' : ''}`);
+        logUserAction(cleanNum, 'Plán na směnu', `Přidáno do plánu na směnu${machineNum ? ' (LIS Č. ' + machineNum + ')' : ''}`);
         if (!suppressToast) showToast(`Forma #${cleanNum} přidána do plánu`);
         return true;
     }
