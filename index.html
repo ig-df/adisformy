@@ -2805,13 +2805,19 @@
             border-color: #0f172a;
             box-shadow: 0 0 0 2px rgba(15, 23, 42, 0.08);
         }
+        .shift-plan-machine-group {
+            display: flex;
+            align-items: center;
+            gap: 0.3rem;
+            flex-shrink: 0;
+        }
         .shift-plan-machine-input {
-            width: 105px;
-            padding: 0.55rem 0.65rem;
+            width: 82px;
+            padding: 0.55rem 0.6rem;
             border: 1px solid var(--border-color);
             border-radius: 8px;
-            font-size: 0.9rem;
-            font-weight: 400;
+            font-size: 0.88rem;
+            font-weight: 500;
             background: var(--card-bg);
             color: var(--text-main);
             outline: none;
@@ -2827,32 +2833,90 @@
             border-color: #0f172a;
             box-shadow: 0 0 0 2px rgba(15, 23, 42, 0.08);
         }
-        .shift-plan-scan-btn {
+        .shift-plan-machine-add-btn {
             display: inline-flex;
             align-items: center;
             justify-content: center;
-            width: 38px;
-            height: 38px;
+            width: 36px;
+            height: 36px;
             flex-shrink: 0;
             border-radius: 8px;
-            background: var(--card-bg);
-            color: var(--text-main);
-            border: 1px solid var(--border-color);
+            background: var(--text-main);
+            color: var(--card-bg);
+            border: 1px solid transparent;
+            font-size: 1.18rem;
+            font-weight: 700;
+            line-height: 1;
             cursor: pointer;
-            transition: all 0.15s ease;
+            transition: opacity 0.15s ease, transform 0.12s ease;
             user-select: none;
             -webkit-tap-highlight-color: transparent;
         }
-        .shift-plan-scan-btn:hover {
-            background-color: var(--row-hover);
+        .shift-plan-machine-add-btn:hover {
+            opacity: 0.88;
         }
-        .shift-plan-scan-btn:active {
+        .shift-plan-machine-add-btn:active {
             transform: scale(0.92);
-            background-color: var(--border-color);
+            opacity: 0.8;
         }
-        .shift-plan-scan-btn svg {
-            width: 20px;
-            height: 20px;
+        @media (max-width: 480px) {
+            .shift-plan-add-bar {
+                gap: 0.35rem;
+            }
+            .shift-plan-machine-input {
+                width: 65px;
+                padding: 0.5rem 0.45rem;
+                font-size: 0.82rem;
+            }
+            .shift-plan-machine-add-btn {
+                width: 32px;
+                height: 34px;
+                font-size: 1.05rem;
+            }
+            .shift-plan-add-input {
+                padding: 0.5rem 0.55rem;
+                font-size: 0.82rem;
+            }
+            .shift-plan-add-bar .btn-primary {
+                padding: 0.5rem 0.65rem !important;
+                font-size: 0.8rem !important;
+            }
+        }
+        .task-time-pill-input {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.35rem;
+            padding: 0.28rem 0.55rem;
+            border-radius: 6px;
+            border: 1px solid var(--border-color);
+            background: var(--card-bg);
+            box-shadow: 0 1px 2px rgba(0,0,0,0.03);
+            transition: border-color 0.15s ease, box-shadow 0.15s ease;
+        }
+        .task-time-pill-input:focus-within {
+            border-color: #0f172a;
+            box-shadow: 0 0 0 2px rgba(15, 23, 42, 0.08);
+        }
+        .task-time-field {
+            border: none;
+            outline: none;
+            background: transparent;
+            font-size: 0.84rem;
+            font-weight: 600;
+            font-family: monospace, inherit;
+            color: var(--text-main);
+            padding: 0;
+            width: auto;
+            cursor: pointer;
+        }
+        .task-time-field::-webkit-calendar-picker-indicator {
+            cursor: pointer;
+            opacity: 0.65;
+            filter: grayscale(1);
+            margin-left: 2px;
+        }
+        .task-time-field::-webkit-calendar-picker-indicator:hover {
+            opacity: 1;
         }
         .shift-plan-stats-bar {
             display: flex;
@@ -3833,7 +3897,7 @@
                     <div style="font-size: 1.05rem; font-weight: 700; color: var(--text-main);" id="uactMoves">0</div>
                 </div>
                 <div style="background: var(--bg-color); border: 1px solid var(--border-color); border-radius: 8px; padding: 0.45rem 0.2rem; text-align: center;">
-                    <div style="font-size: 0.65rem; color: var(--text-muted); text-transform: uppercase;">Hledání</div>
+                    <div style="font-size: 0.65rem; color: var(--text-muted); text-transform: uppercase;">Plán směny</div>
                     <div style="font-size: 1.05rem; font-weight: 700; color: var(--text-main);" id="uactSearches">0</div>
                 </div>
                 <div style="background: var(--bg-color); border: 1px solid var(--border-color); border-radius: 8px; padding: 0.45rem 0.2rem; text-align: center;">
@@ -3869,18 +3933,11 @@
         <div class="modal-body" style="padding-top: 0.75rem;">
             <div class="shift-plan-container">
                 <div class="shift-plan-add-bar">
-                    <input type="text" id="shiftPlanAddMachineInput" class="shift-plan-machine-input" placeholder="Lis č." autocomplete="off" onkeydown="if(event.key==='Enter') document.getElementById('shiftPlanAddInput').focus()">
+                    <div class="shift-plan-machine-group">
+                        <input type="text" id="shiftPlanAddMachineInput" class="shift-plan-machine-input" placeholder="Lis č." autocomplete="off" onkeydown="if(event.key==='Enter') document.getElementById('shiftPlanAddInput').focus()">
+                        <button type="button" class="shift-plan-machine-add-btn" onclick="openShiftPlanTaskModal()" title="Úkol pro lis (Pokračování / Rozjezd)" aria-label="Úkol pro lis">+</button>
+                    </div>
                     <input type="text" id="shiftPlanAddInput" class="shift-plan-add-input" placeholder="Číslo formy" autocomplete="off" onkeydown="if(event.key==='Enter') submitShiftPlanManualAdd()">
-                    <button type="button" class="shift-plan-scan-btn" onclick="startScannerFromShiftPlan()" title="Skenovat denní plán z kamery" aria-label="Skenovat denní plán z kamery">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <path d="M3 7V5a2 2 0 0 1 2-2h2"></path>
-                            <path d="M17 3h2a2 2 0 0 1 2 2v2"></path>
-                            <path d="M21 17v2a2 2 0 0 1-2 2h-2"></path>
-                            <path d="M7 21H5a2 2 0 0 1-2-2v-2"></path>
-                            <rect x="7" y="7" width="10" height="10" rx="1"></rect>
-                            <line x1="7" y1="12" x2="17" y2="12"></line>
-                        </svg>
-                    </button>
                     <button class="btn-primary" style="padding: 0.55rem 0.9rem; font-size: 0.88rem;" onclick="submitShiftPlanManualAdd()">+ Přidat</button>
                 </div>
 
@@ -3897,6 +3954,63 @@
         <div class="modal-footer" style="display: flex; justify-content: space-between; align-items: center; padding-top: 0.75rem;">
             <button class="btn-secondary" style="color: #ef4444; border-color: rgba(239, 68, 68, 0.3);" onclick="clearShiftPlan()">Vyčistit seznam</button>
             <button class="btn-primary" onclick="closeShiftPlanModal()">Hotovo</button>
+        </div>
+    </div>
+</div>
+
+<!-- Modal: Úkol pro lis (TODO List: Pokračování / Rozjezd) -->
+<div class="modal-overlay" id="shiftPlanTaskModal">
+    <div class="modal-card" style="max-width: 420px; overflow: hidden;">
+        <div class="modal-header">
+            <div style="display: flex; align-items: center; gap: 0.55rem;">
+                <div style="width: 26px; height: 26px; border-radius: 6px; background: #0f172a; color: #ffffff; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 0.76rem; font-family: monospace; letter-spacing: 0.02em;">LIS</div>
+                <h3 style="margin: 0; font-size: 1.05rem;" id="shiftPlanTaskModalTitle">Úkol pro lis</h3>
+            </div>
+            <button class="close-modal-btn" onclick="closeShiftPlanTaskModal()">✕</button>
+        </div>
+        <div class="modal-body" style="padding-top: 0.85rem; display: flex; flex-direction: column; gap: 0.85rem;">
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.65rem;">
+                <div class="form-group" style="margin-bottom: 0;">
+                    <label style="font-size: 0.78rem; font-weight: 600; color: var(--text-muted); margin-bottom: 0.3rem; display: block;">Číslo lisu:</label>
+                    <input type="text" id="taskModalMachineInput" class="form-control" placeholder="Např. 14" autocomplete="off" style="width: 100%; padding: 0.55rem 0.65rem; border: 1px solid var(--border-color); border-radius: 8px; font-size: 0.88rem; background: var(--card-bg); color: var(--text-main);">
+                </div>
+                <div class="form-group" style="margin-bottom: 0;">
+                    <label style="font-size: 0.78rem; font-weight: 600; color: var(--text-muted); margin-bottom: 0.3rem; display: block;">Forma (volitelné):</label>
+                    <input type="text" id="taskModalMoldInput" class="form-control" placeholder="Číslo formy" autocomplete="off" style="width: 100%; padding: 0.55rem 0.65rem; border: 1px solid var(--border-color); border-radius: 8px; font-size: 0.88rem; background: var(--card-bg); color: var(--text-main);">
+                </div>
+            </div>
+
+            <div style="background: var(--row-hover); border: 1px solid var(--border-color); border-radius: 8px; padding: 0.75rem; display: flex; flex-direction: column; gap: 0.75rem;">
+                <!-- Option 1: Pokračování -->
+                <div style="display: flex; flex-direction: column; gap: 0.35rem;">
+                    <label style="display: flex; align-items: center; gap: 0.55rem; cursor: pointer; user-select: none; font-size: 0.88rem; font-weight: 600; color: var(--text-main);">
+                        <input type="checkbox" id="taskCheckPokracovani" style="width: 18px; height: 18px; accent-color: #0f172a; cursor: pointer;" onchange="triggerHapticFeedback([10])">
+                        <span>Pokračování</span>
+                    </label>
+                </div>
+
+                <div style="height: 1px; background: var(--border-color); opacity: 0.7;"></div>
+
+                <!-- Option 2: Rozjezd -->
+                <div style="display: flex; align-items: center; justify-content: space-between; gap: 0.5rem; flex-wrap: wrap;">
+                    <label style="display: inline-flex; align-items: center; gap: 0.55rem; cursor: pointer; user-select: none; font-size: 0.88rem; font-weight: 600; color: var(--text-main); margin-bottom: 0;">
+                        <input type="checkbox" id="taskCheckRozjezd" style="width: 18px; height: 18px; accent-color: #0f172a; cursor: pointer;" onchange="toggleTaskTimeInput('rozjezd')">
+                        <span>Rozjezd</span>
+                    </label>
+                    <div id="taskTimeWrapperRozjezd" class="task-time-pill-input" title="Čas rozjezdu">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width: 14px; height: 14px; color: var(--text-muted); flex-shrink: 0;">
+                            <circle cx="12" cy="12" r="10"></circle>
+                            <polyline points="12 6 12 12 16 14"></polyline>
+                        </svg>
+                        <span style="font-size: 0.76rem; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.02em;">Čas:</span>
+                        <input type="time" id="taskTimeRozjezd" class="task-time-field" oninput="onTaskTimeInputChange()">
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="modal-footer" style="display: flex; justify-content: flex-end; gap: 0.55rem; padding-top: 0.75rem;">
+            <button class="btn-secondary" onclick="closeShiftPlanTaskModal()">Zrušit</button>
+            <button class="btn-primary" onclick="submitShiftPlanTaskAdd()">Přidat do seznamu</button>
         </div>
     </div>
 </div>
@@ -4769,6 +4883,8 @@
             closeDirectProdModal();
         } else if (modalId === 'shiftPlanModal') {
             closeShiftPlanModal();
+        } else if (modalId === 'shiftPlanTaskModal') {
+            closeShiftPlanTaskModal();
         } else if (modalId === 'userCabinetModal') {
             closeUserCabinetModal();
         } else {
@@ -5037,9 +5153,41 @@
     let currentUserActivityData = [];
     let currentUserActivityFilter = 'ALL';
     let currentUserActivityTarget = '';
+    const recentLogsRingBuffer = [];
+    const MAX_RECENT_LOGS_BUFFER = 25;
+    const LOG_DUPLICATE_TIME_WINDOW_MS = 20000; // 20s deduplication window
 
     async function logUserAction(moldId, oldPos, newPos) {
         if (!currentUser) return;
+        const cleanMoldId = String(moldId || 'SYSTEM').trim();
+        const cleanOldPos = String(oldPos || 'Akce').trim();
+        const cleanNewPos = String(newPos || '').trim();
+        const cleanUser = String(currentUser).trim();
+        const now = Date.now();
+
+        // Silent deduplication filter: prevent duplicate spam across all actions, searches, and tasks
+        const logSignature = `${cleanUser}___${cleanMoldId}___${cleanOldPos}___${cleanNewPos}`.toLowerCase();
+
+        // Prune expired entries from buffer
+        while (recentLogsRingBuffer.length > 0 && (now - recentLogsRingBuffer[0].time) > LOG_DUPLICATE_TIME_WINDOW_MS) {
+            recentLogsRingBuffer.shift();
+        }
+
+        // Check if identical action was logged recently
+        const isDuplicate = recentLogsRingBuffer.some(entry => entry.signature === logSignature && (now - entry.time) < LOG_DUPLICATE_TIME_WINDOW_MS);
+        if (isDuplicate) {
+            return;
+        }
+
+        // Record entry in buffer
+        recentLogsRingBuffer.push({
+            signature: logSignature,
+            time: now
+        });
+        if (recentLogsRingBuffer.length > MAX_RECENT_LOGS_BUFFER) {
+            recentLogsRingBuffer.shift();
+        }
+
         try {
             await fetch(`${API_URL}/rest/v1/mold_logs`, {
                 method: 'POST',
@@ -5049,15 +5197,35 @@
                     'Content-Type': 'application/json' 
                 },
                 body: JSON.stringify({
-                    mold_id: moldId || 'SYSTEM',
-                    old_position: oldPos || 'Akce',
-                    new_position: newPos || '',
-                    user_name: currentUser
+                    mold_id: cleanMoldId,
+                    old_position: cleanOldPos,
+                    new_position: cleanNewPos,
+                    user_name: cleanUser
                 })
             });
         } catch(e) {
             console.warn("Log user action failed:", e);
         }
+    }
+
+    function isUserActivityInspectorLog(log) {
+        if (!log) return false;
+        const moldId = String(log.mold_id || '').trim().toUpperCase();
+        const oldPos = String(log.old_position || '').trim();
+        const newPos = String(log.new_position || '').trim();
+        const combined = (oldPos + ' ' + newPos).toLowerCase();
+
+        // Exclude raw passive views & search typing noise
+        if (moldId === 'HLEDÁNÍ' || oldPos === 'Vyhledávání' || oldPos === 'Detail formy' || newPos === 'Otevřen detail formy' || combined.includes('hledal:')) return false;
+
+        // Shift plan completed actions
+        if (oldPos === 'Plán na směnu' || combined.includes('odebráno z regálu') || combined.includes('splněn úkol') || combined.includes('splněno v plánu')) return true;
+
+        // Login events
+        if (moldId === 'SYSTEM' || combined.includes('autorizace') || combined.includes('přihlášen') || combined.includes('přihlášení')) return true;
+
+        // Main mold actions
+        return isSignificantAuditLog(log, true);
     }
 
     async function openUserActivityModal(userName, deviceType = '', lastSeenIso = '') {
@@ -5096,24 +5264,40 @@
             console.error("Chyba při načítání aktivity uživatele:", err);
         }
 
-        currentUserActivityData = logs || [];
+        // Filter and deduplicate logs so only significant actions are listed
+        const rawLogs = (logs || []).filter(isUserActivityInspectorLog);
+        const deduplicatedLogs = [];
+        for (let i = 0; i < rawLogs.length; i++) {
+            const cur = rawLogs[i];
+            const prev = deduplicatedLogs[deduplicatedLogs.length - 1];
+            if (prev &&
+                String(prev.mold_id || '').trim().toUpperCase() === String(cur.mold_id || '').trim().toUpperCase() &&
+                String(prev.old_position || '').trim().toLowerCase() === String(cur.old_position || '').trim().toLowerCase() &&
+                String(prev.new_position || '').trim().toLowerCase() === String(cur.new_position || '').trim().toLowerCase()) {
+                continue;
+            }
+            deduplicatedLogs.push(cur);
+        }
+
+        currentUserActivityData = deduplicatedLogs;
 
         // Compute metrics directly with real data
         let totalCount = currentUserActivityData.length;
         let moveCount = 0;
-        let searchCount = 0;
+        let planCount = 0;
         let noteCount = 0;
 
         currentUserActivityData.forEach(item => {
             const moldIdStr = String(item.mold_id || '').toUpperCase();
             const oldPosStr = String(item.old_position || '').toLowerCase();
             const newPosStr = String(item.new_position || '').toLowerCase();
+            const combined = (oldPosStr + ' ' + newPosStr).toLowerCase();
 
-            if (moldIdStr === 'HLEDÁNÍ' || oldPosStr.includes('hled') || newPosStr.includes('hledal')) {
-                searchCount++;
-            } else if (oldPosStr.includes('koment') || oldPosStr.includes('foto') || newPosStr.includes('poznámk') || newPosStr.includes('fotograf')) {
+            if (combined.includes('koment') || combined.includes('foto') || combined.includes('poznámk') || combined.includes('fotograf') || combined.includes('návodk')) {
                 noteCount++;
-            } else if (oldPosStr.includes('pozic') || newPosStr.includes('pozic') || oldPosStr.includes('stav') || newPosStr.includes('stav') || oldPosStr === 'položka vytvořena' || oldPosStr === 'koš') {
+            } else if (oldPosStr === 'plán na směnu' || combined.includes('odebráno') || combined.includes('splněn úkol') || combined.includes('v plánu')) {
+                planCount++;
+            } else if (combined.includes('pozic') || combined.includes('stav') || oldPosStr === 'položka vytvořena' || oldPosStr === 'nová forma' || oldPosStr === 'koš' || newPosStr === 'obnovena' || combined.includes('mezisklad')) {
                 moveCount++;
             }
         });
@@ -5138,7 +5322,7 @@
         const uNotes = document.getElementById('uactNotes');
         if (uTotal) uTotal.textContent = totalCount;
         if (uMoves) uMoves.textContent = moveCount;
-        if (uSearches) uSearches.textContent = searchCount;
+        if (uSearches) uSearches.textContent = planCount;
         if (uNotes) uNotes.textContent = noteCount;
 
         const listEl = document.getElementById('userActivityList');
@@ -5162,6 +5346,66 @@
         renderUserActivityList();
     }
 
+    function isSignificantAuditLog(log, isSuper = false) {
+        if (!log) return false;
+        const moldId = String(log.mold_id || '').trim().toUpperCase();
+        const oldPos = String(log.old_position || '').trim();
+        const newPos = String(log.new_position || '').trim();
+        const combined = (oldPos + ' ' + newPos).toLowerCase();
+
+        // 1. Shift plan ("Seznam forem na směnu") & batch scans: strictly excluded from history
+        if (moldId.startsWith('LIS_') || moldId === 'PLÁN' || moldId === 'SKENER' || moldId === 'HLEDÁNÍ') return false;
+        if (oldPos === 'Plán na směnu' || oldPos === 'Dávkový sken' || oldPos === 'Vyhledávání' || oldPos === 'Skenování') return false;
+        if (combined.includes('plán na směnu') || combined.includes('do plánu') || combined.includes('v plánu') || combined.includes('dávkový sken')) return false;
+
+        // 2. Telemetry and inspection events (opening detail, opening PDF viewer, searches, scanner matches)
+        if (oldPos === 'Detail formy' || newPos === 'Otevřen detail formy') return false;
+        if (oldPos === 'Návodka' && newPos.includes('Zobrazena návodka')) return false;
+        if (combined.includes('hledal:') || combined.includes('forma rozpoznána') || combined.includes('naskenován')) return false;
+
+        // 3. User login / authorization events: visible ONLY for superuser
+        const isLogin = moldId === 'SYSTEM' || combined.includes('autorizace') || combined.includes('přihlášen') || combined.includes('přihlášení');
+        if (isLogin) {
+            return Boolean(isSuper);
+        }
+
+        // 4. Main core functions:
+        // - Adding a new mold
+        if (oldPos === 'Nová forma' || combined.includes('vytvořena')) return true;
+        // - Moving mold / position changes (including trash and restore)
+        if (oldPos.includes('Pozice:') || newPos.includes('Pozice:') || (oldPos === 'Aktivní' && newPos === 'Koš') || oldPos === 'Koš' || newPos === 'Obnovena' || combined.includes('mezisklad') || combined.includes('přesun')) return true;
+        // - Status / customer changes
+        if (oldPos.includes('Stav:') || newPos.includes('Stav:') || combined.includes('zákazník:')) return true;
+        // - Photos: upload, update, delete
+        if (combined.includes('foto') || combined.includes('fotograf')) return true;
+        // - Navodka: add, update, delete
+        if (combined.includes('návodk')) return true;
+        // - Comments / notes
+        if (combined.includes('poznámk')) return true;
+
+        return false;
+    }
+
+    function formatMoldLogTarget(rawId) {
+        const str = String(rawId || '').trim();
+        const lisMatch = str.match(/^#?LIS[-_ ]*(\d+)$/i);
+        if (lisMatch) {
+            return {
+                isMachine: true,
+                cleanId: lisMatch[1],
+                label: `Lis č. ${lisMatch[1]}`,
+                header: `Lis č. ${lisMatch[1]}`
+            };
+        }
+        const cleanNum = str.replace(/^#+/, '');
+        return {
+            isMachine: false,
+            cleanId: cleanNum,
+            label: `Forma #${cleanNum}`,
+            header: `Forma: ${cleanNum}`
+        };
+    }
+
     function renderUserActivityList() {
         const listEl = document.getElementById('userActivityList');
         if (!listEl) return;
@@ -5183,40 +5427,44 @@
             let title = '';
             let detail = '';
 
-            const isSearch = moldIdStr.toUpperCase() === 'HLEDÁNÍ' || oldPos.toLowerCase().includes('hled') || newPos.toLowerCase().includes('hledal');
-            const isScanner = oldPos.toLowerCase().includes('skener') || newPos.toLowerCase().includes('skener');
+            const isLogin = moldIdStr.toUpperCase() === 'SYSTEM' || oldPos.toLowerCase().includes('autorizace') || newPos.toLowerCase().includes('přihlášen') || newPos.toLowerCase().includes('přihlášení');
+            const isShiftPlan = oldPos.toLowerCase().includes('plán na směnu') || newPos.toLowerCase().includes('odebráno z regálu') || newPos.toLowerCase().includes('splněn úkol') || newPos.toLowerCase().includes('splněno v plánu');
+            const isNewMold = oldPos.toLowerCase().includes('nová forma') || newPos.toLowerCase().includes('vytvořena');
             const isNavodka = oldPos.toLowerCase().includes('návodka') || newPos.toLowerCase().includes('návodka');
-            const isDetail = oldPos.toLowerCase().includes('detail formy');
             const isNote = oldPos.toLowerCase().includes('koment') || newPos.toLowerCase().includes('poznámk');
-            const isPhoto = oldPos.toLowerCase().includes('foto') || newPos.toLowerCase().includes('foto');
+            const isPhoto = oldPos.toLowerCase().includes('foto') || newPos.toLowerCase().includes('fotograf');
 
-            if (isSearch) {
-                iconSvg = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width: 14px; height: 14px;"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>';
-                title = 'Vyhledávání v aplikaci';
-                detail = newPos || oldPos;
-            } else if (isScanner) {
-                iconSvg = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width: 14px; height: 14px;"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path><circle cx="12" cy="13" r="4"></circle></svg>';
-                title = `Skener čárových kódů: ${moldIdStr}`;
-                detail = newPos || 'Skenování fotoaparátem';
+            if (isLogin) {
+                iconSvg = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width: 14px; height: 14px;"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"></path><polyline points="10 17 15 12 10 7"></polyline><line x1="15" y1="12" x2="3" y2="12"></line></svg>';
+                title = 'Přihlášení do systému';
+                detail = escapeHtml(newPos || 'Úspěšná autorizace');
+            } else if (isShiftPlan) {
+                iconSvg = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width: 14px; height: 14px;"><path d="M9 11l3 3L22 4"></path><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"></path></svg>';
+                const targetObj = formatMoldLogTarget(moldIdStr);
+                title = `Plán směny: ${targetObj.header}`;
+                detail = escapeHtml(newPos || 'Odebráno z regálu / Splněno');
+            } else if (isNewMold) {
+                iconSvg = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width: 14px; height: 14px;"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>';
+                title = `Vytvořena nová forma: #${moldIdStr}`;
+                detail = `Forma uložena na pozici <strong>${escapeHtml(newPos)}</strong>`;
             } else if (isNavodka) {
                 iconSvg = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width: 14px; height: 14px;"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line></svg>';
-                title = `Návodka: ${moldIdStr}`;
-                detail = newPos;
-            } else if (isDetail) {
-                iconSvg = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width: 14px; height: 14px;"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>';
-                title = `Detail formy: ${moldIdStr}`;
-                detail = 'Zobrazení podrobností a fotografií formy';
+                title = `Návodka: Forma #${moldIdStr}`;
+                detail = escapeHtml(newPos);
             } else if (isNote) {
                 iconSvg = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width: 14px; height: 14px;"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path><line x1="9" y1="9" x2="15" y2="9"></line><line x1="9" y1="13" x2="13" y2="13"></line></svg>';
-                title = `Poznámka k formě: ${moldIdStr}`;
-                detail = newPos;
+                title = `Poznámka k formě: #${moldIdStr}`;
+                detail = escapeHtml(newPos);
             } else if (isPhoto) {
                 iconSvg = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width: 14px; height: 14px;"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>';
-                title = `Fotografie formy: ${moldIdStr}`;
-                detail = newPos;
+                title = `Fotografie formy: #${moldIdStr}`;
+                detail = escapeHtml(newPos);
             } else {
-                iconSvg = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width: 14px; height: 14px;"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>';
-                title = `Forma: ${moldIdStr}`;
+                const targetObj = formatMoldLogTarget(moldIdStr);
+                iconSvg = targetObj.isMachine 
+                    ? '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width: 14px; height: 14px;"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect><line x1="8" y1="21" x2="16" y2="21"></line><line x1="12" y1="17" x2="12" y2="21"></line></svg>'
+                    : '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width: 14px; height: 14px;"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>';
+                title = targetObj.header;
                 detail = `${escapeHtml(oldPos)} → <strong>${escapeHtml(newPos)}</strong>`;
             }
 
@@ -7067,8 +7315,6 @@
             expandedMoldsMap[rowKey] = true;
             if (btn) btn.classList.add('expanded');
 
-            logUserAction(moldId, 'Detail formy', 'Otevřen detail formy');
-
             const item = rawDatabase.find(i => String(i[0]) === String(moldId));
             
             if (item && triggerTr) {
@@ -7344,8 +7590,8 @@
                 headers: { 'apikey': API_KEY, 'Authorization': `Bearer ${API_KEY}`, 'Content-Type': 'application/json' },
                 body: JSON.stringify({ 
                     mold_id: moldId, 
-                    old_position: 'Detail formy', 
-                    new_position: 'Aktualizace návodky / foto', 
+                    old_position: 'Návodka', 
+                    new_position: 'Aktualizace návodky a fotografií', 
                     user_name: currentUser 
                 })
             });
@@ -7391,8 +7637,6 @@
         if (titleEl) {
             titleEl.textContent = `Návodka — Forma ${moldIdInfo || ''}`;
         }
-
-        logUserAction(moldIdInfo ? String(moldIdInfo).split('—')[0].trim() : 'NÁVODKA', 'Návodka', `Zobrazena návodka: ${moldIdInfo || fileUrl}`);
 
         const downloadLink = document.getElementById('pdfDownloadLink');
         if (downloadLink) {
@@ -9690,7 +9934,6 @@ Return strictly valid JSON only without markdown formatting with this schema:
                         if (matchResult) {
                             if (matchResult.type === 'single') {
                                 const moldNum = matchResult.mold[0];
-                                logUserAction(moldNum, 'Skenování', 'Forma rozpoznána a otevřena přes Gemini Vision AI');
                                 haptic.cameraSuccess();
                                 playScannerAudioBeep(true);
                                 showToast(`✓ Gemini AI: Forma #${moldNum} nalezena`);
@@ -9806,7 +10049,6 @@ Return strictly valid JSON only without markdown formatting with this schema:
                     if (matchResult) {
                         if (matchResult.type === 'single') {
                             const moldNum = matchResult.mold[0];
-                            logUserAction(moldNum, 'Skenování', 'Forma rozpoznána a otevřena přes záložní OCR');
                             haptic.cameraSuccess();
                             playScannerAudioBeep(true);
                             showToast(`✓ Záložní OCR: Forma #${moldNum} nalezena`);
@@ -9849,14 +10091,6 @@ Return strictly valid JSON only without markdown formatting with this schema:
 
         const matchedItem = matchResult.mold;
         const [num, pos, cust, status, isDel, productName] = matchedItem;
-
-        const logDetail = matchResult.matchType === 'unique_product'
-            ? `Naskenován název výroby "${matchResult.productName}" (forma #${num})`
-            : (matchResult.matchType === 'exact_mold_in_product'
-                ? `Naskenována výroba "${matchResult.productName}" + forma #${num}`
-                : 'Naskenována forma kamerou');
-
-        logUserAction(num, 'Skenování', logDetail);
 
         const reticle = document.getElementById('scannerReticle');
         if (reticle) {
@@ -9908,8 +10142,6 @@ Return strictly valid JSON only without markdown formatting with this schema:
 
         const molds = matchResult.molds;
         const prodName = matchResult.productName || 'Výroba';
-
-        logUserAction('SKENER', 'Skenování', `Naskenován plán výroby: "${prodName}" (${molds.length} forem)`);
 
         const reticle = document.getElementById('scannerReticle');
         if (reticle) {
@@ -10149,7 +10381,6 @@ Return strictly valid JSON only without markdown formatting with this schema:
 
         if (addedCount > 0) {
             saveShiftPlan();
-            logUserAction('PLÁN', 'Dávkový sken', `Přidáno ${addedCount} forem z listu do plánu na směnu`);
             showToast(`Přidáno ${addedCount} forem do plánu směny!`);
             closeNumberScanner();
             // Start flight animation cleanly after the scanner has closed and faded out
@@ -10838,29 +11069,6 @@ Return strictly valid JSON only without markdown formatting with this schema:
         return WORKSHOP_MACHINES.includes(num);
     }
 
-    async function logUserAction(moldId, oldPos, newPos) {
-        if (!currentUser) return;
-        try {
-            await fetch(`${API_URL}/rest/v1/mold_logs`, {
-                method: 'POST',
-                headers: { 
-                    'apikey': API_KEY, 
-                    'Authorization': `Bearer ${API_KEY}`, 
-                    'Content-Type': 'application/json',
-                    'Prefer': 'return=minimal'
-                },
-                body: JSON.stringify({ 
-                    mold_id: String(moldId || '').trim(), 
-                    old_position: String(oldPos || '').trim(), 
-                    new_position: String(newPos || '').trim(), 
-                    user_name: String(currentUser || '').trim() 
-                })
-            });
-        } catch (err) {
-            console.warn('logUserAction failed:', err);
-        }
-    }
-
     function getShiftPlanStorageKey() {
         return 'adis_shift_plan_' + (currentUser ? encodeURIComponent(currentUser.trim()) : 'default');
     }
@@ -10872,19 +11080,23 @@ Return strictly valid JSON only without markdown formatting with this schema:
                 const parsed = JSON.parse(raw);
                 if (Array.isArray(parsed)) {
                     currentShiftPlan = parsed.map(item => {
-                        const cleanNum = String(item.num || item.id || '').trim();
-                        const mold = rawDatabase.find(m => String(m[0]).trim() === cleanNum);
+                        const cleanNum = String(item.num || '').trim();
+                        const mold = cleanNum ? rawDatabase.find(m => String(m[0]).trim() === cleanNum) : null;
                         return {
+                            id: item.id || (cleanNum ? ('mold_' + cleanNum) : ('task_' + (item.machine || '') + '_' + Date.now())),
                             num: cleanNum,
-                            id: cleanNum,
-                            pos: mold ? (mold[1] || item.pos || 'Mezisklad') : (item.pos || 'Mezisklad'),
+                            machine: String(item.machine || '').trim(),
+                            pos: mold ? (mold[1] || item.pos || 'Mezisklad') : (item.pos || (cleanNum ? 'Mezisklad' : 'Lis')),
                             customer: mold ? (mold[2] || item.customer || '') : (item.customer || ''),
                             product: mold ? (mold[5] || item.product || '') : (item.product || ''),
-                            machine: String(item.machine || '').trim(),
+                            pokracovani: Boolean(item.pokracovani),
+                            pokracovaniTime: item.pokracovaniTime || '',
+                            rozjezd: Boolean(item.rozjezd),
+                            rozjezdTime: item.rozjezdTime || '',
                             checked: Boolean(item.checked),
                             addedAt: item.addedAt || Date.now()
                         };
-                    }).filter(item => Boolean(item.num));
+                    }).filter(item => Boolean(item.num || item.machine || item.pokracovani || item.rozjezd));
                 } else {
                     currentShiftPlan = [];
                 }
@@ -10938,6 +11150,179 @@ Return strictly valid JSON only without markdown formatting with this schema:
         hideModalAnimated('shiftPlanModal');
     }
 
+    function openShiftPlanTaskModal() {
+        triggerHapticFeedback([12]);
+        const machineInput = document.getElementById('shiftPlanAddMachineInput');
+        const moldInput = document.getElementById('shiftPlanAddInput');
+
+        const initialMachine = machineInput ? machineInput.value.trim() : '';
+        const initialMold = moldInput ? moldInput.value.trim() : '';
+
+        const taskMachineEl = document.getElementById('taskModalMachineInput');
+        const taskMoldEl = document.getElementById('taskModalMoldInput');
+        if (taskMachineEl) taskMachineEl.value = initialMachine;
+        if (taskMoldEl) taskMoldEl.value = initialMold;
+
+        const checkPokr = document.getElementById('taskCheckPokracovani');
+        const checkRozj = document.getElementById('taskCheckRozjezd');
+        const timeRozj = document.getElementById('taskTimeRozjezd');
+
+        if (checkPokr) checkPokr.checked = false;
+        if (checkRozj) checkRozj.checked = false;
+        if (timeRozj) timeRozj.value = '';
+
+        showModalAnimated('shiftPlanTaskModal');
+
+        setTimeout(() => {
+            if (!initialMachine && taskMachineEl) {
+                taskMachineEl.focus();
+            } else if (checkPokr) {
+                checkPokr.focus();
+            }
+        }, 80);
+    }
+
+    function closeShiftPlanTaskModal() {
+        hideModalAnimated('shiftPlanTaskModal');
+    }
+
+    function toggleTaskTimeInput(type) {
+        triggerHapticFeedback([10]);
+        if (type === 'rozjezd') {
+            const check = document.getElementById('taskCheckRozjezd');
+            const timeInput = document.getElementById('taskTimeRozjezd');
+            if (check && timeInput) {
+                if (check.checked) {
+                    timeInput.focus();
+                }
+            }
+        }
+    }
+
+    function onTaskTimeInputChange() {
+        const check = document.getElementById('taskCheckRozjezd');
+        const timeInput = document.getElementById('taskTimeRozjezd');
+        if (check && timeInput && timeInput.value) {
+            check.checked = true;
+        }
+    }
+
+    function findDuplicateShiftPlanItem(moldNum, machineNum) {
+        const cleanMold = String(moldNum || '').trim().toLowerCase();
+        const cleanMach = String(machineNum || '').trim().toLowerCase();
+        if (!cleanMold && !cleanMach) return null;
+
+        return currentShiftPlan.find(p => {
+            const pMold = String(p.num || '').trim().toLowerCase();
+            const pMach = String(p.machine || '').trim().toLowerCase();
+
+            if (cleanMold && cleanMach) {
+                return pMold === cleanMold && pMach === cleanMach;
+            }
+            if (cleanMold && !cleanMach) {
+                return pMold === cleanMold && !pMach;
+            }
+            if (!cleanMold && cleanMach) {
+                return !pMold && pMach === cleanMach;
+            }
+            return false;
+        }) || null;
+    }
+
+    function clearMainBarInputs() {
+        const input = document.getElementById('shiftPlanAddInput');
+        const machineInput = document.getElementById('shiftPlanAddMachineInput');
+        if (input) input.value = '';
+        if (machineInput) machineInput.value = '';
+    }
+
+    function submitShiftPlanTaskAdd() {
+        const machineEl = document.getElementById('taskModalMachineInput');
+        const moldEl = document.getElementById('taskModalMoldInput');
+        const checkPokr = document.getElementById('taskCheckPokracovani');
+        const checkRozj = document.getElementById('taskCheckRozjezd');
+        const timeRozj = document.getElementById('taskTimeRozjezd');
+
+        const machine = machineEl ? machineEl.value.trim() : '';
+        const mold = moldEl ? moldEl.value.trim() : '';
+        const isPokr = checkPokr ? checkPokr.checked : false;
+        const isRozj = checkRozj ? checkRozj.checked : false;
+        const tRozj = (isRozj && timeRozj) ? timeRozj.value.trim() : '';
+
+        if (!machine && !mold) {
+            showToast("Zadejte číslo lisu nebo formy!", true);
+            if (machineEl) machineEl.focus();
+            return;
+        }
+
+        const duplicate = findDuplicateShiftPlanItem(mold, machine);
+        if (duplicate) {
+            triggerHapticFeedback([20]);
+            const targetLabel = machine ? (mold ? `Lis č. ${machine} a formu #${mold}` : `Lis č. ${machine}`) : `Formu #${mold}`;
+            showCustomConfirm(
+                "Položka již existuje",
+                `Záznam pro ${targetLabel} již v seznamu je. Chcete jej zapsat znovu a přepsat stávající záznam?`,
+                "Přepsat",
+                () => {
+                    closeShiftPlanTaskModal();
+                    duplicate.machine = machine;
+                    duplicate.num = mold;
+                    duplicate.pokracovani = isPokr;
+                    duplicate.pokracovaniTime = '';
+                    duplicate.rozjezd = isRozj;
+                    duplicate.rozjezdTime = tRozj;
+                    duplicate.checked = false;
+                    duplicate.addedAt = Date.now();
+                    if (mold) {
+                        const dbMold = rawDatabase.find(m => String(m[0]).trim() === mold);
+                        if (dbMold) {
+                            duplicate.pos = dbMold[1] || 'Mezisklad';
+                            duplicate.customer = dbMold[2] || '';
+                            duplicate.product = dbMold[5] || '';
+                        }
+                    }
+                    saveShiftPlan();
+                    renderShiftPlanList();
+                    clearMainBarInputs();
+                    showToast("Záznam byl přepsán a aktualizován");
+                }
+            );
+            return;
+        }
+
+        const newItem = {
+            id: 'task_' + Date.now() + '_' + Math.random().toString(36).substr(2, 4),
+            num: mold,
+            machine: machine,
+            pokracovani: isPokr,
+            pokracovaniTime: '',
+            rozjezd: isRozj,
+            rozjezdTime: tRozj,
+            checked: false,
+            addedAt: Date.now(),
+            pos: mold ? 'Mezisklad' : 'Lis',
+            customer: '',
+            product: ''
+        };
+
+        if (mold) {
+            const dbMold = rawDatabase.find(m => String(m[0]).trim() === mold);
+            if (dbMold) {
+                newItem.pos = dbMold[1] || 'Mezisklad';
+                newItem.customer = dbMold[2] || '';
+                newItem.product = dbMold[5] || '';
+            }
+        }
+
+        currentShiftPlan.push(newItem);
+        saveShiftPlan();
+        renderShiftPlanList();
+        triggerHapticFeedback([18]);
+        closeShiftPlanTaskModal();
+        clearMainBarInputs();
+        showToast("Úkol byl přidán do plánu");
+    }
+
     function renderShiftPlanList() {
         const container = document.getElementById('shiftPlanListContainer');
         const checkedCountEl = document.getElementById('shiftPlanCheckedCount');
@@ -10964,21 +11349,25 @@ Return strictly valid JSON only without markdown formatting with this schema:
                             <path d="m9 14 2 2 4-4"></path>
                         </svg>
                     </div>
-                    <div class="empty-state-title" style="font-size: 0.95rem;">Žádné formy v plánu</div>
-                    <div class="empty-state-desc" style="font-size: 0.8rem;">Zadejte číslo formy výše a klikněte + Přidat, nebo naskenujte denní plán kamerou.</div>
+                    <div class="empty-state-title" style="font-size: 0.95rem;">Žádné úkoly v plánu</div>
+                    <div class="empty-state-desc" style="font-size: 0.8rem;">Zadejte lis a klikněte + pro úkol (Rozjezd / Pokračování), nebo zadejte číslo formy a klikněte + Přidat.</div>
                 </div>
             `;
             return;
         }
 
         container.innerHTML = currentShiftPlan.map(item => {
-            const cleanNum = String(item.num || item.id || '').trim();
-            const mold = rawDatabase.find(m => String(m[0]).trim() === cleanNum);
+            const itemId = item.id || (item.num ? ('mold_' + item.num) : ('task_' + item.machine));
+            const cleanNum = String(item.num || '').trim();
+            const machine = String(item.machine || '').trim();
+            const hasPokr = Boolean(item.pokracovani);
+            const hasRozj = Boolean(item.rozjezd);
+
+            const mold = cleanNum ? rawDatabase.find(m => String(m[0]).trim() === cleanNum) : null;
             
-            let pos = item.pos || 'Mezisklad';
+            let pos = item.pos || (cleanNum ? 'Mezisklad' : 'Lis');
             let cust = item.customer || '';
             let prodName = item.product || '';
-            let machine = String(item.machine || '').trim();
 
             if (mold) {
                 pos = mold[1] || pos;
@@ -10986,12 +11375,17 @@ Return strictly valid JSON only without markdown formatting with this schema:
                 prodName = mold[5] || prodName;
             }
 
-            if (!prodName) {
+            if (!prodName && !cleanNum) {
+                if (hasPokr && hasRozj) prodName = 'Pokračování & Rozjezd';
+                else if (hasPokr) prodName = 'Pokračování výroby';
+                else if (hasRozj) prodName = 'Rozjezd výroby';
+                else prodName = 'Úkol pro lis';
+            } else if (!prodName) {
                 prodName = 'Bez názvu výroby';
             }
 
-            const badgeClass = getPositionBadgeClass(pos);
-            const displayPos = formatPositionDisplay(pos);
+            const badgeClass = cleanNum ? getPositionBadgeClass(pos) : '';
+            const displayPos = cleanNum ? formatPositionDisplay(pos) : '';
 
             const isChecked = Boolean(item.checked);
             const custStyle = getCustomerStyle(cust);
@@ -11002,48 +11396,62 @@ Return strictly valid JSON only without markdown formatting with this schema:
             ` : '';
 
             return `
-                <div class="shift-plan-item ${isChecked ? 'is-checked' : ''}" onclick="toggleShiftPlanItem('${escapeHtml(cleanNum)}', event)" style="cursor: pointer;">
+                <div class="shift-plan-item ${isChecked ? 'is-checked' : ''}" onclick="toggleShiftPlanItem('${escapeHtml(itemId)}', event)" style="cursor: pointer;">
                     <div class="shift-plan-left" style="pointer-events: none;">
-                        <div class="shift-plan-checkbox" title="${isChecked ? 'Odebráno z regálu' : 'Označit jako odebrané'}" role="checkbox" aria-checked="${isChecked}">
+                        <div class="shift-plan-checkbox" title="${isChecked ? 'Označeno jako hotové' : 'Označit jako hotové'}" role="checkbox" aria-checked="${isChecked}">
                             ${checkIcon}
                         </div>
                         <div class="shift-plan-info">
                             <div class="shift-plan-mold-num">
-                                <span>Forma #${escapeHtml(cleanNum)}</span>
+                                ${cleanNum ? `<span>Forma #${escapeHtml(cleanNum)}</span>` : `<span class="tag-machine" style="background: #0f172a; color: #ffffff; font-weight: 700; font-size: 0.76rem; padding: 0.15rem 0.52rem; border-radius: 4px; font-family: monospace; letter-spacing: 0.02em; display: inline-block;">LIS Č. ${escapeHtml(machine)}</span>`}
                                 ${cust ? `<span class="tag-customer" style="${custStyle}; font-size: 0.68rem; padding: 0.1rem 0.38rem;">${escapeHtml(cust)}</span>` : ''}
                             </div>
-                            ${machine ? `<div class="shift-plan-machine-row" style="margin-top: 0.12rem; margin-bottom: 0.04rem;"><span class="tag-machine" style="background: #0f172a; color: #ffffff; font-weight: 700; font-size: 0.68rem; padding: 0.12rem 0.45rem; border-radius: 4px; font-family: monospace; letter-spacing: 0.02em; display: inline-block;" title="Lis č. ${escapeHtml(machine)}">LIS Č. ${escapeHtml(machine)}</span></div>` : ''}
+                            ${(cleanNum && machine) ? `<div class="shift-plan-machine-row" style="margin-top: 0.12rem; margin-bottom: 0.04rem;"><span class="tag-machine" style="background: #0f172a; color: #ffffff; font-weight: 700; font-size: 0.68rem; padding: 0.12rem 0.45rem; border-radius: 4px; font-family: monospace; letter-spacing: 0.02em; display: inline-block;" title="Lis č. ${escapeHtml(machine)}">LIS Č. ${escapeHtml(machine)}</span></div>` : ''}
+                            ${(hasPokr || hasRozj) ? `
+                                <div style="display: flex; gap: 0.3rem; flex-wrap: wrap; margin-top: 0.18rem; margin-bottom: 0.06rem;">
+                                    ${hasPokr ? `<span style="display: inline-flex; align-items: center; gap: 0.25rem; font-size: 0.68rem; font-weight: 600; padding: 0.08rem 0.4rem; border-radius: 4px; background: #fef3c7; color: #92400e; border: 1px solid #fde68a;">🔄 Pokračování</span>` : ''}
+                                    ${hasRozj ? `<span style="display: inline-flex; align-items: center; gap: 0.25rem; font-size: 0.68rem; font-weight: 600; padding: 0.08rem 0.4rem; border-radius: 4px; background: #ecfdf5; color: #065f46; border: 1px solid #a7f3d0;">⚡ Rozjezd${item.rozjezdTime ? ' ve ' + escapeHtml(item.rozjezdTime) : ''}</span>` : ''}
+                                </div>
+                            ` : ''}
                             <div class="shift-plan-product" title="${escapeHtml(prodName)}">${escapeHtml(prodName)}</div>
                         </div>
                     </div>
                     <div class="shift-plan-right">
-                        <span class="${badgeClass}" style="font-size: 0.78rem; pointer-events: none;" title="Pozice: ${escapeHtml(pos)}">${escapeHtml(displayPos)}</span>
+                        ${displayPos ? `<span class="${badgeClass}" style="font-size: 0.78rem; pointer-events: none;" title="Pozice: ${escapeHtml(pos)}">${escapeHtml(displayPos)}</span>` : ''}
                     </div>
                 </div>
             `;
         }).join('');
     }
 
-    function toggleShiftPlanItem(moldNum, e) {
+    function toggleShiftPlanItem(itemId, e) {
         if (e && typeof e.stopPropagation === 'function') {
             e.stopPropagation();
         }
-        const cleanNum = String(moldNum || '').trim();
-        if (!cleanNum) return;
+        const cleanId = String(itemId || '').trim();
+        if (!cleanId) return;
 
-        const item = currentShiftPlan.find(p => String(p.num || p.id).trim() === cleanNum);
+        const item = currentShiftPlan.find(p => String(p.id || p.num).trim() === cleanId);
         if (item) {
             item.checked = !item.checked;
             saveShiftPlan();
             renderShiftPlanList();
             triggerHapticFeedback(item.checked ? [12, 45] : [16]);
-            const logAction = item.checked ? 'Nasazeno do výroby' : 'Odebráno z výroby';
-            logUserAction(cleanNum, 'Plán na směnu', logAction).then(() => {
-                const chipsBar = document.getElementById('cabinetDaysChipsBar');
-                if (chipsBar && typeof loadAndRenderUserCabinetStats === 'function') {
-                    loadAndRenderUserCabinetStats();
-                }
-            }).catch(err => console.warn(err));
+
+            if (item.checked) {
+                const moldTarget = item.num ? item.num : ('LIS_' + (item.machine || ''));
+                const machineTag = item.machine ? ` (Lis č. ${item.machine})` : '';
+                const logDesc = item.num 
+                    ? `Odebráno z regálu: Forma #${item.num}${machineTag}`
+                    : `Splněn úkol pro Lis č. ${item.machine}`;
+
+                logUserAction(moldTarget, 'Plán na směnu', logDesc).then(() => {
+                    const chipsBar = document.getElementById('cabinetDaysChipsBar');
+                    if (chipsBar && typeof loadAndRenderUserCabinetStats === 'function') {
+                        loadAndRenderUserCabinetStats();
+                    }
+                }).catch(err => console.warn(err));
+            }
         }
     }
 
@@ -11057,14 +11465,9 @@ Return strictly valid JSON only without markdown formatting with this schema:
             return false;
         }
 
-        if (currentShiftPlan.some(p => String(p.num || p.id).trim() === cleanNum)) {
-            if (!suppressToast) showToast(`Forma #${cleanNum} již je v seznamu`);
-            return false;
-        }
-
         currentShiftPlan.push({
+            id: 'mold_' + cleanNum + '_' + Date.now(),
             num: cleanNum,
-            id: cleanNum,
             pos: mold[1] || 'Mezisklad',
             customer: mold[2] || '',
             product: mold[5] || '',
@@ -11075,7 +11478,6 @@ Return strictly valid JSON only without markdown formatting with this schema:
         saveShiftPlan();
         renderShiftPlanList();
         triggerHapticFeedback([18]);
-        logUserAction(cleanNum, 'Plán na směnu', `Přidáno do plánu na směnu${machineNum ? ' (LIS Č. ' + machineNum + ')' : ''}`);
         if (!suppressToast) showToast(`Forma #${cleanNum} přidána do plánu`);
         return true;
     }
@@ -11084,43 +11486,79 @@ Return strictly valid JSON only without markdown formatting with this schema:
         const input = document.getElementById('shiftPlanAddInput');
         const machineInput = document.getElementById('shiftPlanAddMachineInput');
         if (!input) return;
-        const val = input.value.trim();
-        if (!val) return;
-        const machine = machineInput ? machineInput.value.trim() : '';
-        const success = addMoldToShiftPlan(val, machine);
+        const moldVal = input.value.trim();
+        const machineVal = machineInput ? machineInput.value.trim() : '';
+
+        if (!moldVal && !machineVal) return;
+
+        if (!moldVal && machineVal) {
+            openShiftPlanTaskModal();
+            return;
+        }
+
+        const duplicate = findDuplicateShiftPlanItem(moldVal, machineVal);
+        if (duplicate) {
+            triggerHapticFeedback([20]);
+            const targetLabel = machineVal ? `Formu #${moldVal} na LIS Č. ${machineVal}` : `Formu #${moldVal}`;
+            showCustomConfirm(
+                "Položka již existuje",
+                `Záznam pro ${targetLabel} již v seznamu je. Chcete jej zapsat znovu a přepsat stávající záznam?`,
+                "Přepsat",
+                () => {
+                    duplicate.machine = machineVal;
+                    duplicate.num = moldVal;
+                    duplicate.checked = false;
+                    duplicate.addedAt = Date.now();
+                    const dbMold = rawDatabase.find(m => String(m[0]).trim() === moldVal);
+                    if (dbMold) {
+                        duplicate.pos = dbMold[1] || 'Mezisklad';
+                        duplicate.customer = dbMold[2] || '';
+                        duplicate.product = dbMold[5] || '';
+                    }
+                    saveShiftPlan();
+                    renderShiftPlanList();
+                    clearMainBarInputs();
+                    showToast("Záznam byl přepsán a aktualizován");
+                }
+            );
+            return;
+        }
+
+        const success = addMoldToShiftPlan(moldVal, machineVal);
         if (success) {
-            input.value = '';
-            if (machineInput) machineInput.value = '';
+            clearMainBarInputs();
             input.focus();
         }
     }
 
-    function removeShiftPlanItem(moldNum, e) {
+    function removeShiftPlanItem(itemId, e) {
         if (e && typeof e.stopPropagation === 'function') {
             e.stopPropagation();
         }
         triggerHapticFeedback([20]);
-        const cleanNum = String(moldNum || '').trim();
-        if (!cleanNum) return;
-        currentShiftPlan = currentShiftPlan.filter(p => String(p.num || p.id).trim() !== cleanNum);
+        const cleanId = String(itemId || '').trim();
+        if (!cleanId) return;
+        const removedItem = currentShiftPlan.find(p => String(p.id || p.num).trim() === cleanId);
+        currentShiftPlan = currentShiftPlan.filter(p => String(p.id || p.num).trim() !== cleanId);
         saveShiftPlan();
         renderShiftPlanList();
-        showToast(`Forma #${cleanNum} odebrána z plánu`);
+        const label = removedItem ? (removedItem.num ? ('Forma #' + removedItem.num) : ('Lis č. ' + removedItem.machine)) : 'Položka';
+        showToast(`${label} byla odebrána z plánu`);
     }
 
     function clearShiftPlan() {
         if (!currentShiftPlan || currentShiftPlan.length === 0) return;
         const checkedItems = currentShiftPlan.filter(item => item.checked);
         if (checkedItems.length === 0) {
-            showToast("Žádné hotové (označené) formy k vyčištění");
+            showToast("Žádné hotové (označené) položky k vyčištění");
             return;
         }
         triggerHapticFeedback([18]);
-        showCustomConfirm("Vyčistit hotové", `Opravdu chcete odebrat ${checkedItems.length} hotové (označené) formy ze seznamu?`, "Vyčistit", () => {
+        showCustomConfirm("Vyčistit hotové", `Opravdu chcete odebrat ${checkedItems.length} hotové položky ze seznamu?`, "Vyčistit", () => {
             currentShiftPlan = currentShiftPlan.filter(item => !item.checked);
             saveShiftPlan();
             renderShiftPlanList();
-            showToast("Hotové formy byly odebrány ze seznamu");
+            showToast("Hotové položky byly odebrány ze seznamu");
         });
     }
 
@@ -11277,14 +11715,20 @@ Return strictly valid JSON only without markdown formatting with this schema:
 
             userLogs.forEach(log => {
                 if (!log.created_at) return;
-                const moldIdStr = String(log.mold_id || '').toUpperCase();
-                const oldPos = String(log.old_position || '');
-                const newPos = String(log.new_position || '');
+                const moldIdStr = String(log.mold_id || '').trim().toUpperCase();
+                const oldPos = String(log.old_position || '').trim();
+                const newPos = String(log.new_position || '').trim();
+                const combined = (oldPos + ' ' + newPos).toLowerCase();
 
-                // Exclude raw scan logs, searches, system events, and guide views
-                if (moldIdStr === 'HLEDÁNÍ' || moldIdStr === 'SYSTEM' || moldIdStr === 'NÁVODKA' || moldIdStr === 'SKENER' || moldIdStr === 'PLÁN') return;
-                if (oldPos === 'Skenování' || oldPos === 'Dávkový sken' || oldPos === 'Vyhledávání' || oldPos === 'Návodka' || oldPos === 'Detail formy') return;
-                if (newPos.includes('Forma rozpoznána') || newPos.includes('rozpoznána') || newPos.includes('Otevřen detail') || newPos.includes('Naskenován plán') || newPos.includes('Hledal:') || newPos.includes('Přidáno do plánu') || newPos.includes('Odebráno z výroby')) return;
+                // Exclude system logs, searches, raw scans, detail open
+                if (moldIdStr === 'HLEDÁNÍ' || moldIdStr === 'SKENER' || moldIdStr === 'SYSTEM') return;
+                if (oldPos === 'Vyhledávání' || oldPos === 'Skenování' || oldPos === 'Detail formy') return;
+                if (combined.includes('hledal:') || combined.includes('forma rozpoznána') || combined.includes('naskenován') || newPos === 'Otevřen detail formy') return;
+
+                const isShiftPlanCompletion = oldPos === 'Plán na směnu' || combined.includes('odebráno z regálu') || combined.includes('splněn úkol') || combined.includes('splněno v plánu');
+                const isMainAction = isSignificantAuditLog(log, false);
+
+                if (!isShiftPlanCompletion && !isMainAction) return;
 
                 const logDate = new Date(log.created_at);
                 const dayKey = toLocalDateStr(logDate);
@@ -11428,8 +11872,9 @@ Return strictly valid JSON only without markdown formatting with this schema:
         }
 
         container.innerHTML = molds.map(item => {
-            const moldId = String(item.mold_id || '').trim();
-            const moldInfo = rawDatabase.find(m => String(m[0]).trim() === moldId);
+            const rawMoldId = String(item.mold_id || '').trim();
+            const targetObj = formatMoldLogTarget(rawMoldId);
+            const moldInfo = rawDatabase.find(m => String(m[0]).trim() === targetObj.cleanId);
             const prodName = moldInfo ? (moldInfo[5] || 'Bez názvu') : '';
             const cust = moldInfo ? (moldInfo[2] || '') : '';
 
@@ -11437,11 +11882,15 @@ Return strictly valid JSON only without markdown formatting with this schema:
             const timeStr = item.created_at ? new Date(item.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : '';
             const actionText = item.new_position || 'Zpracováno';
 
+            const titleLabel = targetObj.isMachine
+                ? `Lis č. ${escapeHtml(targetObj.cleanId)}`
+                : `Forma #${escapeHtml(targetObj.cleanId)}`;
+
             return `
                 <div class="cabinet-mold-row" style="cursor: default;">
                     <div class="cabinet-mold-row-left">
                         <div class="cabinet-mold-id-line">
-                            <span>Forma #${escapeHtml(moldId)}</span>
+                            <span>${titleLabel}</span>
                             ${cust ? `<span class="tag-customer" style="font-size: 0.68rem; padding: 0.05rem 0.35rem;">${escapeHtml(cust)}</span>` : ''}
                         </div>
                         <div class="cabinet-mold-time-meta">
@@ -11538,20 +11987,51 @@ Return strictly valid JSON only without markdown formatting with this schema:
         const list = document.getElementById('logsList');
         list.innerHTML = `<div class="no-data">Načítání historie...</div>`;
         try {
-            const res = await fetch(`${API_URL}/rest/v1/mold_logs?select=*&order=created_at.desc&limit=150`, { headers: { 'apikey': API_KEY, 'Authorization': `Bearer ${API_KEY}` } });
+            const res = await fetch(`${API_URL}/rest/v1/mold_logs?select=*&order=created_at.desc&limit=250`, { headers: { 'apikey': API_KEY, 'Authorization': `Bearer ${API_KEY}` } });
             let logs = await res.json();
 
-            if (!isSuperUser) {
-                logs = logs.filter(isRegularUserLog);
+            // Strictly filter: only significant operations, no shift plan clutter, login records only for superuser
+            logs = (logs || []).filter(log => isSignificantAuditLog(log, isSuperUser));
+
+            // Silent deduplication of identical consecutive logs for clean presentation
+            const cleanLogs = [];
+            for (let i = 0; i < logs.length; i++) {
+                const cur = logs[i];
+                const prev = cleanLogs[cleanLogs.length - 1];
+                if (prev &&
+                    String(prev.mold_id || '').trim().toUpperCase() === String(cur.mold_id || '').trim().toUpperCase() &&
+                    String(prev.old_position || '').trim().toLowerCase() === String(cur.old_position || '').trim().toLowerCase() &&
+                    String(prev.new_position || '').trim().toLowerCase() === String(cur.new_position || '').trim().toLowerCase() &&
+                    String(prev.user_name || '').trim().toLowerCase() === String(cur.user_name || '').trim().toLowerCase()) {
+                    continue;
+                }
+                cleanLogs.push(cur);
             }
 
-            if (logs.length === 0) { list.innerHTML = `<div class="no-data">Zatím žádná historie</div>`; return; }
-            list.innerHTML = logs.map(log => `
+            if (cleanLogs.length === 0) { list.innerHTML = `<div class="no-data">Zatím žádná historie</div>`; return; }
+            list.innerHTML = cleanLogs.map(log => {
+                const moldIdStr = String(log.mold_id || '').trim();
+                const isLogin = moldIdStr.toUpperCase() === 'SYSTEM' || String(log.old_position || '').toLowerCase().includes('autorizace') || String(log.new_position || '').toLowerCase().includes('přihlášen') || String(log.new_position || '').toLowerCase().includes('přihlášení');
+
+                if (isLogin) {
+                    return `
+                    <div class="log-item">
+                        <div><strong>🔑 ${escapeHtml(log.new_position || 'Přihlášení do systému')}</strong></div>
+                        <div class="log-meta"><span>${escapeHtml(log.user_name || 'Neznámý')}</span><span>${new Date(log.created_at).toLocaleString('cs-CZ')}</span></div>
+                    </div>
+                    `;
+                }
+
+                const targetObj = formatMoldLogTarget(moldIdStr);
+                const labelHtml = targetObj.isMachine
+                    ? `<strong>Lis č. ${escapeHtml(targetObj.cleanId)}</strong>`
+                    : `Forma <strong>${escapeHtml(targetObj.cleanId)}</strong>`;
+                return `
                 <div class="log-item">
-                    <div>Forma <strong>${escapeHtml(log.mold_id)}</strong>: <span style="text-decoration: line-through; opacity: 0.6;">${escapeHtml(log.old_position || '—')}</span> &rarr; <strong>${escapeHtml(log.new_position)}</strong></div>
+                    <div>${labelHtml}: <span style="text-decoration: line-through; opacity: 0.6;">${escapeHtml(log.old_position || '—')}</span> &rarr; <strong>${escapeHtml(log.new_position)}</strong></div>
                     <div class="log-meta"><span>${escapeHtml(log.user_name || 'Neznámý')}</span><span>${new Date(log.created_at).toLocaleString('cs-CZ')}</span></div>
                 </div>
-            `).join('');
+            `;}).join('');
         } catch (e) { list.innerHTML = `<div class="no-data" style="color:var(--error-text)">Chyba načítání</div>`; }
     }
 
@@ -12082,14 +12562,6 @@ Return strictly valid JSON only without markdown formatting with this schema:
         // Sort by relevance score descending so exact & whole-word matches appear first
         scoredMatches.sort((a, b) => b.score - a.score);
         const matched = scoredMatches.map(m => m.item);
-
-        // Log search action with debounce to capture user intent without spamming
-        clearTimeout(searchLogDebounceTimer);
-        searchLogDebounceTimer = setTimeout(() => {
-            if (query && query.length >= 2) {
-                logUserAction('HLEDÁNÍ', 'Vyhledávání', `Hledal: "${query}" (${matched.length} výsledků)`);
-            }
-        }, 1800);
 
         stats.textContent = `Nalezeno výsledků: ${matched.length}`;
 
