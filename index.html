@@ -3810,22 +3810,22 @@
             flex-shrink: 0;
         }
 
-        /* Manipulační plocha forem v horní části středního sloupce */
+        /* Manipulační plocha forem přímo nad strojem 11 */
         .factory-staging-zone {
-            height: 100%;
-            min-height: 155px;
+            min-height: 52px;
             border: 1.5px dashed #f59e0b;
             border-radius: 6px;
-            background: rgba(254, 243, 199, 0.35);
+            background: rgba(254, 243, 199, 0.4);
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
             position: relative;
-            padding: 8px;
+            padding: 6px 8px;
             box-sizing: border-box;
             text-align: center;
             user-select: none;
+            margin-bottom: 5px;
         }
 
         .staging-zone-corner {
@@ -3879,11 +3879,6 @@
             align-items: center;
         }
 
-        .mach-center-top-spacer {
-            min-height: 160px;
-            margin-bottom: 6px;
-        }
-
         /* ==========================================================================
            ESKIZ STROJE (VSTŘIKOVACÍHO LISU) - PRŮMYSLOVÉ TLAČÍTKO S PEVNOU GEOMETRIÍ
            ========================================================================== */
@@ -3930,32 +3925,30 @@
 
         /* Stavy stroje (tlačítka s odpovídajícím barevným tónem) */
         .mach-sketch.status-ok {
-            border-left-color: #16a34a;
+            border-left-color: #16a34a !important;
         }
 
         .mach-sketch.status-warning {
-            border-left-color: #d97706;
-            background-image: linear-gradient(180deg, #ffffff 0%, #fffbeb 60%, #fef3c7 100%);
-            border-color: #fde68a;
+            border-left-color: #d97706 !important;
+            background-image: linear-gradient(180deg, #ffffff 0%, #fffbeb 60%, #fef3c7 100%) !important;
+            border-color: #fde68a !important;
             box-shadow: 0 1px 2px rgba(217, 119, 6, 0.06);
         }
 
         .mach-sketch.status-warning:hover {
-            border-color: #d97706;
+            border-color: #d97706 !important;
             box-shadow: 0 2px 6px -1px rgba(217, 119, 6, 0.12);
         }
 
-        .mach-sketch.status-error,
-        .mach-sketch.has-issues {
-            border-left-color: #dc2626;
-            background-image: linear-gradient(180deg, #ffffff 0%, #fff1f2 60%, #fee2e2 100%);
-            border-color: #fecdd3;
+        .mach-sketch.status-error {
+            border-left-color: #dc2626 !important;
+            background-image: linear-gradient(180deg, #ffffff 0%, #fff1f2 60%, #fee2e2 100%) !important;
+            border-color: #fecdd3 !important;
             box-shadow: 0 1px 2px rgba(225, 29, 72, 0.06);
         }
 
-        .mach-sketch.status-error:hover,
-        .mach-sketch.has-issues:hover {
-            border-color: #dc2626;
+        .mach-sketch.status-error:hover {
+            border-color: #dc2626 !important;
             box-shadow: 0 2px 6px -1px rgba(225, 29, 72, 0.12);
         }
 
@@ -4331,10 +4324,13 @@
             }
 
             .factory-map-scroll-area {
-                padding: 0.25rem 0.35rem 0.35rem 0.35rem;
+                padding: 0.5rem 0.45rem;
+                display: flex;
+                flex-direction: column;
                 justify-content: center;
-                align-items: stretch;
-                overflow: hidden;
+                align-items: center;
+                overflow-y: auto;
+                -webkit-overflow-scrolling: touch;
                 flex: 1;
                 min-height: 0;
             }
@@ -4343,24 +4339,21 @@
                 min-width: 0;
                 width: 100%;
                 max-width: 100%;
-                height: 100%;
-                max-height: 100%;
-                margin: 0;
-                padding: 0.25rem 0.35rem;
+                height: auto;
+                max-height: none;
+                margin: auto 0;
+                padding: 0.6rem 0.45rem;
                 border-width: 1.5px;
-                border-radius: 6px;
-                display: flex;
-                flex-direction: column;
-                justify-content: space-between;
+                border-radius: 8px;
+                display: block;
                 box-sizing: border-box;
-                overflow: hidden;
+                overflow: visible;
+                flex-shrink: 0;
             }
 
             .factory-layout-grid {
-                flex: 1;
-                min-height: 0;
-                grid-template-columns: 1fr 14px 1fr 14px 1fr;
-                gap: 0.25rem;
+                grid-template-columns: 1fr 16px 1fr 16px 1fr;
+                gap: 0.35rem;
                 align-items: stretch;
             }
 
@@ -4368,87 +4361,79 @@
                 display: flex;
                 flex-direction: column;
                 justify-content: space-between;
-                min-height: 0;
             }
 
             .mach-sketch {
-                height: 26px;
-                min-height: 24px;
-                max-height: 28px;
-                padding: 0 4px;
-                border-left-width: 3.5px;
-                border-radius: 4px;
+                height: 33px;
+                min-height: 32px;
+                max-height: 35px;
+                padding: 0 6px 0 5px;
+                border-left-width: 4px;
+                border-radius: 5px;
                 box-sizing: border-box;
                 width: 100%;
                 min-width: 0;
             }
 
             .mach-num {
-                font-size: 0.76rem;
+                font-size: 0.80rem;
                 padding-left: 1px;
             }
 
             .mach-sketch-divider {
-                margin: 0 2px;
-                height: 11px;
+                margin: 0 3px;
+                height: 12px;
             }
 
             .mach-mold-slot-box {
-                gap: 2.5px;
+                gap: 3px;
                 min-width: 0;
             }
 
             .mach-mold-product-name {
-                font-size: 0.60rem;
-                max-width: 44px;
+                font-size: 0.62rem;
+                max-width: 55px;
                 line-height: 1;
             }
 
             .mach-mold-tag-minimal {
-                font-size: 0.66rem;
-                padding: 0.5px 3.5px;
-                height: 16px;
+                font-size: 0.68rem;
+                padding: 1px 4px;
+                height: 18px;
                 min-width: 24px;
             }
 
             .mach-mold-empty-dash {
-                font-size: 0.58rem;
+                font-size: 0.62rem;
                 min-width: 20px;
             }
 
             .mach-stack {
-                gap: 2.5px;
+                gap: 4px;
             }
 
             .mach-passage-spacer {
-                min-height: 18px;
+                min-height: 28px;
                 flex: 1;
-                margin: 2px 0;
+                margin: 3px 0;
                 display: flex;
                 align-items: center;
                 justify-content: center;
             }
 
             .mach-col-spacer {
-                min-height: 18px;
+                min-height: 28px;
                 flex: 1;
+                margin: 3px 0;
                 display: flex;
                 align-items: center;
                 justify-content: center;
             }
 
-            .mach-center-top-spacer {
-                min-height: 48px;
-                flex: 1;
-                display: flex;
-                align-items: stretch;
-                margin-bottom: 2px;
-            }
-
             .factory-staging-zone {
-                min-height: 46px;
-                height: 100%;
-                padding: 2px;
+                min-height: 48px;
+                margin-bottom: 4px;
+                padding: 4px 2px;
                 display: flex;
                 flex-direction: column;
                 align-items: center;
@@ -4456,7 +4441,7 @@
             }
 
             .staging-zone-label {
-                font-size: 0.52rem;
+                font-size: 0.54rem;
                 letter-spacing: 0.02em;
                 line-height: 1.1;
                 text-align: center;
@@ -5754,23 +5739,33 @@
                     <div class="factory-aisle-line"></div>
                 </div>
 
-                <!-- STŘEDNÍ SLOUPEC: nahoře manipulační zóna -> dole [11, 12, 23, 25, 26, 27, 31] -->
+                <!-- STŘEDNÍ SLOUPEC: nahoře volný prostor -> MANIPULAČNÍ ZÓNA (přímo nad strojem 11) -> dole stroje [11, 12, 23, 25, 26, 27, 31] -->
                 <div class="factory-col col-center">
-                    <div class="mach-center-top-spacer">
-                        <div class="factory-staging-zone">
-                            <div class="staging-zone-corner tl"></div>
-                            <div class="staging-zone-corner tr"></div>
-                            <div class="staging-zone-corner bl"></div>
-                            <div class="staging-zone-corner br"></div>
-                            <span class="staging-zone-label">MANIPULAČNÍ ZÓNA</span>
-                            <div style="margin-top: 6px; display: flex; align-items: center; gap: 8px;">
-                                <svg class="factory-yellow-arrow" width="11" height="13" viewBox="0 0 12 14" fill="none">
-                                    <path d="M6 1V13M6 13L1 8M6 13L11 8" stroke="#eab308" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
-                                </svg>
-                                <svg class="factory-yellow-arrow" width="11" height="13" viewBox="0 0 12 14" fill="none">
-                                    <path d="M6 13V1M6 1L1 6M6 1L11 6" stroke="#eab308" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
+                    <div class="mach-col-spacer">
+                        <div class="factory-cross-passage" title="Volný prostor / Spojovací ulička">
+                            <div class="factory-cross-line"></div>
+                            <div class="factory-aisle-marker horizontal">
+                                <svg class="factory-yellow-arrow" width="13" height="11" viewBox="0 0 14 12" fill="none">
+                                    <path d="M1 6H13M13 6L8 1M13 6L8 11" stroke="#eab308" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
                                 </svg>
                             </div>
+                            <div class="factory-cross-line"></div>
+                        </div>
+                    </div>
+
+                    <div class="factory-staging-zone">
+                        <div class="staging-zone-corner tl"></div>
+                        <div class="staging-zone-corner tr"></div>
+                        <div class="staging-zone-corner bl"></div>
+                        <div class="staging-zone-corner br"></div>
+                        <span class="staging-zone-label">MANIPULAČNÍ ZÓNA</span>
+                        <div style="margin-top: 4px; display: flex; align-items: center; justify-content: center; gap: 8px;">
+                            <svg class="factory-yellow-arrow" width="11" height="13" viewBox="0 0 12 14" fill="none">
+                                <path d="M6 1V13M6 13L1 8M6 13L11 8" stroke="#eab308" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
+                            </svg>
+                            <svg class="factory-yellow-arrow" width="11" height="13" viewBox="0 0 12 14" fill="none">
+                                <path d="M6 13V1M6 1L1 6M6 1L11 6" stroke="#eab308" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
+                            </svg>
                         </div>
                     </div>
 
@@ -6219,9 +6214,31 @@
         { name: "Ideal", bg: "#f5d0fe" },
         { name: "Others", bg: "#fdfbf7" }
     ];
+    try {
+        const cachedCust = localStorage.getItem('adis_cached_customers_list_v1');
+        if (cachedCust) {
+            const parsed = JSON.parse(cachedCust);
+            if (Array.isArray(parsed) && parsed.length > 0) customersList = parsed;
+        }
+    } catch (e) {}
 
     let rawDatabase = [];
+    try {
+        const cachedDb = localStorage.getItem('adis_cached_molds_v1');
+        if (cachedDb) {
+            const parsed = JSON.parse(cachedDb);
+            if (Array.isArray(parsed) && parsed.length > 0) rawDatabase = parsed;
+        }
+    } catch (e) {}
+
     let allComments = [];
+    try {
+        const cachedComm = localStorage.getItem('adis_cached_comments_v1');
+        if (cachedComm) {
+            const parsed = JSON.parse(cachedComm);
+            if (Array.isArray(parsed) && parsed.length > 0) allComments = parsed;
+        }
+    } catch (e) {}
     let expandedMoldsMap = {}; 
     let editingAccordionMap = {}; 
     let temporaryFilesMap = {}; 
@@ -8153,9 +8170,14 @@
                     if (othersObj) listWithoutOthers.push(othersObj);
                     else listWithoutOthers.push({ name: "Others", bg: "#fdfbf7" });
                     customersList = listWithoutOthers;
+                    try {
+                        localStorage.setItem('adis_cached_customers_list_v1', JSON.stringify(customersList));
+                    } catch (ce) {}
                 }
             }
-        } catch (e) { console.error("Error fetching customers:", e); }
+        } catch (e) {
+            console.warn("Notice: could not refresh customers from cloud, keeping existing/cached customers:", e);
+        }
     }
 
     let isCustomerDragging = false;
@@ -8603,6 +8625,10 @@
                 ];
             }).sort((a, b) => String(a[0]).localeCompare(String(b[0]), undefined, { numeric: true, sensitivity: 'base' }));
 
+            try {
+                localStorage.setItem('adis_cached_molds_v1', JSON.stringify(rawDatabase));
+            } catch (ce) {}
+
             if (commentsRes && commentsRes.ok) {
                 const loadedComments = await commentsRes.json();
                 allComments = loadedComments.map(c => {
@@ -8618,10 +8644,16 @@
                     }
                     return { ...c, photo_urls: parsedPhotoUrls };
                 });
+                try {
+                    localStorage.setItem('adis_cached_comments_v1', JSON.stringify(allComments));
+                } catch (ce) {}
             }
 
             refreshUI();
-        } catch (e) { console.error("Fetch error:", e); }
+        } catch (e) {
+            console.warn("Fetch warning (using local cache if available):", e);
+            refreshUI();
+        }
     }
 
     function toggleAccordion(rowKey, moldId) {
@@ -14321,7 +14353,8 @@ Return strictly valid JSON only without markdown formatting with this schema:
         const hasIssues = unresolvedIssues.length > 0;
 
         let effectiveStatus = m.status || 'ok';
-        if (hasIssues) {
+        // Pokud má stroj nevyřešené závady a nebyl ručně nastaven stav (je 'ok'), zobrazí se jako error
+        if (hasIssues && effectiveStatus === 'ok') {
             effectiveStatus = 'error';
         }
 
@@ -14329,7 +14362,7 @@ Return strictly valid JSON only without markdown formatting with this schema:
         let beaconColor = '#16a34a';
         if (effectiveStatus === 'warning') {
             statusTitle = 'Nutný servis';
-            beaconColor = '#eab308';
+            beaconColor = '#d97706';
         } else if (effectiveStatus === 'error') {
             statusTitle = hasIssues ? `${unresolvedIssues.length} aktivní závada` : 'Mimo provoz';
             beaconColor = '#dc2626';
