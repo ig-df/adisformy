@@ -3598,6 +3598,959 @@
             opacity: 0.8;
             text-decoration: underline;
         }
+
+        /* ==========================================================================
+           MODUL: MONOCHROMATICKÁ GRAFICKÁ MAPA LISOVNY (SKICI STROJŮ & VÝSUVNÁ KARTA)
+           ========================================================================== */
+        .factory-map-page {
+            position: fixed;
+            inset: 0;
+            z-index: 9990;
+            background: #f1f5f9;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            opacity: 0;
+            pointer-events: none;
+            transform: translateY(8px) scale(0.996);
+            transition: opacity 0.2s cubic-bezier(0.16, 1, 0.3, 1), transform 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+            user-select: none;
+        }
+
+        .factory-map-page.active {
+            opacity: 1;
+            pointer-events: auto;
+            transform: translateY(0) scale(1);
+        }
+
+        .factory-map-topbar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 0.75rem;
+            padding: 0.65rem 1.25rem;
+            background: #ffffff;
+            border-bottom: 2px solid #0f172a;
+            box-shadow: 0 1px 4px rgba(0,0,0,0.04);
+            z-index: 10;
+        }
+
+        .factory-map-title-box {
+            display: flex;
+            align-items: center;
+            gap: 0.65rem;
+        }
+
+        .factory-map-title-box h2 {
+            margin: 0;
+            font-size: 1.05rem;
+            font-weight: 800;
+            letter-spacing: -0.01em;
+            color: #0f172a;
+            text-transform: uppercase;
+        }
+
+        .factory-map-badge {
+            font-size: 0.72rem;
+            font-weight: 700;
+            padding: 0.18rem 0.6rem;
+            border-radius: 4px;
+            background: #0f172a;
+            color: #ffffff;
+            font-family: monospace;
+            letter-spacing: 0.04em;
+        }
+
+        .factory-map-scroll-area {
+            flex: 1;
+            overflow: auto;
+            -webkit-overflow-scrolling: touch;
+            padding: 1.25rem 1rem 2rem 1rem;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            background: #f1f5f9;
+            position: relative;
+        }
+
+        /* Průmyslový technický výkres lisovny - rozšířený formát s trasy a šipkami */
+        .factory-monochrome-canvas {
+            background: #f8fafc;
+            background-image: radial-gradient(#cbd5e1 0.75px, transparent 0.75px);
+            background-size: 16px 16px;
+            width: 100%;
+            max-width: 820px;
+            min-width: 630px;
+            border: 2px solid #0f172a;
+            border-radius: 10px;
+            box-shadow: 0 4px 20px rgba(15, 23, 42, 0.08);
+            position: relative;
+            padding: 0.85rem 1rem;
+            margin-bottom: 1.5rem;
+            box-sizing: border-box;
+        }
+
+        /* Horní a spodní spojovací dopravní trasa se šipkami a šтрихпунктиром */
+        .factory-cross-way {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 0.35rem 0.5rem;
+            margin-bottom: 0.65rem;
+            user-select: none;
+        }
+
+        .factory-cross-way.bottom {
+            margin-top: 0.65rem;
+            margin-bottom: 0;
+        }
+
+        .factory-aisle-marker.horizontal {
+            width: 22px;
+            height: 20px;
+            margin: 0 4px;
+        }
+
+        /* 5-sloupcová síť (3 sloupce strojů + 2 žluté dopravní koridory se šipkami) */
+        .factory-layout-grid {
+            display: grid;
+            grid-template-columns: 1fr 24px 1fr 24px 1fr;
+            gap: 0.5rem;
+            align-items: stretch;
+        }
+
+        .factory-col {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .factory-col.col-left {
+            justify-content: space-between;
+        }
+
+        .factory-col.col-center {
+            justify-content: space-between;
+        }
+
+        .factory-col.col-right {
+            justify-content: space-between;
+        }
+
+        /* Žlutý dopravní koridor VZV (Aisle) */
+        .factory-aisle {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: space-between;
+            position: relative;
+            padding: 0.4rem 0;
+            user-select: none;
+        }
+
+        .factory-aisle-line {
+            flex: 1;
+            width: 0;
+            border-left: 2px dashed #f59e0b;
+            opacity: 0.85;
+            min-height: 20px;
+        }
+
+        .factory-aisle-marker {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #fef3c7;
+            border: 1px solid #f59e0b;
+            border-radius: 4px;
+            width: 20px;
+            height: 22px;
+            box-shadow: 0 1px 2px rgba(245, 158, 11, 0.15);
+            margin: 4px 0;
+            flex-shrink: 0;
+        }
+
+        .factory-aisle-label {
+            writing-mode: vertical-rl;
+            text-orientation: mixed;
+            transform: rotate(180deg);
+            font-size: 0.6rem;
+            font-weight: 800;
+            letter-spacing: 0.08em;
+            color: #b45309;
+            background: #fef3c7;
+            padding: 5px 2px;
+            border-radius: 3px;
+            border: 1px solid #fde68a;
+            white-space: nowrap;
+            margin: 6px 0;
+            flex-shrink: 0;
+        }
+
+        /* Příčná ulička se žlutou šipkou a linií */
+        .factory-cross-passage {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 5px;
+            height: 100%;
+            position: relative;
+            user-select: none;
+        }
+
+        .factory-cross-line {
+            flex: 1;
+            border-top: 2px dashed #f59e0b;
+            opacity: 0.85;
+        }
+
+        .factory-yellow-arrow {
+            display: inline-flex;
+            filter: drop-shadow(0 1px 1px rgba(245, 158, 11, 0.25));
+            flex-shrink: 0;
+        }
+
+        /* Manipulační plocha forem v horní části středního sloupce */
+        .factory-staging-zone {
+            height: 100%;
+            min-height: 155px;
+            border: 1.5px dashed #f59e0b;
+            border-radius: 6px;
+            background: rgba(254, 243, 199, 0.35);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            padding: 8px;
+            box-sizing: border-box;
+            text-align: center;
+            user-select: none;
+        }
+
+        .staging-zone-corner {
+            position: absolute;
+            width: 7px;
+            height: 7px;
+            border-color: #d97706;
+            border-style: solid;
+        }
+        .staging-zone-corner.tl { top: -1px; left: -1px; border-width: 2.5px 0 0 2.5px; }
+        .staging-zone-corner.tr { top: -1px; right: -1px; border-width: 2.5px 2.5px 0 0; }
+        .staging-zone-corner.bl { bottom: -1px; left: -1px; border-width: 0 0 2.5px 2.5px; }
+        .staging-zone-corner.br { bottom: -1px; right: -1px; border-width: 0 2.5px 2.5px 0; }
+
+        .staging-zone-label {
+            font-size: 0.68rem;
+            font-weight: 800;
+            color: #92400e;
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+        }
+
+        .staging-zone-sub {
+            font-size: 0.6rem;
+            font-weight: 600;
+            color: #b45309;
+            margin-top: 2px;
+        }
+
+        /* Skupina vertikálně naskládaných strojů */
+        .mach-stack {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        /* Průchozí mezery */
+        .mach-passage-spacer {
+            min-height: 32px;
+            flex: 1;
+            margin: 4px 0;
+            display: flex;
+            align-items: center;
+        }
+
+        .mach-col-spacer {
+            min-height: 52px;
+            flex: 1;
+            margin: 4px 0;
+            display: flex;
+            align-items: center;
+        }
+
+        .mach-center-top-spacer {
+            min-height: 160px;
+            margin-bottom: 6px;
+        }
+
+        /* ==========================================================================
+           ESKIZ STROJE (VSTŘIKOVACÍHO LISU) - PRŮMYSLOVÉ TLAČÍTKO S PEVNOU GEOMETRIÍ
+           ========================================================================== */
+        .mach-sketch {
+            background-color: #ffffff;
+            background-image: linear-gradient(180deg, #ffffff 0%, #f8fafc 60%, #f1f5f9 100%);
+            border: 1px solid #cbd5e1;
+            border-left: 5px solid #16a34a; /* Výchozí stav V pořádku */
+            border-radius: 6px;
+            height: 35px;
+            width: 100%;
+            margin: 0;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 9px 0 8px;
+            position: relative;
+            cursor: pointer;
+            box-shadow: 0 1px 2px rgba(15, 23, 42, 0.05);
+            transition: border-color 0.15s ease, box-shadow 0.15s ease, background-color 0.15s ease;
+            user-select: none;
+            -webkit-tap-highlight-color: transparent;
+            overflow: hidden;
+            box-sizing: border-box;
+            transform: translateZ(0); /* Hardware isolation */
+        }
+
+        .mach-sketch:hover {
+            border-color: #64748b;
+            box-shadow: 0 2px 6px -1px rgba(15, 23, 42, 0.1);
+        }
+
+        .mach-sketch:active {
+            background-image: none;
+            background-color: #f1f5f9;
+            box-shadow: inset 0 1px 2px rgba(15, 23, 42, 0.08);
+            border-color: #94a3b8;
+        }
+
+        .mach-sketch.active-selected {
+            border-color: #0f172a;
+            box-shadow: 0 0 0 2px #0f172a, 0 3px 8px rgba(15, 23, 42, 0.12);
+        }
+
+        /* Stavy stroje (tlačítka s odpovídajícím barevným tónem) */
+        .mach-sketch.status-ok {
+            border-left-color: #16a34a;
+        }
+
+        .mach-sketch.status-warning {
+            border-left-color: #d97706;
+            background-image: linear-gradient(180deg, #ffffff 0%, #fffbeb 60%, #fef3c7 100%);
+            border-color: #fde68a;
+            box-shadow: 0 1px 2px rgba(217, 119, 6, 0.06);
+        }
+
+        .mach-sketch.status-warning:hover {
+            border-color: #d97706;
+            box-shadow: 0 2px 6px -1px rgba(217, 119, 6, 0.12);
+        }
+
+        .mach-sketch.status-error,
+        .mach-sketch.has-issues {
+            border-left-color: #dc2626;
+            background-image: linear-gradient(180deg, #ffffff 0%, #fff1f2 60%, #fee2e2 100%);
+            border-color: #fecdd3;
+            box-shadow: 0 1px 2px rgba(225, 29, 72, 0.06);
+        }
+
+        .mach-sketch.status-error:hover,
+        .mach-sketch.has-issues:hover {
+            border-color: #dc2626;
+            box-shadow: 0 2px 6px -1px rgba(225, 29, 72, 0.12);
+        }
+
+        /* Sekce čísla stroje */
+        .mach-num {
+            font-size: 0.82rem;
+            font-weight: 800;
+            font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", Roboto, sans-serif;
+            font-variant-numeric: tabular-nums;
+            color: #0f172a;
+            line-height: 1;
+            letter-spacing: -0.01em;
+            pointer-events: none;
+            padding-left: 2px;
+            text-shadow: 0 1px 0 rgba(255, 255, 255, 0.85);
+            flex-shrink: 0;
+            white-space: nowrap;
+        }
+
+        /* Jemná vertikální dělicí linie */
+        .mach-sketch-divider {
+            width: 1px;
+            height: 14px;
+            background: linear-gradient(180deg, transparent, #cbd5e1 30%, #cbd5e1 70%, transparent);
+            margin: 0 4px;
+            pointer-events: none;
+            flex-shrink: 0;
+        }
+
+        /* Sekce formy (vpravo) */
+        .mach-mold-slot-box {
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            gap: 5px;
+            pointer-events: none;
+            min-width: 0;
+            flex: 1;
+            overflow: hidden;
+        }
+
+        /* Название изделия слева от бейджа формы (если есть место) */
+        .mach-mold-product-name {
+            font-size: 0.69rem;
+            font-weight: 600;
+            color: #475569;
+            font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", Roboto, sans-serif;
+            line-height: 1;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            letter-spacing: -0.01em;
+            text-align: right;
+            min-width: 0;
+            max-width: 95px;
+            flex: 1 1 auto;
+        }
+
+        /* Monochromní reliéfní štítek formy - фиксированный строгий бейдж с выравниванием */
+        .mach-mold-tag-minimal {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            background: #ffffff;
+            color: #0f172a;
+            border: 1px solid rgba(203, 213, 225, 0.95);
+            border-radius: 4px;
+            font-size: 0.72rem;
+            font-weight: 700;
+            font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", Roboto, sans-serif;
+            font-variant-numeric: tabular-nums;
+            padding: 1px 5px;
+            height: 18px;
+            min-width: 32px;
+            line-height: 1;
+            letter-spacing: -0.01em;
+            flex-shrink: 0;
+            box-shadow: 0 1px 2px rgba(15, 23, 42, 0.05), inset 0 1px 0 rgba(255, 255, 255, 0.9);
+            text-align: center;
+        }
+
+        /* Volný lis (bez formy) */
+        .mach-mold-empty-dash {
+            font-size: 0.68rem;
+            font-weight: 600;
+            color: #cbd5e1;
+            line-height: 1;
+            padding: 0 3px;
+            min-width: 32px;
+            text-align: center;
+            display: inline-flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        /* Pulzující stavové body podle vzoru z dashboardu (pro přepínače a informační lišty) */
+        .mach-status-pulse-dot {
+            position: relative;
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            display: inline-block;
+            flex-shrink: 0;
+        }
+
+        .mach-status-pulse-dot::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            background-color: inherit;
+            transform: translate(-50%, -50%);
+            animation: statusRadialPulse 1.6s cubic-bezier(0.22, 1, 0.36, 1) infinite;
+            pointer-events: none;
+        }
+
+        .mach-status-pulse-dot.dot-ok {
+            background-color: #16a34a;
+        }
+
+        .mach-status-pulse-dot.dot-warning {
+            background-color: #eab308;
+        }
+
+        .mach-status-pulse-dot.dot-error {
+            background-color: #dc2626;
+        }
+
+        /* ==========================================================================
+           KOMPAKTNÍ PŘEPÍNAČE STAVŮ V PROVEDENÍ WEBU
+           ========================================================================== */
+        .mach-status-toggle-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 0.35rem;
+        }
+
+        .mach-status-pill-btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.35rem;
+            padding: 0.32rem 0.5rem;
+            min-height: 28px;
+            border-radius: 6px;
+            font-size: 0.73rem;
+            font-weight: 600;
+            border: 1px solid var(--border-color);
+            background: var(--card-bg);
+            color: var(--text-main);
+            cursor: pointer;
+            transition: all 0.14s ease;
+            user-select: none;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        .mach-status-pill-btn:hover {
+            border-color: #94a3b8;
+            background: var(--row-hover);
+        }
+
+        .mach-status-pill-btn:active {
+            transform: scale(0.96);
+            opacity: 0.88;
+        }
+
+        .mach-status-pill-btn.active.ok {
+            background: rgba(34, 197, 94, 0.12);
+            border-color: #16a34a;
+            color: #15803d;
+            font-weight: 700;
+        }
+
+        .mach-status-pill-btn.active.warning {
+            background: rgba(234, 179, 8, 0.14);
+            border-color: #eab308;
+            color: #a16207;
+            font-weight: 700;
+        }
+
+        .mach-status-pill-btn.active.error {
+            background: rgba(220, 38, 38, 0.12);
+            border-color: #dc2626;
+            color: #b91c1c;
+            font-weight: 700;
+        }
+
+        /* Našeptávač forem podle názvu výrobku i čísla formy */
+        .mach-mold-dropdown {
+            position: absolute;
+            top: calc(100% + 4px);
+            left: 0;
+            right: 0;
+            background: #ffffff;
+            border: 1px solid #cbd5e1;
+            border-radius: 8px;
+            box-shadow: 0 10px 25px -5px rgba(15, 23, 42, 0.15), 0 8px 10px -6px rgba(15, 23, 42, 0.1);
+            max-height: 230px;
+            overflow-y: auto;
+            z-index: 10000;
+            display: none;
+            padding: 4px;
+        }
+
+        .mach-mold-dropdown-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 8px;
+            padding: 6px 8px;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: background-color 0.12s ease;
+            user-select: none;
+        }
+
+        .mach-mold-dropdown-item:hover,
+        .mach-mold-dropdown-item.focused {
+            background-color: #f1f5f9;
+        }
+
+        .mach-mold-dropdown-item:active {
+            background-color: #e2e8f0;
+            transform: scale(0.99);
+        }
+
+        .mach-mold-dropdown-left {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            min-width: 0;
+            flex: 1;
+        }
+
+        .mach-mold-dropdown-badge {
+            background: #0f172a;
+            color: #ffffff;
+            font-weight: 700;
+            font-size: 0.72rem;
+            padding: 1.5px 5.5px;
+            border-radius: 4px;
+            font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", Roboto, sans-serif;
+            font-variant-numeric: tabular-nums;
+            flex-shrink: 0;
+            min-width: 46px;
+            text-align: center;
+            letter-spacing: -0.01em;
+            display: inline-block;
+        }
+
+        .mach-mold-dropdown-product {
+            font-size: 0.78rem;
+            font-weight: 600;
+            color: #1e293b;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            flex: 1;
+            min-width: 0;
+        }
+
+        .mach-mold-dropdown-highlight {
+            background: #fef08a;
+            color: #854d0e;
+            padding: 0 1px;
+            border-radius: 2px;
+            font-weight: 700;
+        }
+
+        .mach-mold-dropdown-right {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            flex-shrink: 0;
+        }
+
+        .mach-mold-dropdown-pos {
+            font-size: 0.68rem;
+            color: #64748b;
+            font-weight: 600;
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            padding: 1px 4px;
+            border-radius: 4px;
+        }
+
+        /* ==========================================================================
+           VÝSUVNÁ BOČNÍ ŠTORKA / KARTA DETAILU STROJE (SLIDE-OVER DRAWER)
+           ========================================================================== */
+        .mach-drawer-backdrop {
+            position: fixed;
+            inset: 0;
+            background: rgba(15, 23, 42, 0.3);
+            backdrop-filter: blur(1.5px);
+            -webkit-backdrop-filter: blur(1.5px);
+            z-index: 9995;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.22s ease;
+        }
+
+        .mach-drawer-backdrop.open {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .mach-drawer-panel {
+            position: fixed;
+            top: 0;
+            right: 0;
+            bottom: 0;
+            width: 420px;
+            max-width: 92vw;
+            background: #ffffff;
+            border-left: 2px solid #0f172a;
+            box-shadow: -8px 0 30px rgba(15, 23, 42, 0.14);
+            z-index: 9996;
+            display: flex;
+            flex-direction: column;
+            transform: translateX(100%);
+            transition: transform 0.24s cubic-bezier(0.16, 1, 0.3, 1);
+            user-select: auto;
+        }
+
+        .mach-drawer-panel.open {
+            transform: translateX(0);
+        }
+
+        @media (max-width: 640px) {
+            .factory-map-page {
+                height: 100dvh;
+                height: 100vh;
+                max-height: 100dvh;
+                overflow: hidden;
+            }
+
+            .factory-map-topbar {
+                padding: 0.35rem 0.65rem;
+                gap: 0.4rem;
+                flex-shrink: 0;
+                min-height: 42px;
+            }
+
+            .factory-map-title-box {
+                gap: 0.4rem;
+                min-width: 0;
+            }
+
+            .factory-map-title-box button {
+                padding: 0.25rem 0.5rem !important;
+                font-size: 0.76rem !important;
+                white-space: nowrap;
+                flex-shrink: 0;
+            }
+
+            .factory-map-title-box h2 {
+                font-size: 0.88rem;
+                line-height: 1.1;
+                white-space: nowrap;
+            }
+
+            .factory-map-title-box div div {
+                display: none;
+            }
+
+            .factory-map-badge {
+                font-size: 0.62rem;
+                padding: 0.12rem 0.4rem;
+                white-space: nowrap;
+            }
+
+            .factory-map-scroll-area {
+                padding: 0.25rem 0.35rem 0.35rem 0.35rem;
+                justify-content: center;
+                align-items: stretch;
+                overflow: hidden;
+                flex: 1;
+                min-height: 0;
+            }
+
+            .factory-monochrome-canvas {
+                min-width: 0;
+                width: 100%;
+                max-width: 100%;
+                height: 100%;
+                max-height: 100%;
+                margin: 0;
+                padding: 0.25rem 0.35rem;
+                border-width: 1.5px;
+                border-radius: 6px;
+                display: flex;
+                flex-direction: column;
+                justify-content: space-between;
+                box-sizing: border-box;
+                overflow: hidden;
+            }
+
+            .factory-layout-grid {
+                flex: 1;
+                min-height: 0;
+                grid-template-columns: 1fr 14px 1fr 14px 1fr;
+                gap: 0.25rem;
+                align-items: stretch;
+            }
+
+            .factory-col {
+                display: flex;
+                flex-direction: column;
+                justify-content: space-between;
+                min-height: 0;
+            }
+
+            .mach-sketch {
+                height: 26px;
+                min-height: 24px;
+                max-height: 28px;
+                padding: 0 4px;
+                border-left-width: 3.5px;
+                border-radius: 4px;
+                box-sizing: border-box;
+                width: 100%;
+                min-width: 0;
+            }
+
+            .mach-num {
+                font-size: 0.76rem;
+                padding-left: 1px;
+            }
+
+            .mach-sketch-divider {
+                margin: 0 2px;
+                height: 11px;
+            }
+
+            .mach-mold-slot-box {
+                gap: 2.5px;
+                min-width: 0;
+            }
+
+            .mach-mold-product-name {
+                font-size: 0.60rem;
+                max-width: 44px;
+                line-height: 1;
+            }
+
+            .mach-mold-tag-minimal {
+                font-size: 0.66rem;
+                padding: 0.5px 3.5px;
+                height: 16px;
+                min-width: 24px;
+            }
+
+            .mach-mold-empty-dash {
+                font-size: 0.58rem;
+                min-width: 20px;
+            }
+
+            .mach-stack {
+                gap: 2.5px;
+            }
+
+            .mach-passage-spacer {
+                min-height: 18px;
+                flex: 1;
+                margin: 2px 0;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            }
+
+            .mach-col-spacer {
+                min-height: 18px;
+                flex: 1;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            }
+
+            .mach-center-top-spacer {
+                min-height: 48px;
+                flex: 1;
+                display: flex;
+                align-items: stretch;
+                margin-bottom: 2px;
+            }
+
+            .factory-staging-zone {
+                min-height: 46px;
+                height: 100%;
+                padding: 2px;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                justify-content: center;
+            }
+
+            .staging-zone-label {
+                font-size: 0.52rem;
+                letter-spacing: 0.02em;
+                line-height: 1.1;
+                text-align: center;
+            }
+
+            .factory-aisle {
+                padding: 0.2rem 0;
+            }
+
+            .factory-aisle-marker {
+                width: 13px;
+                height: 14px;
+            }
+
+            .factory-aisle-marker svg {
+                width: 7px;
+                height: 9px;
+            }
+
+            .factory-aisle-marker.horizontal {
+                width: 14px;
+                height: 13px;
+                margin: 0 2px;
+            }
+
+            .factory-aisle-marker.horizontal svg {
+                width: 9px;
+                height: 7px;
+            }
+
+            .factory-cross-way {
+                padding: 0.1rem 0.2rem;
+                margin-bottom: 0.15rem;
+                gap: 4px;
+                flex-shrink: 0;
+            }
+
+            .factory-cross-way.bottom {
+                margin-top: 0.15rem;
+                margin-bottom: 0;
+            }
+
+            .mach-drawer-panel {
+                top: auto;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                width: 100%;
+                max-width: 100%;
+                max-height: 85vh;
+                border-left: none;
+                border-top: 2.5px solid #0f172a;
+                border-radius: 16px 16px 0 0;
+                transform: translateY(100%);
+            }
+            .mach-drawer-panel.open {
+                transform: translateY(0);
+            }
+        }
+
+        .mach-drawer-header {
+            padding: 1rem 1.25rem;
+            border-bottom: 2px solid #0f172a;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: #ffffff;
+        }
+
+        .mach-drawer-header h3 {
+            margin: 0;
+            font-size: 1.2rem;
+            font-weight: 800;
+            font-family: monospace, sans-serif;
+            letter-spacing: -0.02em;
+            color: #0f172a;
+        }
+
+        .mach-drawer-body {
+            flex: 1;
+            overflow-y: auto;
+            padding: 1.25rem;
+            display: flex;
+            flex-direction: column;
+            gap: 1.15rem;
+        }
+
+        .mach-drawer-footer {
+            padding: 0.85rem 1.25rem;
+            border-top: 1px solid #cbd5e1;
+            background: #f8fafc;
+            display: flex;
+            justify-content: flex-end;
+        }
     </style>
 </head>
 <body>
@@ -3642,6 +4595,13 @@
         </div>
         
         <div class="header-buttons-right">
+            <button class="top-icon-btn" tabindex="0" onclick="openFactoryMapPage()" title="Schéma lisovny a strojů" id="btnHeaderFactoryMap">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="color: var(--text-main);">
+                    <polygon points="3 6 9 3 15 6 21 3 21 18 15 21 9 18 3 21"></polygon>
+                    <line x1="9" y1="3" x2="9" y2="18"></line>
+                    <line x1="15" y1="6" x2="15" y2="21"></line>
+                </svg>
+            </button>
             <button class="top-icon-btn" tabindex="0" onclick="openAddModal()" title="Přidat formu">
                 <img src="icon3.png" alt="Přidat">
             </button>
@@ -4705,6 +5665,291 @@
         </div>
         <div class="modal-footer">
             <button class="btn-secondary" onclick="closeHeliosAdminModal()">Zavřít</button>
+        </div>
+    </div>
+</div>
+
+<!-- ==========================================================================
+     MONOCHROMATICKÁ GRAFICKÁ MAPA LISOVNY (29 LISŮ & VÝSUVNÁ KARTA)
+     ========================================================================== -->
+<div class="factory-map-page" id="factoryMapPage">
+    <div class="factory-map-topbar">
+        <div class="factory-map-title-box">
+            <button type="button" class="btn-secondary" onclick="closeFactoryMapPage()" style="padding: 0.35rem 0.75rem; font-size: 0.82rem; font-weight: 700; display: flex; align-items: center; gap: 0.35rem;">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                    <line x1="19" y1="12" x2="5" y2="12"></line>
+                    <polyline points="12 19 5 12 12 5"></polyline>
+                </svg>
+                Zpět do evidence
+            </button>
+            <div>
+                <h2>Schéma lisovny</h2>
+                <div style="font-size: 0.74rem; color: #64748b; font-weight: 600;">29 vstřikovacích lisů • Provozní stav strojního parku</div>
+            </div>
+        </div>
+
+        <div class="factory-map-actions">
+            <span class="factory-map-badge" id="factoryMapStatsBadge">29 LISŮ • 0 ZÁVAD</span>
+        </div>
+    </div>
+
+    <!-- Posuvné plátno výkresu lisovny -->
+    <div class="factory-map-scroll-area">
+        <div class="factory-monochrome-canvas" id="factoryMonochromeCanvas">
+            
+            <!-- Horní spojovací trasa mezi 33 a 36 se žlutými šipkami a šтрихпунктиром -->
+            <div class="factory-cross-way" title="Dopravní trasa mezi bloky 33 a 36">
+                <div class="factory-cross-line"></div>
+                <div class="factory-aisle-marker horizontal">
+                    <svg class="factory-yellow-arrow" width="13" height="11" viewBox="0 0 14 12" fill="none">
+                        <path d="M1 6H13M13 6L8 1M13 6L8 11" stroke="#eab308" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                </div>
+                <div class="factory-cross-line"></div>
+                <div class="factory-aisle-marker horizontal">
+                    <svg class="factory-yellow-arrow" width="13" height="11" viewBox="0 0 14 12" fill="none">
+                        <path d="M13 6H1M1 6L6 1M1 6L6 11" stroke="#eab308" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                </div>
+                <div class="factory-cross-line"></div>
+            </div>
+
+            <div class="factory-layout-grid">
+                <!-- LEVÝ SLOUPEC: [33, 32, 28, 30, 34] -> spojka -> [37, 1, 10] -->
+                <div class="factory-col col-left">
+                    <div class="mach-stack" id="stackTopLeft">
+                        <!-- 33, 32, 28, 30, 34 -->
+                    </div>
+
+                    <div class="mach-col-spacer">
+                        <div class="factory-cross-passage" title="Vstup do haly / Spojovací trasa">
+                            <div class="factory-cross-line"></div>
+                            <div class="factory-aisle-marker horizontal">
+                                <svg class="factory-yellow-arrow" width="13" height="11" viewBox="0 0 14 12" fill="none">
+                                    <path d="M1 6H13M13 6L8 1M13 6L8 11" stroke="#eab308" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
+                                </svg>
+                            </div>
+                            <div class="factory-cross-line"></div>
+                        </div>
+                    </div>
+
+                    <div class="mach-stack" id="stackBottomLeft">
+                        <!-- 37, 1, 10 -->
+                    </div>
+                </div>
+
+                <!-- KORIDOR 1: Žlutá dopravní trasa -->
+                <div class="factory-aisle" title="Dopravní trasa">
+                    <div class="factory-aisle-line"></div>
+                    <div class="factory-aisle-marker">
+                        <svg class="factory-yellow-arrow" width="11" height="13" viewBox="0 0 12 14" fill="none">
+                            <path d="M6 1V13M6 13L1 8M6 13L11 8" stroke="#eab308" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                    </div>
+                    <div class="factory-aisle-marker">
+                        <svg class="factory-yellow-arrow" width="11" height="13" viewBox="0 0 12 14" fill="none">
+                            <path d="M6 13V1M6 1L1 6M6 1L11 6" stroke="#eab308" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                    </div>
+                    <div class="factory-aisle-line"></div>
+                </div>
+
+                <!-- STŘEDNÍ SLOUPEC: nahoře manipulační zóna -> dole [11, 12, 23, 25, 26, 27, 31] -->
+                <div class="factory-col col-center">
+                    <div class="mach-center-top-spacer">
+                        <div class="factory-staging-zone">
+                            <div class="staging-zone-corner tl"></div>
+                            <div class="staging-zone-corner tr"></div>
+                            <div class="staging-zone-corner bl"></div>
+                            <div class="staging-zone-corner br"></div>
+                            <span class="staging-zone-label">MANIPULAČNÍ ZÓNA</span>
+                            <div style="margin-top: 6px; display: flex; align-items: center; gap: 8px;">
+                                <svg class="factory-yellow-arrow" width="11" height="13" viewBox="0 0 12 14" fill="none">
+                                    <path d="M6 1V13M6 13L1 8M6 13L11 8" stroke="#eab308" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
+                                </svg>
+                                <svg class="factory-yellow-arrow" width="11" height="13" viewBox="0 0 12 14" fill="none">
+                                    <path d="M6 13V1M6 1L1 6M6 1L11 6" stroke="#eab308" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
+                                </svg>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mach-stack" id="stackBottomCenter">
+                        <!-- 11, 12, 23, 25, 26, 27, 31 -->
+                    </div>
+                </div>
+
+                <!-- KORIDOR 2: Žlutá dopravní trasa -->
+                <div class="factory-aisle" title="Dopravní trasa">
+                    <div class="factory-aisle-line"></div>
+                    <div class="factory-aisle-marker">
+                        <svg class="factory-yellow-arrow" width="11" height="13" viewBox="0 0 12 14" fill="none">
+                            <path d="M6 1V13M6 13L1 8M6 13L11 8" stroke="#eab308" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                    </div>
+                    <div class="factory-aisle-marker">
+                        <svg class="factory-yellow-arrow" width="11" height="13" viewBox="0 0 12 14" fill="none">
+                            <path d="M6 13V1M6 1L1 6M6 1L11 6" stroke="#eab308" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                    </div>
+                    <div class="factory-aisle-line"></div>
+                </div>
+
+                <!-- PRAVÝ SLOUPEC: [36, 35, 20, 38, 19, 18] -> ulička -> [29, 2, 3, 4, 5, 6, 8, 7] -->
+                <div class="factory-col col-right">
+                    <div class="mach-stack" id="stackTopRight">
+                        <!-- 36, 35, 20, 38, 19, 18 -->
+                    </div>
+
+                    <div class="mach-passage-spacer">
+                        <div class="factory-cross-passage" title="Průchod mezi řadami">
+                            <div class="factory-cross-line"></div>
+                            <div class="factory-aisle-marker horizontal">
+                                <svg class="factory-yellow-arrow" width="13" height="11" viewBox="0 0 14 12" fill="none">
+                                    <path d="M1 6H13M13 6L8 1M13 6L8 11" stroke="#eab308" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
+                                </svg>
+                            </div>
+                            <div class="factory-cross-line"></div>
+                        </div>
+                    </div>
+
+                    <div class="mach-stack" id="stackBottomRight">
+                        <!-- 29, 2, 3, 4, 5, 6, 8, 7 -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Spodní spojovací trasa se žlutými šipkami a šтрихпунктиром -->
+            <div class="factory-cross-way bottom" title="Dopravní trasa">
+                <div class="factory-cross-line"></div>
+                <div class="factory-aisle-marker horizontal">
+                    <svg class="factory-yellow-arrow" width="13" height="11" viewBox="0 0 14 12" fill="none">
+                        <path d="M1 6H13M13 6L8 1M13 6L8 11" stroke="#eab308" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                </div>
+                <div class="factory-cross-line"></div>
+                <div class="factory-aisle-marker horizontal">
+                    <svg class="factory-yellow-arrow" width="13" height="11" viewBox="0 0 14 12" fill="none">
+                        <path d="M13 6H1M1 6L6 1M1 6L6 11" stroke="#eab308" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                </div>
+                <div class="factory-cross-line"></div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- Výsuvný backdrop & karta detailu stroje (Slide-over drawer) -->
+    <div class="mach-drawer-backdrop" id="machDrawerBackdrop" onclick="closeMachineDrawer()"></div>
+
+    <div class="mach-drawer-panel" id="machDrawerPanel">
+        <div class="mach-drawer-header">
+            <div>
+                <h3 id="machDrawerTitle">LIS Č. 01</h3>
+                <div style="font-size: 0.74rem; color: var(--text-muted); font-weight: 600;">Provozní karta stroje & servisní chat</div>
+            </div>
+            <button type="button" class="close-modal-btn" onclick="closeMachineDrawer()">✕</button>
+        </div>
+
+        <div class="mach-drawer-body">
+            <!-- 0. Zvýrazněný status problémů nahoře -->
+            <div id="machDrawerStatusBanner">
+                <!-- Dynamicky generováno -->
+            </div>
+
+            <!-- 1. Přepínač stavu stroje (kompaktní styl webu s pulzujícími body) -->
+            <div style="display: flex; flex-direction: column; gap: 0.35rem;">
+                <label style="font-size: 0.74rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.03em; color: var(--text-muted);">
+                    Aktuální stav lisu:
+                </label>
+                <div class="mach-status-toggle-row">
+                    <button type="button" id="mStatusBtnOk" class="mach-status-pill-btn ok" onclick="setMachineStatusDirectly('ok')">
+                        <span class="mach-status-pulse-dot dot-ok"></span>
+                        <span>V pořádku</span>
+                    </button>
+                    <button type="button" id="mStatusBtnWarning" class="mach-status-pill-btn warning" onclick="setMachineStatusDirectly('warning')">
+                        <span class="mach-status-pulse-dot dot-warning"></span>
+                        <span>Nutný servis</span>
+                    </button>
+                    <button type="button" id="mStatusBtnError" class="mach-status-pill-btn error" onclick="setMachineStatusDirectly('error')">
+                        <span class="mach-status-pulse-dot dot-error"></span>
+                        <span>Mimo provoz</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- 2. Forma v lisu (zadání čísla formy nebo názvu výrobku s našeptávačem) -->
+            <div style="display: flex; flex-direction: column; gap: 0.35rem; background: var(--row-hover); padding: 0.6rem 0.75rem; border-radius: 8px; border: 1px solid var(--border-color); position: relative;">
+                <label style="font-size: 0.74rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.03em; color: var(--text-muted); display: flex; justify-content: space-between; align-items: center;">
+                    <span>Forma v lisu:</span>
+                    <span style="font-size: 0.68rem; font-weight: 500; text-transform: none; color: #64748b;">(Číslo formy nebo název výrobku)</span>
+                </label>
+                <div style="display: flex; gap: 0.35rem; align-items: center; width: 100%; min-width: 0;">
+                    <div style="position: relative; flex: 1; display: flex; align-items: center; min-width: 0;">
+                        <input type="text" id="machineMoldInput" placeholder="Např. 320 nebo Kryt baterie..." oninput="handleMachineMoldInput()" onkeydown="handleMachineMoldKeydown(event)" onfocus="handleMachineMoldFocus()" style="width: 100%; height: 32px; padding: 0 1.8rem 0 0.55rem; border: 1.5px solid var(--border-color); border-radius: 6px; font-size: 0.86rem; font-weight: 700; background: var(--card-bg); color: var(--text-main); box-sizing: border-box;" autocomplete="off">
+                        <button type="button" id="btnClearMachineMold" class="search-clear-btn" style="position: absolute; right: 4px; display: none; width: 22px; height: 22px;" onclick="clearMachineMoldInput()" title="Vymazat formu" aria-label="Vymazat formu">
+                            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                                <line x1="18" y1="6" x2="6" y2="18"></line>
+                                <line x1="6" y1="6" x2="18" y2="18"></line>
+                            </svg>
+                        </button>
+                    </div>
+                    <button type="button" class="btn-primary" onclick="saveMachineMoldNumber()" style="height: 32px; padding: 0 0.65rem; font-size: 0.76rem; font-weight: 700; white-space: nowrap; flex-shrink: 0; display: inline-flex; align-items: center; justify-content: center; border-radius: 6px;">
+                        Uložit
+                    </button>
+                    <button type="button" id="btnGoToMachineMold" class="btn-secondary" onclick="navigateToMachineMold()" style="height: 32px; width: 32px; min-width: 32px; padding: 0; flex-shrink: 0; display: none; align-items: center; justify-content: center; border-radius: 6px;" title="Přejít na formu v evidenci" aria-label="Přejít na formu">
+                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                            <line x1="5" y1="12" x2="19" y2="12"></line>
+                            <polyline points="12 5 19 12 12 19"></polyline>
+                        </svg>
+                    </button>
+                </div>
+                <!-- Našeptávač forem podle názvu a čísla -->
+                <div id="machineMoldSuggestions" class="mach-mold-dropdown"></div>
+                <!-- Název výrobku a info o formě -->
+                <div id="machineMoldProductPreview" style="display: none;"></div>
+            </div>
+
+            <!-- 3. Kniha závad a servisní chat -->
+            <div style="display: flex; flex-direction: column; gap: 0.6rem;">
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <label style="font-size: 0.8rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.03em; color: var(--text-main); display: flex; align-items: center; gap: 0.4rem;">
+                        <span>Kniha závad & servisní chat</span>
+                        <span id="machineIssuesBadgeCount" style="font-size: 0.72rem; padding: 0.1rem 0.45rem; border-radius: 12px; background: var(--row-hover); color: var(--text-muted);">0</span>
+                    </label>
+                </div>
+
+                <!-- Seznam závad -->
+                <div id="machineIssuesList" style="display: flex; flex-direction: column; gap: 0.5rem; max-height: 220px; overflow-y: auto; padding-right: 2px;">
+                    <!-- Dynamicky generováno -->
+                </div>
+
+                <!-- Formulář přidání nové závady -->
+                <div style="background: var(--card-bg); border: 1.5px solid var(--border-color); border-radius: 8px; padding: 0.75rem; display: flex; flex-direction: column; gap: 0.5rem;">
+                    <div style="font-size: 0.78rem; font-weight: 700; color: var(--text-main);">
+                        + Zapsat novou závadu nebo servisní poznámku:
+                    </div>
+                    <textarea id="newIssueTextInput" placeholder="Popište zjištěnou závadu, únik oleje, teplotu, poškození..." rows="2" style="width: 100%; padding: 0.5rem; font-size: 0.84rem; border: 1px solid var(--border-color); border-radius: 6px; background: var(--input-bg); color: var(--text-main); resize: vertical; box-sizing: border-box;"></textarea>
+                    
+                    <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.5rem;">
+                        <div style="display: flex; align-items: center; gap: 0.75rem; font-size: 0.76rem; color: var(--text-muted);">
+                            <label style="display: flex; align-items: center; gap: 0.25rem; cursor: pointer;">
+                                <input type="radio" name="issuePriority" value="normal" checked> Běžná
+                            </label>
+                            <label style="display: flex; align-items: center; gap: 0.25rem; cursor: pointer; color: #dc2626; font-weight: 700;">
+                                <input type="radio" name="issuePriority" value="critical"> ⚠️ Kritická
+                            </label>
+                        </div>
+                        <button type="button" class="btn-primary" onclick="addNewMachineIssue()" style="padding: 0.45rem 0.9rem; font-size: 0.82rem;">
+                            Přidat záznam
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="mach-drawer-footer">
+            <button type="button" class="btn-secondary" onclick="closeMachineDrawer()">Zavřít</button>
         </div>
     </div>
 </div>
@@ -6332,6 +7577,7 @@
         window.addEventListener('resize', updateTabIndicator);
 
         loadShiftPlan();
+        initFactoryMachinesData();
         fetchData();
         setupRealtimeSubscription();
     });
@@ -8620,6 +9866,7 @@ Return strictly valid JSON only without markdown formatting with this schema:
     }
 
     function startScannerFromShiftPlan() {
+        if (!checkAuthOrPrompt()) return;
         triggerHapticFeedback([16]);
         closeShiftPlanModal();
         openNumberScanner('plan');
@@ -8719,6 +9966,7 @@ Return strictly valid JSON only without markdown formatting with this schema:
         }
         const si = document.getElementById('searchInput');
         if (si) si.blur();
+        if (!checkAuthOrPrompt()) return;
         openNumberScanner();
     }
 
@@ -8749,6 +9997,7 @@ Return strictly valid JSON only without markdown formatting with this schema:
     let pendingManualSnap = false;
 
     async function openNumberScanner(initialMode = 'tag') {
+        if (!checkAuthOrPrompt()) return;
         triggerHapticFeedback([16]);
         if (initialMode) {
             setScannerMode(initialMode, true);
@@ -11257,6 +12506,7 @@ Return strictly valid JSON only without markdown formatting with this schema:
     }
 
     function openShiftPlanTaskModal() {
+        if (!checkAuthOrPrompt()) return;
         triggerHapticFeedback([12]);
         const machineInput = document.getElementById('shiftPlanAddMachineInput');
         const moldInput = document.getElementById('shiftPlanAddInput');
@@ -11343,6 +12593,7 @@ Return strictly valid JSON only without markdown formatting with this schema:
     }
 
     function submitShiftPlanTaskAdd() {
+        if (!checkAuthOrPrompt()) return;
         const machineEl = document.getElementById('taskModalMachineInput');
         const moldEl = document.getElementById('taskModalMoldInput');
         const checkPokr = document.getElementById('taskCheckPokracovani');
@@ -11531,6 +12782,7 @@ Return strictly valid JSON only without markdown formatting with this schema:
     }
 
     function toggleShiftPlanItem(itemId, e) {
+        if (!checkAuthOrPrompt()) return;
         if (e && typeof e.stopPropagation === 'function') {
             e.stopPropagation();
         }
@@ -11562,6 +12814,7 @@ Return strictly valid JSON only without markdown formatting with this schema:
     }
 
     function addMoldToShiftPlan(moldNum, machineNum = '', suppressToast = false) {
+        if (!checkAuthOrPrompt()) return false;
         const cleanNum = String(moldNum || '').trim();
         if (!cleanNum) return false;
 
@@ -11589,6 +12842,7 @@ Return strictly valid JSON only without markdown formatting with this schema:
     }
 
     function submitShiftPlanManualAdd() {
+        if (!checkAuthOrPrompt()) return;
         const input = document.getElementById('shiftPlanAddInput');
         const machineInput = document.getElementById('shiftPlanAddMachineInput');
         if (!input) return;
@@ -11638,6 +12892,7 @@ Return strictly valid JSON only without markdown formatting with this schema:
     }
 
     function removeShiftPlanItem(itemId, e) {
+        if (!checkAuthOrPrompt()) return;
         if (e && typeof e.stopPropagation === 'function') {
             e.stopPropagation();
         }
@@ -11653,6 +12908,7 @@ Return strictly valid JSON only without markdown formatting with this schema:
     }
 
     function clearShiftPlan() {
+        if (!checkAuthOrPrompt()) return;
         if (!currentShiftPlan || currentShiftPlan.length === 0) return;
         const checkedItems = currentShiftPlan.filter(item => item.checked);
         if (checkedItems.length === 0) {
@@ -12861,6 +14117,788 @@ Return strictly valid JSON only without markdown formatting with this schema:
         currentDashboardStatusFilter = statusName;
         renderDashboard();
     }
+
+    /* ==========================================================================
+       MODUL: GRAFICKÁ ARCHITEKTONICKÁ MAPA LISOVNY (30 LISŮ & KNIHA ZÁVAD)
+       ========================================================================== */
+    const FACTORY_MACHINES_STORAGE_KEY = 'adis_factory_machines_state_v1';
+    let factoryMachinesData = [];
+    let factoryMapCurrentFilter = 'all';
+    let currentActiveMachineId = null;
+
+    const FACTORY_MACHINE_NUMBERS = [
+        33, 32, 28, 30, 34,
+        37, 1, 10,
+        11, 12, 23, 25, 26, 27, 31,
+        36, 35, 20, 38, 19, 18,
+        29, 2, 3, 4, 5, 6, 8, 7
+    ];
+
+    const FACTORY_LAYOUT_GROUPS = {
+        stackTopLeft: [33, 32, 28, 30, 34],
+        stackBottomLeft: [37, 1, 10],
+        stackBottomCenter: [11, 12, 23, 25, 26, 27, 31],
+        stackTopRight: [36, 35, 20, 38, 19, 18],
+        stackBottomRight: [29, 2, 3, 4, 5, 6, 8, 7]
+    };
+
+    function initFactoryMachinesData() {
+        let existingMap = {};
+        try {
+            const stored = localStorage.getItem(FACTORY_MACHINES_STORAGE_KEY);
+            if (stored) {
+                const parsed = JSON.parse(stored);
+                if (Array.isArray(parsed)) {
+                    parsed.forEach(item => {
+                        if (item && item.id) {
+                            existingMap[item.id] = item;
+                        }
+                    });
+                }
+            }
+        } catch (e) {
+            console.error('Chyba načítání dat strojů:', e);
+        }
+
+        // Přesně 29 strojů podle dílenského nákresu
+        factoryMachinesData = FACTORY_MACHINE_NUMBERS.map(num => {
+            const existing = existingMap[num];
+            return {
+                id: num,
+                number: String(num),
+                status: existing?.status || 'ok',
+                currentMold: existing?.currentMold || '',
+                issues: Array.isArray(existing?.issues) ? existing.issues : []
+            };
+        });
+
+        saveFactoryMachinesState();
+    }
+
+    function saveFactoryMachinesState() {
+        try {
+            localStorage.setItem(FACTORY_MACHINES_STORAGE_KEY, JSON.stringify(factoryMachinesData));
+        } catch (e) {
+            console.error('Chyba ukládání dat strojů:', e);
+        }
+    }
+
+    function openFactoryMapPage() {
+        triggerHapticFeedback([15]);
+        const page = document.getElementById('factoryMapPage');
+        if (!page) return;
+        page.classList.add('active');
+        renderGraphicFactoryMap();
+    }
+
+    function closeFactoryMapPage() {
+        triggerHapticFeedback([10]);
+        closeMachineDrawer();
+        const page = document.getElementById('factoryMapPage');
+        if (page) page.classList.remove('active');
+    }
+
+    function setFactoryMapFilter(filterType, btnElement) {
+        triggerHapticFeedback([12]);
+        factoryMapCurrentFilter = filterType;
+        document.querySelectorAll('.factory-filter-btn').forEach(btn => btn.classList.remove('active'));
+        if (btnElement) btnElement.classList.add('active');
+        renderGraphicFactoryMap();
+    }
+
+    function createMachineSketchHtml(m) {
+        const unresolvedIssues = (m.issues || []).filter(it => !it.resolved);
+        const hasIssues = unresolvedIssues.length > 0;
+
+        let effectiveStatus = m.status || 'ok';
+        if (hasIssues) {
+            effectiveStatus = 'error';
+        }
+
+        let statusTitle = 'V pořádku';
+        let beaconColor = '#16a34a';
+        if (effectiveStatus === 'warning') {
+            statusTitle = 'Nutný servis';
+            beaconColor = '#eab308';
+        } else if (effectiveStatus === 'error') {
+            statusTitle = hasIssues ? `${unresolvedIssues.length} aktivní závada` : 'Mimo provoz';
+            beaconColor = '#dc2626';
+        }
+
+        let moldSlotHtml = '<span class="mach-mold-empty-dash">—</span>';
+        let moldTooltip = m.currentMold ? `Forma: ${escapeHtml(m.currentMold)}` : 'Lis bez formy';
+        if (m.currentMold && m.currentMold.trim()) {
+            const cleanMold = String(m.currentMold).trim();
+            const moldInfo = rawDatabase.find(item => String(item[0]).trim().toLowerCase() === cleanMold.toLowerCase() && !item[4]);
+            const prodName = (moldInfo && moldInfo[5]) ? String(moldInfo[5]).trim() : '';
+            if (prodName) {
+                moldTooltip = `Forma: ${escapeHtml(cleanMold)} • Výrobek: ${escapeHtml(prodName)}`;
+            }
+            moldSlotHtml = `
+                ${prodName ? `<span class="mach-mold-product-name">${escapeHtml(prodName)}</span>` : ''}
+                <span class="mach-mold-tag-minimal">${escapeHtml(cleanMold)}</span>
+            `;
+        }
+
+        return `
+            <div class="mach-sketch status-${effectiveStatus} ${hasIssues ? 'has-issues' : ''}" 
+                 tabindex="0"
+                 role="button"
+                 aria-label="Lis ${escapeHtml(m.number)} (${statusTitle})"
+                 onclick="openMachineDrawer(${m.id})">
+                
+                <span class="mach-num">${escapeHtml(m.number)}</span>
+
+                <div class="mach-sketch-divider"></div>
+
+                <div class="mach-mold-slot-box" title="${moldTooltip}">
+                    ${moldSlotHtml}
+                </div>
+            </div>
+        `;
+    }
+
+    function renderGraphicFactoryMap() {
+        if (!Array.isArray(factoryMachinesData) || factoryMachinesData.length !== 29) {
+            initFactoryMachinesData();
+        }
+
+        // Výpočet celkových statistik závad
+        let totalUnresolvedIssues = 0;
+        factoryMachinesData.forEach(m => {
+            const activeIssues = (m.issues || []).filter(it => !it.resolved);
+            totalUnresolvedIssues += activeIssues.length;
+        });
+
+        const badgeEl = document.getElementById('factoryMapStatsBadge');
+        if (badgeEl) {
+            const issueWord = totalUnresolvedIssues === 1 ? 'ZÁVADA' : (totalUnresolvedIssues >= 2 && totalUnresolvedIssues <= 4 ? 'ZÁVADY' : 'ZÁVAD');
+            badgeEl.textContent = `29 LISŮ • ${totalUnresolvedIssues} ${issueWord}`;
+            badgeEl.style.background = totalUnresolvedIssues > 0 ? '#dc2626' : '#0f172a';
+        }
+
+        const machineMap = {};
+        factoryMachinesData.forEach(m => {
+            machineMap[m.id] = m;
+        });
+
+        // Vykreslení do jednotlivých stacků mapy
+        Object.keys(FACTORY_LAYOUT_GROUPS).forEach(stackId => {
+            const container = document.getElementById(stackId);
+            if (!container) return;
+            const nums = FACTORY_LAYOUT_GROUPS[stackId];
+            container.innerHTML = nums.map(num => {
+                const m = machineMap[num] || { id: num, number: String(num), status: 'ok', currentMold: '', issues: [] };
+                return createMachineSketchHtml(m);
+            }).join('');
+        });
+    }
+
+    function openMachineDrawer(machineId) {
+        triggerHapticFeedback([12]);
+        const machine = factoryMachinesData.find(m => m.id === machineId);
+        if (!machine) return;
+
+        currentActiveMachineId = machineId;
+
+        // Titulek
+        const titleEl = document.getElementById('machDrawerTitle') || document.getElementById('machineDetailModalTitle');
+        if (titleEl) titleEl.textContent = `LIS Č. ${machine.number}`;
+
+        // Zvýrazněný status problémů
+        renderMachineProblemStatusBanner(machine);
+
+        // Stavová tlačítka
+        updateMachineStatusButtonsUI(machine.status);
+
+        // Vstup formy
+        const moldInput = document.getElementById('machineMoldInput');
+        const clearMoldBtn = document.getElementById('btnClearMachineMold');
+        const goToMoldBtn = document.getElementById('btnGoToMachineMold');
+        const hasMold = !!(machine.currentMold && machine.currentMold.trim());
+        if (moldInput) moldInput.value = machine.currentMold || '';
+        if (clearMoldBtn) clearMoldBtn.style.display = hasMold ? 'inline-flex' : 'none';
+        if (goToMoldBtn) goToMoldBtn.style.display = hasMold ? 'inline-flex' : 'none';
+        updateMachineMoldProductPreview(machine.currentMold || '');
+
+        // Vyčistit pole pro novou závadu
+        const issueInput = document.getElementById('newIssueTextInput');
+        if (issueInput) issueInput.value = '';
+
+        // Kniha závad & servisní chat
+        renderMachineIssuesList(machine);
+
+        // Otevřít slide-over panel a backdrop
+        const panel = document.getElementById('machDrawerPanel');
+        const backdrop = document.getElementById('machDrawerBackdrop');
+        if (panel) panel.classList.add('open');
+        if (backdrop) backdrop.classList.add('open');
+    }
+
+    function closeMachineDrawer() {
+        triggerHapticFeedback([10]);
+        closeMachineMoldSuggestions();
+        const panel = document.getElementById('machDrawerPanel');
+        const backdrop = document.getElementById('machDrawerBackdrop');
+        if (panel) panel.classList.remove('open');
+        if (backdrop) backdrop.classList.remove('open');
+        currentActiveMachineId = null;
+    }
+
+    const openMachineDetailModal = openMachineDrawer;
+    const closeMachineDetailModal = closeMachineDrawer;
+
+    function renderMachineProblemStatusBanner(machine) {
+        const box = document.getElementById('machDrawerStatusBanner') || document.getElementById('machineProblemStatusBox');
+        if (!box) return;
+
+        const unresolved = (machine.issues || []).filter(it => !it.resolved);
+        const hasIssues = unresolved.length > 0;
+        const isError = machine.status === 'error' || hasIssues;
+        const isWarning = machine.status === 'warning' && !hasIssues;
+
+        if (isError) {
+            const count = unresolved.length;
+            const issueText = count === 1 ? '1 aktivní závada' : (count >= 2 && count <= 4 ? `${count} aktivní závady` : `${count} aktivních závad`);
+            box.innerHTML = `
+                <div style="background: rgba(220, 38, 38, 0.08); border: 1.5px solid #dc2626; border-radius: 7px; padding: 0.45rem 0.75rem; display: flex; align-items: center; justify-content: space-between; gap: 0.5rem;">
+                    <div style="display: flex; align-items: center; gap: 0.5rem;">
+                        <span class="mach-status-pulse-dot dot-error"></span>
+                        <div>
+                            <div style="font-weight: 800; font-size: 0.78rem; color: #b91c1c; letter-spacing: 0.01em;">
+                                ${hasIssues ? `ZÁVADA (${issueText.toUpperCase()})` : 'MIMO PROVOZ'}
+                            </div>
+                            <div style="font-size: 0.7rem; color: #dc2626; font-weight: 600;">Lis je odstaven, vyžaduje servisní zásah nebo opravu</div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        } else if (isWarning) {
+            box.innerHTML = `
+                <div style="background: rgba(234, 179, 8, 0.1); border: 1.5px solid #eab308; border-radius: 7px; padding: 0.45rem 0.75rem; display: flex; align-items: center; justify-content: space-between; gap: 0.5rem;">
+                    <div style="display: flex; align-items: center; gap: 0.5rem;">
+                        <span class="mach-status-pulse-dot dot-warning"></span>
+                        <div>
+                            <div style="font-weight: 800; font-size: 0.78rem; color: #a16207; letter-spacing: 0.01em;">
+                                NUTNÝ SERVIS
+                            </div>
+                            <div style="font-size: 0.7rem; color: #ca8a04; font-weight: 600;">Vyžaduje plánovanou údržbu, kontrolu nebo seřízení</div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        } else {
+            box.innerHTML = `
+                <div style="background: rgba(34, 197, 94, 0.08); border: 1.5px solid #16a34a; border-radius: 7px; padding: 0.45rem 0.75rem; display: flex; align-items: center; justify-content: space-between; gap: 0.5rem;">
+                    <div style="display: flex; align-items: center; gap: 0.5rem;">
+                        <span class="mach-status-pulse-dot dot-ok"></span>
+                        <div>
+                            <div style="font-weight: 800; font-size: 0.78rem; color: #15803d; letter-spacing: 0.01em;">
+                                V POŘÁDKU
+                            </div>
+                            <div style="font-size: 0.7rem; color: #16a34a; font-weight: 600;">Lis je v provozním stavu bez evidovaných závad</div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+    }
+
+    function updateMachineStatusButtonsUI(status) {
+        const btnOk = document.getElementById('mStatusBtnOk');
+        const btnWarn = document.getElementById('mStatusBtnWarning');
+        const btnErr = document.getElementById('mStatusBtnError');
+
+        [btnOk, btnWarn, btnErr].forEach(b => {
+            if (b) {
+                b.classList.remove('active');
+            }
+        });
+
+        if (status === 'ok' && btnOk) {
+            btnOk.classList.add('active');
+        } else if (status === 'warning' && btnWarn) {
+            btnWarn.classList.add('active');
+        } else if (status === 'error' && btnErr) {
+            btnErr.classList.add('active');
+        }
+    }
+
+    function setMachineStatusDirectly(newStatus) {
+        if (!checkAuthOrPrompt()) return;
+        triggerHapticFeedback([15]);
+        const machine = factoryMachinesData.find(m => m.id === currentActiveMachineId);
+        if (!machine) return;
+
+        machine.status = newStatus;
+        saveFactoryMachinesState();
+        updateMachineStatusButtonsUI(newStatus);
+        renderMachineProblemStatusBanner(machine);
+        renderGraphicFactoryMap();
+        const statusCzech = newStatus === 'ok' ? 'V pořádku' : (newStatus === 'warning' ? 'Nutný servis' : 'Mimo provoz');
+        showToast(`Stav lisu ${machine.number}: ${statusCzech}`);
+    }
+
+    function updateMachineMoldProductPreview(moldValue) {
+        const previewEl = document.getElementById('machineMoldProductPreview');
+        if (!previewEl) return;
+        const clean = String(moldValue || '').trim();
+        if (!clean) {
+            previewEl.style.display = 'none';
+            previewEl.innerHTML = '';
+            return;
+        }
+
+        const moldInfo = rawDatabase.find(m => String(m[0]).trim().toLowerCase() === clean.toLowerCase() && !m[4]);
+        previewEl.style.display = 'block';
+
+        if (moldInfo) {
+            const prodName = moldInfo[5] || 'Bez názvu výrobku';
+            const cust = moldInfo[2] || '';
+            const pos = moldInfo[1] || '';
+            const custStyle = typeof getCustomerStyle === 'function' ? getCustomerStyle(cust) : '';
+
+            previewEl.innerHTML = `
+                <div style="margin-top: 0.4rem; padding: 0.45rem 0.6rem; background: #ffffff; border: 1px solid #e2e8f0; border-radius: 6px; display: flex; flex-direction: column; gap: 0.25rem; box-shadow: 0 1px 2px rgba(0,0,0,0.03);">
+                    <div style="display: flex; align-items: center; justify-content: space-between; gap: 0.5rem;">
+                        <div style="display: flex; align-items: center; gap: 0.35rem; min-width: 0;">
+                            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#64748b" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink: 0;">
+                                <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path>
+                                <polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline>
+                                <line x1="12" y1="22.08" x2="12" y2="12"></line>
+                            </svg>
+                            <span style="font-size: 0.78rem; font-weight: 700; color: #0f172a; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
+                                ${escapeHtml(prodName)}
+                            </span>
+                        </div>
+                        ${cust ? `<span class="tag-customer" style="${custStyle}; font-size: 0.68rem; padding: 0.1rem 0.45rem; border-radius: 4px; font-weight: 700; flex-shrink: 0;">${escapeHtml(cust)}</span>` : ''}
+                    </div>
+                    ${pos ? `
+                        <div style="font-size: 0.68rem; color: #64748b; font-weight: 500; display: flex; align-items: center; gap: 0.25rem;">
+                            <span>V evidenci:</span>
+                            <span style="font-weight: 700; color: #334155;">${escapeHtml(pos)}</span>
+                        </div>
+                    ` : ''}
+                </div>
+            `;
+        } else {
+            previewEl.innerHTML = `
+                <div style="margin-top: 0.35rem; font-size: 0.72rem; color: #94a3b8; font-style: italic; display: flex; align-items: center; gap: 0.3rem;">
+                    <span>Forma #${escapeHtml(clean)} zatím není v databázi forem</span>
+                </div>
+            `;
+        }
+    }
+
+    let machineMoldActiveIndex = -1;
+    let machineMoldCurrentMatches = [];
+
+    function handleMachineMoldFocus() {
+        const input = document.getElementById('machineMoldInput');
+        const val = input ? input.value.trim() : '';
+        if (val.length > 0) {
+            updateMachineMoldSuggestions(val);
+        }
+    }
+
+    function handleMachineMoldKeydown(e) {
+        const suggEl = document.getElementById('machineMoldSuggestions');
+        const isSuggVisible = suggEl && suggEl.style.display === 'block';
+
+        if (isSuggVisible && machineMoldCurrentMatches.length > 0) {
+            if (e.key === 'ArrowDown') {
+                e.preventDefault();
+                machineMoldActiveIndex = (machineMoldActiveIndex + 1) % machineMoldCurrentMatches.length;
+                highlightMachineMoldActiveSuggestion();
+                return;
+            } else if (e.key === 'ArrowUp') {
+                e.preventDefault();
+                machineMoldActiveIndex = (machineMoldActiveIndex - 1 + machineMoldCurrentMatches.length) % machineMoldCurrentMatches.length;
+                highlightMachineMoldActiveSuggestion();
+                return;
+            } else if (e.key === 'Enter') {
+                if (machineMoldActiveIndex >= 0 && machineMoldActiveIndex < machineMoldCurrentMatches.length) {
+                    e.preventDefault();
+                    selectMachineMoldSuggestion(machineMoldCurrentMatches[machineMoldActiveIndex].num);
+                    return;
+                }
+            } else if (e.key === 'Escape') {
+                closeMachineMoldSuggestions();
+                return;
+            }
+        }
+
+        if (e.key === 'Enter') {
+            closeMachineMoldSuggestions();
+            saveMachineMoldNumber();
+        }
+    }
+
+    function highlightMachineMoldActiveSuggestion() {
+        const suggEl = document.getElementById('machineMoldSuggestions');
+        if (!suggEl) return;
+        const items = suggEl.querySelectorAll('.mach-mold-dropdown-item');
+        items.forEach((item, idx) => {
+            if (idx === machineMoldActiveIndex) {
+                item.classList.add('focused');
+                item.scrollIntoView({ block: 'nearest' });
+            } else {
+                item.classList.remove('focused');
+            }
+        });
+    }
+
+    function closeMachineMoldSuggestions() {
+        const suggEl = document.getElementById('machineMoldSuggestions');
+        if (suggEl) {
+            suggEl.style.display = 'none';
+            suggEl.innerHTML = '';
+        }
+        machineMoldActiveIndex = -1;
+        machineMoldCurrentMatches = [];
+    }
+
+    function updateMachineMoldSuggestions(query) {
+        const suggEl = document.getElementById('machineMoldSuggestions');
+        if (!suggEl) return;
+
+        const q = String(query || '').trim().toLowerCase();
+        if (!q) {
+            closeMachineMoldSuggestions();
+            return;
+        }
+
+        // Vyhledávání v platných formách podle čísla formy a názvu výrobku
+        const matches = [];
+        const seenMolds = new Set();
+
+        // 1. Přesné a prefixové shody čísla formy nebo názvu
+        for (let i = 0; i < rawDatabase.length; i++) {
+            const mold = rawDatabase[i];
+            if (mold[4]) continue; // vymazaná forma v koši
+
+            const moldNum = String(mold[0] || '').trim();
+            const prodName = String(mold[5] || '').trim();
+            const cust = String(mold[2] || '').trim();
+            const pos = String(mold[1] || '').trim();
+
+            if (!moldNum || seenMolds.has(moldNum)) continue;
+
+            const moldNumLow = moldNum.toLowerCase();
+            const prodNameLow = prodName.toLowerCase();
+
+            let score = 0;
+            if (moldNumLow === q) {
+                score = 100;
+            } else if (moldNumLow.startsWith(q)) {
+                score = 80;
+            } else if (prodNameLow.startsWith(q)) {
+                score = 70;
+            } else if (prodNameLow.includes(q)) {
+                score = 50;
+            } else if (moldNumLow.includes(q)) {
+                score = 40;
+            }
+
+            if (score > 0) {
+                seenMolds.add(moldNum);
+                matches.push({
+                    num: moldNum,
+                    product: prodName || 'Bez názvu',
+                    customer: cust,
+                    position: pos,
+                    score
+                });
+            }
+        }
+
+        matches.sort((a, b) => b.score - a.score || a.num.localeCompare(b.num, undefined, { numeric: true }));
+        machineMoldCurrentMatches = matches.slice(0, 8);
+        machineMoldActiveIndex = -1;
+
+        if (machineMoldCurrentMatches.length === 0) {
+            suggEl.innerHTML = `
+                <div style="padding: 8px 10px; font-size: 0.76rem; color: #94a3b8; font-style: italic; text-align: center;">
+                    Žádná forma neodpovídá výrazu „${escapeHtml(query)}“
+                </div>
+            `;
+            suggEl.style.display = 'block';
+            return;
+        }
+
+        const safeQuery = q.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+        const highlightRegex = new RegExp(`(${safeQuery})`, 'gi');
+
+        suggEl.innerHTML = machineMoldCurrentMatches.map((item, idx) => {
+            const highlightedProduct = escapeHtml(item.product).replace(highlightRegex, '<span class="mach-mold-dropdown-highlight">$1</span>');
+            const highlightedNum = escapeHtml(item.num).replace(highlightRegex, '<span class="mach-mold-dropdown-highlight">$1</span>');
+            const custStyle = typeof getCustomerStyle === 'function' ? getCustomerStyle(item.customer) : '';
+
+            return `
+                <div class="mach-mold-dropdown-item" onmousedown="selectMachineMoldSuggestion('${escapeHtml(item.num)}')" data-index="${idx}">
+                    <div class="mach-mold-dropdown-left">
+                        <span class="mach-mold-dropdown-badge">#${highlightedNum}</span>
+                        <span class="mach-mold-dropdown-product" title="${escapeHtml(item.product)}">${highlightedProduct}</span>
+                    </div>
+                    <div class="mach-mold-dropdown-right">
+                        ${item.position ? `<span class="mach-mold-dropdown-pos">${escapeHtml(item.position)}</span>` : ''}
+                        ${item.customer ? `<span class="tag-customer" style="${custStyle}; font-size: 0.64rem; padding: 0.05rem 0.35rem; border-radius: 3px; font-weight: 700;">${escapeHtml(item.customer)}</span>` : ''}
+                    </div>
+                </div>
+            `;
+        }).join('');
+
+        suggEl.style.display = 'block';
+    }
+
+    function selectMachineMoldSuggestion(moldNum) {
+        if (!checkAuthOrPrompt()) return;
+        triggerHapticFeedback([12]);
+        const input = document.getElementById('machineMoldInput');
+        if (input) {
+            input.value = moldNum;
+            input.focus();
+        }
+        const clearBtn = document.getElementById('btnClearMachineMold');
+        if (clearBtn) clearBtn.style.display = 'inline-flex';
+
+        closeMachineMoldSuggestions();
+        updateMachineMoldProductPreview(moldNum);
+        saveMachineMoldNumber();
+    }
+
+    function handleMachineMoldInput() {
+        const input = document.getElementById('machineMoldInput');
+        const clearBtn = document.getElementById('btnClearMachineMold');
+        const val = input ? input.value.trim() : '';
+        if (clearBtn) {
+            clearBtn.style.display = val.length > 0 ? 'inline-flex' : 'none';
+        }
+        updateMachineMoldProductPreview(val);
+        updateMachineMoldSuggestions(val);
+    }
+
+    function clearMachineMoldInput() {
+        if (!checkAuthOrPrompt()) return;
+        triggerHapticFeedback([10]);
+        const input = document.getElementById('machineMoldInput');
+        if (input) {
+            input.value = '';
+            input.focus();
+        }
+        const clearBtn = document.getElementById('btnClearMachineMold');
+        if (clearBtn) clearBtn.style.display = 'none';
+        updateMachineMoldProductPreview('');
+
+        const machine = factoryMachinesData.find(m => m.id === currentActiveMachineId);
+        if (machine && machine.currentMold) {
+            machine.currentMold = '';
+            saveFactoryMachinesState();
+            const goToMoldBtn = document.getElementById('btnGoToMachineMold');
+            if (goToMoldBtn) goToMoldBtn.style.display = 'none';
+            renderGraphicFactoryMap();
+            showToast(`Forma odebrána z lisu ${machine.number}`);
+        }
+    }
+
+    function saveMachineMoldNumber() {
+        if (!checkAuthOrPrompt()) return;
+        triggerHapticFeedback([15]);
+        closeMachineMoldSuggestions();
+        const machine = factoryMachinesData.find(m => m.id === currentActiveMachineId);
+        if (!machine) return;
+
+        const input = document.getElementById('machineMoldInput');
+        let val = input ? input.value.trim() : '';
+
+        // Pokud uživatel zadal název výrobku (nebo část) namísto čísla, najdeme odpovídající formu
+        if (val && !rawDatabase.some(m => String(m[0]).trim().toLowerCase() === val.toLowerCase() && !m[4])) {
+            const foundByProduct = rawDatabase.find(m => !m[4] && String(m[5] || '').trim().toLowerCase() === val.toLowerCase()) ||
+                                   rawDatabase.find(m => !m[4] && String(m[5] || '').trim().toLowerCase().includes(val.toLowerCase()));
+            if (foundByProduct) {
+                val = String(foundByProduct[0]).trim();
+                if (input) input.value = val;
+            }
+        }
+
+        machine.currentMold = val;
+        saveFactoryMachinesState();
+        updateMachineMoldProductPreview(val);
+
+        const clearMoldBtn = document.getElementById('btnClearMachineMold');
+        if (clearMoldBtn) clearMoldBtn.style.display = val ? 'inline-flex' : 'none';
+
+        const goToMoldBtn = document.getElementById('btnGoToMachineMold');
+        if (goToMoldBtn) goToMoldBtn.style.display = val ? 'inline-flex' : 'none';
+
+        renderGraphicFactoryMap();
+        showToast(val ? `Forma ${val} přiřazena k lisu ${machine.number}` : `Forma odebrána z lisu ${machine.number}`);
+    }
+
+    function navigateToMachineMold() {
+        const machine = factoryMachinesData.find(m => m.id === currentActiveMachineId);
+        if (!machine || !machine.currentMold) return;
+
+        triggerHapticFeedback([15]);
+        const moldNum = machine.currentMold;
+        closeMachineDetailModal();
+        closeFactoryMapPage();
+
+        // Přepnout na záložku vyhledávání
+        const btnSearch = document.getElementById('btn-search');
+        if (btnSearch) btnSearch.click();
+
+        const sInput = document.getElementById('searchInput');
+        if (sInput) {
+            sInput.value = moldNum;
+            handleSearch();
+            sInput.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+    }
+
+    function renderMachineIssuesList(machine) {
+        const listContainer = document.getElementById('machineIssuesList');
+        const badgeCount = document.getElementById('machineIssuesBadgeCount');
+        if (!listContainer) return;
+
+        const issues = machine.issues || [];
+        const unresolvedCount = issues.filter(i => !i.resolved).length;
+        if (badgeCount) badgeCount.textContent = `${issues.length} (${unresolvedCount} aktivních)`;
+
+        if (issues.length === 0) {
+            listContainer.innerHTML = `
+                <div style="padding: 1rem; text-align: center; color: var(--text-muted); font-size: 0.82rem; background: var(--input-bg); border-radius: 6px; border: 1px dashed var(--border-color);">
+                    Žádné zapsané závady ani servisní záznamy.
+                </div>
+            `;
+            return;
+        }
+
+        listContainer.innerHTML = issues.map((issue) => {
+            const isCritical = issue.priority === 'critical';
+            const isResolved = !!issue.resolved;
+
+            let dateFormatted = '';
+            try {
+                const d = new Date(issue.date);
+                dateFormatted = `${d.getDate()}.${d.getMonth() + 1}. ${d.getHours()}:${String(d.getMinutes()).padStart(2, '0')}`;
+            } catch { dateFormatted = issue.date || ''; }
+
+            return `
+                <div style="background: ${isResolved ? 'var(--input-bg)' : (isCritical ? '#fef2f2' : 'var(--card-bg)')}; border: 1px solid ${isResolved ? 'var(--border-color)' : (isCritical ? '#fca5a5' : 'var(--border-color)')}; border-radius: 6px; padding: 0.65rem; display: flex; flex-direction: column; gap: 0.35rem; opacity: ${isResolved ? '0.6' : '1'};">
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <div style="display: flex; align-items: center; gap: 0.45rem;">
+                            <span style="font-size: 0.68rem; font-weight: 800; padding: 0.1rem 0.35rem; border-radius: 4px; background: ${isCritical ? '#dc2626' : '#64748b'}; color: #ffffff; text-transform: uppercase;">
+                                ${isCritical ? '⚠️ Kritická' : 'Běžná'}
+                            </span>
+                            <span style="font-size: 0.74rem; font-weight: 700; color: var(--text-main);">${escapeHtml(issue.author || 'Seřizovač')}</span>
+                            <span style="font-size: 0.7rem; color: var(--text-muted);">${dateFormatted}</span>
+                        </div>
+                        <button type="button" onclick="deleteMachineIssue(${issue.id})" style="background: none; border: none; color: #dc2626; font-size: 0.8rem; cursor: pointer; padding: 0 0.25rem;" title="Smazat záznam">✕</button>
+                    </div>
+
+                    <div style="font-size: 0.82rem; color: var(--text-main); font-weight: 500; ${isResolved ? 'text-decoration: line-through;' : ''}">
+                        ${escapeHtml(issue.text)}
+                    </div>
+
+                    <div style="display: flex; justify-content: flex-end; align-items: center; margin-top: 0.2rem;">
+                        <button type="button" class="btn-secondary" onclick="toggleMachineIssueResolved(${issue.id})" style="padding: 0.2rem 0.55rem; font-size: 0.72rem; font-weight: 700; display: flex; align-items: center; gap: 0.25rem;">
+                            ${isResolved ? '↩ Vrátit mezi aktivní' : '✓ Označit jako vyřešené'}
+                        </button>
+                    </div>
+                </div>
+            `;
+        }).join('');
+    }
+
+    function addNewMachineIssue() {
+        if (!checkAuthOrPrompt()) return;
+        triggerHapticFeedback([15]);
+        const machine = factoryMachinesData.find(m => m.id === currentActiveMachineId);
+        if (!machine) return;
+
+        const textInput = document.getElementById('newIssueTextInput');
+        const text = textInput ? textInput.value.trim() : '';
+        if (!text) {
+            showToast('Zadejte popis závady', true);
+            return;
+        }
+
+        const priorityRadio = document.querySelector('input[name="issuePriority"]:checked');
+        const priority = priorityRadio ? priorityRadio.value : 'normal';
+
+        if (!Array.isArray(machine.issues)) machine.issues = [];
+
+        const newIssue = {
+            id: Date.now(),
+            text: text,
+            priority: priority,
+            author: currentUser || 'Seřizovač',
+            date: new Date().toISOString(),
+            resolved: false
+        };
+
+        machine.issues.unshift(newIssue);
+
+        // Pokud je závada kritická a stroj byl 'ok', přepnout na 'error'
+        if (priority === 'critical' && machine.status === 'ok') {
+            machine.status = 'error';
+            updateMachineStatusButtonsUI('error');
+        }
+
+        saveFactoryMachinesState();
+        textInput.value = '';
+
+        renderMachineProblemStatusBanner(machine);
+        renderMachineIssuesList(machine);
+        renderGraphicFactoryMap();
+
+        showToast('Závada byla zaznamenána do knihy lisu');
+    }
+
+    function toggleMachineIssueResolved(issueId) {
+        if (!checkAuthOrPrompt()) return;
+        triggerHapticFeedback([12]);
+        const machine = factoryMachinesData.find(m => m.id === currentActiveMachineId);
+        if (!machine || !Array.isArray(machine.issues)) return;
+
+        const issue = machine.issues.find(i => i.id === issueId);
+        if (!issue) return;
+
+        issue.resolved = !issue.resolved;
+        saveFactoryMachinesState();
+
+        renderMachineProblemStatusBanner(machine);
+        renderMachineIssuesList(machine);
+        renderGraphicFactoryMap();
+
+        showToast(issue.resolved ? 'Závada označena jako vyřešená' : 'Závada vrácena mezi aktivní');
+    }
+
+    function deleteMachineIssue(issueId) {
+        if (!checkAuthOrPrompt()) return;
+        triggerHapticFeedback([12]);
+        const machine = factoryMachinesData.find(m => m.id === currentActiveMachineId);
+        if (!machine || !Array.isArray(machine.issues)) return;
+
+        machine.issues = machine.issues.filter(i => i.id !== issueId);
+        saveFactoryMachinesState();
+
+        renderMachineProblemStatusBanner(machine);
+        renderMachineIssuesList(machine);
+        renderGraphicFactoryMap();
+
+        showToast('Záznam smazán');
+    }
+    document.addEventListener('click', (e) => {
+        const input = document.getElementById('machineMoldInput');
+        const sugg = document.getElementById('machineMoldSuggestions');
+        if (sugg && sugg.style.display === 'block') {
+            if (!sugg.contains(e.target) && e.target !== input) {
+                closeMachineMoldSuggestions();
+            }
+        }
+    });
 </script>
 </body>
 </html>
