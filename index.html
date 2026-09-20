@@ -8108,7 +8108,15 @@
             .on('postgres_changes', { event: '*', schema: 'public', table: 'mold_comments' }, debouncedFetch)
             .on('postgres_changes', { event: '*', schema: 'public', table: 'mold_logs' }, debouncedFetch)
             .on('postgres_changes', { event: '*', schema: 'public', table: 'customers' }, debouncedFetch)
-            .on('postgres_changes', { event: '*', schema: 'public', table: 'app_settings' }, debouncedFetch)
+            .on('postgres_changes', { event: '*', schema: 'public', table: 'app_settings' }, (payload) => {
+                debouncedFetch();
+                if (typeof syncFactoryMachinesFromDb === 'function') {
+                    const rowKey = payload?.new?.key || payload?.old?.key;
+                    if (!rowKey || rowKey === 'adis_factory_machines_state_v1') {
+                        syncFactoryMachinesFromDb();
+                    }
+                }
+            })
             .on('postgres_changes', { event: '*', schema: 'public', table: 'active_sessions' }, () => {
                 updateOnlineBadge();
                 const popover = document.getElementById('onlineUsersPopover');
@@ -14142,6 +14150,102 @@ Return strictly valid JSON only without markdown formatting with this schema:
         stackBottomRight: [29, 2, 3, 4, 5, 6, 8, 7]
     };
 
+    let isSyncingFactoryMachines = false;
+
+    function applyFactoryMachinesData(newMachinesArray) {
+        if (!Array.isArray(newMachinesArray) || newMachinesArray.length === 0) return;
+        const incomingMap = {};
+        newMachinesArray.forEach(item => {
+            if (item && item.id) {
+                incomingMap[item.id] = item;
+            }
+        });
+
+        factoryMachinesData = FACTORY_MACHINE_NUMBERS.map(num => {
+            const existing = incomingMap[num];
+            return {
+                id: num,
+                number: String(num),
+                status: existing?.status || 'ok',
+                currentMold: existing?.currentMold || '',
+                issues: Array.isArray(existing?.issues) ? existing.issues : []
+            };
+        });
+
+        try {
+            localStorage.setItem(FACTORY_MACHINES_STORAGE_KEY, JSON.stringify(factoryMachinesData));
+        } catch (e) {}
+
+        const mapPage = document.getElementById('factoryMapPage');
+        if (mapPage && mapPage.classList.contains('active')) {
+            renderGraphicFactoryMap();
+            if (currentActiveMachineId) {
+                const activeMach = factoryMachinesData.find(m => m.id === currentActiveMachineId);
+                if (activeMach) {
+                    renderMachineProblemStatusBanner(activeMach);
+                    updateMachineStatusButtonsUI(activeMach.status);
+                    renderMachineIssuesList(activeMach);
+                    const moldInput = document.getElementById('machineMoldInput');
+                    if (moldInput && document.activeElement !== moldInput) {
+                        moldInput.value = activeMach.currentMold || '';
+                        const clearMoldBtn = document.getElementById('btnClearMachineMold');
+                        const goToMoldBtn = document.getElementById('btnGoToMachineMold');
+                        const hasMold = !!(activeMach.currentMold && activeMach.currentMold.trim());
+                        if (clearMoldBtn) clearMoldBtn.style.display = hasMold ? 'inline-flex' : 'none';
+                        if (goToMoldBtn) goToMoldBtn.style.display = hasMold ? 'inline-flex' : 'none';
+                        updateMachineMoldProductPreview(activeMach.currentMold || '');
+                    }
+                }
+            }
+        }
+    }
+
+    async function syncFactoryMachinesFromDb() {
+        if (!supabaseClient || isSyncingFactoryMachines) return;
+        try {
+            const { data, error } = await supabaseClient
+                .from('app_settings')
+                .select('value')
+                .eq('key', 'adis_factory_machines_state_v1')
+                .maybeSingle();
+
+            if (!error && data && data.value) {
+                let parsed = null;
+                try {
+                    parsed = typeof data.value === 'string' ? JSON.parse(data.value) : data.value;
+                } catch (pe) {
+                    parsed = null;
+                }
+                if (Array.isArray(parsed) && parsed.length > 0) {
+                    applyFactoryMachinesData(parsed);
+                }
+            }
+        } catch (e) {
+            console.warn('Chyba synchronizace dat lisů ze Supabase:', e);
+        }
+    }
+
+    async function syncFactoryMachinesToDb() {
+        if (!supabaseClient || isSubmittingAction) return;
+        try {
+            isSyncingFactoryMachines = true;
+            await supabaseClient
+                .from('app_settings')
+                .upsert([
+                    {
+                        key: 'adis_factory_machines_state_v1',
+                        value: JSON.stringify(factoryMachinesData)
+                    }
+                ], { onConflict: 'key' });
+        } catch (err) {
+            console.error('Chyba při ukládání stavu lisů do Supabase:', err);
+        } finally {
+            setTimeout(() => {
+                isSyncingFactoryMachines = false;
+            }, 300);
+        }
+    }
+
     function initFactoryMachinesData() {
         let existingMap = {};
         try {
@@ -14172,14 +14276,19 @@ Return strictly valid JSON only without markdown formatting with this schema:
             };
         });
 
-        saveFactoryMachinesState();
+        saveFactoryMachinesState(false);
+        syncFactoryMachinesFromDb();
     }
 
-    function saveFactoryMachinesState() {
+    function saveFactoryMachinesState(shouldSyncToDb = true) {
         try {
             localStorage.setItem(FACTORY_MACHINES_STORAGE_KEY, JSON.stringify(factoryMachinesData));
         } catch (e) {
             console.error('Chyba ukládání dat strojů:', e);
+        }
+
+        if (shouldSyncToDb) {
+            syncFactoryMachinesToDb();
         }
     }
 
@@ -14189,6 +14298,7 @@ Return strictly valid JSON only without markdown formatting with this schema:
         if (!page) return;
         page.classList.add('active');
         renderGraphicFactoryMap();
+        syncFactoryMachinesFromDb();
     }
 
     function closeFactoryMapPage() {
