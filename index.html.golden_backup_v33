@@ -3893,7 +3893,7 @@
             justify-content: space-between;
         }
 
-        /* Inženýrský grafitový dopravní koridor VZV (Aisle) */
+        /* Žlutý dopravní koridor VZV (Aisle) */
         .factory-aisle {
             display: flex;
             flex-direction: column;
@@ -3907,8 +3907,8 @@
         .factory-aisle-line {
             flex: 1;
             width: 0;
-            border-left: 2px dashed #94a3b8;
-            opacity: 0.8;
+            border-left: 2px dashed #f59e0b;
+            opacity: 0.85;
             min-height: 20px;
         }
 
@@ -3916,12 +3916,12 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            background: #f1f5f9;
-            border: 1px solid #cbd5e1;
+            background: #fef3c7;
+            border: 1px solid #f59e0b;
             border-radius: 4px;
             width: 20px;
             height: 22px;
-            box-shadow: 0 1px 2px rgba(15, 23, 42, 0.05);
+            box-shadow: 0 1px 2px rgba(245, 158, 11, 0.15);
             margin: 4px 0;
             flex-shrink: 0;
         }
@@ -3933,17 +3933,17 @@
             font-size: 0.6rem;
             font-weight: 800;
             letter-spacing: 0.08em;
-            color: #475569;
-            background: #f1f5f9;
+            color: #b45309;
+            background: #fef3c7;
             padding: 5px 2px;
             border-radius: 3px;
-            border: 1px solid #cbd5e1;
+            border: 1px solid #fde68a;
             white-space: nowrap;
             margin: 6px 0;
             flex-shrink: 0;
         }
 
-        /* Příčná ulička s grafitovou šipkou a linií */
+        /* Příčná ulička se žlutou šipkou a linií */
         .factory-cross-passage {
             display: flex;
             align-items: center;
@@ -3956,22 +3956,22 @@
 
         .factory-cross-line {
             flex: 1;
-            border-top: 2px dashed #94a3b8;
-            opacity: 0.8;
+            border-top: 2px dashed #f59e0b;
+            opacity: 0.85;
         }
 
         .factory-yellow-arrow {
             display: inline-flex;
-            filter: drop-shadow(0 1px 1px rgba(15, 23, 42, 0.08));
+            filter: drop-shadow(0 1px 1px rgba(245, 158, 11, 0.25));
             flex-shrink: 0;
         }
 
         /* Manipulační plocha forem přímo nad strojem 11 */
         .factory-staging-zone {
             min-height: 40px;
-            border: 1.5px dashed #94a3b8;
+            border: 1.5px dashed #f59e0b;
             border-radius: 6px;
-            background: rgba(241, 245, 249, 0.7);
+            background: rgba(254, 243, 199, 0.4);
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -3988,7 +3988,7 @@
             position: absolute;
             width: 7px;
             height: 7px;
-            border-color: #64748b;
+            border-color: #d97706;
             border-style: solid;
         }
         .staging-zone-corner.tl { top: -1px; left: -1px; border-width: 2.5px 0 0 2.5px; }
@@ -3999,7 +3999,7 @@
         .staging-zone-label {
             font-size: 0.65rem;
             font-weight: 800;
-            color: #334155;
+            color: #92400e;
             letter-spacing: 0.05em;
             text-transform: uppercase;
         }
@@ -4007,7 +4007,7 @@
         .staging-zone-sub {
             font-size: 0.58rem;
             font-weight: 600;
-            color: #64748b;
+            color: #b45309;
             margin-top: 1px;
         }
 
@@ -4034,26 +4034,26 @@
 
         .mach-walkway-line {
             flex: 1;
-            border-top: 1.5px dashed #94a3b8;
-            opacity: 0.8;
+            border-top: 1.5px dashed #f59e0b;
+            opacity: 0.85;
         }
 
         .mach-walkway-marker {
             display: flex;
             align-items: center;
             justify-content: center;
-            background: #f1f5f9;
-            border: 1px solid #cbd5e1;
+            background: #fef3c7;
+            border: 1px solid #fde68a;
             border-radius: 2px;
             width: 17px;
             height: 9px;
-            box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
+            box-shadow: 0 1px 2px rgba(245, 158, 11, 0.12);
             flex-shrink: 0;
         }
 
         .mach-walkway-arrow {
             display: inline-flex;
-            filter: drop-shadow(0 0.5px 0.5px rgba(15, 23, 42, 0.08));
+            filter: drop-shadow(0 0.5px 0.5px rgba(217, 119, 6, 0.2));
             flex-shrink: 0;
         }
 
@@ -4126,15 +4126,15 @@
         }
 
         .mach-sketch.status-warning {
-            border-left-color: #f97316 !important;
-            background-image: linear-gradient(180deg, #ffffff 0%, #fff7ed 60%, #ffedd5 100%) !important;
-            border-color: #fed7aa !important;
-            box-shadow: 0 1px 2px rgba(249, 115, 22, 0.08);
+            border-left-color: #d97706 !important;
+            background-image: linear-gradient(180deg, #ffffff 0%, #fffbeb 60%, #fef3c7 100%) !important;
+            border-color: #fde68a !important;
+            box-shadow: 0 1px 2px rgba(217, 119, 6, 0.06);
         }
 
         .mach-sketch.status-warning:hover {
-            border-color: #ea580c !important;
-            box-shadow: 0 2px 6px -1px rgba(249, 115, 22, 0.16);
+            border-color: #d97706 !important;
+            box-shadow: 0 2px 6px -1px rgba(217, 119, 6, 0.12);
         }
 
         .mach-sketch.status-error {
@@ -4270,7 +4270,7 @@
         }
 
         .mach-status-pulse-dot.dot-warning {
-            background-color: #f97316;
+            background-color: #eab308;
         }
 
         .mach-status-pulse-dot.dot-error {
@@ -4289,8 +4289,7 @@
             flex-shrink: 0;
         }
         .mach-sketch-beacon.beacon-warning {
-            background-color: #f97316;
-            box-shadow: 0 0 2px rgba(249, 115, 22, 0.6);
+            background-color: #d97706;
         }
         .mach-sketch-beacon.beacon-warning::after {
             content: '';
@@ -4300,7 +4299,7 @@
             width: 100%;
             height: 100%;
             border-radius: 50%;
-            background-color: #fb923c;
+            background-color: #f59e0b;
             transform: translate(-50%, -50%);
             animation: statusRadialPulse 1.8s cubic-bezier(0.22, 1, 0.36, 1) infinite;
             pointer-events: none;
@@ -4368,9 +4367,9 @@
         }
 
         .mach-status-pill-btn.active.warning {
-            background: rgba(249, 115, 22, 0.14);
-            border-color: #f97316;
-            color: #c2410c;
+            background: rgba(234, 179, 8, 0.14);
+            border-color: #eab308;
+            color: #a16207;
             font-weight: 700;
         }
 
@@ -5978,13 +5977,13 @@
                 <div class="factory-cross-line"></div>
                 <div class="factory-aisle-marker horizontal">
                     <svg class="factory-yellow-arrow" width="13" height="11" viewBox="0 0 14 12" fill="none">
-                        <path d="M1 6H13M13 6L8 1M13 6L8 11" stroke="#64748b" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+                        <path d="M1 6H13M13 6L8 1M13 6L8 11" stroke="#eab308" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
                     </svg>
                 </div>
                 <div class="factory-cross-line"></div>
                 <div class="factory-aisle-marker horizontal">
                     <svg class="factory-yellow-arrow" width="13" height="11" viewBox="0 0 14 12" fill="none">
-                        <path d="M13 6H1M1 6L6 1M1 6L6 11" stroke="#64748b" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+                        <path d="M13 6H1M1 6L6 1M1 6L6 11" stroke="#eab308" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
                     </svg>
                 </div>
                 <div class="factory-cross-line"></div>
@@ -6002,7 +6001,7 @@
                             <div class="factory-cross-line"></div>
                             <div class="factory-aisle-marker horizontal">
                                 <svg class="factory-yellow-arrow" width="13" height="11" viewBox="0 0 14 12" fill="none">
-                                    <path d="M1 6H13M13 6L8 1M13 6L8 11" stroke="#64748b" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+                                    <path d="M1 6H13M13 6L8 1M13 6L8 11" stroke="#eab308" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
                                 </svg>
                             </div>
                             <div class="factory-cross-line"></div>
@@ -6014,17 +6013,17 @@
                     </div>
                 </div>
 
-                <!-- KORIDOR 1: Dopravní trasa -->
+                <!-- KORIDOR 1: Žlutá dopravní trasa -->
                 <div class="factory-aisle" title="Dopravní trasa">
                     <div class="factory-aisle-line"></div>
                     <div class="factory-aisle-marker">
                         <svg class="factory-yellow-arrow" width="11" height="13" viewBox="0 0 12 14" fill="none">
-                            <path d="M6 1V13M6 13L1 8M6 13L11 8" stroke="#64748b" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+                            <path d="M6 1V13M6 13L1 8M6 13L11 8" stroke="#eab308" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
                         </svg>
                     </div>
                     <div class="factory-aisle-marker">
                         <svg class="factory-yellow-arrow" width="11" height="13" viewBox="0 0 12 14" fill="none">
-                            <path d="M6 13V1M6 1L1 6M6 1L11 6" stroke="#64748b" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+                            <path d="M6 13V1M6 1L1 6M6 1L11 6" stroke="#eab308" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
                         </svg>
                     </div>
                     <div class="factory-aisle-line"></div>
@@ -6046,10 +6045,10 @@
                         <span class="staging-zone-label">MANIPULAČNÍ ZÓNA</span>
                         <div style="margin-top: 4px; display: flex; align-items: center; justify-content: center; gap: 8px;">
                             <svg class="factory-yellow-arrow" width="11" height="13" viewBox="0 0 12 14" fill="none">
-                                <path d="M6 1V13M6 13L1 8M6 13L11 8" stroke="#64748b" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+                                <path d="M6 1V13M6 13L1 8M6 13L11 8" stroke="#eab308" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
                             </svg>
                             <svg class="factory-yellow-arrow" width="11" height="13" viewBox="0 0 12 14" fill="none">
-                                <path d="M6 13V1M6 1L1 6M6 1L11 6" stroke="#64748b" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+                                <path d="M6 13V1M6 1L1 6M6 1L11 6" stroke="#eab308" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
                             </svg>
                         </div>
                     </div>
@@ -6059,17 +6058,17 @@
                     </div>
                 </div>
 
-                <!-- KORIDOR 2: Dopravní trasa -->
+                <!-- KORIDOR 2: Žlutá dopravní trasa -->
                 <div class="factory-aisle" title="Dopravní trasa">
                     <div class="factory-aisle-line"></div>
                     <div class="factory-aisle-marker">
                         <svg class="factory-yellow-arrow" width="11" height="13" viewBox="0 0 12 14" fill="none">
-                            <path d="M6 1V13M6 13L1 8M6 13L11 8" stroke="#64748b" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+                            <path d="M6 1V13M6 13L1 8M6 13L11 8" stroke="#eab308" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
                         </svg>
                     </div>
                     <div class="factory-aisle-marker">
                         <svg class="factory-yellow-arrow" width="11" height="13" viewBox="0 0 12 14" fill="none">
-                            <path d="M6 13V1M6 1L1 6M6 1L11 6" stroke="#64748b" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+                            <path d="M6 13V1M6 1L1 6M6 1L11 6" stroke="#eab308" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
                         </svg>
                     </div>
                     <div class="factory-aisle-line"></div>
@@ -6086,7 +6085,7 @@
                             <div class="factory-cross-line"></div>
                             <div class="factory-aisle-marker horizontal">
                                 <svg class="factory-yellow-arrow" width="13" height="11" viewBox="0 0 14 12" fill="none">
-                                    <path d="M1 6H13M13 6L8 1M13 6L8 11" stroke="#64748b" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+                                    <path d="M1 6H13M13 6L8 1M13 6L8 11" stroke="#eab308" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
                                 </svg>
                             </div>
                             <div class="factory-cross-line"></div>
@@ -6099,18 +6098,18 @@
                 </div>
             </div>
 
-            <!-- Spodní spojovací trasa s grafitovými šipkami a šтрихпунктиром -->
+            <!-- Spodní spojovací trasa se žlutými šipkami a šтрихпунктиром -->
             <div class="factory-cross-way bottom" title="Dopravní trasa">
                 <div class="factory-cross-line"></div>
                 <div class="factory-aisle-marker horizontal">
                     <svg class="factory-yellow-arrow" width="13" height="11" viewBox="0 0 14 12" fill="none">
-                        <path d="M1 6H13M13 6L8 1M13 6L8 11" stroke="#64748b" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+                        <path d="M1 6H13M13 6L8 1M13 6L8 11" stroke="#eab308" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
                     </svg>
                 </div>
                 <div class="factory-cross-line"></div>
                 <div class="factory-aisle-marker horizontal">
                     <svg class="factory-yellow-arrow" width="13" height="11" viewBox="0 0 14 12" fill="none">
-                        <path d="M13 6H1M1 6L6 1M1 6L6 11" stroke="#64748b" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+                        <path d="M13 6H1M1 6L6 1M1 6L6 11" stroke="#eab308" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
                     </svg>
                 </div>
                 <div class="factory-cross-line"></div>
@@ -14659,7 +14658,7 @@ Return strictly valid JSON only without markdown formatting with this schema:
         let beaconColor = '#16a34a';
         if (effectiveStatus === 'warning') {
             statusTitle = 'Nutný servis';
-            beaconColor = '#f97316';
+            beaconColor = '#d97706';
         } else if (effectiveStatus === 'error') {
             statusTitle = hasIssues ? `${unresolvedIssues.length} aktivní závada` : 'Mimo provoz';
             beaconColor = '#dc2626';
@@ -14730,7 +14729,7 @@ Return strictly valid JSON only without markdown formatting with this schema:
             container.innerHTML = nums.map(num => {
                 const m = machineMap[num] || { id: num, number: String(num), status: 'ok', currentMold: '', issues: [] };
                 return createMachineSketchHtml(m);
-            }).join('<div class="mach-walkway" title="Průchod mezi stroji"><div class="mach-walkway-line"></div><div class="mach-walkway-marker"><svg class="mach-walkway-arrow" width="11" height="6" viewBox="0 0 16 8" fill="none"><path d="M3.5 1L1 4M1 4L3.5 7M1 4H15M12.5 1L15 4M15 4L12.5 7" stroke="#64748b" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="mach-walkway-line"></div></div>');
+            }).join('<div class="mach-walkway" title="Průchod mezi stroji"><div class="mach-walkway-line"></div><div class="mach-walkway-marker"><svg class="mach-walkway-arrow" width="11" height="6" viewBox="0 0 16 8" fill="none"><path d="M3.5 1L1 4M1 4L3.5 7M1 4H15M12.5 1L15 4M15 4L12.5 7" stroke="#d97706" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="mach-walkway-line"></div></div>');
         });
     }
 
@@ -14815,14 +14814,14 @@ Return strictly valid JSON only without markdown formatting with this schema:
             `;
         } else if (isWarning) {
             box.innerHTML = `
-                <div style="background: rgba(249, 115, 22, 0.1); border: 1.5px solid #f97316; border-radius: 7px; padding: 0.45rem 0.75rem; display: flex; align-items: center; justify-content: space-between; gap: 0.5rem;">
+                <div style="background: rgba(234, 179, 8, 0.1); border: 1.5px solid #eab308; border-radius: 7px; padding: 0.45rem 0.75rem; display: flex; align-items: center; justify-content: space-between; gap: 0.5rem;">
                     <div style="display: flex; align-items: center; gap: 0.5rem;">
                         <span class="mach-status-pulse-dot dot-warning"></span>
                         <div>
-                            <div style="font-weight: 800; font-size: 0.78rem; color: #c2410c; letter-spacing: 0.01em;">
+                            <div style="font-weight: 800; font-size: 0.78rem; color: #a16207; letter-spacing: 0.01em;">
                                 NUTNÝ SERVIS
                             </div>
-                            <div style="font-size: 0.7rem; color: #ea580c; font-weight: 600;">Vyžaduje plánovanou údržbu, kontrolu nebo seřízení</div>
+                            <div style="font-size: 0.7rem; color: #ca8a04; font-weight: 600;">Vyžaduje plánovanou údržbu, kontrolu nebo seřízení</div>
                         </div>
                     </div>
                 </div>
