@@ -3970,7 +3970,7 @@
         .factory-staging-zone {
             min-height: 40px;
             border: 1.5px dashed #94a3b8;
-            border-radius: 0;
+            border-radius: 6px;
             background: rgba(241, 245, 249, 0.7);
             display: flex;
             flex-direction: column;
@@ -4603,7 +4603,7 @@
             }
 
             .factory-map-scroll-area {
-                padding: 2px 2px;
+                padding: 0.25rem 0.25rem;
                 display: flex;
                 flex-direction: column;
                 justify-content: center;
@@ -4625,9 +4625,9 @@
                 height: auto;
                 max-height: none;
                 margin: auto 0;
-                padding: 3px 2px;
+                padding: 0.35rem 0.25rem;
                 border-width: 1.5px;
-                border-radius: 6px;
+                border-radius: 8px;
                 display: block;
                 box-sizing: border-box;
                 overflow: hidden !important;
@@ -4636,8 +4636,8 @@
 
             .factory-layout-grid {
                 display: grid;
-                grid-template-columns: minmax(0, 1fr) 6px minmax(0, 1fr) 6px minmax(0, 1fr);
-                gap: 0.1rem;
+                grid-template-columns: minmax(0, 1fr) 8px minmax(0, 1fr) 8px minmax(0, 1fr);
+                gap: 0.15rem;
                 align-items: stretch;
                 width: 100%;
                 box-sizing: border-box;
@@ -4652,12 +4652,12 @@
             }
 
             .mach-sketch {
-                height: 35px;
-                min-height: 34px;
-                max-height: 36px;
-                padding: 0 3px;
-                border-left-width: 3.5px;
-                border-radius: 5px;
+                height: 31px;
+                min-height: 30px;
+                max-height: 33px;
+                padding: 0 2.5px;
+                border-left-width: 3px;
+                border-radius: 4px;
                 box-sizing: border-box;
                 width: 100%;
                 min-width: 0;
@@ -4667,7 +4667,7 @@
             }
 
             .mach-num {
-                font-size: 0.78rem;
+                font-size: 0.72rem;
                 padding-left: 0;
                 flex-shrink: 0;
                 font-weight: 800;
@@ -4675,22 +4675,22 @@
             }
 
             .mach-cad-silhouette {
-                margin: 0 1.5px;
+                margin: 0 1px;
             }
 
             .mach-cad-silhouette svg {
-                width: 24px;
-                height: 11.5px;
+                width: 20px;
+                height: 9.5px;
             }
 
             .mach-sketch-divider {
-                margin: 0 1.5px;
-                height: 12px;
+                margin: 0 1px;
+                height: 10px;
                 flex-shrink: 0;
             }
 
             .mach-mold-slot-box {
-                gap: 2.5px;
+                gap: 2px;
                 min-width: 0;
                 flex: 1;
                 overflow: hidden;
@@ -4701,10 +4701,10 @@
 
             .mach-mold-product-name {
                 display: block;
-                font-size: 0.55rem;
+                font-size: 0.52rem;
                 font-weight: 600;
                 line-height: 1;
-                max-width: 44px;
+                max-width: 38px;
                 min-width: 0;
                 overflow: hidden;
                 text-overflow: ellipsis;
@@ -4716,12 +4716,12 @@
             }
 
             .mach-mold-tag-minimal {
-                font-size: 0.62rem;
+                font-size: 0.58rem;
                 font-weight: 700;
-                padding: 1px 3px;
-                height: 17px;
-                min-width: 24px;
-                max-width: 52px;
+                padding: 1px 2px;
+                height: 15px;
+                min-width: 22px;
+                max-width: 48px;
                 box-sizing: border-box;
                 overflow: hidden;
                 text-overflow: ellipsis;
@@ -4730,7 +4730,7 @@
             }
 
             .mach-mold-empty-dash {
-                font-size: 0.58rem;
+                font-size: 0.56rem;
                 min-width: 10px;
                 padding: 0 1px;
             }
@@ -4741,8 +4741,8 @@
             }
 
             .mach-walkway {
-                height: 4px;
-                gap: 1px;
+                height: 6px;
+                gap: 1.5px;
                 padding: 0 1px;
             }
 
@@ -4751,27 +4751,17 @@
             }
 
             .mach-walkway-marker {
-                width: 10px;
-                height: 4px;
-                border-radius: 1.5px;
+                width: 12px;
+                height: 6px;
+                border-radius: 2px;
             }
 
             .mach-walkway-arrow {
-                width: 6px;
-                height: 3px;
+                width: 7px;
+                height: 4px;
             }
 
             .mach-passage-spacer {
-                min-height: 14px;
-                flex: 1;
-                margin: 1px 0;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                min-width: 0;
-            }
-
-            .mach-col-spacer {
                 min-height: 16px;
                 flex: 1;
                 margin: 1px 0;
@@ -4781,30 +4771,30 @@
                 min-width: 0;
             }
 
+            .mach-col-spacer {
+                min-height: 18px;
+                flex: 1;
+                margin: 1px 0;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                min-width: 0;
+            }
+
             .factory-staging-zone {
-                min-height: 30px;
+                min-height: 34px;
                 margin-bottom: 2px;
-                padding: 1px 2px;
-                border-radius: 0 !important;
+                padding: 2px 2px;
                 display: flex;
                 flex-direction: column;
                 align-items: center;
                 justify-content: center;
                 min-width: 0;
-                position: relative;
+                overflow: hidden;
             }
-
-            .staging-zone-corner {
-                width: 5px;
-                height: 5px;
-            }
-            .staging-zone-corner.tl { border-width: 2px 0 0 2px; }
-            .staging-zone-corner.tr { border-width: 2px 2px 0 0; }
-            .staging-zone-corner.bl { border-width: 0 0 2px 2px; }
-            .staging-zone-corner.br { border-width: 0 2px 2px 0; }
 
             .staging-zone-label {
-                font-size: 0.52rem;
+                font-size: 0.5rem;
                 letter-spacing: 0.01em;
                 line-height: 1.1;
                 text-align: center;
