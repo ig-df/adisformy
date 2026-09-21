@@ -4165,38 +4165,39 @@
             white-space: nowrap;
         }
 
-        /* Monochromní schematický půdorys / pohled shora (Varianta 3 - Top-Down CAD Architecture) */
+        /* Monochromní 2.5D izometrický model vstřikovacího lisu (Varianta 2 - Clay / Slate 3D) */
         .mach-cad-silhouette {
             display: inline-flex;
             align-items: center;
             justify-content: center;
             margin: 0 4px;
             color: #64748b;
-            opacity: 0.8;
+            opacity: 0.88;
             flex-shrink: 0;
             pointer-events: none;
-            transition: opacity 0.15s ease, color 0.15s ease;
+            transition: opacity 0.15s ease, transform 0.15s ease;
+            filter: drop-shadow(0 1px 1.5px rgba(0,0,0,0.06));
         }
 
         .mach-cad-silhouette svg {
-            width: 30px;
-            height: 14px;
+            width: 32px;
+            height: 15px;
             display: block;
         }
 
         .mach-sketch:hover .mach-cad-silhouette {
             opacity: 1;
-            color: #334155;
+            transform: translateY(-0.5px);
         }
 
         .mach-sketch.status-warning .mach-cad-silhouette {
-            color: #ea580c;
-            opacity: 0.9;
+            opacity: 0.95;
+            filter: drop-shadow(0 1px 2px rgba(234, 88, 12, 0.18));
         }
 
         .mach-sketch.status-error .mach-cad-silhouette {
-            color: #dc2626;
-            opacity: 0.9;
+            opacity: 0.95;
+            filter: drop-shadow(0 1px 2px rgba(220, 38, 38, 0.22));
         }
 
         /* Jemná vertikální dělicí linie */
@@ -14746,39 +14747,51 @@ Return strictly valid JSON only without markdown formatting with this schema:
         }
 
         const cadSvgHtml = `
-            <span class="mach-cad-silhouette" aria-hidden="true" title="Půdorys vstřikovacího lisu (Top-Down Architecture)">
-                <svg viewBox="0 0 34 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <!-- Osa stroje / Centerline -->
-                    <line x1="1" y1="8" x2="33" y2="8" stroke="currentColor" stroke-width="0.4" stroke-dasharray="2 1" stroke-opacity="0.4"/>
+            <span class="mach-cad-silhouette" aria-hidden="true" title="Vstřikovací lis ENGEL victory (2.5D Isometric)">
+                <svg viewBox="0 0 38 18" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <!-- Měkký kontaktní stín pod strojem -->
+                    <ellipse cx="19" cy="15.8" rx="16.5" ry="1.8" fill="#0f172a" fill-opacity="0.12"/>
 
-                    <!-- Vnější obvod rámu stroje / Machine envelope -->
-                    <rect x="2" y="3" width="30" height="10" rx="0.8" fill="currentColor" fill-opacity="0.08" stroke="currentColor" stroke-width="0.75"/>
+                    <!-- Spodní podstavec uzávěru (levá část v izometrii) -->
+                    <polygon points="2,10.2 12,6.8 15.5,8.5 5.5,11.8" fill="#cbd5e1" stroke="#94a3b8" stroke-width="0.35"/>
+                    <polygon points="5.5,11.8 15.5,8.5 15.5,12.5 5.5,15.8" fill="#94a3b8" stroke="#64748b" stroke-width="0.35"/>
+                    <polygon points="2,10.2 5.5,11.8 5.5,15.8 2,14.2" fill="#64748b" stroke="#475569" stroke-width="0.35"/>
 
-                    <!-- Levá sekce: Uzavírací jednotka a desky formy -->
-                    <rect x="2" y="3" width="13" height="10" rx="0.5" fill="currentColor" fill-opacity="0.14" stroke="currentColor" stroke-width="0.6"/>
-                    <!-- Vodící sloupy / kolejnice -->
-                    <line x1="3" y1="4.8" x2="14" y2="4.8" stroke="currentColor" stroke-width="0.6"/>
-                    <line x1="3" y1="11.2" x2="14" y2="11.2" stroke="currentColor" stroke-width="0.6"/>
-                    <!-- Pevná a pohyblivá deska -->
-                    <rect x="4" y="3.8" width="1.8" height="8.4" rx="0.3" fill="currentColor" fill-opacity="0.6" stroke="currentColor" stroke-width="0.5"/>
-                    <rect x="12" y="3.8" width="1.8" height="8.4" rx="0.3" fill="currentColor" fill-opacity="0.6" stroke="currentColor" stroke-width="0.5"/>
-                    <!-- Forma / Dutina formy uprostřed -->
-                    <rect x="7" y="5" width="3.8" height="6" rx="0.4" fill="currentColor" fill-opacity="0.85"/>
+                    <!-- Pravá skříň základny vstřiku (odstupňovaná níže) -->
+                    <polygon points="15.5,8.5 32,3.5 35.5,5.2 19,10.2" fill="#e2e8f0" stroke="#cbd5e1" stroke-width="0.35"/>
+                    <polygon points="19,10.2 35.5,5.2 35.5,9.8 19,14.8" fill="#94a3b8" stroke="#64748b" stroke-width="0.35"/>
+                    <line x1="24.5" y1="8.5" x2="24.5" y2="13.1" stroke="#64748b" stroke-width="0.4"/>
+                    <line x1="30" y1="6.8" x2="30" y2="11.4" stroke="#64748b" stroke-width="0.4"/>
 
-                    <!-- Výsuvný řídicí pult operátora (dole) -->
-                    <path d="M12.5 13V15.2H16V13" fill="currentColor" fill-opacity="0.4" stroke="currentColor" stroke-width="0.6" stroke-linejoin="round"/>
-                    <circle cx="14.2" cy="14.2" r="0.5" fill="#38bdf8"/>
+                    <!-- Bezsloupkový kryt formy ENGEL (3D horní a přední plocha s oknem) -->
+                    <polygon points="2,4.8 12,1.4 15.5,3.1 5.5,6.4" fill="#f8fafc" stroke="#cbd5e1" stroke-width="0.35"/>
+                    <polygon points="5.5,6.4 15.5,3.1 15.5,8.5 5.5,11.8" fill="#cbd5e1" stroke="#94a3b8" stroke-width="0.35"/>
+                    <polygon points="2,4.8 5.5,6.4 5.5,11.8 2,10.2" fill="#64748b" stroke="#475569" stroke-width="0.35"/>
+                    
+                    <!-- Zkosené inspekční okno operátora -->
+                    <polygon points="7.8,5.8 14.5,3.6 14.5,7.2 9,9" fill="#1e293b" stroke="#0f172a" stroke-width="0.4"/>
+                    <!-- Forma / deska uvnitř -->
+                    <polygon points="10.8,5.4 12.8,4.7 12.8,7.2 10.8,7.9" fill="#94a3b8" stroke="#e2e8f0" stroke-width="0.3"/>
 
-                    <!-- Pravá sekce: Vstřikovací agregát a šnek -->
-                    <rect x="15" y="4.2" width="16" height="7.6" rx="0.5" fill="currentColor" fill-opacity="0.1" stroke="currentColor" stroke-width="0.55"/>
-                    <!-- Vstřikovací válec / komora -->
-                    <rect x="13.5" y="6.8" width="10.5" height="2.4" rx="0.3" fill="currentColor" fill-opacity="0.3" stroke="currentColor" stroke-width="0.6"/>
-                    <!-- Násypka materiálu (kruh/čtverec shora) -->
-                    <circle cx="20" cy="8" r="1.6" fill="currentColor" fill-opacity="0.6" stroke="currentColor" stroke-width="0.5"/>
-                    <circle cx="20" cy="8" r="0.6" fill="#ffffff" fill-opacity="0.9"/>
-                    <!-- Zadní pohon / servomotor / čerpadlo -->
-                    <rect x="25" y="5.2" width="5.5" height="5.6" rx="0.4" fill="currentColor" fill-opacity="0.4" stroke="currentColor" stroke-width="0.6"/>
-                    <line x1="25" y1="8" x2="30.5" y2="8" stroke="currentColor" stroke-width="0.5"/>
+                    <!-- Řídicí pult CC300 a signální maják -->
+                    <polygon points="15.5,3.1 18,2.3 19,2.8 16.5,3.6" fill="#f8fafc" stroke="#cbd5e1" stroke-width="0.3"/>
+                    <polygon points="16.5,3.6 19,2.8 19,7 16.5,7.8" fill="#0f172a" stroke="#020617" stroke-width="0.35"/>
+                    <polygon points="16.8,4.2 18.7,3.6 18.7,6.3 16.8,6.9" fill="#38bdf8" fill-opacity="0.9"/>
+                    <line x1="17.5" y1="2.2" x2="17.5" y2="0.8" stroke="#f97316" stroke-width="1.1" stroke-linecap="round"/>
+                    <circle cx="17.5" cy="0.8" r="0.6" fill="#fb923c"/>
+
+                    <!-- Vstřikovací komora, násypka a hydraulický pohon -->
+                    <polygon points="18.5,5.8 29.5,2.4 31.5,3.3 20.5,6.6" fill="#f8fafc" stroke="#cbd5e1" stroke-width="0.35"/>
+                    <polygon points="20.5,6.6 31.5,3.3 31.5,5.5 20.5,8.8" fill="#cbd5e1" stroke="#94a3b8" stroke-width="0.35"/>
+                    
+                    <!-- Násypka materiálu (3D jehlan) -->
+                    <polygon points="23.5,2.2 26.5,1.2 27.5,1.7 24.5,2.7" fill="#f8fafc" stroke="#cbd5e1" stroke-width="0.3"/>
+                    <polygon points="24.5,2.7 27.5,1.7 25.8,3.8" fill="#94a3b8" stroke="#64748b" stroke-width="0.3"/>
+                    <polygon points="23.5,2.2 24.5,2.7 25.8,3.8" fill="#cbd5e1" stroke="#94a3b8" stroke-width="0.3"/>
+
+                    <!-- Zadní pohon a válce vstřiku -->
+                    <polygon points="29.5,2.4 34.5,0.9 35.5,1.4 30.5,2.9" fill="#94a3b8" stroke="#64748b" stroke-width="0.3"/>
+                    <polygon points="30.5,2.9 35.5,1.4 35.5,3.8 30.5,5.3" fill="#64748b" stroke="#475569" stroke-width="0.3"/>
                 </svg>
             </span>
         `;
