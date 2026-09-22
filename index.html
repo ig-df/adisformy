@@ -241,16 +241,6 @@
             transition: transform 0.05s ease, filter 0.05s ease !important;
         }
 
-        .tab-btn {
-            user-select: none;
-            -webkit-user-select: none;
-            transition: color 0.18s ease, opacity 0.18s ease;
-        }
-        .tab-btn:active, .tab-btn.is-touched {
-            opacity: 0.72;
-            transition: opacity 0.05s ease;
-        }
-
         @media (hover: hover) and (pointer: fine) {
             .top-icon-btn:hover {
                 background-color: var(--border-color);
@@ -553,17 +543,14 @@
         .tab-indicator {
             position: absolute;
             bottom: 0;
-            left: 0;
-            width: 1px;
             height: 2.5px;
             background: #0f172a;
             border-radius: 2px 2px 0 0;
-            transform-origin: 0 0;
-            will-change: transform;
-            transform: translate3d(0, 0, 0) scaleX(1);
+            will-change: left, width;
+            transform: translateZ(0);
             backface-visibility: hidden;
             -webkit-backface-visibility: hidden;
-            transition: transform 0.28s cubic-bezier(0.2, 0.8, 0.2, 1);
+            transition: left 0.30s cubic-bezier(0.2, 0.8, 0.2, 1), width 0.30s cubic-bezier(0.2, 0.8, 0.2, 1);
             z-index: 10;
             pointer-events: none;
         }
@@ -580,7 +567,14 @@
             outline: none;
             position: relative;
             z-index: 2;
-            transition: color 0.2s ease;
+            transition: color 0.18s ease, opacity 0.15s ease;
+            user-select: none;
+            -webkit-user-select: none;
+        }
+
+        .tab-btn:active, .tab-btn.is-touched {
+            opacity: 0.72;
+            transition: opacity 0.05s ease;
         }
 
         .tab-btn:hover {
@@ -8259,9 +8253,8 @@
         const activeBtn = document.querySelector('.tab-btn.active');
         const indicator = document.getElementById('tabIndicator');
         if (activeBtn && indicator) {
-            const left = activeBtn.offsetLeft;
-            const width = activeBtn.offsetWidth;
-            indicator.style.transform = `translate3d(${left}px, 0, 0) scaleX(${width})`;
+            indicator.style.left = `${activeBtn.offsetLeft}px`;
+            indicator.style.width = `${activeBtn.offsetWidth}px`;
         }
     }
 
