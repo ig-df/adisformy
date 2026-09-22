@@ -3762,8 +3762,6 @@
             background: #f1f5f9;
             display: flex;
             flex-direction: column;
-            height: 100vh;
-            height: 100dvh;
             overflow: hidden;
             opacity: 0;
             pointer-events: none;
@@ -3783,12 +3781,11 @@
             align-items: center;
             justify-content: space-between;
             gap: 0.75rem;
-            padding: 0.35rem 1.15rem;
+            padding: 0.65rem 1.25rem;
             background: #ffffff;
             border-bottom: 2px solid #0f172a;
             box-shadow: 0 1px 4px rgba(0,0,0,0.04);
             z-index: 10;
-            flex-shrink: 0;
         }
 
         .factory-map-title-box {
@@ -3799,7 +3796,7 @@
 
         .factory-map-title-box h2 {
             margin: 0;
-            font-size: 1rem;
+            font-size: 1.05rem;
             font-weight: 800;
             letter-spacing: -0.01em;
             color: #0f172a;
@@ -3807,9 +3804,9 @@
         }
 
         .factory-map-badge {
-            font-size: 0.70rem;
+            font-size: 0.72rem;
             font-weight: 700;
-            padding: 0.15rem 0.55rem;
+            padding: 0.18rem 0.6rem;
             border-radius: 4px;
             background: #0f172a;
             color: #ffffff;
@@ -3819,90 +3816,66 @@
 
         .factory-map-scroll-area {
             flex: 1;
-            min-height: 0;
-            overflow: hidden;
-            padding: 0.25rem 0.5rem;
+            overflow: auto;
+            -webkit-overflow-scrolling: touch;
+            padding: 0.65rem 1rem 0.65rem 1rem;
             display: flex;
             justify-content: center;
             align-items: center;
-            background: #e9eef5; /* Světle šedý průmyslový podklad haly */
+            background: #f8fafc;
             position: relative;
-            box-sizing: border-box;
         }
 
-        /* Průmyslový technický výkres lisovny - digitální dvojče s průmyslovou podlahou přizpůsobené výšce */
+        /* Průmyslový technický výkres lisovny - čistý světlý plán */
         .factory-monochrome-canvas {
-            background-color: #f1f5f9; /* Světle šedá průmyslová epoxidová podlaha */
+            background-color: #ffffff;
             width: 100%;
             max-width: 820px;
-            min-width: 600px;
-            height: 100%;
-            max-height: 100%;
-            min-height: 0;
+            min-width: 630px;
             border: 1.5px solid #cbd5e1;
-            border-radius: 8px;
-            box-shadow: 0 1px 3px rgba(15, 23, 42, 0.04), 0 6px 20px -3px rgba(15, 23, 42, 0.07);
+            border-radius: 10px;
+            box-shadow: 0 1px 3px rgba(15, 23, 42, 0.03), 0 8px 24px -4px rgba(15, 23, 42, 0.06);
             position: relative;
-            padding: 0.25rem 0.65rem;
-            margin: 0 auto;
+            padding: 0.45rem 0.85rem;
+            margin-bottom: 0;
             box-sizing: border-box;
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-            overflow: hidden;
         }
 
-        /* Horní a spodní spojovací dopravní trasa - Radiant Sunbeam Yellow šтрихпунктир */
+        /* Horní a spodní spojovací dopravní trasa se šipkami a штрихпунктиром */
         .factory-cross-way {
             display: flex;
             align-items: center;
             justify-content: center;
             gap: 8px;
-            padding: 0.1rem 0.3rem;
-            margin: 0;
+            padding: 0.15rem 0.5rem;
+            margin-bottom: 0.35rem;
             user-select: none;
-            background: transparent;
-            border: none;
-            flex-shrink: 0;
-            height: clamp(14px, 2vh, 20px);
         }
 
         .factory-cross-way.bottom {
-            margin-top: 0;
+            margin-top: 0.35rem;
             margin-bottom: 0;
         }
 
         .factory-aisle-marker.horizontal {
-            width: auto;
-            height: auto;
+            width: 22px;
+            height: 20px;
             margin: 0 4px;
-            background: transparent;
-            border: none;
-            box-shadow: none;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            flex-shrink: 0;
+            background: #ffffff;
+            border: 1px solid #cbd5e1;
         }
 
         /* 5-sloupcová síť (3 sloupce strojů + 2 žluté dopravní koridory se šipkami) */
         .factory-layout-grid {
             display: grid;
-            grid-template-columns: 1fr 20px 1fr 20px 1fr;
-            gap: 0.35rem;
+            grid-template-columns: 1fr 24px 1fr 24px 1fr;
+            gap: 0.5rem;
             align-items: stretch;
-            flex: 1;
-            min-height: 0;
-            width: 100%;
-            box-sizing: border-box;
         }
 
         .factory-col {
             display: flex;
             flex-direction: column;
-            justify-content: space-between;
-            height: 100%;
-            min-height: 0;
         }
 
         .factory-col.col-left {
@@ -3917,39 +3890,36 @@
             justify-content: space-between;
         }
 
-        /* Dopravní koridor VZV (Aisle) - svislý Radiant Sunbeam Yellow šтрихпунктир */
+        /* Inženýrský grafitový dopravní koridor VZV (Aisle) */
         .factory-aisle {
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: space-between;
             position: relative;
-            padding: 0.1rem 0;
+            padding: 0.4rem 0;
             user-select: none;
-            background: transparent;
-            border: none;
-            box-sizing: border-box;
-            flex-shrink: 0;
         }
 
         .factory-aisle-line {
             flex: 1;
             width: 0;
-            border-left: 2px dashed #ffd000; /* Radiant Sunbeam Yellow */
-            opacity: 1;
-            min-height: 10px;
+            border-left: 1.5px dashed #cbd5e1;
+            opacity: 0.85;
+            min-height: 20px;
         }
 
         .factory-aisle-marker {
             display: flex;
             align-items: center;
             justify-content: center;
-            background: transparent;
-            border: none;
-            box-shadow: none;
-            width: auto;
-            height: auto;
-            margin: 2px 0;
+            background: #ffffff;
+            border: 1px solid #cbd5e1;
+            border-radius: 4px;
+            width: 20px;
+            height: 22px;
+            box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
+            margin: 4px 0;
             flex-shrink: 0;
         }
 
@@ -3962,15 +3932,15 @@
             letter-spacing: 0.08em;
             color: #475569;
             background: #f1f5f9;
-            padding: 4px 2px;
+            padding: 5px 2px;
             border-radius: 3px;
             border: 1px solid #cbd5e1;
             white-space: nowrap;
-            margin: 4px 0;
+            margin: 6px 0;
             flex-shrink: 0;
         }
 
-        /* Příčná ulička s Radiant Sunbeam Yellow bezpečnostní šipkou a linií */
+        /* Příčná ulička s grafitovou šipkou a linií */
         .factory-cross-passage {
             display: flex;
             align-items: center;
@@ -3983,121 +3953,163 @@
 
         .factory-cross-line {
             flex: 1;
-            border-top: 2px dashed #ffd000; /* Radiant Sunbeam Yellow */
-            opacity: 1;
+            border-top: 2px dashed #94a3b8;
+            opacity: 0.8;
         }
 
         .factory-yellow-arrow {
             display: inline-flex;
-            filter: drop-shadow(0 0.5px 0.5px rgba(15, 23, 42, 0.06));
+            filter: drop-shadow(0 1px 1px rgba(15, 23, 42, 0.08));
             flex-shrink: 0;
         }
-        .factory-yellow-arrow path {
-            stroke: #ffbb00 !important; /* Radiant Sunbeam Yellow */
-        }
 
-        /* Manipulační plocha forem přímo nad strojem 11 - Radiant Sunbeam Yellow ohraničení i podklad */
+        /* Manipulační plocha forem přímo nad strojem 11 */
         .factory-staging-zone {
-            height: 38px;
-            min-height: 34px;
-            max-height: 42px;
-            border: 2px dashed #ffd000; /* Radiant Sunbeam Yellow */
-            border-radius: 0 !important; /* Přísně pravoúhlé ostré rohy bez zaoblení */
-            background: rgba(255, 210, 0, 0.32); /* Radiant Sunbeam Yellow zářivá výplň */
+            min-height: 40px;
+            border: 1.5px dashed #94a3b8;
+            border-radius: 0;
+            background: rgba(241, 245, 249, 0.7);
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
             position: relative;
-            padding: 2px 4px;
+            padding: 4px 6px;
             box-sizing: border-box;
             text-align: center;
             user-select: none;
-            margin-bottom: 4px;
-            flex-shrink: 0;
+            margin-bottom: 3px;
         }
 
+        .staging-zone-corner {
+            position: absolute;
+            width: 7px;
+            height: 7px;
+            border-color: #64748b;
+            border-style: solid;
+        }
+        .staging-zone-corner.tl { top: -1px; left: -1px; border-width: 2.5px 0 0 2.5px; }
+        .staging-zone-corner.tr { top: -1px; right: -1px; border-width: 2.5px 2.5px 0 0; }
+        .staging-zone-corner.bl { bottom: -1px; left: -1px; border-width: 0 0 2.5px 2.5px; }
+        .staging-zone-corner.br { bottom: -1px; right: -1px; border-width: 0 2.5px 2.5px 0; }
+
         .staging-zone-label {
-            font-size: 0.62rem;
+            font-size: 0.65rem;
             font-weight: 800;
-            color: #0f172a;
+            color: #334155;
             letter-spacing: 0.05em;
             text-transform: uppercase;
-            line-height: 1.1;
         }
 
         .staging-zone-sub {
-            font-size: 0.54rem;
+            font-size: 0.58rem;
             font-weight: 600;
             color: #64748b;
             margin-top: 1px;
         }
 
-        /* Skupina vertikálně naskládaných strojů - rovnoměrná pevná mezera */
+        /* Skupina vertikálně naskládaných strojů */
         .mach-stack {
             display: flex;
             flex-direction: column;
-            gap: 4px;
-            min-height: 0;
+            gap: 0;
+        }
+
+        /* Průchozí ulička / штрихпунктир с двусторонней стрелкой между отдельными станками */
+        .mach-walkway {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 3px;
+            height: 10px;
+            padding: 0 4px;
+            margin: 0;
+            user-select: none;
+            pointer-events: none;
+            box-sizing: border-box;
+        }
+
+        .mach-walkway-line {
+            flex: 1;
+            border-top: 1.5px dashed #cbd5e1;
+            opacity: 0.85;
+        }
+
+        .mach-walkway-marker {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #ffffff;
+            border: 1px solid #cbd5e1;
+            border-radius: 2px;
+            width: 17px;
+            height: 9px;
+            box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
+            flex-shrink: 0;
+        }
+
+        .mach-walkway-arrow {
+            display: inline-flex;
+            filter: drop-shadow(0 0.5px 0.5px rgba(15, 23, 42, 0.08));
+            flex-shrink: 0;
         }
 
         /* Průchozí mezery */
         .mach-passage-spacer {
-            min-height: 14px;
+            min-height: 24px;
             flex: 1;
-            margin: 0;
+            margin: 2px 0;
             display: flex;
             align-items: center;
         }
 
         .mach-col-spacer {
-            min-height: 14px;
+            min-height: 40px;
             flex: 1;
-            margin: 0;
+            margin: 2px 0;
             display: flex;
             align-items: center;
         }
 
         /* ==========================================================================
-           ESKIZ STROJE (VSTŘIKOVACÍ LIS ENGEL) - DVOUÚROVŇOVÉ TLAČÍTKO (DIGITÁLNÍ DVOJČE)
+           ESKIZ STROJE (VSTŘIKOVACÍHO LISU) - PRŮMYSLOVÉ TLAČÍTKO S PEVNOU GEOMETRIÍ
            ========================================================================== */
         .mach-sketch {
             background-color: #ffffff;
-            border: 1px solid #cbd5e1;
-            border-left: 4.5px solid #4cae2a; /* Výchozí stav V pořádku - firemní zelená ENGEL */
-            border-radius: 5px;
-            height: 38px;
-            min-height: 34px;
-            max-height: 42px;
+            background-image: none;
+            border: 1px solid #e2e8f0;
+            border-left: 5px solid #16a34a; /* Výchozí stav V pořádku */
+            border-radius: 6px;
+            height: 31px;
             width: 100%;
             margin: 0;
             display: flex;
-            flex-direction: column;
+            align-items: center;
             justify-content: space-between;
-            padding: 2px 5px;
+            padding: 0 8px 0 7px;
             position: relative;
             cursor: pointer;
-            box-shadow: 0 1px 2px rgba(15, 23, 42, 0.05);
+            box-shadow: 0 1px 3px rgba(15, 23, 42, 0.05), 0 2px 6px -2px rgba(15, 23, 42, 0.04);
             transition: border-color 0.15s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.15s cubic-bezier(0.16, 1, 0.3, 1), background-color 0.15s ease, transform 0.15s ease;
             user-select: none;
             -webkit-tap-highlight-color: transparent;
             overflow: hidden;
             box-sizing: border-box;
             transform: translateZ(0); /* Hardware isolation */
-            flex-shrink: 0;
         }
 
         .mach-sketch:hover {
             border-color: #64748b;
-            box-shadow: 0 2px 6px rgba(15, 23, 42, 0.08), 0 6px 14px -3px rgba(15, 23, 42, 0.08);
+            box-shadow: 0 2px 5px rgba(15, 23, 42, 0.06), 0 6px 14px -3px rgba(15, 23, 42, 0.08);
             transform: translateY(-0.5px);
         }
 
         .mach-sketch:active {
+            background-image: none;
             background-color: #f1f5f9;
             box-shadow: inset 0 1px 2px rgba(15, 23, 42, 0.08);
             border-color: #94a3b8;
-            transform: scale(0.982);
+            transform: scale(0.985);
         }
 
         .mach-sketch.active-selected {
@@ -4105,143 +4117,63 @@
             box-shadow: 0 0 0 2px #0f172a, 0 4px 12px rgba(15, 23, 42, 0.14);
         }
 
-        /* Stavy strojů s barevným odlišením */
+        /* Stavy stroje (tlačítka s odpovídajícím barevným tónem) */
         .mach-sketch.status-ok {
-            border-left-color: #4cae2a !important; /* ENGEL Signature Green */
+            border-left-color: #16a34a !important;
         }
 
         .mach-sketch.status-warning {
             border-left-color: #f97316 !important;
             background-image: linear-gradient(180deg, #ffffff 0%, #fff7ed 60%, #ffedd5 100%) !important;
             border-color: #fed7aa !important;
-            box-shadow: 0 1px 3px rgba(249, 115, 22, 0.1);
+            box-shadow: 0 1px 2px rgba(249, 115, 22, 0.08);
         }
 
         .mach-sketch.status-warning:hover {
             border-color: #ea580c !important;
-            box-shadow: 0 2px 6px -1px rgba(249, 115, 22, 0.18);
+            box-shadow: 0 2px 6px -1px rgba(249, 115, 22, 0.16);
         }
 
         .mach-sketch.status-error {
             border-left-color: #dc2626 !important;
             background-image: linear-gradient(180deg, #ffffff 0%, #fff1f2 60%, #fee2e2 100%) !important;
             border-color: #fecdd3 !important;
-            box-shadow: 0 1px 3px rgba(225, 29, 72, 0.08);
+            box-shadow: 0 1px 2px rgba(225, 29, 72, 0.06);
         }
 
         .mach-sketch.status-error:hover {
             border-color: #dc2626 !important;
-            box-shadow: 0 2px 6px -1px rgba(225, 29, 72, 0.14);
+            box-shadow: 0 2px 6px -1px rgba(225, 29, 72, 0.12);
         }
 
-        /* Horní patro tlačítka: Číslo lisu + Silueta ENGEL + Štítek formy */
-        .mach-tier-top {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            width: 100%;
-            min-width: 0;
-            gap: 4px;
-            height: 22px;
-        }
-
-        .mach-num-box {
-            display: inline-flex;
-            align-items: center;
-            gap: 4px;
-            flex-shrink: 0;
-        }
-
-        .mach-status-beacon {
-            position: relative;
-            width: 6px;
-            height: 6px;
-            border-radius: 50%;
-            display: inline-block;
-            flex-shrink: 0;
-        }
-        .mach-status-beacon.status-ok {
-            background-color: #4cae2a;
-            box-shadow: 0 0 4px rgba(76, 174, 42, 0.6);
-        }
-        .mach-status-beacon.status-warning {
-            background-color: #f97316;
-            box-shadow: 0 0 3px rgba(249, 115, 22, 0.6);
-        }
-        .mach-status-beacon.status-warning::after {
-            content: '';
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            width: 100%;
-            height: 100%;
-            border-radius: 50%;
-            background-color: #f97316;
-            transform: translate(-50%, -50%);
-            animation: statusRadialPulse 1.6s cubic-bezier(0.22, 1, 0.36, 1) infinite;
-            pointer-events: none;
-        }
-        .mach-status-beacon.status-error {
-            background-color: #dc2626;
-            box-shadow: 0 0 4px rgba(220, 38, 38, 0.7);
-        }
-        .mach-status-beacon.status-error::after {
-            content: '';
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            width: 100%;
-            height: 100%;
-            border-radius: 50%;
-            background-color: #dc2626;
-            transform: translate(-50%, -50%);
-            animation: statusRadialPulse 1.4s cubic-bezier(0.22, 1, 0.36, 1) infinite;
-            pointer-events: none;
-        }
-
+        /* Sekce čísla stroje */
         .mach-num {
-            font-size: 0.94rem;
+            font-size: 0.82rem;
             font-weight: 800;
             font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", Roboto, sans-serif;
             font-variant-numeric: tabular-nums;
             color: #0f172a;
             line-height: 1;
-            letter-spacing: -0.015em;
+            letter-spacing: -0.01em;
             pointer-events: none;
+            padding-left: 2px;
+            text-shadow: 0 1px 0 rgba(255, 255, 255, 0.85);
+            flex-shrink: 0;
             white-space: nowrap;
         }
 
-        .mach-brand-box {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            gap: 4px;
-            min-width: 0;
-            flex: 1 1 auto;
-            overflow: hidden;
-        }
-
-        .mach-engel-chip {
-            font-size: 0.52rem;
-            font-weight: 900;
-            letter-spacing: 0.06em;
-            color: #4cae2a;
-            background: #f0fdf4;
-            border: 1px solid #bbf7d0;
-            padding: 0.5px 3px;
-            border-radius: 3px;
-            line-height: 1;
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, monospace;
-            flex-shrink: 0;
-        }
-
+        /* Monochromní 2.5D izometrický model vstřikovacího lisu (Varianta 2 - Clay / Slate 3D) */
         .mach-cad-silhouette {
             display: inline-flex;
             align-items: center;
             justify-content: center;
+            margin: 0 4px;
+            color: #64748b;
+            opacity: 0.88;
             flex-shrink: 0;
             pointer-events: none;
-            filter: drop-shadow(0 1px 1px rgba(0, 0, 0, 0.08));
+            transition: opacity 0.15s ease, transform 0.15s ease;
+            filter: drop-shadow(0 1px 1.5px rgba(0,0,0,0.06));
         }
 
         .mach-cad-silhouette svg {
@@ -4250,20 +4182,68 @@
             display: block;
         }
 
-        .mach-mold-tag-wrap {
-            display: inline-flex;
-            align-items: center;
-            justify-content: flex-end;
+        .mach-sketch:hover .mach-cad-silhouette {
+            opacity: 1;
+            transform: translateY(-0.5px);
+        }
+
+        .mach-sketch.status-warning .mach-cad-silhouette {
+            opacity: 0.95;
+            filter: drop-shadow(0 1px 2px rgba(234, 88, 12, 0.18));
+        }
+
+        .mach-sketch.status-error .mach-cad-silhouette {
+            opacity: 0.95;
+            filter: drop-shadow(0 1px 2px rgba(220, 38, 38, 0.22));
+        }
+
+        /* Jemná vertikální dělicí linie */
+        .mach-sketch-divider {
+            width: 1px;
+            height: 14px;
+            background: linear-gradient(180deg, transparent, #cbd5e1 30%, #cbd5e1 70%, transparent);
+            margin: 0 3px;
+            pointer-events: none;
             flex-shrink: 0;
         }
 
+        /* Sekce formy (vpravo) */
+        .mach-mold-slot-box {
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            gap: 5px;
+            pointer-events: none;
+            min-width: 0;
+            flex: 1;
+            overflow: hidden;
+        }
+
+        /* Название изделия слева от бейджа формы (если есть место) */
+        .mach-mold-product-name {
+            font-size: 0.69rem;
+            font-weight: 600;
+            color: #475569;
+            font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", Roboto, sans-serif;
+            line-height: 1;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            letter-spacing: -0.01em;
+            text-align: right;
+            min-width: 0;
+            max-width: 95px;
+            flex: 1 1 auto;
+        }
+
+        /* Monochromní reliéfní štítek formy - фиксированный строгий бейдж с выравниванием */
         .mach-mold-tag-minimal {
             display: inline-flex;
             align-items: center;
             justify-content: center;
             background: #ffffff;
             color: #0f172a;
-            border: 1px solid #94a3b8;
+            border: 1px solid rgba(203, 213, 225, 0.95);
             border-radius: 4px;
             font-size: 0.72rem;
             font-weight: 700;
@@ -4271,87 +4251,39 @@
             font-variant-numeric: tabular-nums;
             padding: 1px 5px;
             height: 18px;
-            min-width: 28px;
+            min-width: 32px;
             line-height: 1;
             letter-spacing: -0.01em;
             flex-shrink: 0;
-            box-shadow: 0 1px 2px rgba(15, 23, 42, 0.06);
+            box-shadow: 0 1px 2px rgba(15, 23, 42, 0.05), inset 0 1px 0 rgba(255, 255, 255, 0.9);
             text-align: center;
         }
 
+        /* Volný lis (bez formy) */
         .mach-mold-empty-dash {
-            font-size: 0.7rem;
-            font-weight: 700;
+            font-size: 0.68rem;
+            font-weight: 600;
             color: #cbd5e1;
             line-height: 1;
-            padding: 0 4px;
-            min-width: 24px;
+            padding: 0 3px;
+            min-width: 32px;
             text-align: center;
             display: inline-flex;
             justify-content: center;
             align-items: center;
         }
 
-        /* Spodní patro tlačítka: Název dílu (celá šířka tlačítka bez tlačenice) */
-        .mach-tier-bottom {
-            display: flex;
-            align-items: center;
-            width: 100%;
-            min-width: 0;
-            height: 16px;
-            padding-top: 2px;
-            border-top: 1px solid #f1f5f9;
-            overflow: hidden;
-        }
-
-        .mach-mold-product-name {
-            font-size: 0.65rem;
-            font-weight: 600;
-            color: #334155;
-            font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", Roboto, sans-serif;
-            line-height: 1.1;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            white-space: nowrap;
-            letter-spacing: -0.01em;
-            text-align: left;
-            width: 100%;
-            min-width: 0;
-        }
-
-        .mach-prod-placeholder {
-            color: #94a3b8;
-            font-style: italic;
-            font-size: 0.62rem;
-        }
-
-        .mach-prod-empty {
-            color: #cbd5e1;
-            font-size: 0.60rem;
-            font-weight: 500;
-        }
-
         /* Pulzující stavové body podle vzoru z dashboardu (pro přepínače a informační lišty) */
         .mach-status-pulse-dot {
             position: relative;
-            width: 7px;
-            height: 7px;
+            width: 6px;
+            height: 6px;
             border-radius: 50%;
             display: inline-block;
             flex-shrink: 0;
         }
 
-        .mach-status-pulse-dot.dot-ok {
-            background-color: #16a34a;
-            box-shadow: 0 0 3px rgba(22, 163, 74, 0.5);
-        }
-
-        .mach-status-pulse-dot.dot-warning {
-            background-color: #f97316;
-            box-shadow: 0 0 3px rgba(249, 115, 22, 0.6);
-        }
-
-        .mach-status-pulse-dot.dot-warning::after {
+        .mach-status-pulse-dot::after {
             content: '';
             position: absolute;
             top: 50%;
@@ -4359,29 +4291,22 @@
             width: 100%;
             height: 100%;
             border-radius: 50%;
-            background-color: #f97316;
+            background-color: inherit;
             transform: translate(-50%, -50%);
             animation: statusRadialPulse 1.6s cubic-bezier(0.22, 1, 0.36, 1) infinite;
             pointer-events: none;
         }
 
-        .mach-status-pulse-dot.dot-error {
-            background-color: #dc2626;
-            box-shadow: 0 0 3px rgba(220, 38, 38, 0.6);
+        .mach-status-pulse-dot.dot-ok {
+            background-color: #16a34a;
         }
 
-        .mach-status-pulse-dot.dot-error::after {
-            content: '';
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            width: 100%;
-            height: 100%;
-            border-radius: 50%;
+        .mach-status-pulse-dot.dot-warning {
+            background-color: #f97316;
+        }
+
+        .mach-status-pulse-dot.dot-error {
             background-color: #dc2626;
-            transform: translate(-50%, -50%);
-            animation: statusRadialPulse 1.4s cubic-bezier(0.22, 1, 0.36, 1) infinite;
-            pointer-events: none;
         }
 
         /* Delikátní status maják pro stroje s výstrahou nebo poruchou v eskizu */
@@ -4590,29 +4515,6 @@
         /* ==========================================================================
            VÝSUVNÁ BOČNÍ ŠTORKA / KARTA DETAILU STROJE (SLIDE-OVER DRAWER)
            ========================================================================== */
-        .mach-drawer-header-actions {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .mach-drawer-icon-badge {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            padding: 0;
-            background: transparent !important;
-            border: none !important;
-            box-shadow: none !important;
-        }
-
-        .mach-drawer-icon-badge svg {
-            width: 64px;
-            height: 30px;
-            display: block;
-            filter: drop-shadow(0 2px 4px rgba(15, 23, 42, 0.12));
-        }
-
         .mach-drawer-backdrop {
             position: fixed;
             inset: 0;
@@ -4698,12 +4600,14 @@
             }
 
             .factory-map-scroll-area {
-                padding: 2px 3px 2px 3px;
+                padding: 2px 2px;
                 display: flex;
                 flex-direction: column;
                 justify-content: center;
                 align-items: center;
-                overflow: hidden !important;
+                overflow-x: hidden !important;
+                overflow-y: auto;
+                -webkit-overflow-scrolling: touch;
                 flex: 1;
                 min-height: 0;
                 width: 100%;
@@ -4715,16 +4619,13 @@
                 min-width: 0 !important;
                 width: 100% !important;
                 max-width: 100% !important;
-                height: 100% !important;
-                max-height: 100% !important;
-                min-height: 0 !important;
-                margin: 0 auto;
-                padding: 2px 2px 2px 2px;
+                height: auto;
+                max-height: none;
+                margin: auto 0;
+                padding: 3px 2px;
                 border-width: 1.5px;
                 border-radius: 6px;
-                display: flex !important;
-                flex-direction: column !important;
-                justify-content: space-between !important;
+                display: block;
                 box-sizing: border-box;
                 overflow: hidden !important;
                 flex-shrink: 0;
@@ -4732,11 +4633,9 @@
 
             .factory-layout-grid {
                 display: grid;
-                grid-template-columns: minmax(0, 1fr) 8px minmax(0, 1fr) 8px minmax(0, 1fr);
-                gap: 0.15rem;
+                grid-template-columns: minmax(0, 1fr) 6px minmax(0, 1fr) 6px minmax(0, 1fr);
+                gap: 0.1rem;
                 align-items: stretch;
-                flex: 1;
-                min-height: 0;
                 width: 100%;
                 box-sizing: border-box;
             }
@@ -4745,47 +4644,28 @@
                 display: flex;
                 flex-direction: column;
                 justify-content: space-between;
-                height: 100%;
-                min-height: 0;
                 min-width: 0;
                 overflow: hidden;
             }
 
-            .factory-aisle {
-                background: transparent;
-                border: none;
-                padding: 0;
-                min-width: 0;
-                display: flex;
-                flex-direction: column;
-                align-items: center;
-                justify-content: space-between;
-            }
-
-            .factory-aisle-line {
-                border-left: 1.5px dashed #ffd000; /* Radiant Sunbeam Yellow */
-                opacity: 1;
-            }
-
             .mach-sketch {
-                height: 32px;
-                min-height: 28px;
-                max-height: 34px;
-                padding: 1.5px 3.5px;
+                height: 35px;
+                min-height: 34px;
+                max-height: 36px;
+                padding: 0 4px;
                 background-color: #ffffff;
-                border: 1px solid #cbd5e1;
-                border-left: 3.5px solid #4cae2a; /* ENGEL Signature Green */
-                border-radius: 5px;
-                box-shadow: 0 1px 2px rgba(15, 23, 42, 0.05);
+                background-image: none;
+                border: 1px solid #e2e8f0;
+                border-left: 3.5px solid #16a34a;
+                border-radius: 6px;
+                box-shadow: 0 1px 3px rgba(15, 23, 42, 0.08), 0 1px 2px rgba(15, 23, 42, 0.04);
                 box-sizing: border-box;
                 width: 100%;
                 min-width: 0;
                 overflow: hidden;
                 display: flex;
-                flex-direction: column;
-                justify-content: space-between;
-                margin: 0;
-                flex-shrink: 0;
+                align-items: center;
+                margin: 1.5px 0;
             }
 
             .mach-sketch.status-warning {
@@ -4801,82 +4681,66 @@
             }
 
             .mach-sketch:active {
-                transform: scale(0.975);
+                transform: scale(0.97);
                 background-color: #f8fafc;
             }
 
-            /* Horní patro tlačítka na mobilu */
-            .mach-tier-top {
-                display: flex;
-                align-items: center;
-                justify-content: space-between;
-                width: 100%;
-                height: 18px;
-                min-width: 0;
-                gap: 2px;
-            }
-
-            .mach-num-box {
-                display: inline-flex;
-                align-items: center;
-                gap: 2.5px;
-                flex-shrink: 0;
-            }
-
-            .mach-status-beacon {
-                width: 5px;
-                height: 5px;
-            }
-
             .mach-num {
-                font-size: 0.82rem;
+                font-size: 0.78rem;
                 padding-left: 0;
                 flex-shrink: 0;
                 font-weight: 800;
                 line-height: 1;
             }
 
-            .mach-brand-box {
-                display: inline-flex;
-                align-items: center;
-                justify-content: center;
-                gap: 2px;
-                min-width: 0;
-                flex: 1;
-                overflow: hidden;
-            }
-
-            .mach-engel-chip {
-                font-size: 0.44rem;
-                padding: 0.5px 2px;
-                font-weight: 900;
-                letter-spacing: 0.04em;
-                border-radius: 2px;
-            }
-
             .mach-cad-silhouette {
-                margin: 0 1px;
+                margin: 0 1.5px;
             }
 
             .mach-cad-silhouette svg {
-                width: 22px;
-                height: 10px;
+                width: 24px;
+                height: 11.5px;
             }
 
-            .mach-mold-tag-wrap {
+            .mach-sketch-divider {
+                margin: 0 1.5px;
+                height: 12px;
                 flex-shrink: 0;
-                display: inline-flex;
-                align-items: center;
+            }
+
+            .mach-mold-slot-box {
+                gap: 2.5px;
+                min-width: 0;
+                flex: 1;
+                overflow: hidden;
                 justify-content: flex-end;
+                align-items: center;
+                display: flex;
+            }
+
+            .mach-mold-product-name {
+                display: block;
+                font-size: 0.55rem;
+                font-weight: 600;
+                line-height: 1;
+                max-width: 44px;
+                min-width: 0;
+                overflow: hidden;
+                text-overflow: ellipsis;
+                white-space: nowrap;
+                color: #64748b;
+                letter-spacing: -0.02em;
+                text-align: right;
+                flex: 1 1 auto;
             }
 
             .mach-mold-tag-minimal {
-                font-size: 0.60rem;
-                font-weight: 800;
-                padding: 0.5px 3px;
-                height: 14px;
-                min-width: 22px;
-                max-width: 50px;
+                font-size: 0.62rem;
+                font-weight: 700;
+                padding: 1px 3px;
+                height: 17px;
+                min-width: 24px;
+                max-width: 52px;
                 box-sizing: border-box;
                 overflow: hidden;
                 text-overflow: ellipsis;
@@ -4890,56 +4754,41 @@
                 padding: 0 1px;
             }
 
-            /* Spodní patro tlačítka na mobilu - celá šířka pro název dílu */
-            .mach-tier-bottom {
-                display: flex;
-                align-items: center;
-                width: 100%;
-                min-width: 0;
-                height: 13px;
-                padding-top: 0.5px;
-                border-top: 1px solid #f1f5f9;
-                overflow: hidden;
-            }
-
-            .mach-mold-product-name {
-                display: block;
-                font-size: 0.54rem;
-                font-weight: 600;
-                line-height: 1;
-                width: 100%;
-                min-width: 0;
-                overflow: hidden;
-                text-overflow: ellipsis;
-                white-space: nowrap;
-                color: #334155;
-                letter-spacing: -0.015em;
-                text-align: left;
-            }
-
-            .mach-prod-placeholder {
-                color: #94a3b8;
-                font-style: italic;
-                font-size: 0.50rem;
-            }
-
-            .mach-prod-empty {
-                color: #cbd5e1;
-                font-size: 0.48rem;
-            }
-
             .mach-stack {
-                gap: 3px;
+                gap: 0;
                 min-width: 0;
-                display: flex;
-                flex-direction: column;
-                min-height: 0;
+            }
+
+            .mach-walkway {
+                height: 5px;
+                gap: 2px;
+                padding: 0 1px;
+                margin: 1px 0;
+            }
+
+            .mach-walkway-line {
+                border-top: 1px dashed #cbd5e1;
+                opacity: 0.9;
+            }
+
+            .mach-walkway-marker {
+                width: 12px;
+                height: 5px;
+                border-radius: 2px;
+                background: #ffffff;
+                border: 1px solid #cbd5e1;
+                box-shadow: 0 0.5px 1px rgba(15, 23, 42, 0.04);
+            }
+
+            .mach-walkway-arrow {
+                width: 7px;
+                height: 3.5px;
             }
 
             .mach-passage-spacer {
-                min-height: 8px;
+                min-height: 14px;
                 flex: 1;
-                margin: 0;
+                margin: 1px 0;
                 display: flex;
                 align-items: center;
                 justify-content: center;
@@ -4947,9 +4796,9 @@
             }
 
             .mach-col-spacer {
-                min-height: 8px;
+                min-height: 16px;
                 flex: 1;
-                margin: 0;
+                margin: 1px 0;
                 display: flex;
                 align-items: center;
                 justify-content: center;
@@ -4957,29 +4806,30 @@
             }
 
             .factory-staging-zone {
-                height: 32px;
-                min-height: 28px;
-                max-height: 34px;
-                margin: 0 0 3px 0;
+                min-height: 30px;
+                margin-bottom: 2px;
                 padding: 1px 2px;
-                border: 1.5px dashed #ffd000; /* Radiant Sunbeam Yellow */
                 border-radius: 0 !important;
-                background: rgba(255, 210, 0, 0.32); /* Radiant Sunbeam Yellow */
                 display: flex;
                 flex-direction: column;
                 align-items: center;
                 justify-content: center;
                 min-width: 0;
                 position: relative;
-                box-sizing: border-box;
-                flex-shrink: 0;
             }
+
+            .staging-zone-corner {
+                width: 5px;
+                height: 5px;
+            }
+            .staging-zone-corner.tl { border-width: 2px 0 0 2px; }
+            .staging-zone-corner.tr { border-width: 2px 2px 0 0; }
+            .staging-zone-corner.bl { border-width: 0 0 2px 2px; }
+            .staging-zone-corner.br { border-width: 0 2px 2px 0; }
 
             .staging-zone-label {
                 font-size: 0.52rem;
-                font-weight: 800;
-                color: #0f172a;
-                letter-spacing: 0.02em;
+                letter-spacing: 0.01em;
                 line-height: 1.1;
                 text-align: center;
                 white-space: nowrap;
@@ -4987,59 +4837,45 @@
                 text-overflow: ellipsis;
             }
 
-            .staging-zone-sub {
-                display: none;
+            .factory-aisle {
+                padding: 0.15rem 0;
+                min-width: 0;
             }
 
             .factory-aisle-marker {
-                width: auto;
-                height: auto;
-                border: none;
-                background: transparent;
-                box-shadow: none;
-                margin: 1px 0;
+                width: 10px;
+                height: 11px;
             }
 
             .factory-aisle-marker svg {
-                width: 6px;
-                height: 8px;
+                width: 5px;
+                height: 7px;
             }
 
             .factory-aisle-marker.horizontal {
-                width: auto;
-                height: auto;
-                margin: 0 2px;
-                border: none;
-                background: transparent;
-                box-shadow: none;
+                width: 11px;
+                height: 10px;
+                margin: 0 1px;
             }
 
             .factory-aisle-marker.horizontal svg {
-                width: 8px;
-                height: 6px;
+                width: 7px;
+                height: 5px;
             }
 
             .factory-cross-way {
-                background: transparent;
-                border: none;
-                padding: 0;
-                margin: 0;
+                padding: 0.05rem 0.15rem;
+                margin-bottom: 0.1rem;
                 gap: 3px;
                 flex-shrink: 0;
                 width: 100%;
                 box-sizing: border-box;
                 overflow: hidden;
-                height: clamp(10px, 1.6vh, 14px);
             }
 
             .factory-cross-way.bottom {
-                margin-top: 0;
+                margin-top: 0.1rem;
                 margin-bottom: 0;
-            }
-
-            .factory-cross-line {
-                border-top: 1.5px dashed #ffd000; /* Radiant Sunbeam Yellow */
-                opacity: 1;
             }
 
             .mach-drawer-panel {
@@ -6240,18 +6076,18 @@
     <div class="factory-map-scroll-area">
         <div class="factory-monochrome-canvas" id="factoryMonochromeCanvas">
             
-            <!-- Horní spojovací trasa mezi 33 a 36 s Radiant Sunbeam Yellow šipkami a šтрихпунктиром -->
+            <!-- Horní spojovací trasa mezi 33 a 36 se žlutými šipkami a šтрихпунктиром -->
             <div class="factory-cross-way" title="Dopravní trasa mezi bloky 33 a 36">
                 <div class="factory-cross-line"></div>
                 <div class="factory-aisle-marker horizontal">
-                    <svg class="factory-yellow-arrow" width="10" height="8" viewBox="0 0 10 8" fill="none">
-                        <path d="M1 4h8M6 1.5l2.5 2.5L6 6.5" stroke="#ffbb00" stroke-width="2.0" stroke-linecap="round" stroke-linejoin="round"/>
+                    <svg class="factory-yellow-arrow" width="13" height="11" viewBox="0 0 14 12" fill="none">
+                        <path d="M1 6H13M13 6L8 1M13 6L8 11" stroke="#64748b" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
                     </svg>
                 </div>
                 <div class="factory-cross-line"></div>
                 <div class="factory-aisle-marker horizontal">
-                    <svg class="factory-yellow-arrow" width="10" height="8" viewBox="0 0 10 8" fill="none">
-                        <path d="M9 4H1M4 1.5L1.5 4 4 6.5" stroke="#ffbb00" stroke-width="2.0" stroke-linecap="round" stroke-linejoin="round"/>
+                    <svg class="factory-yellow-arrow" width="13" height="11" viewBox="0 0 14 12" fill="none">
+                        <path d="M13 6H1M1 6L6 1M1 6L6 11" stroke="#64748b" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
                     </svg>
                 </div>
                 <div class="factory-cross-line"></div>
@@ -6268,8 +6104,8 @@
                         <div class="factory-cross-passage" title="Vstup do haly / Spojovací trasa">
                             <div class="factory-cross-line"></div>
                             <div class="factory-aisle-marker horizontal">
-                                <svg class="factory-yellow-arrow" width="10" height="8" viewBox="0 0 10 8" fill="none">
-                                    <path d="M1 4h8M6 1.5l2.5 2.5L6 6.5" stroke="#ffbb00" stroke-width="2.0" stroke-linecap="round" stroke-linejoin="round"/>
+                                <svg class="factory-yellow-arrow" width="13" height="11" viewBox="0 0 14 12" fill="none">
+                                    <path d="M1 6H13M13 6L8 1M13 6L8 11" stroke="#64748b" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
                                 </svg>
                             </div>
                             <div class="factory-cross-line"></div>
@@ -6285,13 +6121,13 @@
                 <div class="factory-aisle" title="Dopravní trasa">
                     <div class="factory-aisle-line"></div>
                     <div class="factory-aisle-marker">
-                        <svg class="factory-yellow-arrow" width="8" height="10" viewBox="0 0 8 10" fill="none">
-                            <path d="M4 1v8M1.5 6.5L4 9l2.5-2.5" stroke="#ffbb00" stroke-width="2.0" stroke-linecap="round" stroke-linejoin="round"/>
+                        <svg class="factory-yellow-arrow" width="11" height="13" viewBox="0 0 12 14" fill="none">
+                            <path d="M6 1V13M6 13L1 8M6 13L11 8" stroke="#64748b" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
                         </svg>
                     </div>
                     <div class="factory-aisle-marker">
-                        <svg class="factory-yellow-arrow" width="8" height="10" viewBox="0 0 8 10" fill="none">
-                            <path d="M4 9V1M1.5 3.5L4 1l2.5 2.5" stroke="#ffbb00" stroke-width="2.0" stroke-linecap="round" stroke-linejoin="round"/>
+                        <svg class="factory-yellow-arrow" width="11" height="13" viewBox="0 0 12 14" fill="none">
+                            <path d="M6 13V1M6 1L1 6M6 1L11 6" stroke="#64748b" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
                         </svg>
                     </div>
                     <div class="factory-aisle-line"></div>
@@ -6306,13 +6142,17 @@
                     </div>
 
                     <div class="factory-staging-zone">
+                        <div class="staging-zone-corner tl"></div>
+                        <div class="staging-zone-corner tr"></div>
+                        <div class="staging-zone-corner bl"></div>
+                        <div class="staging-zone-corner br"></div>
                         <span class="staging-zone-label">MANIPULAČNÍ ZÓNA</span>
-                        <div style="margin-top: 3px; display: flex; align-items: center; justify-content: center; gap: 8px;">
-                            <svg class="factory-yellow-arrow" width="8" height="10" viewBox="0 0 8 10" fill="none">
-                                <path d="M4 1v8M1.5 6.5L4 9l2.5-2.5" stroke="#ffbb00" stroke-width="2.0" stroke-linecap="round" stroke-linejoin="round"/>
+                        <div style="margin-top: 4px; display: flex; align-items: center; justify-content: center; gap: 8px;">
+                            <svg class="factory-yellow-arrow" width="11" height="13" viewBox="0 0 12 14" fill="none">
+                                <path d="M6 1V13M6 13L1 8M6 13L11 8" stroke="#64748b" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
                             </svg>
-                            <svg class="factory-yellow-arrow" width="8" height="10" viewBox="0 0 8 10" fill="none">
-                                <path d="M4 9V1M1.5 3.5L4 1l2.5 2.5" stroke="#ffbb00" stroke-width="2.0" stroke-linecap="round" stroke-linejoin="round"/>
+                            <svg class="factory-yellow-arrow" width="11" height="13" viewBox="0 0 12 14" fill="none">
+                                <path d="M6 13V1M6 1L1 6M6 1L11 6" stroke="#64748b" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
                             </svg>
                         </div>
                     </div>
@@ -6326,13 +6166,13 @@
                 <div class="factory-aisle" title="Dopravní trasa">
                     <div class="factory-aisle-line"></div>
                     <div class="factory-aisle-marker">
-                        <svg class="factory-yellow-arrow" width="8" height="10" viewBox="0 0 8 10" fill="none">
-                            <path d="M4 1v8M1.5 6.5L4 9l2.5-2.5" stroke="#ffbb00" stroke-width="2.0" stroke-linecap="round" stroke-linejoin="round"/>
+                        <svg class="factory-yellow-arrow" width="11" height="13" viewBox="0 0 12 14" fill="none">
+                            <path d="M6 1V13M6 13L1 8M6 13L11 8" stroke="#64748b" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
                         </svg>
                     </div>
                     <div class="factory-aisle-marker">
-                        <svg class="factory-yellow-arrow" width="8" height="10" viewBox="0 0 8 10" fill="none">
-                            <path d="M4 9V1M1.5 3.5L4 1l2.5 2.5" stroke="#ffbb00" stroke-width="2.0" stroke-linecap="round" stroke-linejoin="round"/>
+                        <svg class="factory-yellow-arrow" width="11" height="13" viewBox="0 0 12 14" fill="none">
+                            <path d="M6 13V1M6 1L1 6M6 1L11 6" stroke="#64748b" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
                         </svg>
                     </div>
                     <div class="factory-aisle-line"></div>
@@ -6348,8 +6188,8 @@
                         <div class="factory-cross-passage" title="Průchod mezi řadami">
                             <div class="factory-cross-line"></div>
                             <div class="factory-aisle-marker horizontal">
-                                <svg class="factory-yellow-arrow" width="10" height="8" viewBox="0 0 10 8" fill="none">
-                                    <path d="M1 4h8M6 1.5l2.5 2.5L6 6.5" stroke="#ffbb00" stroke-width="2.0" stroke-linecap="round" stroke-linejoin="round"/>
+                                <svg class="factory-yellow-arrow" width="13" height="11" viewBox="0 0 14 12" fill="none">
+                                    <path d="M1 6H13M13 6L8 1M13 6L8 11" stroke="#64748b" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
                                 </svg>
                             </div>
                             <div class="factory-cross-line"></div>
@@ -6362,18 +6202,18 @@
                 </div>
             </div>
 
-            <!-- Spodní spojovací trasa s Radiant Sunbeam Yellow šipkami a šтрихпунктиром -->
+            <!-- Spodní spojovací trasa s grafitovými šipkami a šтрихпунктиром -->
             <div class="factory-cross-way bottom" title="Dopravní trasa">
                 <div class="factory-cross-line"></div>
                 <div class="factory-aisle-marker horizontal">
-                    <svg class="factory-yellow-arrow" width="10" height="8" viewBox="0 0 10 8" fill="none">
-                        <path d="M1 4h8M6 1.5l2.5 2.5L6 6.5" stroke="#ffbb00" stroke-width="2.0" stroke-linecap="round" stroke-linejoin="round"/>
+                    <svg class="factory-yellow-arrow" width="13" height="11" viewBox="0 0 14 12" fill="none">
+                        <path d="M1 6H13M13 6L8 1M13 6L8 11" stroke="#64748b" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
                     </svg>
                 </div>
                 <div class="factory-cross-line"></div>
                 <div class="factory-aisle-marker horizontal">
-                    <svg class="factory-yellow-arrow" width="10" height="8" viewBox="0 0 10 8" fill="none">
-                        <path d="M9 4H1M4 1.5L1.5 4 4 6.5" stroke="#ffbb00" stroke-width="2.0" stroke-linecap="round" stroke-linejoin="round"/>
+                    <svg class="factory-yellow-arrow" width="13" height="11" viewBox="0 0 14 12" fill="none">
+                        <path d="M13 6H1M1 6L6 1M1 6L6 11" stroke="#64748b" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
                     </svg>
                 </div>
                 <div class="factory-cross-line"></div>
@@ -6391,12 +6231,7 @@
                 <h3 id="machDrawerTitle">LIS Č. 01</h3>
                 <div style="font-size: 0.74rem; color: var(--text-muted); font-weight: 600;">Provozní karta stroje & servisní chat</div>
             </div>
-            <div class="mach-drawer-header-actions">
-                <span class="mach-drawer-icon-badge" id="machDrawerIconBadge" title="Vstřikovací lis ENGEL">
-                    <!-- Digitální dvojče 2.5D se dynamicky aktualizuje -->
-                </span>
-                <button type="button" class="close-modal-btn" onclick="closeMachineDrawer()">✕</button>
-            </div>
+            <button type="button" class="close-modal-btn" onclick="closeMachineDrawer()">✕</button>
         </div>
 
         <div class="mach-drawer-body">
@@ -14894,10 +14729,6 @@ Return strictly valid JSON only without markdown formatting with this schema:
         const page = document.getElementById('factoryMapPage');
         if (!page) return;
         page.classList.add('active');
-        const scrollArea = page.querySelector('.factory-map-scroll-area');
-        if (scrollArea) {
-            scrollArea.scrollTop = 0;
-        }
         renderGraphicFactoryMap();
         syncFactoryMachinesFromDb();
     }
@@ -14917,56 +14748,6 @@ Return strictly valid JSON only without markdown formatting with this schema:
         renderGraphicFactoryMap();
     }
 
-    function renderMachineCadSilhouetteSvg(beaconColor = '#4cae2a') {
-        return `
-            <svg viewBox="0 0 38 18" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <!-- Kontaktní stín pod strojem na podlaze haly -->
-                <ellipse cx="19" cy="15.8" rx="16.5" ry="1.8" fill="#0f172a" fill-opacity="0.16"/>
-
-                <!-- Spodní podstavec a stůl operátora (tmavý průmyslový grafit) -->
-                <polygon points="2,10.2 12,6.8 15.5,8.5 5.5,11.8" fill="#1e293b" stroke="#0f172a" stroke-width="0.35"/>
-                <polygon points="5.5,11.8 15.5,8.5 15.5,12.5 5.5,15.8" fill="#0f172a" stroke="#020617" stroke-width="0.35"/>
-                <polygon points="2,10.2 5.5,11.8 5.5,15.8 2,14.2" fill="#334155" stroke="#1e293b" stroke-width="0.35"/>
-
-                <!-- Pravá skříň základny vstřiku (odstupňovaná níže - grafit/ocel) -->
-                <polygon points="15.5,8.5 32,3.5 35.5,5.2 19,10.2" fill="#334155" stroke="#1e293b" stroke-width="0.35"/>
-                <polygon points="19,10.2 35.5,5.2 35.5,9.8 19,14.8" fill="#1e293b" stroke="#0f172a" stroke-width="0.35"/>
-                <line x1="24.5" y1="8.5" x2="24.5" y2="13.1" stroke="#475569" stroke-width="0.4"/>
-                <line x1="30" y1="6.8" x2="30" y2="11.4" stroke="#475569" stroke-width="0.4"/>
-
-                <!-- Bezsloupkový kryt formy ENGEL - autentická firemní zelená ENGEL (#5ec437 / #4cae2a) -->
-                <polygon points="2,4.8 12,1.4 15.5,3.1 5.5,6.4" fill="#5ec437" stroke="#3ea21d" stroke-width="0.35"/>
-                <polygon points="5.5,6.4 15.5,3.1 15.5,8.5 5.5,11.8" fill="#4cae2a" stroke="#358e17" stroke-width="0.35"/>
-                <polygon points="2,4.8 5.5,6.4 5.5,11.8 2,10.2" fill="#3ea21d" stroke="#2e7d12" stroke-width="0.35"/>
-                
-                <!-- Tmavá kabina operátora a zkosené inspekční okno (grafit) -->
-                <polygon points="7.8,5.8 14.5,3.6 14.5,7.2 9,9" fill="#0f172a" stroke="#020617" stroke-width="0.4"/>
-                <!-- Forma / upínací deska uvnitř -->
-                <polygon points="10.8,5.4 12.8,4.7 12.8,7.2 10.8,7.9" fill="#94a3b8" stroke="#cbd5e1" stroke-width="0.3"/>
-
-                <!-- Řídicí pult CC300 a signální maják stavu -->
-                <polygon points="15.5,3.1 18,2.3 19,2.8 16.5,3.6" fill="#334155" stroke="#1e293b" stroke-width="0.3"/>
-                <polygon points="16.5,3.6 19,2.8 19,7 16.5,7.8" fill="#0f172a" stroke="#020617" stroke-width="0.35"/>
-                <polygon points="16.8,4.2 18.7,3.6 18.7,6.3 16.8,6.9" fill="#38bdf8" fill-opacity="0.95"/>
-                <line x1="17.5" y1="2.2" x2="17.5" y2="0.8" stroke="${beaconColor}" stroke-width="1.1" stroke-linecap="round"/>
-                <circle cx="17.5" cy="0.8" r="0.6" fill="${beaconColor}"/>
-
-                <!-- Vstřikovací komora ENGEL v zelené barvě a nerezová násypka -->
-                <polygon points="18.5,5.8 29.5,2.4 31.5,3.3 20.5,6.6" fill="#5ec437" stroke="#3ea21d" stroke-width="0.35"/>
-                <polygon points="20.5,6.6 31.5,3.3 31.5,5.5 20.5,8.8" fill="#4cae2a" stroke="#358e17" stroke-width="0.35"/>
-                
-                <!-- Násypka granulátu (nerez / hliník) -->
-                <polygon points="23.5,2.2 26.5,1.2 27.5,1.7 24.5,2.7" fill="#f8fafc" stroke="#cbd5e1" stroke-width="0.3"/>
-                <polygon points="24.5,2.7 27.5,1.7 25.8,3.8" fill="#94a3b8" stroke="#64748b" stroke-width="0.3"/>
-                <polygon points="23.5,2.2 24.5,2.7 25.8,3.8" fill="#cbd5e1" stroke="#94a3b8" stroke-width="0.3"/>
-
-                <!-- Zadní pohon a hydraulika (grafit) -->
-                <polygon points="29.5,2.4 34.5,0.9 35.5,1.4 30.5,2.9" fill="#475569" stroke="#334155" stroke-width="0.3"/>
-                <polygon points="30.5,2.9 35.5,1.4 35.5,3.8 30.5,5.3" fill="#1e293b" stroke="#0f172a" stroke-width="0.3"/>
-            </svg>
-        `;
-    }
-
     function createMachineSketchHtml(m) {
         const unresolvedIssues = (m.issues || []).filter(it => !it.resolved);
         const hasIssues = unresolvedIssues.length > 0;
@@ -14975,7 +14756,7 @@ Return strictly valid JSON only without markdown formatting with this schema:
         let effectiveStatus = m.status || (hasIssues ? 'warning' : 'ok');
 
         let statusTitle = 'V pořádku (v chodu)';
-        let beaconColor = '#4cae2a'; // Firemní zelená ENGEL
+        let beaconColor = '#16a34a';
         if (effectiveStatus === 'warning') {
             statusTitle = 'V chodu s problémy (servis)';
             beaconColor = '#f97316';
@@ -14984,20 +14765,68 @@ Return strictly valid JSON only without markdown formatting with this schema:
             beaconColor = '#dc2626';
         }
 
-        const cleanMold = (m.currentMold && String(m.currentMold).trim()) ? String(m.currentMold).trim() : '';
-        let prodName = '';
-        let moldTooltip = cleanMold ? `Forma: ${escapeHtml(cleanMold)}` : 'Lis bez formy';
-        if (cleanMold) {
+        let moldSlotHtml = '<span class="mach-mold-empty-dash">—</span>';
+        let moldTooltip = m.currentMold ? `Forma: ${escapeHtml(m.currentMold)}` : 'Lis bez formy';
+        if (m.currentMold && m.currentMold.trim()) {
+            const cleanMold = String(m.currentMold).trim();
             const moldInfo = rawDatabase.find(item => String(item[0]).trim().toLowerCase() === cleanMold.toLowerCase() && !item[4]);
-            prodName = (moldInfo && moldInfo[5]) ? String(moldInfo[5]).trim() : '';
+            const prodName = (moldInfo && moldInfo[5]) ? String(moldInfo[5]).trim() : '';
             if (prodName) {
                 moldTooltip = `Forma: ${escapeHtml(cleanMold)} • Výrobek: ${escapeHtml(prodName)}`;
             }
+            moldSlotHtml = `
+                ${prodName ? `<span class="mach-mold-product-name">${escapeHtml(prodName)}</span>` : ''}
+                <span class="mach-mold-tag-minimal">${escapeHtml(cleanMold)}</span>
+            `;
         }
 
         const cadSvgHtml = `
-            <span class="mach-cad-silhouette" aria-hidden="true" title="Vstřikovací lis ENGEL (Digitální dvojče 2.5D)">
-                ${renderMachineCadSilhouetteSvg(beaconColor)}
+            <span class="mach-cad-silhouette" aria-hidden="true" title="Vstřikovací lis ENGEL victory (2.5D Isometric)">
+                <svg viewBox="0 0 38 18" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <!-- Měkký kontaktní stín pod strojem -->
+                    <ellipse cx="19" cy="15.8" rx="16.5" ry="1.8" fill="#0f172a" fill-opacity="0.12"/>
+
+                    <!-- Spodní podstavec uzávěru (levá část v izometrii) -->
+                    <polygon points="2,10.2 12,6.8 15.5,8.5 5.5,11.8" fill="#cbd5e1" stroke="#94a3b8" stroke-width="0.35"/>
+                    <polygon points="5.5,11.8 15.5,8.5 15.5,12.5 5.5,15.8" fill="#94a3b8" stroke="#64748b" stroke-width="0.35"/>
+                    <polygon points="2,10.2 5.5,11.8 5.5,15.8 2,14.2" fill="#64748b" stroke="#475569" stroke-width="0.35"/>
+
+                    <!-- Pravá skříň základny vstřiku (odstupňovaná níže) -->
+                    <polygon points="15.5,8.5 32,3.5 35.5,5.2 19,10.2" fill="#e2e8f0" stroke="#cbd5e1" stroke-width="0.35"/>
+                    <polygon points="19,10.2 35.5,5.2 35.5,9.8 19,14.8" fill="#94a3b8" stroke="#64748b" stroke-width="0.35"/>
+                    <line x1="24.5" y1="8.5" x2="24.5" y2="13.1" stroke="#64748b" stroke-width="0.4"/>
+                    <line x1="30" y1="6.8" x2="30" y2="11.4" stroke="#64748b" stroke-width="0.4"/>
+
+                    <!-- Bezsloupkový kryt formy ENGEL (3D horní a přední plocha s oknem) -->
+                    <polygon points="2,4.8 12,1.4 15.5,3.1 5.5,6.4" fill="#f8fafc" stroke="#cbd5e1" stroke-width="0.35"/>
+                    <polygon points="5.5,6.4 15.5,3.1 15.5,8.5 5.5,11.8" fill="#cbd5e1" stroke="#94a3b8" stroke-width="0.35"/>
+                    <polygon points="2,4.8 5.5,6.4 5.5,11.8 2,10.2" fill="#64748b" stroke="#475569" stroke-width="0.35"/>
+                    
+                    <!-- Zkosené inspekční okno operátora -->
+                    <polygon points="7.8,5.8 14.5,3.6 14.5,7.2 9,9" fill="#1e293b" stroke="#0f172a" stroke-width="0.4"/>
+                    <!-- Forma / deska uvnitř -->
+                    <polygon points="10.8,5.4 12.8,4.7 12.8,7.2 10.8,7.9" fill="#94a3b8" stroke="#e2e8f0" stroke-width="0.3"/>
+
+                    <!-- Řídicí pult CC300 a signální maják -->
+                    <polygon points="15.5,3.1 18,2.3 19,2.8 16.5,3.6" fill="#f8fafc" stroke="#cbd5e1" stroke-width="0.3"/>
+                    <polygon points="16.5,3.6 19,2.8 19,7 16.5,7.8" fill="#0f172a" stroke="#020617" stroke-width="0.35"/>
+                    <polygon points="16.8,4.2 18.7,3.6 18.7,6.3 16.8,6.9" fill="#38bdf8" fill-opacity="0.9"/>
+                    <line x1="17.5" y1="2.2" x2="17.5" y2="0.8" stroke="#f97316" stroke-width="1.1" stroke-linecap="round"/>
+                    <circle cx="17.5" cy="0.8" r="0.6" fill="#fb923c"/>
+
+                    <!-- Vstřikovací komora, násypka a hydraulický pohon -->
+                    <polygon points="18.5,5.8 29.5,2.4 31.5,3.3 20.5,6.6" fill="#f8fafc" stroke="#cbd5e1" stroke-width="0.35"/>
+                    <polygon points="20.5,6.6 31.5,3.3 31.5,5.5 20.5,8.8" fill="#cbd5e1" stroke="#94a3b8" stroke-width="0.35"/>
+                    
+                    <!-- Násypka materiálu (3D jehlan) -->
+                    <polygon points="23.5,2.2 26.5,1.2 27.5,1.7 24.5,2.7" fill="#f8fafc" stroke="#cbd5e1" stroke-width="0.3"/>
+                    <polygon points="24.5,2.7 27.5,1.7 25.8,3.8" fill="#94a3b8" stroke="#64748b" stroke-width="0.3"/>
+                    <polygon points="23.5,2.2 24.5,2.7 25.8,3.8" fill="#cbd5e1" stroke="#94a3b8" stroke-width="0.3"/>
+
+                    <!-- Zadní pohon a válce vstřiku -->
+                    <polygon points="29.5,2.4 34.5,0.9 35.5,1.4 30.5,2.9" fill="#94a3b8" stroke="#64748b" stroke-width="0.3"/>
+                    <polygon points="30.5,2.9 35.5,1.4 35.5,3.8 30.5,5.3" fill="#64748b" stroke="#475569" stroke-width="0.3"/>
+                </svg>
             </span>
         `;
 
@@ -15008,24 +14837,14 @@ Return strictly valid JSON only without markdown formatting with this schema:
                  aria-label="Lis ${escapeHtml(m.number)} (${statusTitle})"
                  onclick="openMachineDrawer(${m.id})">
                 
-                <div class="mach-tier-top">
-                    <div class="mach-num-box">
-                        <span class="mach-status-beacon status-${effectiveStatus}"></span>
-                        <span class="mach-num">${escapeHtml(m.number)}</span>
-                    </div>
+                <span class="mach-num">${effectiveStatus === 'warning' ? '<span class="mach-sketch-beacon beacon-warning"></span>' : (effectiveStatus === 'error' ? '<span class="mach-sketch-beacon beacon-error"></span>' : '')}${escapeHtml(m.number)}</span>
 
-                    <div class="mach-brand-box">
-                        <span class="mach-engel-chip">ENGEL</span>
-                        ${cadSvgHtml}
-                    </div>
+                ${cadSvgHtml}
 
-                    <div class="mach-mold-tag-wrap" title="${moldTooltip}">
-                        ${cleanMold ? `<span class="mach-mold-tag-minimal">${escapeHtml(cleanMold)}</span>` : `<span class="mach-mold-empty-dash">—</span>`}
-                    </div>
-                </div>
+                <div class="mach-sketch-divider"></div>
 
-                <div class="mach-tier-bottom" title="${prodName ? escapeHtml(prodName) : (cleanMold ? 'Díl nespecifikován' : 'Lis bez formy')}">
-                    <span class="mach-mold-product-name ${!prodName ? 'is-empty' : ''}">${prodName ? escapeHtml(prodName) : (cleanMold ? '<span class="mach-prod-placeholder">Díl nespecifikován</span>' : '<span class="mach-prod-empty">Volný lis</span>')}</span>
+                <div class="mach-mold-slot-box" title="${moldTooltip}">
+                    ${moldSlotHtml}
                 </div>
             </div>
         `;
@@ -15063,7 +14882,7 @@ Return strictly valid JSON only without markdown formatting with this schema:
             container.innerHTML = nums.map(num => {
                 const m = machineMap[num] || { id: num, number: String(num), status: 'ok', currentMold: '', issues: [] };
                 return createMachineSketchHtml(m);
-            }).join('');
+            }).join('<div class="mach-walkway" title="Průchod mezi stroji"><div class="mach-walkway-line"></div><div class="mach-walkway-marker"><svg class="mach-walkway-arrow" width="11" height="6" viewBox="0 0 16 8" fill="none"><path d="M3.5 1L1 4M1 4L3.5 7M1 4H15M12.5 1L15 4M15 4L12.5 7" stroke="#64748b" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="mach-walkway-line"></div></div>');
         });
     }
 
@@ -15077,13 +14896,6 @@ Return strictly valid JSON only without markdown formatting with this schema:
         // Titulek
         const titleEl = document.getElementById('machDrawerTitle') || document.getElementById('machineDetailModalTitle');
         if (titleEl) titleEl.textContent = `LIS Č. ${machine.number}`;
-
-        // Mini silueta stroje v hlavičce
-        const headerIconBadge = document.getElementById('machDrawerIconBadge');
-        if (headerIconBadge) {
-            const bColor = machine.status === 'warning' ? '#f97316' : (machine.status === 'error' ? '#dc2626' : '#4cae2a');
-            headerIconBadge.innerHTML = renderMachineCadSilhouetteSvg(bColor);
-        }
 
         // Zvýrazněný status problémů
         renderMachineProblemStatusBanner(machine);
@@ -15215,11 +15027,6 @@ Return strictly valid JSON only without markdown formatting with this schema:
         saveFactoryMachinesState();
         updateMachineStatusButtonsUI(newStatus);
         renderMachineProblemStatusBanner(machine);
-        const headerIconBadge = document.getElementById('machDrawerIconBadge');
-        if (headerIconBadge) {
-            const bColor = newStatus === 'warning' ? '#f97316' : (newStatus === 'error' ? '#dc2626' : '#4cae2a');
-            headerIconBadge.innerHTML = renderMachineCadSilhouetteSvg(bColor);
-        }
         renderGraphicFactoryMap();
         const statusCzech = newStatus === 'ok' ? 'V pořádku (v chodu)' : (newStatus === 'warning' ? 'V chodu s problémy' : 'Odstaveno / Mimo provoz');
         showToast(`Stav lisu ${machine.number}: ${statusCzech}`);
