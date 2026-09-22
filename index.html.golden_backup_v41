@@ -228,27 +228,17 @@
             position: relative;
         }
 
-        button:not(.toggle-accordion-btn):not(.tab-btn), .filter-chip, .dash-card, .badge-position, tr, .tag-customer, .add-customer-chip, .top-icon-btn, .auth-btn, .superuser-badge-btn, .comment-item, .edit-btn, .comment-btn, .floating-corner-btn, .floating-corner-btn-left, .floating-corner-btn-list, .shift-plan-item, .mold-clickable-id {
+        button:not(.toggle-accordion-btn), .filter-chip, .dash-card, .badge-position, tr, .tag-customer, .add-customer-chip, .top-icon-btn, .auth-btn, .superuser-badge-btn, .comment-item, .edit-btn, .comment-btn, .floating-corner-btn, .floating-corner-btn-left, .floating-corner-btn-list, .shift-plan-item, .mold-clickable-id, .tab-btn {
             user-select: none;
             -webkit-user-select: none;
             transition: transform 0.22s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.18s ease, filter 0.18s ease, background-color 0.2s ease, box-shadow 0.2s ease;
         }
 
-        button:not(.toggle-accordion-btn):not(.tab-btn):active, .filter-chip:active, .dash-card:active, .badge-position:active, .tag-customer:active, .add-customer-chip:active, .top-icon-btn:active, .auth-btn:active, .superuser-badge-btn:active, .floating-corner-btn:active, .floating-corner-btn-left:active, .floating-corner-btn-list:active, .shift-plan-item:active, .mold-clickable-id:active, .is-touched:not(.toggle-accordion-btn):not(.tab-btn) {
+        button:not(.toggle-accordion-btn):active, .filter-chip:active, .dash-card:active, .badge-position:active, .tag-customer:active, .add-customer-chip:active, .top-icon-btn:active, .auth-btn:active, .superuser-badge-btn:active, .floating-corner-btn:active, .floating-corner-btn-left:active, .floating-corner-btn-list:active, .shift-plan-item:active, .tab-btn:active, .mold-clickable-id:active, .is-touched:not(.toggle-accordion-btn) {
             transform: scale(0.91) !important;
             opacity: 0.82 !important;
             filter: brightness(0.91) contrast(1.05) !important;
             transition: transform 0.05s ease, filter 0.05s ease !important;
-        }
-
-        .tab-btn {
-            user-select: none;
-            -webkit-user-select: none;
-            transition: color 0.18s ease, opacity 0.18s ease;
-        }
-        .tab-btn:active, .tab-btn.is-touched {
-            opacity: 0.72;
-            transition: opacity 0.05s ease;
         }
 
         @media (hover: hover) and (pointer: fine) {
@@ -553,19 +543,14 @@
         .tab-indicator {
             position: absolute;
             bottom: 0;
-            left: 0;
-            width: 1px;
             height: 2.5px;
             background: #0f172a;
             border-radius: 2px 2px 0 0;
-            transform-origin: 0 0;
-            will-change: transform;
-            transform: translate3d(0, 0, 0) scaleX(1);
+            will-change: left, width;
+            transform: translateZ(0);
             backface-visibility: hidden;
-            -webkit-backface-visibility: hidden;
-            transition: transform 0.28s cubic-bezier(0.2, 0.8, 0.2, 1);
+            transition: left 0.32s cubic-bezier(0.2, 0.8, 0.2, 1), width 0.32s cubic-bezier(0.2, 0.8, 0.2, 1);
             z-index: 10;
-            pointer-events: none;
         }
 
         .tab-btn {
@@ -8259,9 +8244,8 @@
         const activeBtn = document.querySelector('.tab-btn.active');
         const indicator = document.getElementById('tabIndicator');
         if (activeBtn && indicator) {
-            const left = activeBtn.offsetLeft;
-            const width = activeBtn.offsetWidth;
-            indicator.style.transform = `translate3d(${left}px, 0, 0) scaleX(${width})`;
+            indicator.style.left = `${activeBtn.offsetLeft}px`;
+            indicator.style.width = `${activeBtn.offsetWidth}px`;
         }
     }
 
@@ -9228,6 +9212,9 @@
         
         if (currentActive === tabName || isTabTransitioning) return;
         isTabTransitioning = true;
+
+        const tabLabels = { search: 'Hledání', database: 'Databáze', dashboard: 'Přehled' };
+        logUserAction('SYSTEM', 'Navigace', `Přepnutí na záložku: ${tabLabels[tabName] || tabName}`);
 
         if (typeof isScannerRunning !== 'undefined' && isScannerRunning) {
             closeNumberScanner();
