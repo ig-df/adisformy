@@ -542,18 +542,15 @@
 
         .tab-indicator {
             position: absolute;
-            left: 0;
             bottom: 0;
-            width: 1px;
             height: 2.5px;
             background: #0f172a;
             border-radius: 2px 2px 0 0;
-            will-change: transform;
-            transform-origin: 0 50%;
-            transform: translate3d(0, 0, 0) scaleX(0);
+            will-change: left, width;
+            transform: translateZ(0);
             backface-visibility: hidden;
             -webkit-backface-visibility: hidden;
-            transition: transform 0.30s cubic-bezier(0.2, 0.8, 0.2, 1);
+            transition: left 0.30s cubic-bezier(0.2, 0.8, 0.2, 1), width 0.30s cubic-bezier(0.2, 0.8, 0.2, 1);
             z-index: 10;
             pointer-events: none;
         }
@@ -8258,9 +8255,8 @@
         const activeBtn = document.querySelector('.tab-btn.active');
         const indicator = document.getElementById('tabIndicator');
         if (activeBtn && indicator) {
-            const left = activeBtn.offsetLeft;
-            const width = activeBtn.offsetWidth;
-            indicator.style.transform = `translate3d(${left}px, 0, 0) scaleX(${width})`;
+            indicator.style.left = `${activeBtn.offsetLeft}px`;
+            indicator.style.width = `${activeBtn.offsetWidth}px`;
         }
     }
 
