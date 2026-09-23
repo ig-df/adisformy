@@ -538,19 +538,19 @@
             background-color: var(--card-bg);
             position: relative;
             flex-shrink: 0;
+            overflow: hidden;
         }
 
         .tab-indicator {
             position: absolute;
             left: 0;
             bottom: 0;
-            width: 1px;
+            width: 33.3333%;
             height: 2.5px;
             background: #0f172a;
             border-radius: 2px 2px 0 0;
             will-change: transform;
-            transform-origin: 0 50%;
-            transform: translate3d(0, 0, 0) scaleX(0);
+            transform: translate3d(0, 0, 0);
             backface-visibility: hidden;
             -webkit-backface-visibility: hidden;
             transition: transform 0.30s cubic-bezier(0.2, 0.8, 0.2, 1);
@@ -8260,7 +8260,8 @@
         if (activeBtn && indicator) {
             const left = activeBtn.offsetLeft;
             const width = activeBtn.offsetWidth;
-            indicator.style.transform = `translate3d(${left}px, 0, 0) scaleX(${width})`;
+            indicator.style.width = `${width}px`;
+            indicator.style.transform = `translate3d(${left}px, 0, 0)`;
         }
     }
 
