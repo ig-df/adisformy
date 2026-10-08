@@ -1,11 +1,15 @@
 // Service Worker for Adis Formy PWA (Network-first with robust fallback)
-const CACHE_NAME = 'adis-formy-v1';
+const CACHE_NAME = 'adis-formy-v2';
 const CORE_ASSETS = [
   './',
   './index.html',
   './manifest.json',
   './favicon.ico',
-  './favicon.png',
+  './favicon-16.png',
+  './favicon-32.png',
+  './pwa-icon-192.png',
+  './pwa-icon-512.png',
+  './pwa-maskable-512.png',
   './apple-touch-icon.png',
   './logo.png'
 ];
