@@ -15997,14 +15997,12 @@ Return strictly valid JSON only without markdown formatting with this schema:
                     desktopGuide.style.display = 'block';
                 }
             }
-            const modal = document.getElementById('pwaInstallGuideModal');
-            if (modal) modal.classList.add('active');
+            showModalAnimated('pwaInstallGuideModal');
         }
     }
 
     function closePwaInstallGuideModal() {
-        const modal = document.getElementById('pwaInstallGuideModal');
-        if (modal) modal.classList.remove('active');
+        hideModalAnimated('pwaInstallGuideModal');
     }
 
     // ----------------------------------------------------
