@@ -1,14 +1,14 @@
-// Rock-solid, Safe Service Worker for Adis Formy PWA
-const CACHE_NAME = 'adis-pwa-static-v2';
+// Rock-solid, Safe Service Worker for Adis Formy PWA (Netlify & GitHub Pages compatible)
+const CACHE_NAME = 'adis-pwa-static-v3';
 const STATIC_ASSETS = [
-  '/manifest.json',
-  '/icon-192.png',
-  '/icon-512.png',
-  '/icon-maskable-512.png',
-  '/apple-touch-icon.png',
-  '/favicon.ico',
-  '/favicon.png',
-  '/logo.png'
+  './manifest.json',
+  './icon-192.png',
+  './icon-512.png',
+  './icon-maskable-512.png',
+  './apple-touch-icon.png',
+  './favicon.ico',
+  './favicon.png',
+  './logo.png'
 ];
 
 self.addEventListener('install', (event) => {
@@ -43,11 +43,11 @@ self.addEventListener('fetch', (event) => {
 
   const url = new URL(req.url);
 
-  // Never intercept external requests (Supabase, Google Apps Script, Gemini, etc.)
+  // Never intercept external requests (Supabase, Google Apps Script, Gemini, CDN, etc.)
   if (url.origin !== self.location.origin) return;
 
-  // Never intercept navigation requests (always get fresh index.html directly from network)
-  if (req.mode === 'navigate' || url.pathname === '/' || url.pathname === '/index.html') {
+  // Never intercept navigation requests (always get fresh HTML directly from network)
+  if (req.mode === 'navigate' || url.pathname.endsWith('/') || url.pathname.endsWith('/index.html')) {
     event.respondWith(
       fetch(req).catch(() => caches.match(req))
     );
@@ -55,11 +55,11 @@ self.addEventListener('fetch', (event) => {
   }
 
   // Never intercept dynamic APIs
-  if (url.pathname.startsWith('/api/') || url.pathname.includes('supabase')) {
+  if (url.pathname.includes('/api/') || url.pathname.includes('supabase')) {
     return;
   }
 
-  // Cache-first only for static icons and assets
+  // Cache-first only for static icons and manifest
   event.respondWith(
     caches.match(req).then((cachedResponse) => {
       if (cachedResponse) {

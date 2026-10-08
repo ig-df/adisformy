@@ -18,7 +18,7 @@
     <meta property="og:description" content="Systém pro evidenci a správu forem skladu závodu s vyhledáváním, sledováním údržby a exportem do Heliosu.">
     
     <!-- Favicon & Mobile App Integration (GitHub Pages & Subpath compatible) -->
-    <link rel="manifest" href="manifest.json?v=2026">
+    <link rel="manifest" href="manifest.json">
     <link rel="shortcut icon" href="favicon.ico?v=2026" type="image/x-icon">
     <link rel="icon" type="image/x-icon" href="favicon.ico?v=2026">
     <link rel="icon" type="image/png" href="favicon.png?v=2026">
@@ -16026,9 +16026,9 @@ Return strictly valid JSON only without markdown formatting with this schema:
                 }
             }).catch(() => {});
         } else {
-            // Production deployment (Netlify / live domain):
+            // Production deployment (Netlify / GitHub Pages / live domain):
             window.addEventListener('load', () => {
-                navigator.serviceWorker.register('/sw.js')
+                navigator.serviceWorker.register('./sw.js')
                     .then((reg) => {
                         console.log('[PWA] Service Worker registered with scope:', reg.scope);
                     })
