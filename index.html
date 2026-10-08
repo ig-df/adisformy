@@ -17,16 +17,26 @@
     <meta property="og:title" content="Adis Formy">
     <meta property="og:description" content="Systém pro evidenci a správu forem skladu závodu s vyhledáváním, sledováním údržby a exportem do Heliosu.">
     
-    <!-- Favicon & Mobile App Integration (GitHub Pages & Subpath compatible) -->
+    <!-- Favicon & Mobile App Integration (GitHub Pages & Netlify compatible) -->
     <link rel="manifest" href="manifest.json">
-    <link rel="shortcut icon" href="favicon.ico?v=2026" type="image/x-icon">
-    <link rel="icon" type="image/x-icon" href="favicon.ico?v=2026">
-    <link rel="icon" type="image/png" href="favicon.png?v=2026">
-    <link rel="icon" type="image/png" sizes="32x32" href="favicon.png?v=2026">
-    <link rel="icon" type="image/png" sizes="16x16" href="favicon.png?v=2026">
-    <link rel="icon" type="image/png" sizes="192x192" href="favicon.png?v=2026">
-    <link rel="icon" type="image/png" sizes="512x512" href="favicon.png?v=2026">
-    <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png?v=2026">
+    <link rel="shortcut icon" href="favicon.ico" type="image/x-icon">
+    <link rel="icon" type="image/x-icon" href="favicon.ico">
+    <link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="favicon-16.png">
+    <link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
+    <link rel="icon" type="image/png" sizes="512x512" href="icon-512.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
+    <script>
+      // Early capture of beforeinstallprompt to eliminate race conditions
+      window.deferredPwaPrompt = null;
+      window.addEventListener('beforeinstallprompt', function(e) {
+        e.preventDefault();
+        window.deferredPwaPrompt = e;
+        if (typeof updatePwaInstallButtonVisibility === 'function') {
+          updatePwaInstallButtonVisibility();
+        }
+      });
+    </script>
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-title" content="Adis Formy">
     <meta name="color-scheme" content="light">
@@ -15938,7 +15948,9 @@ Return strictly valid JSON only without markdown formatting with this schema:
     // ==========================================
     // PWA & INSTALLATION LOGIC (WITH AI STUDIO SHIELD)
     // ==========================================
-    let deferredPwaPrompt = null;
+    // PWA INSTALLATION CONTROLLER & CAPTURE
+    // ==========================================
+    let deferredPwaPrompt = window.deferredPwaPrompt || null;
 
     function checkIsAppStandalone() {
         return window.matchMedia('(display-mode: standalone)').matches ||
@@ -15964,11 +15976,13 @@ Return strictly valid JSON only without markdown formatting with this schema:
     window.addEventListener('beforeinstallprompt', (e) => {
         e.preventDefault();
         deferredPwaPrompt = e;
+        window.deferredPwaPrompt = e;
         updatePwaInstallButtonVisibility();
     });
 
     window.addEventListener('appinstalled', () => {
         deferredPwaPrompt = null;
+        window.deferredPwaPrompt = null;
         const installBtn = document.getElementById('btnHeaderInstallApp');
         if (installBtn) installBtn.style.display = 'none';
         showToast('Aplikace byla úspěšně nainstalována');
@@ -15976,11 +15990,13 @@ Return strictly valid JSON only without markdown formatting with this schema:
 
     function triggerPwaInstall() {
         triggerHapticFeedback([15]);
-        if (deferredPwaPrompt) {
-            deferredPwaPrompt.prompt();
-            deferredPwaPrompt.userChoice.then((choiceResult) => {
+        const promptToUse = deferredPwaPrompt || window.deferredPwaPrompt;
+        if (promptToUse) {
+            promptToUse.prompt();
+            promptToUse.userChoice.then((choiceResult) => {
                 if (choiceResult && choiceResult.outcome === 'accepted') {
                     deferredPwaPrompt = null;
+                    window.deferredPwaPrompt = null;
                     const installBtn = document.getElementById('btnHeaderInstallApp');
                     if (installBtn) installBtn.style.display = 'none';
                 }
@@ -16027,7 +16043,7 @@ Return strictly valid JSON only without markdown formatting with this schema:
             }).catch(() => {});
         } else {
             // Production deployment (Netlify / GitHub Pages / live domain):
-            window.addEventListener('load', () => {
+            const registerSW = () => {
                 navigator.serviceWorker.register('./sw.js')
                     .then((reg) => {
                         console.log('[PWA] Service Worker registered with scope:', reg.scope);
@@ -16035,7 +16051,13 @@ Return strictly valid JSON only without markdown formatting with this schema:
                     .catch((err) => {
                         console.warn('[PWA] Service Worker registration failed:', err);
                     });
-            });
+            };
+
+            if (document.readyState === 'complete') {
+                registerSW();
+            } else {
+                window.addEventListener('load', registerSW);
+            }
         }
     }
 
