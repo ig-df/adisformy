@@ -18,15 +18,14 @@
     <meta property="og:description" content="Systém pro evidenci a správu forem skladu závodu s vyhledáváním, sledováním údržby a exportem do Heliosu.">
     
     <!-- Favicon & Mobile App Integration (GitHub Pages & Subpath compatible) -->
-    <link rel="manifest" href="manifest.json?v=2026">
-    <link rel="shortcut icon" href="favicon.ico?v=2026" type="image/x-icon">
-    <link rel="icon" type="image/x-icon" href="favicon.ico?v=2026">
-    <link rel="icon" type="image/png" href="favicon.png?v=2026">
-    <link rel="icon" type="image/png" sizes="32x32" href="favicon.png?v=2026">
-    <link rel="icon" type="image/png" sizes="16x16" href="favicon.png?v=2026">
-    <link rel="icon" type="image/png" sizes="192x192" href="favicon.png?v=2026">
-    <link rel="icon" type="image/png" sizes="512x512" href="favicon.png?v=2026">
-    <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png?v=2026">
+    <link rel="manifest" href="manifest.json?v=2026_fullico">
+    <link rel="shortcut icon" href="favicon.ico?v=2026_fullico" type="image/x-icon">
+    <link rel="icon" type="image/x-icon" href="favicon.ico?v=2026_fullico">
+    <link rel="icon" type="image/png" sizes="256x256" href="icon-256.png?v=2026_fullico">
+    <link rel="icon" type="image/png" sizes="192x192" href="icon-192.png?v=2026_fullico">
+    <link rel="icon" type="image/png" sizes="512x512" href="icon-512.png?v=2026_fullico">
+    <link rel="icon" type="image/png" sizes="32x32" href="icon-32.png?v=2026_fullico">
+    <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png?v=2026_fullico">
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-title" content="Adis Formy">
     <meta name="color-scheme" content="light">
@@ -5228,7 +5227,7 @@
         </div>
         
         <div class="header-buttons-right">
-            <button class="top-icon-btn" tabindex="0" onclick="triggerPwaInstall()" title="Instalovat aplikaci" id="btnHeaderInstallApp">
+            <button class="top-icon-btn" tabindex="0" onclick="triggerPwaInstall()" title="Instalovat aplikaci" id="btnHeaderInstallApp" style="display: none;">
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" style="color: var(--text-main);">
                     <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
                     <polyline points="7 10 12 15 17 10"></polyline>
@@ -10507,6 +10506,7 @@ Return strictly valid JSON only without markdown formatting with this schema:
                     }
                 ],
                 generationConfig: {
+                    temperature: 0.0,
                     maxOutputTokens: 1024
                 }
             };
@@ -15935,11 +15935,8 @@ Return strictly valid JSON only without markdown formatting with this schema:
         }
     });
 
-    // ==========================================
-    // PWA & INSTALLATION LOGIC (WITH AI STUDIO SHIELD)
-    // ==========================================
+    // PWA & Service Worker Integration (Robust cross-platform)
     let deferredPwaPrompt = null;
-
     function checkIsAppStandalone() {
         return window.matchMedia('(display-mode: standalone)').matches ||
                window.matchMedia('(display-mode: window-controls-overlay)').matches ||
@@ -15956,7 +15953,7 @@ Return strictly valid JSON only without markdown formatting with this schema:
         if (checkIsAppStandalone()) {
             installBtn.style.display = 'none';
         } else {
-            // Show install button in regular browsers and preview
+            // In regular browsers (desktop or mobile) show the install button
             installBtn.style.display = 'flex';
         }
     }
@@ -15986,6 +15983,7 @@ Return strictly valid JSON only without markdown formatting with this schema:
                 }
             });
         } else {
+            // Show guide for iOS or browsers where prompt event hasn't fired yet
             const iosGuide = document.getElementById('pwaIosGuideContent');
             const desktopGuide = document.getElementById('pwaDesktopGuideContent');
             if (iosGuide && desktopGuide) {
@@ -16007,38 +16005,17 @@ Return strictly valid JSON only without markdown formatting with this schema:
         if (modal) modal.classList.remove('active');
     }
 
-    // ----------------------------------------------------
-    // IRONCLAD SERVICE WORKER REGISTRATION (SHIELD PROTECTED)
-    // ----------------------------------------------------
-    const isInsideIframe = window.self !== window.top;
-    const isDevOrStudioHost = 
-        location.hostname.includes('ais-dev') || 
-        location.hostname.includes('localhost') || 
-        location.hostname === '127.0.0.1';
-
+    // Register Service Worker
     if ('serviceWorker' in navigator) {
-        if (isInsideIframe || isDevOrStudioHost) {
-            // AI Studio / Dev Environment Shield:
-            // Ensure any legacy service workers on this dev origin are immediately cleaned up.
-            navigator.serviceWorker.getRegistrations().then((registrations) => {
-                for (const reg of registrations) {
-                    reg.unregister().then(() => {
-                        console.log('[PWA Shield] Active dev worker unregistered for stability');
-                    });
-                }
-            }).catch(() => {});
-        } else {
-            // Production deployment (Netlify / live domain):
-            window.addEventListener('load', () => {
-                navigator.serviceWorker.register('/sw.js')
-                    .then((reg) => {
-                        console.log('[PWA] Service Worker registered with scope:', reg.scope);
-                    })
-                    .catch((err) => {
-                        console.warn('[PWA] Service Worker registration failed:', err);
-                    });
-            });
-        }
+        window.addEventListener('load', () => {
+            navigator.serviceWorker.register('./sw.js')
+                .then((reg) => {
+                    console.log('[PWA] Service Worker registered with scope:', reg.scope);
+                })
+                .catch((err) => {
+                    console.warn('[PWA] Service Worker registration failed:', err);
+                });
+        });
     }
 
     // Initialize button visibility
