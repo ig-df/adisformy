@@ -18,14 +18,15 @@
     <meta property="og:description" content="Systém pro evidenci a správu forem skladu závodu s vyhledáváním, sledováním údržby a exportem do Heliosu.">
     
     <!-- Favicon & Mobile App Integration (GitHub Pages & Subpath compatible) -->
-    <link rel="manifest" href="manifest.json?v=2026_fullico">
-    <link rel="shortcut icon" href="favicon.ico?v=2026_fullico" type="image/x-icon">
-    <link rel="icon" type="image/x-icon" href="favicon.ico?v=2026_fullico">
-    <link rel="icon" type="image/png" sizes="256x256" href="icon-256.png?v=2026_fullico">
-    <link rel="icon" type="image/png" sizes="192x192" href="icon-192.png?v=2026_fullico">
-    <link rel="icon" type="image/png" sizes="512x512" href="icon-512.png?v=2026_fullico">
-    <link rel="icon" type="image/png" sizes="32x32" href="icon-32.png?v=2026_fullico">
-    <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png?v=2026_fullico">
+    <link rel="manifest" href="manifest.json?v=2026">
+    <link rel="shortcut icon" href="favicon.ico?v=2026" type="image/x-icon">
+    <link rel="icon" type="image/x-icon" href="favicon.ico?v=2026">
+    <link rel="icon" type="image/png" href="favicon.png?v=2026">
+    <link rel="icon" type="image/png" sizes="32x32" href="favicon.png?v=2026">
+    <link rel="icon" type="image/png" sizes="16x16" href="favicon.png?v=2026">
+    <link rel="icon" type="image/png" sizes="192x192" href="favicon.png?v=2026">
+    <link rel="icon" type="image/png" sizes="512x512" href="favicon.png?v=2026">
+    <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png?v=2026">
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-title" content="Adis Formy">
     <meta name="color-scheme" content="light">
@@ -5227,13 +5228,6 @@
         </div>
         
         <div class="header-buttons-right">
-            <button class="top-icon-btn" tabindex="0" onclick="triggerPwaInstall()" title="Instalovat aplikaci" id="btnHeaderInstallApp" style="display: none;">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" style="color: var(--text-main);">
-                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
-                    <polyline points="7 10 12 15 17 10"></polyline>
-                    <line x1="12" y1="15" x2="12" y2="3"></line>
-                </svg>
-            </button>
             <button class="top-icon-btn" tabindex="0" onclick="openFactoryMapPage()" title="Schéma lisovny a strojů" id="btnHeaderFactoryMap">
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="color: var(--text-main);">
                     <polygon points="3 6 9 3 15 6 21 3 21 18 15 21 9 18 3 21"></polygon>
@@ -6014,40 +6008,6 @@
         <div class="modal-header"><h3>Vyčistit historii</h3><button class="close-modal-btn" onclick="closeClearLogsModal()">✕</button></div>
         <div class="modal-body"><p>Opravdu chcete vyčistit starou historii?</p></div>
         <div class="modal-footer"><button class="btn-secondary" onclick="closeClearLogsModal()">Zrušit</button><button class="btn-primary" onclick="executeClearLogs()">Potvrdit a vyčistit</button></div>
-    </div>
-</div>
-
-<div class="modal-overlay" id="pwaInstallGuideModal">
-    <div class="modal-card" style="max-width: 380px; text-align: center;">
-        <div class="modal-header">
-            <h3>Instalace aplikace</h3>
-            <button class="close-modal-btn" onclick="closePwaInstallGuideModal()">✕</button>
-        </div>
-        <div class="modal-body" style="text-align: left; font-size: 0.9rem; line-height: 1.5; color: var(--text-main);">
-            <div style="display: flex; align-items: center; gap: 0.75rem; margin-bottom: 1rem; padding: 0.75rem; background: var(--row-hover); border-radius: 8px; border: 1px solid var(--border-color);">
-                <img src="favicon.png" alt="Adis Formy" style="width: 44px; height: 44px; border-radius: 10px; flex-shrink: 0;">
-                <div>
-                    <div style="font-weight: 700; font-size: 0.95rem;">Adis Formy</div>
-                    <div style="font-size: 0.75rem; color: var(--text-muted);">Integrovaný výrobní systém</div>
-                </div>
-            </div>
-            <div id="pwaIosGuideContent" style="display: none;">
-                <p style="margin-bottom: 0.5rem; font-weight: 600;">Jak nainstalovat na iPhone / iPad:</p>
-                <ol style="padding-left: 1.25rem; margin: 0 0 0.75rem 0; font-size: 0.85rem; color: var(--text-muted);">
-                    <li style="margin-bottom: 0.35rem;">Klepněte na ikonu <strong>Sdílet</strong> (čtvereček se šipkou nahoru) v Safari.</li>
-                    <li>Sjeďte dolů a zvolte <strong>Přidat na plochu</strong>.</li>
-                </ol>
-            </div>
-            <div id="pwaDesktopGuideContent" style="display: none;">
-                <p style="margin-bottom: 0.5rem; font-weight: 600;">Instalace do zařízení:</p>
-                <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 0.75rem;">
-                    V nabídce prohlížeče (tři tečky vpravo nahoře) zvolte <strong>Nainstalovat aplikaci</strong> nebo <strong>Přidat na plochu</strong>.
-                </p>
-            </div>
-        </div>
-        <div class="modal-footer" style="justify-content: flex-end;">
-            <button class="btn-primary" onclick="closePwaInstallGuideModal()">Rozumím</button>
-        </div>
     </div>
 </div>
 
@@ -10506,7 +10466,6 @@ Return strictly valid JSON only without markdown formatting with this schema:
                     }
                 ],
                 generationConfig: {
-                    temperature: 0.0,
                     maxOutputTokens: 1024
                 }
             };
@@ -15934,92 +15893,6 @@ Return strictly valid JSON only without markdown formatting with this schema:
             }
         }
     });
-
-    // PWA & Service Worker Integration (Robust cross-platform)
-    let deferredPwaPrompt = null;
-    function checkIsAppStandalone() {
-        return window.matchMedia('(display-mode: standalone)').matches ||
-               window.matchMedia('(display-mode: window-controls-overlay)').matches ||
-               window.matchMedia('(display-mode: minimal-ui)').matches ||
-               window.navigator.standalone === true ||
-               document.referrer.includes('android-app://');
-    }
-    const isIOSDevice = /iphone|ipad|ipod/.test(window.navigator.userAgent.toLowerCase());
-
-    function updatePwaInstallButtonVisibility() {
-        const installBtn = document.getElementById('btnHeaderInstallApp');
-        if (!installBtn) return;
-        // Hide button when already running as an installed standalone app
-        if (checkIsAppStandalone()) {
-            installBtn.style.display = 'none';
-        } else {
-            // In regular browsers (desktop or mobile) show the install button
-            installBtn.style.display = 'flex';
-        }
-    }
-
-    window.addEventListener('beforeinstallprompt', (e) => {
-        e.preventDefault();
-        deferredPwaPrompt = e;
-        updatePwaInstallButtonVisibility();
-    });
-
-    window.addEventListener('appinstalled', () => {
-        deferredPwaPrompt = null;
-        const installBtn = document.getElementById('btnHeaderInstallApp');
-        if (installBtn) installBtn.style.display = 'none';
-        showToast('Aplikace byla úspěšně nainstalována');
-    });
-
-    function triggerPwaInstall() {
-        triggerHapticFeedback([15]);
-        if (deferredPwaPrompt) {
-            deferredPwaPrompt.prompt();
-            deferredPwaPrompt.userChoice.then((choiceResult) => {
-                if (choiceResult && choiceResult.outcome === 'accepted') {
-                    deferredPwaPrompt = null;
-                    const installBtn = document.getElementById('btnHeaderInstallApp');
-                    if (installBtn) installBtn.style.display = 'none';
-                }
-            });
-        } else {
-            // Show guide for iOS or browsers where prompt event hasn't fired yet
-            const iosGuide = document.getElementById('pwaIosGuideContent');
-            const desktopGuide = document.getElementById('pwaDesktopGuideContent');
-            if (iosGuide && desktopGuide) {
-                if (isIOSDevice) {
-                    iosGuide.style.display = 'block';
-                    desktopGuide.style.display = 'none';
-                } else {
-                    iosGuide.style.display = 'none';
-                    desktopGuide.style.display = 'block';
-                }
-            }
-            const modal = document.getElementById('pwaInstallGuideModal');
-            if (modal) modal.classList.add('active');
-        }
-    }
-
-    function closePwaInstallGuideModal() {
-        const modal = document.getElementById('pwaInstallGuideModal');
-        if (modal) modal.classList.remove('active');
-    }
-
-    // Register Service Worker
-    if ('serviceWorker' in navigator) {
-        window.addEventListener('load', () => {
-            navigator.serviceWorker.register('./sw.js')
-                .then((reg) => {
-                    console.log('[PWA] Service Worker registered with scope:', reg.scope);
-                })
-                .catch((err) => {
-                    console.warn('[PWA] Service Worker registration failed:', err);
-                });
-        });
-    }
-
-    // Initialize button visibility
-    updatePwaInstallButtonVisibility();
 </script>
 </body>
 </html>
