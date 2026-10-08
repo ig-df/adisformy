@@ -15936,16 +15936,24 @@ Return strictly valid JSON only without markdown formatting with this schema:
 
     // PWA & Service Worker Integration
     let deferredPwaPrompt = null;
-    const isPwaStandalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true;
+    function checkIsAppStandalone() {
+        return window.matchMedia('(display-mode: standalone)').matches ||
+               window.matchMedia('(display-mode: window-controls-overlay)').matches ||
+               window.matchMedia('(display-mode: minimal-ui)').matches ||
+               window.navigator.standalone === true ||
+               document.referrer.includes('android-app://');
+    }
     const isIOSDevice = /iphone|ipad|ipod/.test(window.navigator.userAgent.toLowerCase());
 
     function updatePwaInstallButtonVisibility() {
         const installBtn = document.getElementById('btnHeaderInstallApp');
         if (!installBtn) return;
-        if (isPwaStandalone) {
+        if (checkIsAppStandalone()) {
             installBtn.style.display = 'none';
         } else if (deferredPwaPrompt || isIOSDevice) {
             installBtn.style.display = 'flex';
+        } else {
+            installBtn.style.display = 'none';
         }
     }
 
