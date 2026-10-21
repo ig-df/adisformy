@@ -10139,7 +10139,7 @@
         }
 
         try {
-            const res = await fetchGeminiApi(`https://generativelanguage.googleapis.com/v1beta/models`, cleanKey, { timeoutMs: 5000 });
+            const res = await fetchGeminiApi(`https://generativelanguage.googleapis.com/v1beta/models`, cleanKey, { timeoutMs: 15000 });
             if (!res || !res.ok) {
                 return [];
             }
@@ -10368,16 +10368,57 @@
         if (testBtn) testBtn.disabled = true;
 
         try {
-            const availableModels = await fetchAvailableGeminiModels(key);
-            if (availableModels.length > 0) {
-                const primary = availableModels.find(m => m.includes('2.0-flash') || m.includes('1.5-flash') || m.includes('flash')) || availableModels[0];
+            let workingModel = null;
+            // 1. First test real generative ping with gemini-3-flash-preview
+            try {
+                const pingRes = await fetchGeminiApi('https://generativelanguage.googleapis.com/v1beta/models/gemini-3-flash-preview:generateContent', key, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        contents: [{ parts: [{ text: "ping" }] }],
+                        generationConfig: { maxOutputTokens: 2, thinkingConfig: { thinkingLevel: "LOW" } }
+                    }),
+                    timeoutMs: 12000
+                });
+                if (pingRes && pingRes.ok) {
+                    workingModel = 'gemini-3-flash-preview';
+                }
+            } catch (pErr) {}
+
+            // 2. If first model busy, test ping with gemini-3.8-flash
+            if (!workingModel) {
+                try {
+                    const pingRes2 = await fetchGeminiApi('https://generativelanguage.googleapis.com/v1beta/models/gemini-3.8-flash:generateContent', key, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            contents: [{ parts: [{ text: "ping" }] }],
+                            generationConfig: { maxOutputTokens: 2, thinkingConfig: { thinkingLevel: "LOW" } }
+                        }),
+                        timeoutMs: 12000
+                    });
+                    if (pingRes2 && pingRes2.ok) {
+                        workingModel = 'gemini-3.8-flash';
+                    }
+                } catch (pErr2) {}
+            }
+
+            // 3. Fallback to model catalog list lookup
+            if (!workingModel) {
+                const availableModels = await fetchAvailableGeminiModels(key);
+                if (availableModels.length > 0) {
+                    workingModel = availableModels.find(m => m.includes('3') || m.includes('flash')) || availableModels[0];
+                }
+            }
+
+            if (workingModel) {
                 if (statusEl) {
-                    statusEl.innerHTML = `<span style="color: #22c55e; font-weight: 600;">✓ Spojení navázáno! Klíč je platný (${primary}).</span>`;
+                    statusEl.innerHTML = `<span style="color: #22c55e; font-weight: 600;">✓ Spojení navázáno! Klíč je platný a aktivní (${workingModel}).</span>`;
                 }
                 triggerHapticFeedback([20]);
             } else {
                 if (statusEl) {
-                    statusEl.innerHTML = '<span style="color: #ef4444;">✕ Pro tento klíč nebyly nalezeny žádné dostupné Gemini modely.</span>';
+                    statusEl.innerHTML = '<span style="color: #ef4444;">✕ Pro tento klíč nebyly nalezeny žádné dostupné Gemini modely. Zkontrolujte připojení.</span>';
                 }
                 triggerHapticFeedback([40, 50, 40]);
             }
