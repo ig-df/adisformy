@@ -10093,7 +10093,8 @@
     async function fetchGeminiApi(endpointUrl, cleanKey, options = {}) {
         if (!cleanKey) throw new Error("API klíč je prázdný");
         
-        const isBearer = cleanKey.startsWith('AQ.') || cleanKey.startsWith('ya29.');
+        // ya29. is Google OAuth bearer token; AIzaSy and AQ. are Gemini API keys
+        const isBearer = cleanKey.startsWith('ya29.');
         let finalUrl = endpointUrl;
         const headers = { ...(options.headers || {}) };
 
