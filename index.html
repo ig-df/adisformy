@@ -12,6 +12,9 @@
     </script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
     <title>Adis Formy</title>
     <meta name="description" content="Systém pro evidenci a správu forem skladu závodu s vyhledáváním, sledováním údržby a exportem do Heliosu.">
     <meta property="og:title" content="Adis Formy">
@@ -10370,66 +10373,28 @@
         if (testBtn) testBtn.disabled = true;
 
         try {
-            let workingModel = null;
-            // 1. First test real generative ping with high-quota gemini-3.1-flash-lite (1500 RPD)
-            try {
-                const pingRes = await fetchGeminiApi('https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite:generateContent', key, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        contents: [{ parts: [{ text: "ping" }] }],
-                        generationConfig: { maxOutputTokens: 2 }
-                    }),
-                    timeoutMs: 12000
-                });
-                if (pingRes && pingRes.ok) {
-                    workingModel = 'gemini-3.1-flash-lite';
-                }
-            } catch (pErr) {}
-
-            // 2. If first model busy, test ping with gemini-3.8-flash
-            if (!workingModel) {
-                try {
-                    const pingRes2 = await fetchGeminiApi('https://generativelanguage.googleapis.com/v1beta/models/gemini-3.8-flash:generateContent', key, {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({
-                            contents: [{ parts: [{ text: "ping" }] }],
-                            generationConfig: { maxOutputTokens: 2, thinkingConfig: { thinkingLevel: "LOW" } }
-                        }),
-                        timeoutMs: 12000
-                    });
-                    if (pingRes2 && pingRes2.ok) {
-                        workingModel = 'gemini-3.8-flash';
-                    }
-                } catch (pErr2) {}
-            }
-
-            // 3. Fallback to model catalog list lookup (strictly gemini vision models)
-            if (!workingModel) {
-                const availableModels = await fetchAvailableGeminiModels(key);
-                if (availableModels.length > 0) {
-                    workingModel = availableModels.find(m => m.startsWith('gemini-') && (m.includes('flash') || m.includes('3'))) || 'gemini-3.1-flash-lite';
-                } else {
-                    workingModel = 'gemini-3.1-flash-lite';
-                }
-            }
-
-            if (workingModel) {
+            // Instant 200ms authorization check via Google Gemini API
+            const res = await fetchGeminiApi('https://generativelanguage.googleapis.com/v1beta/models', key, { timeoutMs: 6000 });
+            if (res && res.ok) {
                 if (statusEl) {
-                    statusEl.innerHTML = `<span style="color: #22c55e; font-weight: 600;">✓ Spojení navázáno! Klíč je platný a aktivní (${workingModel}).</span>`;
+                    statusEl.innerHTML = '<span style="color: #22c55e; font-weight: 600;">✓ Spojení navázáno! Firemní klíč Gemini Vision AI je platný a aktivní.</span>';
                 }
                 triggerHapticFeedback([20]);
             } else {
+                let errText = "Neplatný API klíč";
+                try {
+                    const errJson = await res.json();
+                    if (errJson?.error?.message) errText = errJson.error.message;
+                } catch (e) {}
                 if (statusEl) {
-                    statusEl.innerHTML = '<span style="color: #ef4444;">✕ Pro tento klíč nebyly nalezeny žádné dostupné Gemini modely. Zkontrolujte připojení.</span>';
+                    statusEl.innerHTML = `<span style="color: #ef4444;">✕ ODMÍTNUTO: ${escapeHtml(errText)}</span>`;
                 }
                 triggerHapticFeedback([40, 50, 40]);
             }
         } catch (err) {
             let msg = err.message || '';
-            if (msg.includes('invalid authentication credentials') || msg.includes('API key not valid') || msg.includes('401') || msg.includes('403') || msg.includes('UNAUTHENTICATED')) {
-                msg = 'Klíč byl odmítnut Googlem (neplatný, exspirovaný nebo zrušený klíč). Zkontrolujte, zda jste jej vytvořili na aistudio.google.com/app/apikey.';
+            if (msg.includes('invalid authentication credentials') || msg.includes('API key not valid') || msg.includes('401') || msg.includes('403')) {
+                msg = 'Klíč byl odmítnut Googlem (neplatný nebo zrušený klíč). Zkontrolujte, zda jste jej vytvořili na aistudio.google.com/app/apikey.';
             }
             if (statusEl) {
                 statusEl.innerHTML = `<span style="color: #ef4444;">✕ Neplatný klíč: ${escapeHtml(msg)}</span>`;
@@ -10556,19 +10521,23 @@ Return strictly valid JSON only without markdown formatting with this schema:
                 }
             };
 
-            // Instant deterministic model cascade (prioritizing 1500 RPD high-quota gemini-3.1-flash-lite)
-            const modelsToTry = ['gemini-3.1-flash-lite', 'gemini-3.8-flash', 'gemini-3-flash-preview'];
+            // Instant deterministic model cascade (prioritizing stable gemini-3.6-flash)
+            const modelsToTry = ['gemini-3.6-flash', 'gemini-3.8-flash', 'gemini-3.1-flash-lite'];
 
             let res = null;
             let lastErrData = null;
 
             for (const modelName of modelsToTry) {
                 try {
+                    const reqPayload = JSON.parse(JSON.stringify(payload));
+                    if (modelName.includes('lite')) {
+                        delete reqPayload.generationConfig.thinkingConfig;
+                    }
                     const response = await fetchGeminiApi(`https://generativelanguage.googleapis.com/v1beta/models/${modelName}:generateContent`, apiKey, {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify(payload),
-                        timeoutMs: 8000
+                        body: JSON.stringify(reqPayload),
+                        timeoutMs: 6000
                     });
 
                     if (response && response.ok) {
