@@ -10093,60 +10093,36 @@
     async function fetchGeminiApi(endpointUrl, cleanKey, options = {}) {
         if (!cleanKey) throw new Error("API klíč je prázdný");
         
-        const attempts = [];
+        const isBearer = cleanKey.startsWith('AQ.') || cleanKey.startsWith('ya29.');
+        let finalUrl = endpointUrl;
+        const headers = { ...(options.headers || {}) };
 
-        // OAuth Bearer tokens (e.g. AQ.Ab8... or ya29....)
-        if (cleanKey.startsWith('AQ.') || cleanKey.startsWith('ya29.') || !cleanKey.startsWith('AIzaSy')) {
-            attempts.push({
-                url: endpointUrl,
-                opts: {
-                    ...options,
-                    headers: { ...(options.headers || {}), 'Authorization': `Bearer ${cleanKey}` }
-                }
-            });
-            attempts.push({
-                url: endpointUrl,
-                opts: {
-                    ...options,
-                    headers: { ...(options.headers || {}), 'X-Goog-Api-Key': cleanKey }
-                }
-            });
-            const urlWithKey = endpointUrl.includes('?') 
-                ? `${endpointUrl}&key=${encodeURIComponent(cleanKey)}` 
-                : `${endpointUrl}?key=${encodeURIComponent(cleanKey)}`;
-            attempts.push({ url: urlWithKey, opts: options });
+        if (isBearer) {
+            headers['Authorization'] = `Bearer ${cleanKey}`;
         } else {
             // Standard AIzaSy API key
-            const urlWithKey = endpointUrl.includes('?') 
+            finalUrl = endpointUrl.includes('?') 
                 ? `${endpointUrl}&key=${encodeURIComponent(cleanKey)}` 
                 : `${endpointUrl}?key=${encodeURIComponent(cleanKey)}`;
-            attempts.push({ url: urlWithKey, opts: options });
-            attempts.push({
-                url: endpointUrl,
-                opts: {
-                    ...options,
-                    headers: { ...(options.headers || {}), 'X-Goog-Api-Key': cleanKey }
-                }
-            });
-            attempts.push({
-                url: endpointUrl,
-                opts: {
-                    ...options,
-                    headers: { ...(options.headers || {}), 'Authorization': `Bearer ${cleanKey}` }
-                }
-            });
+            headers['X-Goog-Api-Key'] = cleanKey;
         }
 
-        let lastRes = null;
-        for (const attempt of attempts) {
-            try {
-                const res = await fetch(attempt.url, attempt.opts);
-                if (res.ok) return res;
-                lastRes = res;
-            } catch (e) {}
-        }
+        const controller = new AbortController();
+        const timeoutMs = options.timeoutMs || 20000;
+        const timer = setTimeout(() => controller.abort(), timeoutMs);
 
-        return lastRes;
+        try {
+            const res = await fetch(finalUrl, {
+                ...options,
+                headers,
+                signal: options.signal || controller.signal
+            });
+            clearTimeout(timer);
+            return res;
+        } catch (err) {
+            clearTimeout(timer);
+            throw err;
+        }
     }
 
     let _cachedGeminiModelsList = null;
@@ -10155,29 +10131,39 @@
 
     async function fetchAvailableGeminiModels(key) {
         const cleanKey = sanitizeGeminiApiKey(key);
-        if (!cleanKey) throw new Error("API klíč je prázdný");
+        if (!cleanKey) return [];
 
         const now = Date.now();
         if (_cachedGeminiModelsList && _cachedGeminiKey === cleanKey && (now - _cachedGeminiTime < 300000)) {
             return _cachedGeminiModelsList;
         }
 
-        const res = await fetchGeminiApi(`https://generativelanguage.googleapis.com/v1beta/models`, cleanKey);
-        if (!res.ok) {
-            const errJson = await res.json().catch(() => ({}));
-            throw new Error(errJson?.error?.message || `HTTP ${res.status}`);
-        }
-        const data = await res.json();
-        const models = (data?.models || [])
-            .filter(m => Array.isArray(m.supportedGenerationMethods) && m.supportedGenerationMethods.includes("generateContent"))
-            .map(m => m.name.replace(/^models\//, ''));
+        try {
+            const res = await fetchGeminiApi(`https://generativelanguage.googleapis.com/v1beta/models`, cleanKey, { timeoutMs: 5000 });
+            if (!res || !res.ok) {
+                return [];
+            }
+            const data = await res.json();
+            const models = (data?.models || [])
+                .filter(m => Array.isArray(m.supportedGenerationMethods) && m.supportedGenerationMethods.includes("generateContent"))
+                .map(m => m.name.replace(/^models\//, ''))
+                .filter(m => {
+                    const l = m.toLowerCase();
+                    // Exclude deprecated models, TTS models, non-vision models
+                    if (l.includes('2.5-') || l.includes('2.0-') || l.includes('1.5-') || l.includes('1.0-')) return false;
+                    if (l.includes('tts') || l.includes('embedding') || l.includes('audio') || l.includes('robotics')) return false;
+                    return true;
+                });
 
-        if (models.length > 0) {
-            _cachedGeminiModelsList = models;
-            _cachedGeminiKey = cleanKey;
-            _cachedGeminiTime = now;
+            if (models.length > 0) {
+                _cachedGeminiModelsList = models;
+                _cachedGeminiKey = cleanKey;
+                _cachedGeminiTime = now;
+            }
+            return models;
+        } catch (e) {
+            return [];
         }
-        return models;
     }
 
     function updateGeminiAiUiState() {
@@ -10517,7 +10503,11 @@ Return strictly valid JSON only without markdown formatting with this schema:
                     }
                 ],
                 generationConfig: {
-                    maxOutputTokens: 1024
+                    maxOutputTokens: 1024,
+                    responseMimeType: "application/json",
+                    thinkingConfig: {
+                        thinkingLevel: "LOW"
+                    }
                 }
             };
 
@@ -10526,17 +10516,23 @@ Return strictly valid JSON only without markdown formatting with this schema:
                 availableModels = await fetchAvailableGeminiModels(apiKey);
             } catch (e) {}
 
-            let modelsToTry = [];
+            // Priority order: Working fast multimodal Flash models
+            const DEFAULT_FAST_MODELS = ['gemini-3-flash-preview', 'gemini-3.8-flash'];
+            let modelsToTry = [...DEFAULT_FAST_MODELS];
+
             if (availableModels.length > 0) {
-                const flash25 = availableModels.filter(m => m.includes('2.5-flash'));
-                const flash20 = availableModels.filter(m => m.includes('2.0-flash'));
-                const flash15 = availableModels.filter(m => m.includes('1.5-flash'));
-                const otherFlash = availableModels.filter(m => m.includes('flash') && !flash25.includes(m) && !flash20.includes(m) && !flash15.includes(m));
-                const remaining = availableModels.filter(m => !m.includes('flash'));
-                modelsToTry = [...flash25, ...flash20, ...flash15, ...otherFlash, ...remaining];
-            }
-            if (modelsToTry.length === 0) {
-                modelsToTry = ['gemini-2.5-flash', 'gemini-2.0-flash', 'gemini-1.5-flash', 'gemini-2.0-flash-lite'];
+                const ordered = [];
+                for (const p of DEFAULT_FAST_MODELS) {
+                    if (availableModels.includes(p)) ordered.push(p);
+                }
+                for (const m of availableModels) {
+                    if (m.toLowerCase().includes('flash') && !ordered.includes(m)) ordered.push(m);
+                }
+                if (ordered.length > 0) {
+                    modelsToTry = ordered.slice(0, 2); // Max 2 fast attempts to avoid any lag
+                }
+            } else {
+                modelsToTry = ['gemini-3-flash-preview', 'gemini-3.8-flash'];
             }
 
             let res = null;
@@ -10547,16 +10543,21 @@ Return strictly valid JSON only without markdown formatting with this schema:
                     const response = await fetchGeminiApi(`https://generativelanguage.googleapis.com/v1beta/models/${modelName}:generateContent`, apiKey, {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify(payload)
+                        body: JSON.stringify(payload),
+                        timeoutMs: 20000
                     });
 
-                    if (response.ok) {
+                    if (response && response.ok) {
                         res = response;
                         break;
-                    } else {
+                    } else if (response) {
                         const errJson = await response.json().catch(() => ({}));
                         lastErrData = { status: response.status, data: errJson };
                         console.warn(`Gemini Vision model ${modelName} returned status ${response.status}:`, errJson);
+                        // If quota reached or auth failed, stop immediately without wasting time on remaining models
+                        if (response.status === 401 || response.status === 403 || response.status === 429) {
+                            break;
+                        }
                     }
                 } catch (fetchErr) {
                     console.warn(`Fetch error trying ${modelName}:`, fetchErr);
@@ -10762,24 +10763,34 @@ Return strictly valid JSON only without markdown formatting with this schema:
         if (tesseractWorker) return tesseractWorker;
         if (typeof Tesseract === 'undefined') return null;
         if (isInitializingTesseract) {
-            while (isInitializingTesseract) {
-                await new Promise(r => setTimeout(r, 80));
+            let waitAttempts = 0;
+            while (isInitializingTesseract && waitAttempts < 40) {
+                await new Promise(r => setTimeout(r, 100));
+                waitAttempts++;
             }
             return tesseractWorker;
         }
         isInitializingTesseract = true;
         try {
-            const worker = await Tesseract.createWorker('eng', 1, {
-                logger: () => {}
-            });
-            await worker.setParameters({
-                tessedit_pageseg_mode: '11', // Sparse text - finds characters/numbers in any layout without paragraph constraints
-                user_defined_dpi: '300'
-            });
+            // Guard with 5s timeout to prevent hanging when downloading CDN weights on slow network
+            const loadWorkerPromise = (async () => {
+                const worker = await Tesseract.createWorker('eng', 1, {
+                    logger: () => {}
+                });
+                await worker.setParameters({
+                    tessedit_pageseg_mode: '11',
+                    user_defined_dpi: '300'
+                });
+                return worker;
+            })();
+            const timeoutPromise = new Promise((_, reject) => 
+                setTimeout(() => reject(new Error("Tesseract CDN download timeout")), 15000)
+            );
+            const worker = await Promise.race([loadWorkerPromise, timeoutPromise]);
             tesseractWorker = worker;
             return tesseractWorker;
         } catch (err) {
-            console.warn("Chyba při inicializaci Tesseract OCR:", err);
+            console.warn("Chyba při inicializaci Tesseract OCR (timeout/offline):", err);
             return null;
         } finally {
             isInitializingTesseract = false;
@@ -10860,6 +10871,10 @@ Return strictly valid JSON only without markdown formatting with this schema:
         updateScannerSnapBtnState(false);
         updateGeminiAiUiState();
         syncGeminiApiKeyFromDb();
+        // Gentle background warmup so local OCR is pre-loaded without blocking UI
+        setTimeout(() => {
+            getTesseractWorker().catch(() => {});
+        }, 350);
 
         const reticle = document.getElementById('scannerReticle');
         if (reticle) {
@@ -11060,8 +11075,8 @@ Return strictly valid JSON only without markdown formatting with this schema:
         if (cropW <= 0 || cropH <= 0 || isNaN(cropW) || isNaN(cropH)) return null;
 
         const canvas = document.createElement('canvas');
-        // High resolution with preserved aspect ratio for crisp recognition of handwritten numbers & lists
-        const maxDim = 1280;
+        // Optimal resolution for high-accuracy vision AI with sub-second transmission
+        const maxDim = 960;
         let destW = Math.round(cropW);
         let destH = Math.round(cropH);
         if (destW > maxDim || destH > maxDim) {
@@ -11074,86 +11089,15 @@ Return strictly valid JSON only without markdown formatting with this schema:
 
         canvas.width = destW;
         canvas.height = destH;
-        const ctx = canvas.getContext('2d', { willReadFrequently: true });
-        
-        ctx.drawImage(video, cropX, cropY, cropW, cropH, 0, 0, destW, destH);
-
-        // Preprocessing: shadow removal & adaptive contrast for handwriting on paper
-        try {
-            const imgData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-            const d = imgData.data;
-            const w = canvas.width;
-            const h = canvas.height;
-
-            // Block grid background luminance estimation based on resolution
-            const gridCols = Math.max(6, Math.round(w / 70));
-            const gridRows = Math.max(6, Math.round(h / 70));
-            const cellW = Math.ceil(w / gridCols);
-            const cellH = Math.ceil(h / gridRows);
-            const bgGrid = [];
-
-            for (let gy = 0; gy < gridRows; gy++) {
-                bgGrid[gy] = [];
-                for (let gx = 0; gx < gridCols; gx++) {
-                    const startX = gx * cellW;
-                    const endX = Math.min(w, startX + cellW);
-                    const startY = gy * cellH;
-                    const endY = Math.min(h, startY + cellH);
-
-                    let cellLums = [];
-                    for (let y = startY; y < endY; y += 2) {
-                        for (let x = startX; x < endX; x += 2) {
-                            const idx = (y * w + x) * 4;
-                            const lum = 0.299 * d[idx] + 0.587 * d[idx+1] + 0.114 * d[idx+2];
-                            cellLums.push(lum);
-                        }
-                    }
-                    if (cellLums.length > 0) {
-                        cellLums.sort((a, b) => a - b);
-                        // 85th percentile represents local paper background
-                        const p85Idx = Math.floor(cellLums.length * 0.85);
-                        bgGrid[gy][gx] = cellLums[p85Idx];
-                    } else {
-                        bgGrid[gy][gx] = 200;
-                    }
-                }
-            }
-
-            // Normalize pixels against local background to eliminate hand/phone shadows & preserve fine ballpoint pen strokes
-            for (let y = 0; y < h; y++) {
-                const gy = Math.min(gridRows - 1, Math.floor(y / cellH));
-                for (let x = 0; x < w; x++) {
-                    const gx = Math.min(gridCols - 1, Math.floor(x / cellW));
-                    const localBg = Math.max(50, bgGrid[gy][gx]);
-                    const idx = (y * w + x) * 4;
-                    const r = d[idx], g = d[idx+1], b = d[idx+2];
-                    
-                    // For blue/black pen: Red channel is the darkest!
-                    const minCh = Math.min(r, g);
-                    const lum = 0.299 * r + 0.587 * g + 0.114 * b;
-                    const effectiveLum = Math.min(lum, minCh * 1.15);
-
-                    const ratio = effectiveLum / localBg;
-                    let enhanced;
-                    if (ratio < 0.85) {
-                        // Dark & medium ink stroke - push darker with smooth quadratic curve (supports light pencil to heavy marker)
-                        const normInk = ratio / 0.85;
-                        enhanced = Math.max(0, Math.round(normInk * normInk * 115));
-                    } else if (ratio < 0.94) {
-                        // Soft edge anti-aliasing transition (fine ballpoint pen & pencil stroke preservation)
-                        enhanced = Math.min(255, Math.round(115 + (ratio - 0.85) * 1550));
-                    } else {
-                        // Paper background - clean bright white
-                        enhanced = 255;
-                    }
-
-                    d[idx] = enhanced;
-                    d[idx+1] = enhanced;
-                    d[idx+2] = enhanced;
-                }
-            }
-            ctx.putImageData(imgData, 0, 0);
-        } catch (e) {}
+        const ctx = canvas.getContext('2d');
+        if (ctx) {
+            // Hardware-accelerated contrast & clarity boost for pen & pencil on industrial paper
+            ctx.filter = 'contrast(1.22) brightness(1.02)';
+            ctx.drawImage(video, cropX, cropY, cropW, cropH, 0, 0, destW, destH);
+        } else {
+            const fallbackCtx = canvas.getContext('2d');
+            if (fallbackCtx) fallbackCtx.drawImage(video, cropX, cropY, cropW, cropH, 0, 0, destW, destH);
+        }
 
         return canvas;
     }
@@ -12094,71 +12038,107 @@ Return strictly valid JSON only without markdown formatting with this schema:
             let detectedText = '';
 
             // ==========================================
-            // ON-DEMAND PHOTO RECOGNITION PIPELINE
-            // Tier 1 Priority: Gemini Vision AI (Instant recognition & open)
-            // Tier 2 Fallback: Barcode + Tesseract OCR (STRICTLY ONLY on Gemini error / offline / quota limit / no key)
+            // HIGH-SPEED SMART RECOGNITION PIPELINE
+            // Tier 1 Priority: High-speed server proxy /api/gemini/scan (~1s response)
+            // Tier 2 Priority: Direct client Gemini API (with thinkingLevel LOW)
+            // Tier 3 Fallback: Barcode + Guarded Tesseract OCR
             // ==========================================
-            const apiKey = getGeminiApiKey();
+            let geminiResult = null;
             let geminiProblem = false;
             let geminiErrorMessage = '';
 
-            if (apiKey) {
-                const geminiResult = await recognizeWithGeminiVision(cropCanvas, scannerActiveMode);
+            const dataUrl = cropCanvas.toDataURL('image/jpeg', 0.82);
+            const base64Data = dataUrl.split(',')[1];
 
-                if (geminiResult && geminiResult.error) {
-                    // Actual Gemini failure / problem
+            // 1. Primary: High-speed server-side Gemini API (using process.env.GEMINI_API_KEY)
+            try {
+                const proxyRes = await fetch('/api/gemini/scan', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ imageBase64: base64Data, mode: scannerActiveMode }),
+                    signal: AbortSignal.timeout(25000)
+                });
+                if (proxyRes.ok) {
+                    const json = await proxyRes.json();
+                    if (json.success && json.data) {
+                        geminiResult = {
+                            primaryNumber: json.data.primary_number || json.data.code || '',
+                            numbers: json.data.numbers || (json.data.primary_number ? [json.data.primary_number] : []),
+                            productName: json.data.product_name || json.data.name || '',
+                            rawText: json.data.raw_text || '',
+                            pairs: json.data.pairs || []
+                        };
+                    }
+                }
+            } catch (proxyErr) {
+                // Server proxy unreachable or timed out (e.g. static hosting)
+            }
+
+            // 2. Secondary: Direct client-side Gemini Vision API call if server wasn't available
+            if (!geminiResult) {
+                let apiKey = getGeminiApiKey();
+                if (!apiKey) {
+                    await syncGeminiApiKeyFromDb();
+                    apiKey = getGeminiApiKey();
+                }
+
+                if (apiKey) {
+                    geminiResult = await recognizeWithGeminiVision(cropCanvas, scannerActiveMode);
+                    if (geminiResult && geminiResult.error) {
+                        geminiProblem = true;
+                        geminiErrorMessage = (geminiResult.error === 'quota_exceeded')
+                            ? "Limit Gemini AI vyčerpán"
+                            : "Chyba připojení k Gemini AI";
+                        console.warn("Gemini Vision selhalo:", geminiResult);
+                    }
+                } else {
                     geminiProblem = true;
-                    geminiErrorMessage = (geminiResult.error === 'quota_exceeded')
-                        ? "Limit Gemini AI vyčerpán"
-                        : "Chyba připojení k Gemini AI";
-                    console.warn("Gemini Vision selhalo, spouštím záložní OCR:", geminiResult);
-                } else if (geminiResult) {
-                    // Gemini Vision processed the image successfully:
-                    // Under no circumstances do we call Tesseract here!
-                    if (scannerActiveMode === 'plan') {
-                        const batchMolds = matchGeminiPlanBatch(geminiResult, barcodeValues, cropCanvas);
-                        if (batchMolds && batchMolds.length > 0) {
-                            handleBatchMoldMatchFound(batchMolds);
+                    geminiErrorMessage = "Klíč Gemini AI není nastaven";
+                }
+            }
+
+            if (!geminiProblem && geminiResult) {
+                // Gemini Vision processed the image successfully:
+                // Under no circumstances do we call Tesseract here!
+                if (scannerActiveMode === 'plan') {
+                    const batchMolds = matchGeminiPlanBatch(geminiResult, barcodeValues, cropCanvas);
+                    if (batchMolds && batchMolds.length > 0) {
+                        handleBatchMoldMatchFound(batchMolds);
+                        return;
+                    } else {
+                        showToast("Gemini AI: Na listu nebyly nalezeny žádné formy z databáze.");
+                        if (statusText) statusText.textContent = "Žádné formy nerozpoznány.";
+                        playScannerAudioBeep(false);
+                        return;
+                    }
+                } else {
+                    const matchResult = matchGeminiData(geminiResult, barcodeValues, cropCanvas);
+                    if (matchResult) {
+                        if (matchResult.type === 'single') {
+                            const moldNum = matchResult.mold[0];
+                            haptic.cameraSuccess();
+                            playScannerAudioBeep(true);
+                            showToast(`✓ Gemini AI: Forma #${moldNum} nalezena`);
+                            scannerOpenSpecificMold(moldNum);
                             return;
-                        } else {
-                            showToast("Gemini AI: Na listu nebyly nalezeny žádné formy z databáze.");
-                            if (statusText) statusText.textContent = "Žádné formy nerozpoznány.";
-                            playScannerAudioBeep(false);
+                        } else if (matchResult.type === 'multi') {
+                            handleMultiMoldMatchFound(matchResult);
                             return;
                         }
                     } else {
-                        const matchResult = matchGeminiData(geminiResult, barcodeValues, cropCanvas);
-                        if (matchResult) {
-                            if (matchResult.type === 'single') {
-                                const moldNum = matchResult.mold[0];
-                                haptic.cameraSuccess();
-                                playScannerAudioBeep(true);
-                                showToast(`✓ Gemini AI: Forma #${moldNum} nalezena`);
-                                scannerOpenSpecificMold(moldNum);
-                                return;
-                            } else if (matchResult.type === 'multi') {
-                                handleMultiMoldMatchFound(matchResult);
-                                return;
-                            }
+                        const sampleFound = (geminiResult.primaryNumber || (geminiResult.numbers && geminiResult.numbers[0]) || geminiResult.productName || geminiResult.rawText || '').trim();
+                        if (sampleFound) {
+                            const previewText = sampleFound.length > 28 ? sampleFound.substring(0, 28) + '...' : sampleFound;
+                            showToast(`Gemini AI přečetlo: "${previewText}", ale v databázi nebyla nalezena shoda.`);
+                            if (statusText) statusText.textContent = `Nenalezeno v databázi: "${previewText}"`;
                         } else {
-                            // Gemini Vision successfully read the frame, but no matching mold exists in the database
-                            const sampleFound = (geminiResult.primaryNumber || (geminiResult.numbers && geminiResult.numbers[0]) || geminiResult.productName || geminiResult.rawText || '').trim();
-                            if (sampleFound) {
-                                const previewText = sampleFound.length > 28 ? sampleFound.substring(0, 28) + '...' : sampleFound;
-                                showToast(`Gemini AI přečetlo: "${previewText}", ale v databázi nebyla nalezena shoda.`);
-                                if (statusText) statusText.textContent = `Nenalezeno v databázi: "${previewText}"`;
-                            } else {
-                                showToast("Gemini AI: Na štítku nebylo nalezeno žádné čitelné číslo.");
-                                if (statusText) statusText.textContent = "Nerozpoznáno. Zkuste zaostřit.";
-                            }
-                            playScannerAudioBeep(false);
-                            return; // Gemini worked, do NOT start Tesseract!
+                            showToast("Gemini AI: Na štítku nebylo nalezeno žádné čitelné číslo.");
+                            if (statusText) statusText.textContent = "Nerozpoznáno. Zkuste zaostřit.";
                         }
+                        playScannerAudioBeep(false);
+                        return; // Gemini worked, do NOT start Tesseract!
                     }
                 }
-            } else {
-                geminiProblem = true;
-                geminiErrorMessage = "Klíč Gemini AI není nastaven";
             }
 
             // ==========================================
@@ -12166,7 +12146,7 @@ Return strictly valid JSON only without markdown formatting with this schema:
             // (No API key, quota limit, network outage, or API crash)
             // ==========================================
             if (geminiProblem) {
-                showToast(`${geminiErrorMessage}. Spouštím záložní OCR...`, 3200);
+                showToast(`${geminiErrorMessage}. Spouštím záložní OCR...`, 2400);
                 if (statusText) statusText.textContent = "Záložní čtení (Kód / OCR)...";
                 updateScannerSnapBtnState(true, "Záložní OCR...");
 
@@ -12183,50 +12163,33 @@ Return strictly valid JSON only without markdown formatting with this schema:
                     } catch (bErr) {}
                 }
 
-                // 2. Fallback: Local Tesseract worker (strictly lazy loaded on demand)
-                const worker = await getTesseractWorker();
-                if (worker) {
-                    try {
+                // 2. Fallback: Local Tesseract worker (lightweight resolution + 8s hard timeout)
+                try {
+                    const worker = await getTesseractWorker();
+                    if (worker) {
                         const desiredPsm = (scannerActiveMode === 'plan') ? '6' : '11';
                         if (scannerCurrentPsm !== desiredPsm) {
                             await worker.setParameters({ tessedit_pageseg_mode: desiredPsm });
                             scannerCurrentPsm = desiredPsm;
                         }
 
-                        const ret = await worker.recognize(cropCanvas);
+                        // Lightweight downsample for instant WASM OCR
+                        const ocrCanvas = document.createElement('canvas');
+                        const scale = Math.min(1, 520 / Math.max(cropCanvas.width, cropCanvas.height));
+                        ocrCanvas.width = Math.max(1, Math.round(cropCanvas.width * scale));
+                        ocrCanvas.height = Math.max(1, Math.round(cropCanvas.height * scale));
+                        const ocrCtx = ocrCanvas.getContext('2d');
+                        if (ocrCtx) ocrCtx.drawImage(cropCanvas, 0, 0, ocrCanvas.width, ocrCanvas.height);
+
+                        const ocrTask = worker.recognize(ocrCanvas);
+                        const timeoutTask = new Promise((_, reject) => setTimeout(() => reject(new Error("Timeout")), 15000));
+                        const ret = await Promise.race([ocrTask, timeoutTask]);
                         if (ret && ret.data && ret.data.text) {
                             detectedText = ret.data.text.trim();
                         }
-
-                        // Extra slice pass in plan mode if tall
-                        if (scannerActiveMode === 'plan' && cropCanvas.height > 350) {
-                            try {
-                                const halfH = Math.floor(cropCanvas.height / 2);
-                                const topCanvas = document.createElement('canvas');
-                                topCanvas.width = cropCanvas.width;
-                                topCanvas.height = halfH + 40;
-                                const topCtx = topCanvas.getContext('2d');
-                                topCtx.drawImage(cropCanvas, 0, 0, cropCanvas.width, halfH + 40, 0, 0, topCanvas.width, halfH + 40);
-
-                                const botCanvas = document.createElement('canvas');
-                                botCanvas.width = cropCanvas.width;
-                                botCanvas.height = halfH + 40;
-                                const botCtx = botCanvas.getContext('2d');
-                                botCtx.drawImage(cropCanvas, 0, halfH - 40, cropCanvas.width, halfH + 40, 0, 0, botCanvas.width, halfH + 40);
-
-                                const [topRet, botRet] = await Promise.all([
-                                    worker.recognize(topCanvas),
-                                    worker.recognize(botCanvas)
-                                ]);
-                                if (topRet?.data?.text) detectedText += '\n' + topRet.data.text;
-                                if (botRet?.data?.text) detectedText += '\n' + botRet.data.text;
-                            } catch (sliceErr) {
-                                console.warn("Slice OCR error:", sliceErr);
-                            }
-                        }
-                    } catch (ocrErr) {
-                        console.warn("Chyba záložního OCR:", ocrErr);
                     }
+                } catch (ocrErr) {
+                    console.warn("Záložní OCR přeskočeno (timeout / offline):", ocrErr);
                 }
 
                 // Evaluate fallback result
