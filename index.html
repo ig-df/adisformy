@@ -10150,7 +10150,8 @@
                 .map(m => m.name.replace(/^models\//, ''))
                 .filter(m => {
                     const l = m.toLowerCase();
-                    // Exclude deprecated models, TTS models, non-vision models
+                    // Must be a Gemini multimodal vision model (exclude Gemma LLM, aqa, etc.)
+                    if (!l.startsWith('gemini-')) return false;
                     if (l.includes('2.5-') || l.includes('2.0-') || l.includes('1.5-') || l.includes('1.0-')) return false;
                     if (l.includes('tts') || l.includes('embedding') || l.includes('audio') || l.includes('robotics')) return false;
                     return true;
@@ -10370,19 +10371,19 @@
 
         try {
             let workingModel = null;
-            // 1. First test real generative ping with gemini-3-flash-preview
+            // 1. First test real generative ping with high-quota gemini-3.1-flash-lite (1500 RPD)
             try {
-                const pingRes = await fetchGeminiApi('https://generativelanguage.googleapis.com/v1beta/models/gemini-3-flash-preview:generateContent', key, {
+                const pingRes = await fetchGeminiApi('https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite:generateContent', key, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
                         contents: [{ parts: [{ text: "ping" }] }],
-                        generationConfig: { maxOutputTokens: 2, thinkingConfig: { thinkingLevel: "LOW" } }
+                        generationConfig: { maxOutputTokens: 2 }
                     }),
                     timeoutMs: 12000
                 });
                 if (pingRes && pingRes.ok) {
-                    workingModel = 'gemini-3-flash-preview';
+                    workingModel = 'gemini-3.1-flash-lite';
                 }
             } catch (pErr) {}
 
@@ -10404,11 +10405,13 @@
                 } catch (pErr2) {}
             }
 
-            // 3. Fallback to model catalog list lookup
+            // 3. Fallback to model catalog list lookup (strictly gemini vision models)
             if (!workingModel) {
                 const availableModels = await fetchAvailableGeminiModels(key);
                 if (availableModels.length > 0) {
-                    workingModel = availableModels.find(m => m.includes('3') || m.includes('flash')) || availableModels[0];
+                    workingModel = availableModels.find(m => m.startsWith('gemini-') && (m.includes('flash') || m.includes('3'))) || 'gemini-3.1-flash-lite';
+                } else {
+                    workingModel = 'gemini-3.1-flash-lite';
                 }
             }
 
@@ -10553,29 +10556,8 @@ Return strictly valid JSON only without markdown formatting with this schema:
                 }
             };
 
-            let availableModels = [];
-            try {
-                availableModels = await fetchAvailableGeminiModels(apiKey);
-            } catch (e) {}
-
-            // Priority order: High-quota multimodal Flash Lite model (1500 RPD) then Flash models
-            const DEFAULT_FAST_MODELS = ['gemini-3.1-flash-lite', 'gemini-3.8-flash', 'gemini-3-flash-preview'];
-            let modelsToTry = [...DEFAULT_FAST_MODELS];
-
-            if (availableModels.length > 0) {
-                const ordered = [];
-                for (const p of DEFAULT_FAST_MODELS) {
-                    if (availableModels.includes(p)) ordered.push(p);
-                }
-                for (const m of availableModels) {
-                    if (m.toLowerCase().includes('flash') && !ordered.includes(m)) ordered.push(m);
-                }
-                if (ordered.length > 0) {
-                    modelsToTry = ordered.slice(0, 2); // Max 2 fast attempts to avoid any lag
-                }
-            } else {
-                modelsToTry = ['gemini-3.1-flash-lite', 'gemini-3.8-flash', 'gemini-3-flash-preview'];
-            }
+            // Instant deterministic model cascade (prioritizing 1500 RPD high-quota gemini-3.1-flash-lite)
+            const modelsToTry = ['gemini-3.1-flash-lite', 'gemini-3.8-flash', 'gemini-3-flash-preview'];
 
             let res = null;
             let lastErrData = null;
