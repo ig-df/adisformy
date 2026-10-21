@@ -10521,8 +10521,16 @@ Return strictly valid JSON only without markdown formatting with this schema:
                 }
             };
 
-            // Instant deterministic model cascade (prioritizing stable gemini-3.6-flash)
-            const modelsToTry = ['gemini-3.6-flash', 'gemini-3.8-flash', 'gemini-3.1-flash-lite'];
+            // Complete high-speed resilient model cascade (tries all free/active vision models in sequence)
+            const modelsToTry = [
+                'gemini-3.5-flash-lite',
+                'gemini-3.1-flash-lite',
+                'gemini-3.6-flash',
+                'gemini-3.8-flash',
+                'gemini-3.7-flash',
+                'gemini-3-flash-preview',
+                'gemini-flash-latest'
+            ];
 
             let res = null;
             let lastErrData = null;

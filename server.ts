@@ -109,7 +109,15 @@ CRITICAL INDUSTRIAL CONTEXT & HANDWRITTEN DISAMBIGUATION:
 Return strictly valid JSON only without markdown formatting with this schema:
 {"primary_number":"050","numbers":["050"],"product_name":"Steckdeckel","raw_text":"050 C Steckdeckel"}`;
 
-      const candidateModels = ["gemini-3.6-flash", "gemini-3.8-flash", "gemini-3.1-flash-lite"];
+      const candidateModels = [
+        "gemini-3.5-flash-lite",
+        "gemini-3.1-flash-lite",
+        "gemini-3.6-flash",
+        "gemini-3.8-flash",
+        "gemini-3.7-flash",
+        "gemini-3-flash-preview",
+        "gemini-flash-latest"
+      ];
       let response = null;
       let lastError: any = null;
 
