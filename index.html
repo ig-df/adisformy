@@ -10558,8 +10558,8 @@ Return strictly valid JSON only without markdown formatting with this schema:
                 availableModels = await fetchAvailableGeminiModels(apiKey);
             } catch (e) {}
 
-            // Priority order: Working fast multimodal Flash models
-            const DEFAULT_FAST_MODELS = ['gemini-3-flash-preview', 'gemini-3.8-flash'];
+            // Priority order: High-quota multimodal Flash Lite model (1500 RPD) then Flash models
+            const DEFAULT_FAST_MODELS = ['gemini-3.1-flash-lite', 'gemini-3.8-flash', 'gemini-3-flash-preview'];
             let modelsToTry = [...DEFAULT_FAST_MODELS];
 
             if (availableModels.length > 0) {
@@ -10574,7 +10574,7 @@ Return strictly valid JSON only without markdown formatting with this schema:
                     modelsToTry = ordered.slice(0, 2); // Max 2 fast attempts to avoid any lag
                 }
             } else {
-                modelsToTry = ['gemini-3-flash-preview', 'gemini-3.8-flash'];
+                modelsToTry = ['gemini-3.1-flash-lite', 'gemini-3.8-flash', 'gemini-3-flash-preview'];
             }
 
             let res = null;
