@@ -10568,7 +10568,7 @@ Return strictly valid JSON only without markdown formatting with this schema:
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify(payload),
-                        timeoutMs: 20000
+                        timeoutMs: 8000
                     });
 
                     if (response && response.ok) {
@@ -12206,7 +12206,7 @@ Return strictly valid JSON only without markdown formatting with this schema:
                         if (ocrCtx) ocrCtx.drawImage(cropCanvas, 0, 0, ocrCanvas.width, ocrCanvas.height);
 
                         const ocrTask = worker.recognize(ocrCanvas);
-                        const timeoutTask = new Promise((_, reject) => setTimeout(() => reject(new Error("Timeout")), 15000));
+                        const timeoutTask = new Promise((_, reject) => setTimeout(() => reject(new Error("Timeout")), 3500));
                         const ret = await Promise.race([ocrTask, timeoutTask]);
                         if (ret && ret.data && ret.data.text) {
                             detectedText = ret.data.text.trim();
@@ -12261,6 +12261,7 @@ Return strictly valid JSON only without markdown formatting with this schema:
             console.error("Chyba při rozpoznávání snímku:", e);
         } finally {
             isScannerProcessing = false;
+            pendingManualSnap = false;
             updateScannerSnapBtnState(false);
         }
     }
