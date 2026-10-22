@@ -11,7 +11,7 @@
       gtag('config', 'G-XZYF6MB88T');
     </script>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no, viewport-fit=cover, interactive-widget=resizes-content">
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
     <meta http-equiv="Pragma" content="no-cache">
     <meta http-equiv="Expires" content="0">
@@ -175,6 +175,13 @@
         html, body {
             color-scheme: light only;
             forced-color-adjust: none;
+            width: 100%;
+            max-width: 100vw;
+            overflow-x: hidden;
+            touch-action: pan-x pan-y;
+            -webkit-text-size-adjust: 100%;
+            text-size-adjust: 100%;
+            overscroll-behavior-y: none;
         }
 
         body {
@@ -182,8 +189,11 @@
             color: var(--text-main);
             display: flex;
             justify-content: center;
-            padding: 1rem 0.5rem;
+            padding: env(safe-area-inset-top, 1rem) env(safe-area-inset-right, 0.5rem) env(safe-area-inset-bottom, 1rem) env(safe-area-inset-left, 0.5rem);
             min-height: 100vh;
+            min-height: 100dvh;
+            position: relative;
+            overscroll-behavior-y: none;
         }
 
         /* Toast Notification */
@@ -1225,11 +1235,30 @@
             color: var(--text-main);
         }
 
+        @media (max-width: 768px) {
+            /* Ironclad iOS Safari Auto-Zoom Immunity: Inputs 16px or larger never trigger zoom */
+            input, select, textarea,
+            .search-input,
+            .position-input,
+            .shift-plan-add-input,
+            .shift-plan-machine-input,
+            .modal-body input,
+            .modal-body select,
+            .modal-body textarea {
+                font-size: 16px !important;
+            }
+        }
+
         @media (max-width: 600px) {
             html, body {
-                height: 100vh;
+                height: 100dvh;
+                min-height: 100dvh;
+                max-height: 100dvh;
+                width: 100vw;
+                max-width: 100vw;
                 overflow: hidden;
                 padding: 0;
+                overscroll-behavior: none;
             }
             body {
                 display: flex;
@@ -1238,7 +1267,10 @@
             }
             .container {
                 height: 100%;
-                max-height: 100vh;
+                min-height: 100dvh;
+                max-height: 100dvh;
+                width: 100vw;
+                max-width: 100vw;
                 border-radius: 0;
                 border: none;
             }
@@ -6654,6 +6686,60 @@
 </div>
 
 <script>
+    // ----------------------------------------------------
+    // IRONCLAD APP-SHELL ZOOM & GESTURE SHIELD
+    // Prevents accidental pinch-to-zoom and double-tap zoom
+    // while keeping local pan/zoom inside drawing/photo viewers
+    // ----------------------------------------------------
+    (function initAppShellShield() {
+        // 1. Prevent Safari pinch-to-zoom gesture on the window
+        const isViewerTarget = (target) => {
+            return target && target.closest && (
+                target.closest('#pdfModal') || 
+                target.closest('#photoModal') || 
+                target.closest('.pdf-scroll-area')
+            );
+        };
+
+        document.addEventListener('gesturestart', function(e) {
+            if (!isViewerTarget(e.target)) {
+                e.preventDefault();
+            }
+        }, { passive: false });
+
+        document.addEventListener('gesturechange', function(e) {
+            if (!isViewerTarget(e.target)) {
+                e.preventDefault();
+            }
+        }, { passive: false });
+
+        document.addEventListener('gestureend', function(e) {
+            if (!isViewerTarget(e.target)) {
+                e.preventDefault();
+            }
+        }, { passive: false });
+
+        // 2. Prevent multi-touch pinch zoom on document body
+        document.addEventListener('touchstart', function(e) {
+            if (e.touches.length > 1 && !isViewerTarget(e.target)) {
+                e.preventDefault();
+            }
+        }, { passive: false });
+
+        // 3. Prevent double-tap zoom on mobile webview
+        let lastTouchEndTime = 0;
+        document.addEventListener('touchend', function(e) {
+            const now = Date.now();
+            if (now - lastTouchEndTime <= 280) {
+                const isFormInput = e.target && e.target.matches && e.target.matches('input, textarea, select, [contenteditable]');
+                if (!isFormInput && !isViewerTarget(e.target)) {
+                    e.preventDefault();
+                }
+            }
+            lastTouchEndTime = now;
+        }, { passive: false });
+    })();
+
     const API_URL = "https://qjoovhagucdcaebgdmbx.supabase.co";
     const API_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFqb292aGFndWNkY2FlYmdkbWJ4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQ4OTYyMTEsImV4cCI6MjEwMDQ3MjIxMX0.Z-Pey6nbpo5b-RyXkc2cCCV7Uj3-YgbAqZsTUV1kZD0";
     const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbz2Zp-Me-bMX_2VY6Be2Mt0Z5HguRLwnjuYz9fNh1nXjbAXIOVXMIlcTNjs1Z72qiuM9Q/exec";
