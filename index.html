@@ -3014,6 +3014,7 @@
             #shiftPlanModal .modal-card {
                 max-width: 480px !important;
                 width: 100% !important;
+                min-height: 420px !important;
                 max-height: 84dvh !important;
                 max-height: 84vh !important;
                 display: flex !important;
@@ -3032,15 +3033,17 @@
             #shiftPlanModal .modal-body {
                 flex: 1 1 auto !important;
                 min-height: 0 !important;
-                overflow-y: auto !important;
+                overflow: hidden !important;
                 max-height: none !important;
                 padding: 0.5rem 0.75rem !important;
-                -webkit-overflow-scrolling: touch !important;
+                display: flex !important;
+                flex-direction: column !important;
             }
             #shiftPlanModal .shift-plan-container {
                 display: flex !important;
                 flex-direction: column !important;
-                height: 100% !important;
+                flex: 1 1 auto !important;
+                min-height: 0 !important;
                 gap: 0.45rem !important;
             }
             #shiftPlanModal .shift-plan-add-bar {
@@ -3087,10 +3090,14 @@
             }
             #shiftPlanModal .shift-plan-list {
                 height: auto !important;
-                min-height: 120px !important;
-                max-height: 44vh !important;
+                min-height: 245px !important;
+                max-height: 48vh !important;
                 flex: 1 1 auto !important;
+                flex-shrink: 0 !important;
                 gap: 0.35rem !important;
+                overflow-y: auto !important;
+                overflow-x: hidden !important;
+                -webkit-overflow-scrolling: touch !important;
             }
             #shiftPlanModal .modal-footer {
                 flex-shrink: 0 !important;
@@ -3296,18 +3303,43 @@
             color: var(--text-main);
             font-variant-numeric: tabular-nums;
         }
+        #shiftPlanModal .modal-card {
+            max-width: 520px;
+            min-height: 440px;
+            max-height: 86vh;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+        #shiftPlanModal .modal-body {
+            flex: 1 1 auto;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            min-height: 0;
+            padding: 0.85rem 1.25rem;
+        }
+        #shiftPlanModal .shift-plan-container {
+            display: flex;
+            flex-direction: column;
+            flex: 1 1 auto;
+            min-height: 0;
+            gap: 0.65rem;
+        }
         .shift-plan-list {
             display: flex;
             flex-direction: column;
             gap: 0.45rem;
-            height: 360px;
-            max-height: 50vh;
+            min-height: 250px;
+            max-height: 52vh;
             overflow-y: auto;
             overflow-x: hidden;
             padding-right: 0.25rem;
             margin-bottom: 0.15rem;
             -webkit-overflow-scrolling: touch;
             position: relative;
+            flex: 1 1 auto;
+            flex-shrink: 0;
         }
         .shift-plan-list .empty-state-card {
             margin: auto !important;
@@ -5850,7 +5882,7 @@
 </div>
 
 <div class="modal-overlay" id="shiftPlanModal">
-    <div class="modal-card" style="max-width: 520px; overflow: hidden;">
+    <div class="modal-card" style="max-width: 520px; min-height: 440px; overflow: hidden;">
         <div class="modal-header">
             <div style="display: flex; align-items: center; gap: 0.55rem;">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width: 20px; height: 20px; color: var(--text-main);">
