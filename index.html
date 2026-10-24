@@ -12,9 +12,12 @@
     </script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no, viewport-fit=cover, interactive-widget=resizes-content">
-    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-    <meta http-equiv="Pragma" content="no-cache">
-    <meta http-equiv="Expires" content="0">
+    <link rel="preconnect" href="https://qjoovhagucdcaebgdmbx.supabase.co" crossorigin>
+    <link rel="dns-prefetch" href="https://qjoovhagucdcaebgdmbx.supabase.co">
+    <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+    <link rel="dns-prefetch" href="https://cdn.jsdelivr.net">
+    <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
+    <link rel="dns-prefetch" href="https://cdnjs.cloudflare.com">
     <title>Adis Formy</title>
     <meta name="description" content="Systém pro evidenci a správu forem skladu závodu s vyhledáváním, sledováním údržby a exportem do Heliosu.">
     <meta property="og:title" content="Adis Formy">
@@ -3009,14 +3012,25 @@
         .shift-plan-add-input {
             flex: 1;
             min-width: 0;
-            padding: 0.55rem 0.8rem;
+            height: 33px;
+            padding: 0 0.65rem;
             border: 1px solid var(--border-color);
-            border-radius: 8px;
-            font-size: 0.9rem;
+            border-radius: 7px;
+            font-family: inherit;
+            font-size: 0.85rem;
+            font-weight: 500;
+            letter-spacing: normal;
             background: var(--card-bg);
             color: var(--text-main);
             outline: none;
+            box-sizing: border-box;
             transition: border-color 0.2s ease, box-shadow 0.2s ease;
+        }
+        .shift-plan-add-input::placeholder {
+            font-family: inherit;
+            font-weight: 400;
+            color: var(--text-muted);
+            opacity: 0.75;
         }
         .shift-plan-add-input:focus {
             border-color: #0f172a;
@@ -3025,21 +3039,31 @@
         .shift-plan-machine-group {
             display: flex;
             align-items: center;
-            gap: 0.3rem;
+            gap: 0.25rem;
             flex-shrink: 0;
         }
         .shift-plan-machine-input {
-            width: 82px;
-            padding: 0.55rem 0.6rem;
+            width: 78px;
+            height: 33px;
+            padding: 0 0.55rem;
             border: 1px solid var(--border-color);
-            border-radius: 8px;
-            font-size: 0.88rem;
+            border-radius: 7px;
+            font-family: inherit;
+            font-size: 0.85rem;
             font-weight: 500;
+            letter-spacing: normal;
             background: var(--card-bg);
             color: var(--text-main);
             outline: none;
+            box-sizing: border-box;
             transition: border-color 0.2s ease, box-shadow 0.2s ease;
             flex-shrink: 0;
+        }
+        .shift-plan-machine-input::placeholder {
+            font-family: inherit;
+            font-weight: 400;
+            color: var(--text-muted);
+            opacity: 0.75;
         }
         .shift-plan-machine-input::-webkit-calendar-picker-indicator,
         .shift-plan-machine-input::-webkit-clear-button {
@@ -3054,17 +3078,18 @@
             display: inline-flex;
             align-items: center;
             justify-content: center;
-            width: 36px;
-            height: 36px;
+            width: 33px;
+            height: 33px;
             flex-shrink: 0;
-            border-radius: 8px;
+            border-radius: 7px;
             background: var(--text-main);
             color: var(--card-bg);
             border: 1px solid transparent;
-            font-size: 1.18rem;
+            font-size: 1.12rem;
             font-weight: 700;
             line-height: 1;
             cursor: pointer;
+            box-sizing: border-box;
             transition: opacity 0.15s ease, transform 0.12s ease;
             user-select: none;
             -webkit-tap-highlight-color: transparent;
@@ -3076,27 +3101,41 @@
             transform: scale(0.92);
             opacity: 0.8;
         }
+        .shift-plan-submit-btn {
+            height: 33px;
+            padding: 0 0.85rem !important;
+            font-size: 0.82rem !important;
+            font-weight: 600 !important;
+            border-radius: 7px !important;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            box-sizing: border-box;
+            white-space: nowrap;
+        }
         @media (max-width: 480px) {
             .shift-plan-add-bar {
-                gap: 0.35rem;
+                gap: 0.3rem;
             }
             .shift-plan-machine-input {
-                width: 65px;
-                padding: 0.5rem 0.45rem;
-                font-size: 0.82rem;
+                width: 62px;
+                height: 33px;
+                padding: 0 0.45rem;
             }
             .shift-plan-machine-add-btn {
-                width: 32px;
-                height: 34px;
+                width: 33px;
+                height: 33px;
                 font-size: 1.05rem;
             }
             .shift-plan-add-input {
-                padding: 0.5rem 0.55rem;
-                font-size: 0.82rem;
+                height: 33px;
+                padding: 0 0.5rem;
             }
+            .shift-plan-submit-btn,
             .shift-plan-add-bar .btn-primary {
-                padding: 0.5rem 0.65rem !important;
-                font-size: 0.8rem !important;
+                height: 33px !important;
+                padding: 0 0.65rem !important;
+                font-size: 0.78rem !important;
             }
         }
         .task-time-pill-input {
@@ -3162,9 +3201,21 @@
             padding-right: 0.25rem;
             margin-bottom: 0.15rem;
             -webkit-overflow-scrolling: touch;
+            position: relative;
         }
         .shift-plan-list .empty-state-card {
-            margin: auto 0;
+            margin: auto !important;
+            align-self: center !important;
+            justify-self: center !important;
+            display: flex !important;
+            flex-direction: column !important;
+            align-items: center !important;
+            justify-content: center !important;
+            text-align: center !important;
+            width: 100% !important;
+            max-width: 340px !important;
+            padding: 2rem 1rem !important;
+            box-sizing: border-box !important;
         }
         .shift-plan-item {
             display: flex;
@@ -3403,18 +3454,35 @@
             letter-spacing: -0.02em;
         }
         /* Day Chips Filter Carousel */
+        .cabinet-days-wrapper {
+            position: relative;
+            margin-bottom: 0.35rem;
+            width: 100%;
+        }
         .cabinet-days-chips-bar {
             display: flex;
+            flex-wrap: nowrap;
             align-items: center;
             gap: 0.4rem;
             overflow-x: auto;
-            padding: 8px 4px 10px 4px;
-            margin: 0.25rem 0 0.35rem 0;
+            overflow-y: hidden;
+            padding: 6px 3px 8px 3px;
+            margin: 0.15rem 0 0.35rem 0;
             box-sizing: border-box;
             scrollbar-width: none;
             -ms-overflow-style: none;
             -webkit-overflow-scrolling: touch;
-            min-height: 52px;
+            cursor: grab;
+            user-select: none;
+            -webkit-user-select: none;
+            width: 100%;
+            touch-action: pan-x pan-y;
+            scroll-behavior: smooth;
+            min-height: 48px;
+        }
+        .cabinet-days-chips-bar.is-dragging {
+            cursor: grabbing !important;
+            scroll-behavior: auto;
         }
         .cabinet-days-chips-bar::-webkit-scrollbar {
             display: none;
@@ -3540,6 +3608,33 @@
         }
         .cabinet-mold-row:active {
             transform: scale(0.98);
+        }
+        .cabinet-mold-row.cabinet-item-armed {
+            background: rgba(239, 68, 68, 0.08) !important;
+            border-color: rgba(239, 68, 68, 0.35) !important;
+            transform: scale(0.98);
+        }
+        .cabinet-item-delete-btn {
+            background: transparent;
+            border: none;
+            color: var(--text-muted);
+            cursor: pointer;
+            padding: 3px 4px;
+            border-radius: 4px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.15s ease;
+            opacity: 0.45;
+            flex-shrink: 0;
+        }
+        .cabinet-item-delete-btn:hover {
+            color: #ef4444;
+            background: rgba(239, 68, 68, 0.1);
+            opacity: 1;
+        }
+        .cabinet-item-delete-btn:active {
+            transform: scale(0.9);
         }
         .cabinet-mold-row-left {
             display: flex;
@@ -5290,7 +5385,7 @@
             <button class="top-icon-btn" tabindex="0" onclick="openAddModal()" title="Přidat formu">
                 <img src="icon3.png" alt="Přidat">
             </button>
-            <button class="top-icon-btn" tabindex="0" onclick="openLogsModal()" title="Historie">
+            <button class="top-icon-btn" tabindex="0" onclick="openLogsModal()" title="Historie" id="btnHeaderHistory" style="display: none;">
                 <img src="icon2.png" alt="Historie">
             </button>
         </div>
@@ -5453,6 +5548,15 @@
     <div id="onlineUsersContainer" style="display: flex; flex-direction: column; gap: 0.4rem; max-height: 250px; overflow-y: auto;">
         <div style="font-size: 0.78rem; color: var(--text-muted); font-style: italic;">Načítání...</div>
     </div>
+    <div style="margin-top: 0.55rem; padding-top: 0.45rem; border-top: 1px solid var(--border-color, #e2e8f0); display: flex; justify-content: flex-end;">
+        <button type="button" class="btn-secondary" onclick="closeOnlineUsersPopover(); openLogsModal();" style="width: 100%; justify-content: center; font-size: 0.75rem; padding: 0.4rem 0.6rem; display: inline-flex; align-items: center; gap: 0.4rem; color: var(--text-main); font-weight: 600;" title="Otevřít celou historii systému (Správce)">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="10"></circle>
+                <polyline points="12 6 12 12 16 14"></polyline>
+            </svg>
+            <span>Celková historie (Správce)</span>
+        </button>
+    </div>
 </div>
 
 <!-- Gmail-style Under-layer Track (Revealed under sliding row tile) -->
@@ -5546,8 +5650,10 @@
             </div>
 
             <!-- Chips carousel of days -->
-            <div class="cabinet-days-chips-bar" id="cabinetDaysChipsBar">
-                <div class="no-data" style="padding: 0.4rem 0; font-size: 0.8rem;">Načítání směn...</div>
+            <div class="cabinet-days-wrapper">
+                <div class="cabinet-days-chips-bar" id="cabinetDaysChipsBar">
+                    <div class="no-data" style="padding: 0.4rem 0; font-size: 0.8rem;">Načítání směn...</div>
+                </div>
             </div>
 
             <!-- Drill-down checklist of molds for selected day -->
@@ -5624,7 +5730,14 @@
                 <div class="no-data">Načítání aktivity...</div>
             </div>
         </div>
-        <div class="modal-footer" style="flex-shrink: 0; justify-content: flex-end; padding-top: 0.5rem;">
+        <div class="modal-footer" style="flex-shrink: 0; display: flex; justify-content: space-between; align-items: center; padding-top: 0.5rem;">
+            <button class="btn-secondary" onclick="closeUserActivityModal(); openLogsModal();" style="font-size: 0.78rem; padding: 0.4rem 0.75rem; display: inline-flex; align-items: center; gap: 0.35rem; color: var(--text-main); font-weight: 600;">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <polyline points="12 6 12 12 16 14"></polyline>
+                </svg>
+                <span>Celková historie (Správce)</span>
+            </button>
             <button class="btn-primary" onclick="closeUserActivityModal()">Zavřít</button>
         </div>
     </div>
@@ -5651,7 +5764,7 @@
                         <button type="button" class="shift-plan-machine-add-btn" onclick="openShiftPlanTaskModal()" title="Úkol pro lis (Pokračování / Rozjezd)" aria-label="Úkol pro lis">+</button>
                     </div>
                     <input type="text" id="shiftPlanAddInput" class="shift-plan-add-input" placeholder="Číslo formy" autocomplete="off" onkeydown="if(event.key==='Enter') submitShiftPlanManualAdd()">
-                    <button class="btn-primary" style="padding: 0.55rem 0.9rem; font-size: 0.88rem;" onclick="submitShiftPlanManualAdd()">+ Přidat</button>
+                    <button class="btn-primary shift-plan-submit-btn" onclick="submitShiftPlanManualAdd()">+ Přidat</button>
                 </div>
 
                 <div class="shift-plan-stats-bar" id="shiftPlanStatsBar">
@@ -5660,7 +5773,7 @@
                 </div>
 
                 <div class="shift-plan-list" id="shiftPlanListContainer">
-                    <div class="no-data">Načítání seznamu...</div>
+                    <div class="no-data" style="margin: auto; text-align: center;">Načítání seznamu...</div>
                 </div>
             </div>
         </div>
@@ -7077,11 +7190,15 @@
     let activeContextMenuMoldId = null;
     let activeContextMenuCommentId = null;
     let activeContextMenuShiftPlanItemId = null;
+    let activeContextMenuCabinetItem = null;
     let activeViewCommentId = null;
     let lastTouchInteractionTime = 0;
     let shiftPlanItemLongPressTimer = null;
     let shiftPlanItemLongPressTriggered = false;
     let shiftPlanTouchStartX = 0;
+    let cabinetItemLongPressTimer = null;
+    let cabinetItemTouchStartX = 0;
+    let cabinetItemTouchStartY = 0;
     let shiftPlanTouchStartY = 0;
 
     let isSubmittingAction = false;
@@ -7290,8 +7407,8 @@
     let currentUserActivityFilter = 'ALL';
     let currentUserActivityTarget = '';
     const recentLogsRingBuffer = [];
-    const MAX_RECENT_LOGS_BUFFER = 25;
-    const LOG_DUPLICATE_TIME_WINDOW_MS = 20000; // 20s deduplication window
+    const MAX_RECENT_LOGS_BUFFER = 40;
+    const LOG_DUPLICATE_TIME_WINDOW_MS = 2000; // 2s micro-window to avoid rapid double-click while capturing all actions
 
     async function logUserAction(moldId, oldPos, newPos) {
         if (!currentUser) return;
@@ -7301,7 +7418,7 @@
         const cleanUser = String(currentUser).trim();
         const now = Date.now();
 
-        // Silent deduplication filter: prevent duplicate spam across all actions, searches, and tasks
+        // Prevent rapid double-tap duplicate spam
         const logSignature = `${cleanUser}___${cleanMoldId}___${cleanOldPos}___${cleanNewPos}`.toLowerCase();
 
         // Prune expired entries from buffer
@@ -7309,7 +7426,7 @@
             recentLogsRingBuffer.shift();
         }
 
-        // Check if identical action was logged recently
+        // Check if identical action was logged within 2s micro-window
         const isDuplicate = recentLogsRingBuffer.some(entry => entry.signature === logSignature && (now - entry.time) < LOG_DUPLICATE_TIME_WINDOW_MS);
         if (isDuplicate) {
             return;
@@ -7356,7 +7473,7 @@
         currentUserActivityTarget = userName;
         currentUserActivityFilter = 'ALL';
 
-        // Load logs in real-time first so there is zero flickering or counter resetting
+        // Load all logs in real-time first with limit 1000 to see complete historical activity
         let logs = [];
         try {
             const { data: logsExact, error: errExact } = await supabaseClient
@@ -7364,7 +7481,7 @@
                 .select('*')
                 .eq('user_name', userName)
                 .order('created_at', { ascending: false })
-                .limit(350);
+                .limit(1000);
 
             if (!errExact && logsExact) {
                 logs = logsExact;
@@ -7376,7 +7493,7 @@
                     .select('*')
                     .ilike('user_name', `%${userName}%`)
                     .order('created_at', { ascending: false })
-                    .limit(350);
+                    .limit(1000);
                 if (logsIlike && logsIlike.length > 0) {
                     logs = logsIlike;
                 }
@@ -7385,7 +7502,7 @@
             console.error("Chyba při načítání aktivity uživatele:", err);
         }
 
-        // Filter and deduplicate consecutive identical actions
+        // Preserve all actions, only drop immediate double-taps (< 2000ms)
         const rawLogs = (logs || []).filter(isUserActivityInspectorLog);
         const deduplicatedLogs = [];
         for (let i = 0; i < rawLogs.length; i++) {
@@ -7394,7 +7511,8 @@
             if (prev &&
                 String(prev.mold_id || '').trim().toUpperCase() === String(cur.mold_id || '').trim().toUpperCase() &&
                 String(prev.old_position || '').trim().toLowerCase() === String(cur.old_position || '').trim().toLowerCase() &&
-                String(prev.new_position || '').trim().toLowerCase() === String(cur.new_position || '').trim().toLowerCase()) {
+                String(prev.new_position || '').trim().toLowerCase() === String(cur.new_position || '').trim().toLowerCase() &&
+                Math.abs(new Date(prev.created_at).getTime() - new Date(cur.created_at).getTime()) < 2000) {
                 continue;
             }
             deduplicatedLogs.push(cur);
@@ -7624,6 +7742,15 @@
             } else if (isPhotoEdit) {
                 iconSvg = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width: 14px; height: 14px;"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>';
                 title = `Správa fotografií: #${moldIdStr}`;
+                detail = escapeHtml(newPos);
+            } else if (oldPos === 'Koš' || newPos === 'Koš' || combined.includes('do koše') || combined.includes('z koše')) {
+                iconSvg = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width: 14px; height: 14px;"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>';
+                title = `Koš: Forma #${moldIdStr}`;
+                detail = escapeHtml(newPos);
+            } else if (moldIdStr.startsWith('LIS_') || oldPos.toLowerCase().includes('lisu') || newPos.toLowerCase().includes('lisu') || oldPos.toLowerCase().includes('závad') || newPos.toLowerCase().includes('závad')) {
+                iconSvg = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width: 14px; height: 14px;"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect><line x1="8" y1="21" x2="16" y2="21"></line><line x1="12" y1="17" x2="12" y2="21"></line></svg>';
+                const machNum = moldIdStr.replace(/^LIS_/i, '');
+                title = `Lis č. ${machNum || ''}: ${escapeHtml(oldPos)}`;
                 detail = escapeHtml(newPos);
             } else {
                 const targetObj = formatMoldLogTarget(moldIdStr);
@@ -8390,7 +8517,11 @@
 
         document.getElementById('contextDeleteOption').addEventListener('click', () => {
             triggerHapticFeedback([20]);
-            if (activeContextMenuShiftPlanItemId) removeShiftPlanItemWithConfirm(activeContextMenuShiftPlanItemId);
+            if (activeContextMenuCabinetItem) {
+                const item = activeContextMenuCabinetItem;
+                deleteCabinetHistoryItem(item.logId, item.dayKey, item.titleLabel);
+            }
+            else if (activeContextMenuShiftPlanItemId) removeShiftPlanItemWithConfirm(activeContextMenuShiftPlanItemId);
             else if (activeContextMenuTag) deleteCustomerTagDirect(activeContextMenuTag);
             else if (activeContextMenuMoldId) deleteMoldSoftDirect(activeContextMenuMoldId);
             else if (activeContextMenuCommentId) deleteComment(activeContextMenuCommentId);
@@ -9234,6 +9365,139 @@
         if (e.currentTarget) e.currentTarget.classList.remove('shift-plan-item-armed');
     }
 
+    function handleCabinetItemRightClick(e, logId, dayKey, titleLabel) {
+        if (e && e.preventDefault) e.preventDefault();
+        if (e && e.stopPropagation) e.stopPropagation();
+        triggerHapticFeedback([20]);
+
+        activeContextMenuCabinetItem = { logId, dayKey, titleLabel };
+        activeContextMenuShiftPlanItemId = null;
+        activeContextMenuTag = null;
+        activeContextMenuMoldId = null;
+        activeContextMenuCommentId = null;
+
+        const editColorBtn = document.getElementById('contextEditColorOption');
+        if (editColorBtn) editColorBtn.style.display = 'none';
+
+        document.getElementById('contextMenuText').textContent = 'Smazat záznam z historie';
+
+        const menu = document.getElementById('customContextMenu');
+        let clientX = e.clientX;
+        let clientY = e.clientY;
+        if (typeof clientX !== 'number' || typeof clientY !== 'number') {
+            const rect = e.currentTarget ? e.currentTarget.getBoundingClientRect() : null;
+            if (rect) {
+                clientX = rect.left + rect.width / 2;
+                clientY = rect.top + rect.height / 2;
+            } else {
+                clientX = window.innerWidth / 2;
+                clientY = window.innerHeight / 2;
+            }
+        }
+
+        const menuWidth = 200;
+        const menuHeight = 50;
+        const posX = Math.min(Math.max(clientX, 12), window.innerWidth - menuWidth - 12);
+        const posY = Math.min(Math.max(clientY, 12), window.innerHeight - menuHeight - 12);
+
+        menu.style.left = `${posX}px`;
+        menu.style.top = `${posY}px`;
+        menu.style.display = 'block';
+    }
+
+    function handleCabinetItemTouchStart(e, logId, dayKey, titleLabel) {
+        if (!e.touches || e.touches.length !== 1) return;
+        cabinetItemTouchStartX = e.touches[0].clientX;
+        cabinetItemTouchStartY = e.touches[0].clientY;
+        const targetEl = e.currentTarget;
+
+        if (cabinetItemLongPressTimer) clearTimeout(cabinetItemLongPressTimer);
+        cabinetItemLongPressTimer = setTimeout(() => {
+            if (targetEl) targetEl.classList.add('cabinet-item-armed');
+            triggerHapticFeedback([30]);
+            handleCabinetItemRightClick(e.touches ? e.touches[0] : e, logId, dayKey, titleLabel);
+            setTimeout(() => {
+                if (targetEl) targetEl.classList.remove('cabinet-item-armed');
+            }, 300);
+        }, 500);
+    }
+
+    function handleCabinetItemTouchMove(e) {
+        if (!e.touches || e.touches.length !== 1) return;
+        const dx = Math.abs(e.touches[0].clientX - cabinetItemTouchStartX);
+        const dy = Math.abs(e.touches[0].clientY - cabinetItemTouchStartY);
+        if (dx > 8 || dy > 8) {
+            if (cabinetItemLongPressTimer) {
+                clearTimeout(cabinetItemLongPressTimer);
+                cabinetItemLongPressTimer = null;
+            }
+            if (e.currentTarget) e.currentTarget.classList.remove('cabinet-item-armed');
+        }
+    }
+
+    function handleCabinetItemTouchEnd(e) {
+        if (cabinetItemLongPressTimer) {
+            clearTimeout(cabinetItemLongPressTimer);
+            cabinetItemLongPressTimer = null;
+        }
+        if (e.currentTarget) e.currentTarget.classList.remove('cabinet-item-armed');
+    }
+
+    async function deleteCabinetHistoryItem(logId, dayKey, titleLabel) {
+        if (!currentUser || !logId) return;
+        triggerHapticFeedback([18]);
+        hideContextMenu();
+
+        const displayLabel = titleLabel || 'Záznam';
+        showCustomConfirm(
+            "Smazat záznam z historie",
+            `Opravdu chcete odstranit "${displayLabel}" z historie?`,
+            "Smazat",
+            async () => {
+                try {
+                    // 1. Delete log row from Supabase mold_logs table
+                    const { error } = await supabaseClient
+                        .from('mold_logs')
+                        .delete()
+                        .eq('id', logId);
+
+                    if (error) {
+                        await fetch(`${API_URL}/rest/v1/mold_logs?id=eq.${logId}`, {
+                            method: 'DELETE',
+                            headers: { 
+                                'apikey': API_KEY, 
+                                'Authorization': `Bearer ${API_KEY}`,
+                                'Prefer': 'return=minimal' 
+                            }
+                        });
+                    }
+
+                    // 2. Remove locally from cabinetDaysData
+                    if (dayKey && cabinetDaysData.has(dayKey)) {
+                        const dayObj = cabinetDaysData.get(dayKey);
+                        dayObj.molds = dayObj.molds.filter(m => String(m.id) !== String(logId));
+                        dayObj.moves = dayObj.molds.length;
+
+                        // Pokud se smažou všechny záznamy daného dne, odstranit záložku/chip tohoto dne
+                        if (dayObj.molds.length === 0) {
+                            cabinetDaysData.delete(dayKey);
+                            const remainingDays = Array.from(cabinetDaysData.keys()).sort((a, b) => b.localeCompare(a));
+                            cabinetSelectedDayKey = remainingDays.length > 0 ? remainingDays[0] : null;
+                        }
+                    }
+
+                    showToast("Záznam byl smazán z historie");
+
+                    // 3. Fully recompute stats and re-render cabinet days and drilldown
+                    await loadAndRenderUserCabinetStats();
+                } catch (err) {
+                    console.error("Chyba při mazání záznamu z historie:", err);
+                    showToast("Chyba při mazání záznamu", true);
+                }
+            }
+        );
+    }
+
     function hideContextMenu() {
         const menu = document.getElementById('customContextMenu');
         if (menu) menu.style.display = 'none';
@@ -9241,6 +9505,7 @@
         activeContextMenuMoldId = null;
         activeContextMenuCommentId = null;
         activeContextMenuShiftPlanItemId = null;
+        activeContextMenuCabinetItem = null;
     }
 
     async function deleteCustomerTagDirect(customerName) {
@@ -13592,16 +13857,16 @@ Return strictly valid JSON only without markdown formatting with this schema:
 
         if (total === 0) {
             container.innerHTML = `
-                <div class="empty-state-card" style="padding: 1.5rem 1rem; border-color: var(--border-color); box-shadow: none;">
-                    <div class="empty-state-icon-box">
+                <div class="empty-state-card" style="margin: auto !important; align-self: center; justify-self: center; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 2rem 1rem; border-color: var(--border-color); box-shadow: none;">
+                    <div class="empty-state-icon-box" style="margin: 0 auto 0.75rem auto;">
                         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
                             <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path>
                             <rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect>
                             <path d="m9 14 2 2 4-4"></path>
                         </svg>
                     </div>
-                    <div class="empty-state-title" style="font-size: 0.95rem;">Žádné úkoly v plánu</div>
-                    <div class="empty-state-desc" style="font-size: 0.8rem;">Zadejte lis a klikněte + pro úkol (Rozjezd / Pokračování), nebo zadejte číslo formy a klikněte + Přidat.</div>
+                    <div class="empty-state-title" style="font-size: 0.95rem; text-align: center;">Žádné úkoly v plánu</div>
+                    <div class="empty-state-desc" style="font-size: 0.8rem; text-align: center; margin-left: auto; margin-right: auto;">Zadejte lis a klikněte + pro úkol (Rozjezd / Pokračování), nebo zadejte číslo formy a klikněte + Přidat.</div>
                 </div>
             `;
             return;
@@ -13744,6 +14009,7 @@ Return strictly valid JSON only without markdown formatting with this schema:
         renderShiftPlanList();
         triggerHapticFeedback([18]);
         if (!suppressToast) showToast(`Forma #${cleanNum} přidána do plánu`);
+        logUserAction(cleanNum, 'Plán na směnu', `Přidána forma #${cleanNum} do plánu směny${machineNum ? ` (Lis č. ${machineNum})` : ''}`);
         return true;
     }
 
@@ -13810,6 +14076,7 @@ Return strictly valid JSON only without markdown formatting with this schema:
             saveShiftPlan();
             renderShiftPlanList();
             showToast(`${item.num ? ('Forma #' + item.num) : ('Lis č. ' + item.machine)} byla odebrána z plánu`);
+            logUserAction(item.num || ('LIS_' + (item.machine || '')), 'Plán na směnu', `Odebráno z plánu směny: ${label}`);
         });
     }
 
@@ -13836,6 +14103,7 @@ Return strictly valid JSON only without markdown formatting with this schema:
             saveShiftPlan();
             renderShiftPlanList();
             showToast("Hotové položky byly odebrány ze seznamu");
+            logUserAction('PLÁN', 'Plán na směnu', `Vyčištěno ${checkedItems.length} dokončených položek z plánu`);
         });
     }
 
@@ -13915,6 +14183,59 @@ Return strictly valid JSON only without markdown formatting with this schema:
 
     let cabinetDaysData = new Map();
     let cabinetSelectedDayKey = null;
+
+    let isCabinetDragging = false;
+    let cabinetDragStartX = 0;
+    let cabinetDragScrollLeft = 0;
+    let cabinetDragMoved = false;
+
+    function initCabinetDaysScrolling() {
+        const container = document.getElementById('cabinetDaysChipsBar');
+        if (!container || container.dataset.dragInitialized) return;
+        container.dataset.dragInitialized = "true";
+
+        container.addEventListener('mousedown', (e) => {
+            if (e.button !== 0) return;
+            isCabinetDragging = true;
+            cabinetDragMoved = false;
+            cabinetDragStartX = e.pageX;
+            cabinetDragScrollLeft = container.scrollLeft;
+        });
+
+        container.addEventListener('wheel', (e) => {
+            if (e.deltaY !== 0 || e.deltaX !== 0) {
+                const delta = Math.abs(e.deltaX) > Math.abs(e.deltaY) ? e.deltaX : e.deltaY;
+                container.scrollLeft += delta;
+                e.preventDefault();
+            }
+        }, { passive: false });
+    }
+
+    window.addEventListener('mousemove', (e) => {
+        if (!isCabinetDragging) return;
+        const container = document.getElementById('cabinetDaysChipsBar');
+        if (!container) return;
+        const walk = e.pageX - cabinetDragStartX;
+        if (Math.abs(walk) > 4) {
+            cabinetDragMoved = true;
+            container.classList.add('is-dragging');
+        }
+        container.scrollLeft = cabinetDragScrollLeft - walk;
+    });
+
+    window.addEventListener('mouseup', () => {
+        if (!isCabinetDragging) return;
+        isCabinetDragging = false;
+        const container = document.getElementById('cabinetDaysChipsBar');
+        if (container) {
+            container.classList.remove('is-dragging');
+        }
+        if (cabinetDragMoved) {
+            setTimeout(() => {
+                cabinetDragMoved = false;
+            }, 60);
+        }
+    });
 
     async function promptClearUserCabinetHistory() {
         if (!currentUser) return;
@@ -14077,6 +14398,7 @@ Return strictly valid JSON only without markdown formatting with this schema:
                     dayObj.shiftType = logShift.shiftType;
                 }
                 dayObj.molds.push({
+                    id: log.id,
                     mold_id: moldId,
                     old_position: log.old_position,
                     new_position: log.new_position,
@@ -14125,6 +14447,7 @@ Return strictly valid JSON only without markdown formatting with this schema:
 
             renderCabinetDayChips(sortedDays, currentShiftDateStr, currentShift);
             renderCabinetMoldsDrilldown();
+            initCabinetDaysScrolling();
 
         } catch (err) {
             console.warn('Error loading cabinet stats:', err);
@@ -14167,9 +14490,19 @@ Return strictly valid JSON only without markdown formatting with this schema:
                 </button>
             `;
         }).join('');
+
+        initCabinetDaysScrolling();
+
+        setTimeout(() => {
+            const activeChip = chipsBar.querySelector('.cabinet-day-chip.active');
+            if (activeChip && typeof activeChip.scrollIntoView === 'function') {
+                activeChip.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+            }
+        }, 50);
     }
 
     function selectCabinetDay(dayKey, element) {
+        if (cabinetDragMoved) return;
         if (cabinetSelectedDayKey === dayKey) return;
         triggerHapticFeedback([12]);
         cabinetSelectedDayKey = dayKey;
@@ -14178,7 +14511,7 @@ Return strictly valid JSON only without markdown formatting with this schema:
             const isTarget = chip === element || (chip.getAttribute('data-day-key') === dayKey);
             chip.classList.toggle('active', Boolean(isTarget));
             if (isTarget && typeof chip.scrollIntoView === 'function') {
-                chip.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'nearest' });
+                chip.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
             }
         });
         renderCabinetMoldsDrilldown();
@@ -14224,7 +14557,19 @@ Return strictly valid JSON only without markdown formatting with this schema:
         }
 
         if (molds.length === 0) {
-            container.innerHTML = `<div class="no-data" style="padding: 1.5rem 0;">V této směně nebyly zaznamenány žádné formy</div>`;
+            container.innerHTML = `
+                <div class="empty-state-card" style="padding: 1.5rem 1rem; border-color: var(--border-color); box-shadow: none; margin: 0.5rem 0;">
+                    <div class="empty-state-icon-box">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path>
+                            <rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect>
+                            <path d="m9 14 2 2 4-4"></path>
+                        </svg>
+                    </div>
+                    <div class="empty-state-title" style="font-size: 0.95rem;">Žádné formy v této směně</div>
+                    <div class="empty-state-desc" style="font-size: 0.8rem;">V tento den nebyly zaznamenány žádné zpracované formy.</div>
+                </div>
+            `;
             return;
         }
 
@@ -14240,6 +14585,9 @@ Return strictly valid JSON only without markdown formatting with this schema:
             const actionText = item.new_position || 'Zpracováno';
 
             const titleLabel = targetObj.isMachine
+                ? `Lis č. ${targetObj.cleanId}`
+                : `Forma #${targetObj.cleanId}`;
+            const displayTitleHtml = targetObj.isMachine
                 ? `Lis č. ${escapeHtml(targetObj.cleanId)}`
                 : `Forma #${escapeHtml(targetObj.cleanId)}`;
 
@@ -14247,11 +14595,22 @@ Return strictly valid JSON only without markdown formatting with this schema:
             const cascadeClass = isCascade ? ' cascade-item' : '';
             const cascadeStyle = isCascade ? ` style="--cascade-delay: ${idx * 34}ms;"` : '';
 
+            const escapedDayKey = escapeHtml(cabinetSelectedDayKey || '');
+            const jsSafeTitle = (titleLabel || '').replace(/'/g, "\\'");
+
             return `
-                <div class="cabinet-mold-row${cascadeClass}"${cascadeStyle} style="cursor: default;">
+                <div class="cabinet-mold-row${cascadeClass}"${cascadeStyle} 
+                     data-log-id="${item.id}"
+                     data-day-key="${escapedDayKey}"
+                     oncontextmenu="handleCabinetItemRightClick(event, ${item.id}, '${escapedDayKey}', '${jsSafeTitle}')"
+                     ontouchstart="handleCabinetItemTouchStart(event, ${item.id}, '${escapedDayKey}', '${jsSafeTitle}')"
+                     ontouchmove="handleCabinetItemTouchMove(event)"
+                     ontouchend="handleCabinetItemTouchEnd(event)"
+                     ontouchcancel="handleCabinetItemTouchEnd(event)"
+                     style="cursor: default;">
                     <div class="cabinet-mold-row-left">
                         <div class="cabinet-mold-id-line">
-                            <span>${titleLabel}</span>
+                            <span>${displayTitleHtml}</span>
                             ${cust ? `<span class="tag-customer" style="font-size: 0.68rem; padding: 0.05rem 0.35rem;">${escapeHtml(cust)}</span>` : ''}
                         </div>
                         <div class="cabinet-mold-time-meta">
@@ -14259,8 +14618,18 @@ Return strictly valid JSON only without markdown formatting with this schema:
                             <span style="color: var(--text-main); font-weight: 500;">${escapeHtml(actionText)}</span>
                         </div>
                     </div>
-                    <div class="cabinet-mold-row-right" style="font-size: 0.75rem; color: var(--text-muted); font-variant-numeric: tabular-nums;">
-                        ${escapeHtml(timeStr)}
+                    <div class="cabinet-mold-row-right">
+                        <span style="font-size: 0.75rem; color: var(--text-muted); font-variant-numeric: tabular-nums;">
+                            ${escapeHtml(timeStr)}
+                        </span>
+                        <button type="button" class="cabinet-item-delete-btn" 
+                                onclick="event.stopPropagation(); deleteCabinetHistoryItem(${item.id}, '${escapedDayKey}', '${jsSafeTitle}')" 
+                                title="Smazat záznam z historie" aria-label="Smazat záznam z historie">
+                            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <line x1="18" y1="6" x2="6" y2="18"></line>
+                                <line x1="6" y1="6" x2="18" y2="18"></line>
+                            </svg>
+                        </button>
                     </div>
                 </div>
             `;
@@ -15533,6 +15902,7 @@ Return strictly valid JSON only without markdown formatting with this schema:
         renderGraphicFactoryMap();
         const statusCzech = newStatus === 'ok' ? 'V pořádku (v chodu)' : (newStatus === 'warning' ? 'V chodu s problémy' : 'Odstaveno / Mimo provoz');
         showToast(`Stav lisu ${machine.number}: ${statusCzech}`);
+        logUserAction(machine.number ? `LIS_${machine.number}` : 'LIS', 'Stav lisu', `Stav lisu ${machine.number}: ${statusCzech}`);
     }
 
     function updateMachineMoldProductPreview(moldValue) {
@@ -15788,12 +16158,14 @@ Return strictly valid JSON only without markdown formatting with this schema:
 
         const machine = factoryMachinesData.find(m => m.id === currentActiveMachineId);
         if (machine && machine.currentMold) {
+            const oldMold = machine.currentMold;
             machine.currentMold = '';
             saveFactoryMachinesState();
             const goToMoldBtn = document.getElementById('btnGoToMachineMold');
             if (goToMoldBtn) goToMoldBtn.style.display = 'none';
             renderGraphicFactoryMap();
             showToast(`Forma odebrána z lisu ${machine.number}`);
+            logUserAction(oldMold, 'Odebrána z lisu', `Forma #${oldMold} odebrána z lisu č. ${machine.number}`);
         }
     }
 
@@ -15829,6 +16201,11 @@ Return strictly valid JSON only without markdown formatting with this schema:
 
         renderGraphicFactoryMap();
         showToast(val ? `Forma ${val} přiřazena k lisu ${machine.number}` : `Forma odebrána z lisu ${machine.number}`);
+        if (val) {
+            logUserAction(val, 'Nasazena na lis', `Forma #${val} nasazena na lis č. ${machine.number}`);
+        } else {
+            logUserAction(`LIS_${machine.number}`, 'Odebrána z lisu', `Forma odebrána z lisu č. ${machine.number}`);
+        }
     }
 
     function navigateToMachineMold() {
@@ -15950,6 +16327,7 @@ Return strictly valid JSON only without markdown formatting with this schema:
         renderGraphicFactoryMap();
 
         showToast('Závada byla zaznamenána do knihy lisu');
+        logUserAction(`LIS_${machine.number}`, 'Závada lisu', `Závada lisu č. ${machine.number} (${priority === 'critical' ? 'Kritická' : 'Běžná'}): ${text}`);
     }
 
     function toggleMachineIssueResolved(issueId) {
@@ -15969,6 +16347,7 @@ Return strictly valid JSON only without markdown formatting with this schema:
         renderGraphicFactoryMap();
 
         showToast(issue.resolved ? 'Závada označena jako vyřešená' : 'Závada vrácena mezi aktivní');
+        logUserAction(`LIS_${machine.number}`, 'Závada lisu', `${issue.resolved ? 'Závada vyřešena' : 'Závada vrácena mezi aktivní'}: ${issue.text}`);
     }
 
     function deleteMachineIssue(issueId) {
@@ -15985,6 +16364,7 @@ Return strictly valid JSON only without markdown formatting with this schema:
         renderGraphicFactoryMap();
 
         showToast('Záznam smazán');
+        logUserAction(`LIS_${machine.number}`, 'Závada lisu', `Smazána závada lisu č. ${machine.number}`);
     }
     document.addEventListener('click', (e) => {
         const input = document.getElementById('machineMoldInput');

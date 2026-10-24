@@ -99,3 +99,9 @@ INSERT INTO public.machines (id, name, model, tonnage, row_zone, status) VALUES
     ('23', 'Lis 23', 'Demag', '180T', 'Řada C', 'ok'),
     ('24', 'Lis 24', 'Demag', '180T', 'Řada C', 'ok')
 ON CONFLICT (id) DO NOTHING;
+
+-- 7. Explicit API access grants (Supabase October 30 update compliance)
+GRANT ALL ON TABLE public.machines TO anon, authenticated, service_role;
+GRANT ALL ON TABLE public.machine_issues TO anon, authenticated, service_role;
+GRANT USAGE, SELECT ON ALL SEQUENCES IN SCHEMA public TO anon, authenticated, service_role;
+
