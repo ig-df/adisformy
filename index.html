@@ -11,7 +11,7 @@
       gtag('config', 'G-XZYF6MB88T');
     </script>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no, viewport-fit=cover, interactive-widget=resizes-content">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no, viewport-fit=cover, interactive-widget=overlays-content">
     <link rel="preconnect" href="https://qjoovhagucdcaebgdmbx.supabase.co" crossorigin>
     <link rel="dns-prefetch" href="https://qjoovhagucdcaebgdmbx.supabase.co">
     <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
@@ -2980,6 +2980,16 @@
             .floating-corner-btn-left { position: absolute; bottom: calc(1.25rem + 48px + 10px); left: 1.25rem; }
         }
 
+        body.has-modal-open .floating-corner-btn,
+        body.has-modal-open .floating-corner-btn-left,
+        body.has-modal-open .floating-corner-btn-list {
+            opacity: 0 !important;
+            pointer-events: none !important;
+            transform: scale(0.7) !important;
+            visibility: hidden !important;
+            transition: opacity 0.2s ease, transform 0.2s ease, visibility 0.2s !important;
+        }
+
         @media (max-width: 600px) {
             .floating-corner-btn { 
                 position: fixed !important; 
@@ -2995,6 +3005,64 @@
                 position: fixed !important; 
                 left: 1.25rem !important; 
                 bottom: calc(max(1.25rem, env(safe-area-inset-bottom, 1.25rem)) + 48px + 10px) !important; 
+            }
+
+            /* Shift Plan Modal Mobile Keyboard & Viewport Shield */
+            #shiftPlanModal {
+                align-items: flex-start !important;
+                padding: max(0.5rem, env(safe-area-inset-top, 0.5rem)) 0.5rem 0.5rem 0.5rem !important;
+                overflow-y: auto !important;
+                -webkit-overflow-scrolling: touch !important;
+            }
+            #shiftPlanModal .modal-card {
+                max-width: 100% !important;
+                width: 100% !important;
+                max-height: 86dvh !important;
+                max-height: 86vh !important;
+                display: flex !important;
+                flex-direction: column !important;
+                overflow: hidden !important;
+                border-radius: 14px !important;
+                margin: 0 auto !important;
+            }
+            #shiftPlanModal .modal-header {
+                flex-shrink: 0 !important;
+                padding: 0.75rem 1rem !important;
+            }
+            #shiftPlanModal .modal-body {
+                flex: 1 1 auto !important;
+                min-height: 0 !important;
+                overflow-y: auto !important;
+                max-height: none !important;
+                padding: 0.65rem 0.75rem !important;
+                -webkit-overflow-scrolling: touch !important;
+            }
+            #shiftPlanModal .shift-plan-container {
+                display: flex !important;
+                flex-direction: column !important;
+                height: 100% !important;
+                gap: 0.6rem !important;
+            }
+            #shiftPlanModal .shift-plan-add-bar {
+                flex-shrink: 0 !important;
+            }
+            #shiftPlanModal .shift-plan-stats-bar {
+                flex-shrink: 0 !important;
+                padding: 0.35rem 0.65rem !important;
+            }
+            #shiftPlanModal .shift-plan-list {
+                height: auto !important;
+                min-height: 120px !important;
+                max-height: 42vh !important;
+                flex: 1 1 auto !important;
+            }
+            #shiftPlanModal .modal-footer {
+                flex-shrink: 0 !important;
+                padding: 0.65rem 1rem !important;
+            }
+            #shiftPlanModal .shift-plan-add-input,
+            #shiftPlanModal .shift-plan-machine-input {
+                font-size: 16px !important;
             }
         }
 
@@ -6996,6 +7064,7 @@
 
     function showModalAnimated(modalId) {
         refreshUserSessionActivity();
+        document.body.classList.add('has-modal-open');
         document.querySelectorAll('.is-touched').forEach(el => el.classList.remove('is-touched'));
         const modal = document.getElementById(modalId);
         if (!modal) return;
@@ -7035,6 +7104,9 @@
         modal.classList.remove('active');
         setTimeout(() => {
             modal.style.display = 'none';
+            if (!document.querySelector('.modal-overlay.active')) {
+                document.body.classList.remove('has-modal-open');
+            }
         }, 320);
     }
 
