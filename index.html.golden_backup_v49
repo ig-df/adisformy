@@ -11,22 +11,38 @@
       gtag('config', 'G-XZYF6MB88T');
     </script>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no, viewport-fit=cover, interactive-widget=resizes-content">
+    <link rel="preconnect" href="https://qjoovhagucdcaebgdmbx.supabase.co" crossorigin>
+    <link rel="dns-prefetch" href="https://qjoovhagucdcaebgdmbx.supabase.co">
+    <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+    <link rel="dns-prefetch" href="https://cdn.jsdelivr.net">
+    <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
+    <link rel="dns-prefetch" href="https://cdnjs.cloudflare.com">
     <title>Adis Formy</title>
     <meta name="description" content="Systém pro evidenci a správu forem skladu závodu s vyhledáváním, sledováním údržby a exportem do Heliosu.">
     <meta property="og:title" content="Adis Formy">
     <meta property="og:description" content="Systém pro evidenci a správu forem skladu závodu s vyhledáváním, sledováním údržby a exportem do Heliosu.">
     
-    <!-- Favicon & Mobile App Integration (GitHub Pages & Subpath compatible) -->
-    <link rel="manifest" href="manifest.json?v=2026">
-    <link rel="shortcut icon" href="favicon.ico?v=2026" type="image/x-icon">
-    <link rel="icon" type="image/x-icon" href="favicon.ico?v=2026">
-    <link rel="icon" type="image/png" href="favicon.png?v=2026">
-    <link rel="icon" type="image/png" sizes="32x32" href="favicon.png?v=2026">
-    <link rel="icon" type="image/png" sizes="16x16" href="favicon.png?v=2026">
-    <link rel="icon" type="image/png" sizes="192x192" href="favicon.png?v=2026">
-    <link rel="icon" type="image/png" sizes="512x512" href="favicon.png?v=2026">
-    <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png?v=2026">
+    <!-- Favicon & Mobile App Integration (GitHub Pages & Netlify compatible) -->
+    <link rel="manifest" href="manifest.json">
+    <link rel="shortcut icon" href="favicon.ico" type="image/x-icon">
+    <link rel="icon" type="image/x-icon" href="favicon.ico">
+    <link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="favicon-16.png">
+    <link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
+    <link rel="icon" type="image/png" sizes="512x512" href="icon-512.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
+    <script>
+      // Early capture of beforeinstallprompt to eliminate race conditions
+      window.deferredPwaPrompt = null;
+      window.addEventListener('beforeinstallprompt', function(e) {
+        e.preventDefault();
+        window.deferredPwaPrompt = e;
+        if (typeof updatePwaInstallButtonVisibility === 'function') {
+          updatePwaInstallButtonVisibility();
+        }
+      });
+    </script>
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-title" content="Adis Formy">
     <meta name="color-scheme" content="light">
@@ -162,6 +178,13 @@
         html, body {
             color-scheme: light only;
             forced-color-adjust: none;
+            width: 100%;
+            max-width: 100vw;
+            overflow-x: hidden;
+            touch-action: pan-x pan-y;
+            -webkit-text-size-adjust: 100%;
+            text-size-adjust: 100%;
+            overscroll-behavior-y: none;
         }
 
         body {
@@ -169,8 +192,11 @@
             color: var(--text-main);
             display: flex;
             justify-content: center;
-            padding: 1rem 0.5rem;
+            padding: env(safe-area-inset-top, 1rem) env(safe-area-inset-right, 0.5rem) env(safe-area-inset-bottom, 1rem) env(safe-area-inset-left, 0.5rem);
             min-height: 100vh;
+            min-height: 100dvh;
+            position: relative;
+            overscroll-behavior-y: none;
         }
 
         /* Toast Notification */
@@ -228,13 +254,13 @@
             position: relative;
         }
 
-        button:not(.toggle-accordion-btn), .filter-chip, .dash-card, .badge-position, tr, .tag-customer, .add-customer-chip, .top-icon-btn, .auth-btn, .superuser-badge-btn, .comment-item, .edit-btn, .comment-btn, .floating-corner-btn, .floating-corner-btn-left, .floating-corner-btn-list, .shift-plan-item, .mold-clickable-id, .tab-btn {
+        button:not(.toggle-accordion-btn):not(.tab-btn), .filter-chip, .dash-card, .badge-position, tr, .tag-customer, .add-customer-chip, .top-icon-btn, .auth-btn, .superuser-badge-btn, .comment-item, .edit-btn, .comment-btn, .floating-corner-btn, .floating-corner-btn-left, .floating-corner-btn-list, .shift-plan-item, .mold-clickable-id {
             user-select: none;
             -webkit-user-select: none;
             transition: transform 0.22s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.18s ease, filter 0.18s ease, background-color 0.2s ease, box-shadow 0.2s ease;
         }
 
-        button:not(.toggle-accordion-btn):active, .filter-chip:active, .dash-card:active, .badge-position:active, .tag-customer:active, .add-customer-chip:active, .top-icon-btn:active, .auth-btn:active, .superuser-badge-btn:active, .floating-corner-btn:active, .floating-corner-btn-left:active, .floating-corner-btn-list:active, .shift-plan-item:active, .tab-btn:active, .mold-clickable-id:active, .is-touched:not(.toggle-accordion-btn) {
+        button:not(.toggle-accordion-btn):not(.tab-btn):active, .filter-chip:active, .dash-card:active, .badge-position:active, .tag-customer:active, .add-customer-chip:active, .top-icon-btn:active, .auth-btn:active, .superuser-badge-btn:active, .floating-corner-btn:active, .floating-corner-btn-left:active, .floating-corner-btn-list:active, .shift-plan-item:active, .mold-clickable-id:active, .is-touched:not(.toggle-accordion-btn):not(.tab-btn) {
             transform: scale(0.91) !important;
             opacity: 0.82 !important;
             filter: brightness(0.91) contrast(1.05) !important;
@@ -249,9 +275,13 @@
         }
 
         /* Tactile Hardware-Accelerated Haptic-Splash on Click */
-        .btn-primary, .btn-secondary, .empty-state-btn, .top-icon-btn, .floating-corner-btn, .floating-corner-btn-list {
+        .btn-primary, .btn-secondary, .empty-state-btn, .top-icon-btn, .floating-corner-btn {
             position: relative;
             overflow: hidden;
+        }
+        .floating-corner-btn-list {
+            position: relative;
+            overflow: visible !important;
         }
 
         .btn-primary::after, .btn-secondary::after, .empty-state-btn::after, .top-icon-btn::after, .floating-corner-btn::after, .floating-corner-btn-list::after {
@@ -534,19 +564,24 @@
             background-color: var(--card-bg);
             position: relative;
             flex-shrink: 0;
+            overflow: hidden;
         }
 
         .tab-indicator {
             position: absolute;
+            left: 0;
             bottom: 0;
+            width: 33.3333%;
             height: 2.5px;
             background: #0f172a;
             border-radius: 2px 2px 0 0;
-            will-change: left, width;
-            transform: translateZ(0);
+            will-change: transform;
+            transform: translate3d(0, 0, 0);
             backface-visibility: hidden;
-            transition: left 0.32s cubic-bezier(0.2, 0.8, 0.2, 1), width 0.32s cubic-bezier(0.2, 0.8, 0.2, 1);
+            -webkit-backface-visibility: hidden;
+            transition: transform 0.30s cubic-bezier(0.2, 0.8, 0.2, 1);
             z-index: 10;
+            pointer-events: none;
         }
 
         .tab-btn {
@@ -561,7 +596,14 @@
             outline: none;
             position: relative;
             z-index: 2;
-            transition: color 0.2s ease;
+            transition: color 0.18s ease, opacity 0.15s ease;
+            user-select: none;
+            -webkit-user-select: none;
+        }
+
+        .tab-btn:active, .tab-btn.is-touched {
+            opacity: 0.72;
+            transition: opacity 0.05s ease;
         }
 
         .tab-btn:hover {
@@ -880,7 +922,7 @@
         .custom-context-menu {
             display: none;
             position: fixed;
-            z-index: 1000;
+            z-index: 2600;
             background: var(--card-bg);
             border: 1px solid var(--border-color);
             border-radius: 8px;
@@ -1196,11 +1238,30 @@
             color: var(--text-main);
         }
 
+        @media (max-width: 768px) {
+            /* Ironclad iOS Safari Auto-Zoom Immunity: Inputs 16px or larger never trigger zoom */
+            input, select, textarea,
+            .search-input,
+            .position-input,
+            .shift-plan-add-input,
+            .shift-plan-machine-input,
+            .modal-body input,
+            .modal-body select,
+            .modal-body textarea {
+                font-size: 16px !important;
+            }
+        }
+
         @media (max-width: 600px) {
             html, body {
-                height: 100vh;
+                height: 100dvh;
+                min-height: 100dvh;
+                max-height: 100dvh;
+                width: 100vw;
+                max-width: 100vw;
                 overflow: hidden;
                 padding: 0;
+                overscroll-behavior: none;
             }
             body {
                 display: flex;
@@ -1209,7 +1270,10 @@
             }
             .container {
                 height: 100%;
-                max-height: 100vh;
+                min-height: 100dvh;
+                max-height: 100dvh;
+                width: 100vw;
+                max-width: 100vw;
                 border-radius: 0;
                 border: none;
             }
@@ -1395,9 +1459,7 @@
             width: 56px;
             height: 56px;
             border-radius: 14px;
-            background-color: #f8fafc;
-            background-image: radial-gradient(rgba(148, 163, 184, 0.4) 0.8px, transparent 0.8px);
-            background-size: 8px 8px;
+            background-color: #ffffff;
             border: 1px solid #e2e8f0;
             display: flex;
             align-items: center;
@@ -2886,21 +2948,26 @@
 
         .corner-badge-counter {
             position: absolute;
-            top: -4px;
-            right: -4px;
+            top: -6px;
+            right: -6px;
             background: #0f172a;
             color: #ffffff;
-            font-size: 0.7rem;
-            font-weight: 700;
-            padding: 0.12rem 0.38rem;
+            font-size: 0.68rem;
+            font-weight: 800;
+            padding: 0.12rem 0.44rem;
             border-radius: 999px;
-            min-width: 19px;
-            text-align: center;
-            line-height: 1.1;
-            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.25);
-            border: 1.5px solid var(--card-bg);
+            min-width: 20px;
+            height: 19px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            line-height: 1;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+            border: 2px solid var(--card-bg);
             font-variant-numeric: tabular-nums;
             pointer-events: none;
+            white-space: nowrap;
+            z-index: 1000;
             transition: transform 0.2s ease, opacity 0.2s ease, background-color 0.2s ease;
         }
         .corner-badge-counter.all-done {
@@ -2945,14 +3012,25 @@
         .shift-plan-add-input {
             flex: 1;
             min-width: 0;
-            padding: 0.55rem 0.8rem;
+            height: 33px;
+            padding: 0 0.65rem;
             border: 1px solid var(--border-color);
-            border-radius: 8px;
-            font-size: 0.9rem;
+            border-radius: 7px;
+            font-family: inherit;
+            font-size: 0.85rem;
+            font-weight: 500;
+            letter-spacing: normal;
             background: var(--card-bg);
             color: var(--text-main);
             outline: none;
+            box-sizing: border-box;
             transition: border-color 0.2s ease, box-shadow 0.2s ease;
+        }
+        .shift-plan-add-input::placeholder {
+            font-family: inherit;
+            font-weight: 400;
+            color: var(--text-muted);
+            opacity: 0.75;
         }
         .shift-plan-add-input:focus {
             border-color: #0f172a;
@@ -2961,21 +3039,31 @@
         .shift-plan-machine-group {
             display: flex;
             align-items: center;
-            gap: 0.3rem;
+            gap: 0.25rem;
             flex-shrink: 0;
         }
         .shift-plan-machine-input {
-            width: 82px;
-            padding: 0.55rem 0.6rem;
+            width: 78px;
+            height: 33px;
+            padding: 0 0.55rem;
             border: 1px solid var(--border-color);
-            border-radius: 8px;
-            font-size: 0.88rem;
+            border-radius: 7px;
+            font-family: inherit;
+            font-size: 0.85rem;
             font-weight: 500;
+            letter-spacing: normal;
             background: var(--card-bg);
             color: var(--text-main);
             outline: none;
+            box-sizing: border-box;
             transition: border-color 0.2s ease, box-shadow 0.2s ease;
             flex-shrink: 0;
+        }
+        .shift-plan-machine-input::placeholder {
+            font-family: inherit;
+            font-weight: 400;
+            color: var(--text-muted);
+            opacity: 0.75;
         }
         .shift-plan-machine-input::-webkit-calendar-picker-indicator,
         .shift-plan-machine-input::-webkit-clear-button {
@@ -2990,17 +3078,18 @@
             display: inline-flex;
             align-items: center;
             justify-content: center;
-            width: 36px;
-            height: 36px;
+            width: 33px;
+            height: 33px;
             flex-shrink: 0;
-            border-radius: 8px;
+            border-radius: 7px;
             background: var(--text-main);
             color: var(--card-bg);
             border: 1px solid transparent;
-            font-size: 1.18rem;
+            font-size: 1.12rem;
             font-weight: 700;
             line-height: 1;
             cursor: pointer;
+            box-sizing: border-box;
             transition: opacity 0.15s ease, transform 0.12s ease;
             user-select: none;
             -webkit-tap-highlight-color: transparent;
@@ -3012,27 +3101,41 @@
             transform: scale(0.92);
             opacity: 0.8;
         }
+        .shift-plan-submit-btn {
+            height: 33px;
+            padding: 0 0.85rem !important;
+            font-size: 0.82rem !important;
+            font-weight: 600 !important;
+            border-radius: 7px !important;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            box-sizing: border-box;
+            white-space: nowrap;
+        }
         @media (max-width: 480px) {
             .shift-plan-add-bar {
-                gap: 0.35rem;
+                gap: 0.3rem;
             }
             .shift-plan-machine-input {
-                width: 65px;
-                padding: 0.5rem 0.45rem;
-                font-size: 0.82rem;
+                width: 62px;
+                height: 33px;
+                padding: 0 0.45rem;
             }
             .shift-plan-machine-add-btn {
-                width: 32px;
-                height: 34px;
+                width: 33px;
+                height: 33px;
                 font-size: 1.05rem;
             }
             .shift-plan-add-input {
-                padding: 0.5rem 0.55rem;
-                font-size: 0.82rem;
+                height: 33px;
+                padding: 0 0.5rem;
             }
+            .shift-plan-submit-btn,
             .shift-plan-add-bar .btn-primary {
-                padding: 0.5rem 0.65rem !important;
-                font-size: 0.8rem !important;
+                height: 33px !important;
+                padding: 0 0.65rem !important;
+                font-size: 0.78rem !important;
             }
         }
         .task-time-pill-input {
@@ -3098,9 +3201,21 @@
             padding-right: 0.25rem;
             margin-bottom: 0.15rem;
             -webkit-overflow-scrolling: touch;
+            position: relative;
         }
         .shift-plan-list .empty-state-card {
-            margin: auto 0;
+            margin: auto !important;
+            align-self: center !important;
+            justify-self: center !important;
+            display: flex !important;
+            flex-direction: column !important;
+            align-items: center !important;
+            justify-content: center !important;
+            text-align: center !important;
+            width: 100% !important;
+            max-width: 340px !important;
+            padding: 2rem 1rem !important;
+            box-sizing: border-box !important;
         }
         .shift-plan-item {
             display: flex;
@@ -3116,6 +3231,12 @@
         }
         .shift-plan-item:hover {
             border-color: #cbd5e1;
+        }
+        .shift-plan-item.shift-plan-item-armed {
+            transform: scale(0.96);
+            opacity: 0.85;
+            background: rgba(241, 245, 249, 0.9);
+            border-color: #94a3b8;
         }
         .shift-plan-item.is-checked {
             opacity: 0.55;
@@ -3333,18 +3454,35 @@
             letter-spacing: -0.02em;
         }
         /* Day Chips Filter Carousel */
+        .cabinet-days-wrapper {
+            position: relative;
+            margin-bottom: 0.35rem;
+            width: 100%;
+        }
         .cabinet-days-chips-bar {
             display: flex;
+            flex-wrap: nowrap;
             align-items: center;
             gap: 0.4rem;
             overflow-x: auto;
-            padding: 8px 4px 10px 4px;
-            margin: 0.25rem 0 0.35rem 0;
+            overflow-y: hidden;
+            padding: 6px 3px 8px 3px;
+            margin: 0.15rem 0 0.35rem 0;
             box-sizing: border-box;
             scrollbar-width: none;
             -ms-overflow-style: none;
             -webkit-overflow-scrolling: touch;
-            min-height: 52px;
+            cursor: grab;
+            user-select: none;
+            -webkit-user-select: none;
+            width: 100%;
+            touch-action: pan-x pan-y;
+            scroll-behavior: smooth;
+            min-height: 48px;
+        }
+        .cabinet-days-chips-bar.is-dragging {
+            cursor: grabbing !important;
+            scroll-behavior: auto;
         }
         .cabinet-days-chips-bar::-webkit-scrollbar {
             display: none;
@@ -3470,6 +3608,33 @@
         }
         .cabinet-mold-row:active {
             transform: scale(0.98);
+        }
+        .cabinet-mold-row.cabinet-item-armed {
+            background: rgba(239, 68, 68, 0.08) !important;
+            border-color: rgba(239, 68, 68, 0.35) !important;
+            transform: scale(0.98);
+        }
+        .cabinet-item-delete-btn {
+            background: transparent;
+            border: none;
+            color: var(--text-muted);
+            cursor: pointer;
+            padding: 3px 4px;
+            border-radius: 4px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.15s ease;
+            opacity: 0.45;
+            flex-shrink: 0;
+        }
+        .cabinet-item-delete-btn:hover {
+            color: #ef4444;
+            background: rgba(239, 68, 68, 0.1);
+            opacity: 1;
+        }
+        .cabinet-item-delete-btn:active {
+            transform: scale(0.9);
         }
         .cabinet-mold-row-left {
             display: flex;
@@ -3762,6 +3927,8 @@
             background: #f1f5f9;
             display: flex;
             flex-direction: column;
+            height: 100vh;
+            height: 100dvh;
             overflow: hidden;
             opacity: 0;
             pointer-events: none;
@@ -3781,11 +3948,12 @@
             align-items: center;
             justify-content: space-between;
             gap: 0.75rem;
-            padding: 0.65rem 1.25rem;
+            padding: 0.35rem 1.15rem;
             background: #ffffff;
             border-bottom: 2px solid #0f172a;
             box-shadow: 0 1px 4px rgba(0,0,0,0.04);
             z-index: 10;
+            flex-shrink: 0;
         }
 
         .factory-map-title-box {
@@ -3796,7 +3964,7 @@
 
         .factory-map-title-box h2 {
             margin: 0;
-            font-size: 1.05rem;
+            font-size: 1rem;
             font-weight: 800;
             letter-spacing: -0.01em;
             color: #0f172a;
@@ -3804,9 +3972,9 @@
         }
 
         .factory-map-badge {
-            font-size: 0.72rem;
+            font-size: 0.70rem;
             font-weight: 700;
-            padding: 0.18rem 0.6rem;
+            padding: 0.15rem 0.55rem;
             border-radius: 4px;
             background: #0f172a;
             color: #ffffff;
@@ -3816,66 +3984,90 @@
 
         .factory-map-scroll-area {
             flex: 1;
-            overflow: auto;
-            -webkit-overflow-scrolling: touch;
-            padding: 0.65rem 1rem 0.65rem 1rem;
+            min-height: 0;
+            overflow: hidden;
+            padding: 0.25rem 0.5rem;
             display: flex;
             justify-content: center;
             align-items: center;
-            background: #f8fafc;
+            background: #e9eef5; /* Světle šedý průmyslový podklad haly */
             position: relative;
-        }
-
-        /* Průmyslový technický výkres lisovny - čistý světlý plán */
-        .factory-monochrome-canvas {
-            background-color: #ffffff;
-            width: 100%;
-            max-width: 820px;
-            min-width: 630px;
-            border: 1.5px solid #cbd5e1;
-            border-radius: 10px;
-            box-shadow: 0 1px 3px rgba(15, 23, 42, 0.03), 0 8px 24px -4px rgba(15, 23, 42, 0.06);
-            position: relative;
-            padding: 0.45rem 0.85rem;
-            margin-bottom: 0;
             box-sizing: border-box;
         }
 
-        /* Horní a spodní spojovací dopravní trasa se šipkami a штрихпунктиром */
+        /* Průmyslový technický výkres lisovny - digitální dvojče s průmyslovou podlahou přizpůsobené výšce */
+        .factory-monochrome-canvas {
+            background-color: #f1f5f9; /* Světle šedá průmyslová epoxidová podlaha */
+            width: 100%;
+            max-width: 820px;
+            min-width: 600px;
+            height: 100%;
+            max-height: 100%;
+            min-height: 0;
+            border: 1.5px solid #cbd5e1;
+            border-radius: 8px;
+            box-shadow: 0 1px 3px rgba(15, 23, 42, 0.04), 0 6px 20px -3px rgba(15, 23, 42, 0.07);
+            position: relative;
+            padding: 0.25rem 0.65rem;
+            margin: 0 auto;
+            box-sizing: border-box;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            overflow: hidden;
+        }
+
+        /* Horní a spodní spojovací dopravní trasa - Radiant Sunbeam Yellow šтрихпунктир */
         .factory-cross-way {
             display: flex;
             align-items: center;
             justify-content: center;
             gap: 8px;
-            padding: 0.15rem 0.5rem;
-            margin-bottom: 0.35rem;
+            padding: 0.1rem 0.3rem;
+            margin: 0;
             user-select: none;
+            background: transparent;
+            border: none;
+            flex-shrink: 0;
+            height: clamp(14px, 2vh, 20px);
         }
 
         .factory-cross-way.bottom {
-            margin-top: 0.35rem;
+            margin-top: 0;
             margin-bottom: 0;
         }
 
         .factory-aisle-marker.horizontal {
-            width: 22px;
-            height: 20px;
+            width: auto;
+            height: auto;
             margin: 0 4px;
-            background: #ffffff;
-            border: 1px solid #cbd5e1;
+            background: transparent;
+            border: none;
+            box-shadow: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
         }
 
         /* 5-sloupcová síť (3 sloupce strojů + 2 žluté dopravní koridory se šipkami) */
         .factory-layout-grid {
             display: grid;
-            grid-template-columns: 1fr 24px 1fr 24px 1fr;
-            gap: 0.5rem;
+            grid-template-columns: 1fr 20px 1fr 20px 1fr;
+            gap: 0.35rem;
             align-items: stretch;
+            flex: 1;
+            min-height: 0;
+            width: 100%;
+            box-sizing: border-box;
         }
 
         .factory-col {
             display: flex;
             flex-direction: column;
+            justify-content: space-between;
+            height: 100%;
+            min-height: 0;
         }
 
         .factory-col.col-left {
@@ -3890,36 +4082,39 @@
             justify-content: space-between;
         }
 
-        /* Inženýrský grafitový dopravní koridor VZV (Aisle) */
+        /* Dopravní koridor VZV (Aisle) - svislý Radiant Sunbeam Yellow šтрихпунктир */
         .factory-aisle {
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: space-between;
             position: relative;
-            padding: 0.4rem 0;
+            padding: 0.1rem 0;
             user-select: none;
+            background: transparent;
+            border: none;
+            box-sizing: border-box;
+            flex-shrink: 0;
         }
 
         .factory-aisle-line {
             flex: 1;
             width: 0;
-            border-left: 1.5px dashed #cbd5e1;
-            opacity: 0.85;
-            min-height: 20px;
+            border-left: 2px dashed #ffd000; /* Radiant Sunbeam Yellow */
+            opacity: 1;
+            min-height: 10px;
         }
 
         .factory-aisle-marker {
             display: flex;
             align-items: center;
             justify-content: center;
-            background: #ffffff;
-            border: 1px solid #cbd5e1;
-            border-radius: 4px;
-            width: 20px;
-            height: 22px;
-            box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
-            margin: 4px 0;
+            background: transparent;
+            border: none;
+            box-shadow: none;
+            width: auto;
+            height: auto;
+            margin: 2px 0;
             flex-shrink: 0;
         }
 
@@ -3932,15 +4127,15 @@
             letter-spacing: 0.08em;
             color: #475569;
             background: #f1f5f9;
-            padding: 5px 2px;
+            padding: 4px 2px;
             border-radius: 3px;
             border: 1px solid #cbd5e1;
             white-space: nowrap;
-            margin: 6px 0;
+            margin: 4px 0;
             flex-shrink: 0;
         }
 
-        /* Příčná ulička s grafitovou šipkou a linií */
+        /* Příčná ulička s Radiant Sunbeam Yellow bezpečnostní šipkou a linií */
         .factory-cross-passage {
             display: flex;
             align-items: center;
@@ -3953,163 +4148,138 @@
 
         .factory-cross-line {
             flex: 1;
-            border-top: 2px dashed #94a3b8;
-            opacity: 0.8;
+            border-top: 2px dashed #ffd000; /* Radiant Sunbeam Yellow */
+            opacity: 1;
         }
 
         .factory-yellow-arrow {
             display: inline-flex;
-            filter: drop-shadow(0 1px 1px rgba(15, 23, 42, 0.08));
+            filter: drop-shadow(0 0.5px 0.5px rgba(15, 23, 42, 0.06));
             flex-shrink: 0;
         }
+        .factory-yellow-arrow path {
+            stroke: #ffbb00 !important; /* Radiant Sunbeam Yellow */
+        }
 
-        /* Manipulační plocha forem přímo nad strojem 11 */
+        /* Manipulační plocha forem - velký čtverec přímo nad strojem 11 */
+        .factory-col.col-center {
+            justify-content: flex-end;
+        }
+
         .factory-staging-zone {
-            min-height: 40px;
-            border: 1.5px dashed #94a3b8;
-            border-radius: 0;
-            background: rgba(241, 245, 249, 0.7);
+            flex-shrink: 0;
+            height: 200px;
+            min-height: 200px;
+            max-height: 200px;
+            width: 100%;
+            border: 2.5px dashed #ffd000; /* Radiant Sunbeam Yellow */
+            border-radius: 6px !important;
+            background: rgba(255, 210, 0, 0.28); /* Radiant Sunbeam Yellow */
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
             position: relative;
-            padding: 4px 6px;
+            padding: 10px 8px;
             box-sizing: border-box;
             text-align: center;
             user-select: none;
-            margin-bottom: 3px;
+            margin-top: auto;
+            margin-bottom: 5px;
+            gap: 6px;
+            box-shadow: inset 0 0 16px rgba(255, 208, 0, 0.12);
         }
-
-        .staging-zone-corner {
-            position: absolute;
-            width: 7px;
-            height: 7px;
-            border-color: #64748b;
-            border-style: solid;
-        }
-        .staging-zone-corner.tl { top: -1px; left: -1px; border-width: 2.5px 0 0 2.5px; }
-        .staging-zone-corner.tr { top: -1px; right: -1px; border-width: 2.5px 2.5px 0 0; }
-        .staging-zone-corner.bl { bottom: -1px; left: -1px; border-width: 0 0 2.5px 2.5px; }
-        .staging-zone-corner.br { bottom: -1px; right: -1px; border-width: 0 2.5px 2.5px 0; }
 
         .staging-zone-label {
-            font-size: 0.65rem;
-            font-weight: 800;
-            color: #334155;
-            letter-spacing: 0.05em;
+            font-size: 0.84rem;
+            font-weight: 900;
+            color: #0f172a;
+            letter-spacing: 0.06em;
             text-transform: uppercase;
+            line-height: 1.2;
         }
 
         .staging-zone-sub {
-            font-size: 0.58rem;
-            font-weight: 600;
-            color: #64748b;
-            margin-top: 1px;
+            font-size: 0.65rem;
+            font-weight: 700;
+            color: #475569;
+            margin-top: 2px;
+            letter-spacing: 0.02em;
         }
 
-        /* Skupina vertikálně naskládaných strojů */
+        .staging-zone-arrows-wrap {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            margin-top: 4px;
+        }
+
+        /* Skupina vertikálně naskládaných strojů - rovnoměrná pevná mezera */
         .mach-stack {
             display: flex;
             flex-direction: column;
-            gap: 0;
-        }
-
-        /* Průchozí ulička / штрихпунктир с двусторонней стрелкой между отдельными станками */
-        .mach-walkway {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 3px;
-            height: 10px;
-            padding: 0 4px;
-            margin: 0;
-            user-select: none;
-            pointer-events: none;
-            box-sizing: border-box;
-        }
-
-        .mach-walkway-line {
-            flex: 1;
-            border-top: 1.5px dashed #cbd5e1;
-            opacity: 0.85;
-        }
-
-        .mach-walkway-marker {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background: #ffffff;
-            border: 1px solid #cbd5e1;
-            border-radius: 2px;
-            width: 17px;
-            height: 9px;
-            box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
-            flex-shrink: 0;
-        }
-
-        .mach-walkway-arrow {
-            display: inline-flex;
-            filter: drop-shadow(0 0.5px 0.5px rgba(15, 23, 42, 0.08));
-            flex-shrink: 0;
+            gap: 4px;
+            min-height: 0;
         }
 
         /* Průchozí mezery */
         .mach-passage-spacer {
-            min-height: 24px;
+            min-height: 14px;
             flex: 1;
-            margin: 2px 0;
+            margin: 0;
             display: flex;
             align-items: center;
         }
 
         .mach-col-spacer {
-            min-height: 40px;
+            min-height: 14px;
             flex: 1;
-            margin: 2px 0;
+            margin: 0;
             display: flex;
             align-items: center;
         }
 
         /* ==========================================================================
-           ESKIZ STROJE (VSTŘIKOVACÍHO LISU) - PRŮMYSLOVÉ TLAČÍTKO S PEVNOU GEOMETRIÍ
+           ESKIZ STROJE (VSTŘIKOVACÍ LIS ENGEL) - DVOUÚROVŇOVÉ TLAČÍTKO (DIGITÁLNÍ DVOJČE)
            ========================================================================== */
         .mach-sketch {
             background-color: #ffffff;
-            background-image: none;
-            border: 1px solid #e2e8f0;
-            border-left: 5px solid #16a34a; /* Výchozí stav V pořádku */
-            border-radius: 6px;
-            height: 31px;
+            border: 1px solid #cbd5e1;
+            border-left: 4.5px solid #4cae2a; /* Výchozí stav V pořádku - firemní zelená ENGEL */
+            border-radius: 5px;
+            height: 38px;
+            min-height: 34px;
+            max-height: 42px;
             width: 100%;
             margin: 0;
             display: flex;
-            align-items: center;
+            flex-direction: column;
             justify-content: space-between;
-            padding: 0 8px 0 7px;
+            padding: 2px 5px;
             position: relative;
             cursor: pointer;
-            box-shadow: 0 1px 3px rgba(15, 23, 42, 0.05), 0 2px 6px -2px rgba(15, 23, 42, 0.04);
+            box-shadow: 0 1px 2px rgba(15, 23, 42, 0.05);
             transition: border-color 0.15s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.15s cubic-bezier(0.16, 1, 0.3, 1), background-color 0.15s ease, transform 0.15s ease;
             user-select: none;
             -webkit-tap-highlight-color: transparent;
             overflow: hidden;
             box-sizing: border-box;
             transform: translateZ(0); /* Hardware isolation */
+            flex-shrink: 0;
         }
 
         .mach-sketch:hover {
             border-color: #64748b;
-            box-shadow: 0 2px 5px rgba(15, 23, 42, 0.06), 0 6px 14px -3px rgba(15, 23, 42, 0.08);
+            box-shadow: 0 2px 6px rgba(15, 23, 42, 0.08), 0 6px 14px -3px rgba(15, 23, 42, 0.08);
             transform: translateY(-0.5px);
         }
 
         .mach-sketch:active {
-            background-image: none;
             background-color: #f1f5f9;
             box-shadow: inset 0 1px 2px rgba(15, 23, 42, 0.08);
             border-color: #94a3b8;
-            transform: scale(0.985);
+            transform: scale(0.982);
         }
 
         .mach-sketch.active-selected {
@@ -4117,164 +4287,54 @@
             box-shadow: 0 0 0 2px #0f172a, 0 4px 12px rgba(15, 23, 42, 0.14);
         }
 
-        /* Stavy stroje (tlačítka s odpovídajícím barevným tónem) */
+        /* Stavy strojů s barevným odlišením */
         .mach-sketch.status-ok {
-            border-left-color: #16a34a !important;
+            border-left-color: #4cae2a !important; /* ENGEL Signature Green */
         }
 
         .mach-sketch.status-warning {
             border-left-color: #f97316 !important;
             background-image: linear-gradient(180deg, #ffffff 0%, #fff7ed 60%, #ffedd5 100%) !important;
             border-color: #fed7aa !important;
-            box-shadow: 0 1px 2px rgba(249, 115, 22, 0.08);
+            box-shadow: 0 1px 3px rgba(249, 115, 22, 0.1);
         }
 
         .mach-sketch.status-warning:hover {
             border-color: #ea580c !important;
-            box-shadow: 0 2px 6px -1px rgba(249, 115, 22, 0.16);
+            box-shadow: 0 2px 6px -1px rgba(249, 115, 22, 0.18);
         }
 
         .mach-sketch.status-error {
             border-left-color: #dc2626 !important;
             background-image: linear-gradient(180deg, #ffffff 0%, #fff1f2 60%, #fee2e2 100%) !important;
             border-color: #fecdd3 !important;
-            box-shadow: 0 1px 2px rgba(225, 29, 72, 0.06);
+            box-shadow: 0 1px 3px rgba(225, 29, 72, 0.08);
         }
 
         .mach-sketch.status-error:hover {
             border-color: #dc2626 !important;
-            box-shadow: 0 2px 6px -1px rgba(225, 29, 72, 0.12);
+            box-shadow: 0 2px 6px -1px rgba(225, 29, 72, 0.14);
         }
 
-        /* Sekce čísla stroje */
-        .mach-num {
-            font-size: 0.82rem;
-            font-weight: 800;
-            font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", Roboto, sans-serif;
-            font-variant-numeric: tabular-nums;
-            color: #0f172a;
-            line-height: 1;
-            letter-spacing: -0.01em;
-            pointer-events: none;
-            padding-left: 2px;
-            text-shadow: 0 1px 0 rgba(255, 255, 255, 0.85);
-            flex-shrink: 0;
-            white-space: nowrap;
-        }
-
-        /* Monochromní 2.5D izometrický model vstřikovacího lisu (Varianta 2 - Clay / Slate 3D) */
-        .mach-cad-silhouette {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            margin: 0 4px;
-            color: #64748b;
-            opacity: 0.88;
-            flex-shrink: 0;
-            pointer-events: none;
-            transition: opacity 0.15s ease, transform 0.15s ease;
-            filter: drop-shadow(0 1px 1.5px rgba(0,0,0,0.06));
-        }
-
-        .mach-cad-silhouette svg {
-            width: 32px;
-            height: 15px;
-            display: block;
-        }
-
-        .mach-sketch:hover .mach-cad-silhouette {
-            opacity: 1;
-            transform: translateY(-0.5px);
-        }
-
-        .mach-sketch.status-warning .mach-cad-silhouette {
-            opacity: 0.95;
-            filter: drop-shadow(0 1px 2px rgba(234, 88, 12, 0.18));
-        }
-
-        .mach-sketch.status-error .mach-cad-silhouette {
-            opacity: 0.95;
-            filter: drop-shadow(0 1px 2px rgba(220, 38, 38, 0.22));
-        }
-
-        /* Jemná vertikální dělicí linie */
-        .mach-sketch-divider {
-            width: 1px;
-            height: 14px;
-            background: linear-gradient(180deg, transparent, #cbd5e1 30%, #cbd5e1 70%, transparent);
-            margin: 0 3px;
-            pointer-events: none;
-            flex-shrink: 0;
-        }
-
-        /* Sekce formy (vpravo) */
-        .mach-mold-slot-box {
+        /* Horní patro tlačítka: Číslo lisu + Silueta ENGEL + Štítek formy */
+        .mach-tier-top {
             display: flex;
             align-items: center;
-            justify-content: flex-end;
-            gap: 5px;
-            pointer-events: none;
+            justify-content: space-between;
+            width: 100%;
             min-width: 0;
-            flex: 1;
-            overflow: hidden;
+            gap: 4px;
+            height: 22px;
         }
 
-        /* Название изделия слева от бейджа формы (если есть место) */
-        .mach-mold-product-name {
-            font-size: 0.69rem;
-            font-weight: 600;
-            color: #475569;
-            font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", Roboto, sans-serif;
-            line-height: 1;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            white-space: nowrap;
-            letter-spacing: -0.01em;
-            text-align: right;
-            min-width: 0;
-            max-width: 95px;
-            flex: 1 1 auto;
-        }
-
-        /* Monochromní reliéfní štítek formy - фиксированный строгий бейдж с выравниванием */
-        .mach-mold-tag-minimal {
+        .mach-num-box {
             display: inline-flex;
             align-items: center;
-            justify-content: center;
-            background: #ffffff;
-            color: #0f172a;
-            border: 1px solid rgba(203, 213, 225, 0.95);
-            border-radius: 4px;
-            font-size: 0.72rem;
-            font-weight: 700;
-            font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", Roboto, sans-serif;
-            font-variant-numeric: tabular-nums;
-            padding: 1px 5px;
-            height: 18px;
-            min-width: 32px;
-            line-height: 1;
-            letter-spacing: -0.01em;
+            gap: 4px;
             flex-shrink: 0;
-            box-shadow: 0 1px 2px rgba(15, 23, 42, 0.05), inset 0 1px 0 rgba(255, 255, 255, 0.9);
-            text-align: center;
         }
 
-        /* Volný lis (bez formy) */
-        .mach-mold-empty-dash {
-            font-size: 0.68rem;
-            font-weight: 600;
-            color: #cbd5e1;
-            line-height: 1;
-            padding: 0 3px;
-            min-width: 32px;
-            text-align: center;
-            display: inline-flex;
-            justify-content: center;
-            align-items: center;
-        }
-
-        /* Pulzující stavové body podle vzoru z dashboardu (pro přepínače a informační lišty) */
-        .mach-status-pulse-dot {
+        .mach-status-beacon {
             position: relative;
             width: 6px;
             height: 6px;
@@ -4282,8 +4342,15 @@
             display: inline-block;
             flex-shrink: 0;
         }
-
-        .mach-status-pulse-dot::after {
+        .mach-status-beacon.status-ok {
+            background-color: #4cae2a;
+            box-shadow: 0 0 4px rgba(76, 174, 42, 0.6);
+        }
+        .mach-status-beacon.status-warning {
+            background-color: #f97316;
+            box-shadow: 0 0 3px rgba(249, 115, 22, 0.6);
+        }
+        .mach-status-beacon.status-warning::after {
             content: '';
             position: absolute;
             top: 50%;
@@ -4291,22 +4358,216 @@
             width: 100%;
             height: 100%;
             border-radius: 50%;
-            background-color: inherit;
+            background-color: #f97316;
+            transform: translate(-50%, -50%);
+            animation: statusRadialPulse 1.6s cubic-bezier(0.22, 1, 0.36, 1) infinite;
+            pointer-events: none;
+        }
+        .mach-status-beacon.status-error {
+            background-color: #dc2626;
+            box-shadow: 0 0 4px rgba(220, 38, 38, 0.7);
+        }
+        .mach-status-beacon.status-error::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            background-color: #dc2626;
+            transform: translate(-50%, -50%);
+            animation: statusRadialPulse 1.4s cubic-bezier(0.22, 1, 0.36, 1) infinite;
+            pointer-events: none;
+        }
+
+        .mach-num {
+            font-size: 0.94rem;
+            font-weight: 800;
+            font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", Roboto, sans-serif;
+            font-variant-numeric: tabular-nums;
+            color: #0f172a;
+            line-height: 1;
+            letter-spacing: -0.015em;
+            pointer-events: none;
+            white-space: nowrap;
+        }
+
+        .mach-brand-box {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 4px;
+            min-width: 0;
+            flex: 1 1 auto;
+            overflow: hidden;
+        }
+
+        .mach-engel-chip {
+            font-size: 0.52rem;
+            font-weight: 900;
+            letter-spacing: 0.06em;
+            color: #4cae2a;
+            background: #f0fdf4;
+            border: 1px solid #bbf7d0;
+            padding: 0.5px 3px;
+            border-radius: 3px;
+            line-height: 1;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, monospace;
+            flex-shrink: 0;
+        }
+
+        .mach-cad-silhouette {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            pointer-events: none;
+            filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.1));
+        }
+
+        .mach-cad-silhouette svg {
+            width: 42px;
+            height: 20px;
+            display: block;
+        }
+
+        .mach-mold-tag-wrap {
+            display: inline-flex;
+            align-items: center;
+            justify-content: flex-end;
+            flex-shrink: 0;
+        }
+
+        .mach-mold-tag-minimal {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            background: #ffffff;
+            color: #0f172a;
+            border: 1px solid #94a3b8;
+            border-radius: 4px;
+            font-size: 0.65rem;
+            font-weight: 700;
+            font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", Roboto, sans-serif;
+            font-variant-numeric: tabular-nums;
+            padding: 0 4px;
+            height: 16px;
+            min-width: 22px;
+            max-width: 48px;
+            line-height: 1;
+            letter-spacing: -0.01em;
+            flex-shrink: 0;
+            box-shadow: 0 1px 2px rgba(15, 23, 42, 0.06);
+            text-align: center;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .mach-mold-empty-dash {
+            font-size: 0.65rem;
+            font-weight: 700;
+            color: #cbd5e1;
+            line-height: 1;
+            padding: 0 3px;
+            min-width: 18px;
+            text-align: center;
+            display: inline-flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        /* Spodní patro tlačítka: Název dílu (celá šířka tlačítka bez tlačenice) */
+        .mach-tier-bottom {
+            display: flex;
+            align-items: center;
+            width: 100%;
+            min-width: 0;
+            height: 15px;
+            padding-top: 1px;
+            border-top: 1px solid #f1f5f9;
+            overflow: hidden;
+        }
+
+        .mach-mold-product-name {
+            font-size: 0.58rem;
+            font-weight: 600;
+            color: #334155;
+            font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", Roboto, sans-serif;
+            line-height: 1.1;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            letter-spacing: -0.01em;
+            text-align: left;
+            width: 100%;
+            min-width: 0;
+        }
+
+        .mach-prod-placeholder {
+            color: #94a3b8;
+            font-style: italic;
+            font-size: 0.56rem;
+        }
+
+        .mach-prod-empty {
+            color: #cbd5e1;
+            font-size: 0.55rem;
+            font-weight: 500;
+        }
+
+        /* Pulzující stavové body podle vzoru z dashboardu (pro přepínače a informační lišty) */
+        .mach-status-pulse-dot {
+            position: relative;
+            width: 7px;
+            height: 7px;
+            border-radius: 50%;
+            display: inline-block;
+            flex-shrink: 0;
+        }
+
+        .mach-status-pulse-dot.dot-ok {
+            background-color: #16a34a;
+            box-shadow: 0 0 3px rgba(22, 163, 74, 0.5);
+        }
+
+        .mach-status-pulse-dot.dot-warning {
+            background-color: #f97316;
+            box-shadow: 0 0 3px rgba(249, 115, 22, 0.6);
+        }
+
+        .mach-status-pulse-dot.dot-warning::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            background-color: #f97316;
             transform: translate(-50%, -50%);
             animation: statusRadialPulse 1.6s cubic-bezier(0.22, 1, 0.36, 1) infinite;
             pointer-events: none;
         }
 
-        .mach-status-pulse-dot.dot-ok {
-            background-color: #16a34a;
-        }
-
-        .mach-status-pulse-dot.dot-warning {
-            background-color: #f97316;
-        }
-
         .mach-status-pulse-dot.dot-error {
             background-color: #dc2626;
+            box-shadow: 0 0 3px rgba(220, 38, 38, 0.6);
+        }
+
+        .mach-status-pulse-dot.dot-error::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            background-color: #dc2626;
+            transform: translate(-50%, -50%);
+            animation: statusRadialPulse 1.4s cubic-bezier(0.22, 1, 0.36, 1) infinite;
+            pointer-events: none;
         }
 
         /* Delikátní status maják pro stroje s výstrahou nebo poruchou v eskizu */
@@ -4515,6 +4776,29 @@
         /* ==========================================================================
            VÝSUVNÁ BOČNÍ ŠTORKA / KARTA DETAILU STROJE (SLIDE-OVER DRAWER)
            ========================================================================== */
+        .mach-drawer-header-actions {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .mach-drawer-icon-badge {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0;
+            background: transparent !important;
+            border: none !important;
+            box-shadow: none !important;
+        }
+
+        .mach-drawer-icon-badge svg {
+            width: 64px;
+            height: 30px;
+            display: block;
+            filter: drop-shadow(0 2px 4px rgba(15, 23, 42, 0.12));
+        }
+
         .mach-drawer-backdrop {
             position: fixed;
             inset: 0;
@@ -4600,13 +4884,13 @@
             }
 
             .factory-map-scroll-area {
-                padding: 2px 2px;
+                padding: 2px 3px 2px 3px;
                 display: flex;
                 flex-direction: column;
-                justify-content: center;
+                justify-content: flex-start;
                 align-items: center;
+                overflow-y: auto !important;
                 overflow-x: hidden !important;
-                overflow-y: auto;
                 -webkit-overflow-scrolling: touch;
                 flex: 1;
                 min-height: 0;
@@ -4619,13 +4903,16 @@
                 min-width: 0 !important;
                 width: 100% !important;
                 max-width: 100% !important;
-                height: auto;
-                max-height: none;
-                margin: auto 0;
-                padding: 3px 2px;
+                height: auto !important;
+                min-height: 100% !important;
+                max-height: none !important;
+                margin: 0 auto;
+                padding: 3px 3px 3px 3px;
                 border-width: 1.5px;
                 border-radius: 6px;
-                display: block;
+                display: flex !important;
+                flex-direction: column !important;
+                justify-content: space-between !important;
                 box-sizing: border-box;
                 overflow: hidden !important;
                 flex-shrink: 0;
@@ -4633,9 +4920,11 @@
 
             .factory-layout-grid {
                 display: grid;
-                grid-template-columns: minmax(0, 1fr) 6px minmax(0, 1fr) 6px minmax(0, 1fr);
-                gap: 0.1rem;
+                grid-template-columns: minmax(0, 1fr) 9px minmax(0, 1fr) 9px minmax(0, 1fr);
+                gap: 0.18rem;
                 align-items: stretch;
+                flex: 1;
+                min-height: 0;
                 width: 100%;
                 box-sizing: border-box;
             }
@@ -4644,28 +4933,47 @@
                 display: flex;
                 flex-direction: column;
                 justify-content: space-between;
+                height: 100%;
+                min-height: 0;
                 min-width: 0;
                 overflow: hidden;
             }
 
+            .factory-aisle {
+                background: transparent;
+                border: none;
+                padding: 0;
+                min-width: 0;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                justify-content: space-between;
+            }
+
+            .factory-aisle-line {
+                border-left: 1.5px dashed #ffd000; /* Radiant Sunbeam Yellow */
+                opacity: 1;
+            }
+
             .mach-sketch {
-                height: 35px;
-                min-height: 34px;
-                max-height: 36px;
-                padding: 0 4px;
+                height: 41px;
+                min-height: 38px;
+                max-height: 43px;
+                padding: 2.5px 4.5px;
                 background-color: #ffffff;
-                background-image: none;
-                border: 1px solid #e2e8f0;
-                border-left: 3.5px solid #16a34a;
-                border-radius: 6px;
-                box-shadow: 0 1px 3px rgba(15, 23, 42, 0.08), 0 1px 2px rgba(15, 23, 42, 0.04);
+                border: 1px solid #cbd5e1;
+                border-left: 3.5px solid #4cae2a; /* ENGEL Signature Green */
+                border-radius: 5px;
+                box-shadow: 0 1px 2px rgba(15, 23, 42, 0.06);
                 box-sizing: border-box;
                 width: 100%;
                 min-width: 0;
                 overflow: hidden;
                 display: flex;
-                align-items: center;
-                margin: 1.5px 0;
+                flex-direction: column;
+                justify-content: space-between;
+                margin: 0;
+                flex-shrink: 0;
             }
 
             .mach-sketch.status-warning {
@@ -4681,155 +4989,226 @@
             }
 
             .mach-sketch:active {
-                transform: scale(0.97);
+                transform: scale(0.975);
                 background-color: #f8fafc;
             }
 
+            /* Horní patro tlačítka na mobilu */
+            .mach-tier-top {
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                width: 100%;
+                height: 19px;
+                min-width: 0;
+                gap: 2px;
+            }
+
+            .mach-num-box {
+                display: inline-flex;
+                align-items: center;
+                gap: 3px;
+                flex-shrink: 0;
+            }
+
+            .mach-status-beacon {
+                width: 6px;
+                height: 6px;
+                flex-shrink: 0;
+            }
+
             .mach-num {
-                font-size: 0.78rem;
+                font-size: 0.92rem;
                 padding-left: 0;
                 flex-shrink: 0;
-                font-weight: 800;
+                font-weight: 900;
+                color: #0f172a;
                 line-height: 1;
+                letter-spacing: -0.02em;
             }
 
-            .mach-cad-silhouette {
-                margin: 0 1.5px;
-            }
-
-            .mach-cad-silhouette svg {
-                width: 24px;
-                height: 11.5px;
-            }
-
-            .mach-sketch-divider {
-                margin: 0 1.5px;
-                height: 12px;
-                flex-shrink: 0;
-            }
-
-            .mach-mold-slot-box {
+            .mach-brand-box {
+                display: inline-flex;
+                align-items: center;
+                justify-content: center;
                 gap: 2.5px;
                 min-width: 0;
                 flex: 1;
                 overflow: hidden;
-                justify-content: flex-end;
-                align-items: center;
-                display: flex;
             }
 
-            .mach-mold-product-name {
-                display: block;
-                font-size: 0.55rem;
-                font-weight: 600;
+            .mach-engel-chip {
+                font-size: 0.48rem;
+                padding: 1px 3px;
+                font-weight: 900;
+                letter-spacing: 0.05em;
+                color: #15803d;
+                background: #dcfce7;
+                border: 1px solid #86efac;
+                border-radius: 3px;
                 line-height: 1;
-                max-width: 44px;
-                min-width: 0;
-                overflow: hidden;
-                text-overflow: ellipsis;
-                white-space: nowrap;
-                color: #64748b;
-                letter-spacing: -0.02em;
-                text-align: right;
-                flex: 1 1 auto;
+                flex-shrink: 0;
+            }
+
+            .mach-cad-silhouette {
+                margin: 0 1px;
+                flex-shrink: 0;
+            }
+
+            .mach-cad-silhouette svg {
+                width: 27px;
+                height: 13px;
+                display: block;
+            }
+
+            .mach-mold-tag-wrap {
+                flex-shrink: 0;
+                display: inline-flex;
+                align-items: center;
+                justify-content: flex-end;
             }
 
             .mach-mold-tag-minimal {
-                font-size: 0.62rem;
-                font-weight: 700;
-                padding: 1px 3px;
-                height: 17px;
-                min-width: 24px;
-                max-width: 52px;
+                font-size: 0.58rem;
+                font-weight: 800;
+                padding: 0 3px;
+                height: 14px;
+                min-width: 20px;
+                max-width: 44px;
                 box-sizing: border-box;
                 overflow: hidden;
                 text-overflow: ellipsis;
                 white-space: nowrap;
                 flex-shrink: 0;
+                color: #0f172a;
+                background: #ffffff;
+                border: 1px solid #64748b;
+                border-radius: 3px;
+                line-height: 1;
             }
 
             .mach-mold-empty-dash {
                 font-size: 0.58rem;
+                font-weight: 700;
                 min-width: 10px;
                 padding: 0 1px;
+                color: #94a3b8;
+            }
+
+            /* Spodní patro tlačítka na mobilu - celá šířka pro název dílu */
+            .mach-tier-bottom {
+                display: flex;
+                align-items: center;
+                width: 100%;
+                min-width: 0;
+                height: 14px;
+                padding-top: 1px;
+                border-top: 1px solid #e2e8f0;
+                overflow: hidden;
+            }
+
+            .mach-mold-product-name {
+                display: block;
+                font-size: 0.52rem;
+                font-weight: 700;
+                line-height: 1.1;
+                width: 100%;
+                min-width: 0;
+                overflow: hidden;
+                text-overflow: ellipsis;
+                white-space: nowrap;
+                color: #0f172a;
+                letter-spacing: -0.01em;
+                text-align: left;
+            }
+
+            .mach-prod-placeholder {
+                color: #64748b;
+                font-style: italic;
+                font-size: 0.50rem;
+                font-weight: 600;
+            }
+
+            .mach-prod-empty {
+                color: #94a3b8;
+                font-size: 0.48rem;
+                font-weight: 600;
             }
 
             .mach-stack {
-                gap: 0;
+                gap: 4px;
                 min-width: 0;
-            }
-
-            .mach-walkway {
-                height: 5px;
-                gap: 2px;
-                padding: 0 1px;
-                margin: 1px 0;
-            }
-
-            .mach-walkway-line {
-                border-top: 1px dashed #cbd5e1;
-                opacity: 0.9;
-            }
-
-            .mach-walkway-marker {
-                width: 12px;
-                height: 5px;
-                border-radius: 2px;
-                background: #ffffff;
-                border: 1px solid #cbd5e1;
-                box-shadow: 0 0.5px 1px rgba(15, 23, 42, 0.04);
-            }
-
-            .mach-walkway-arrow {
-                width: 7px;
-                height: 3.5px;
+                display: flex;
+                flex-direction: column;
+                min-height: 0;
             }
 
             .mach-passage-spacer {
-                min-height: 14px;
+                min-height: 10px;
+                max-height: 28px;
                 flex: 1;
-                margin: 1px 0;
+                margin: 0;
                 display: flex;
                 align-items: center;
                 justify-content: center;
                 min-width: 0;
             }
 
-            .mach-col-spacer {
-                min-height: 16px;
+            .factory-col.col-center {
+                justify-content: flex-end;
+            }
+
+            .factory-col.col-center .mach-col-spacer {
+                display: flex !important;
+                min-height: 10px;
+                max-height: 28px;
                 flex: 1;
-                margin: 1px 0;
-                display: flex;
+                margin: 0;
                 align-items: center;
                 justify-content: center;
                 min-width: 0;
             }
 
             .factory-staging-zone {
-                min-height: 30px;
-                margin-bottom: 2px;
-                padding: 1px 2px;
-                border-radius: 0 !important;
+                flex-shrink: 0;
+                height: 130px;
+                min-height: 130px;
+                max-height: 130px;
+                width: 100%;
+                margin: auto 0 5px 0;
+                padding: 6px 4px;
+                border: 2px dashed #ffd000; /* Radiant Sunbeam Yellow */
+                border-radius: 6px !important;
+                background: rgba(255, 210, 0, 0.28); /* Radiant Sunbeam Yellow */
                 display: flex;
                 flex-direction: column;
                 align-items: center;
                 justify-content: center;
+                gap: 4px;
                 min-width: 0;
                 position: relative;
+                box-sizing: border-box;
+                box-shadow: inset 0 0 10px rgba(255, 208, 0, 0.12);
             }
-
-            .staging-zone-corner {
-                width: 5px;
-                height: 5px;
-            }
-            .staging-zone-corner.tl { border-width: 2px 0 0 2px; }
-            .staging-zone-corner.tr { border-width: 2px 2px 0 0; }
-            .staging-zone-corner.bl { border-width: 0 0 2px 2px; }
-            .staging-zone-corner.br { border-width: 0 2px 2px 0; }
 
             .staging-zone-label {
-                font-size: 0.52rem;
-                letter-spacing: 0.01em;
+                font-size: 0.72rem;
+                font-weight: 900;
+                color: #0f172a;
+                letter-spacing: 0.04em;
+                line-height: 1.15;
+                text-align: center;
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
+            }
+
+            .staging-zone-sub {
+                display: block !important;
+                font-size: 0.54rem;
+                font-weight: 700;
+                color: #475569;
+                letter-spacing: 0.02em;
                 line-height: 1.1;
                 text-align: center;
                 white-space: nowrap;
@@ -4837,45 +5216,60 @@
                 text-overflow: ellipsis;
             }
 
-            .factory-aisle {
-                padding: 0.15rem 0;
-                min-width: 0;
+            .factory-staging-zone .factory-yellow-arrow {
+                width: 11px;
+                height: 14px;
             }
 
             .factory-aisle-marker {
-                width: 10px;
-                height: 11px;
+                width: auto;
+                height: auto;
+                border: none;
+                background: transparent;
+                box-shadow: none;
+                margin: 1px 0;
             }
 
             .factory-aisle-marker svg {
-                width: 5px;
-                height: 7px;
+                width: 6px;
+                height: 8px;
             }
 
             .factory-aisle-marker.horizontal {
-                width: 11px;
-                height: 10px;
-                margin: 0 1px;
+                width: auto;
+                height: auto;
+                margin: 0 2px;
+                border: none;
+                background: transparent;
+                box-shadow: none;
             }
 
             .factory-aisle-marker.horizontal svg {
-                width: 7px;
-                height: 5px;
+                width: 8px;
+                height: 6px;
             }
 
             .factory-cross-way {
-                padding: 0.05rem 0.15rem;
-                margin-bottom: 0.1rem;
+                background: transparent;
+                border: none;
+                padding: 0;
+                margin: 0;
                 gap: 3px;
                 flex-shrink: 0;
                 width: 100%;
                 box-sizing: border-box;
                 overflow: hidden;
+                height: clamp(11px, 1.7vh, 15px);
             }
 
             .factory-cross-way.bottom {
-                margin-top: 0.1rem;
+                margin-top: 0;
                 margin-bottom: 0;
+            }
+
+            .factory-cross-line {
+                border-top: 1.5px dashed #ffd000; /* Radiant Sunbeam Yellow */
+                opacity: 1;
             }
 
             .mach-drawer-panel {
@@ -4974,6 +5368,13 @@
         </div>
         
         <div class="header-buttons-right">
+            <button class="top-icon-btn" tabindex="0" onclick="triggerPwaInstall()" title="Instalovat aplikaci" id="btnHeaderInstallApp">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" style="color: var(--text-main);">
+                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                    <polyline points="7 10 12 15 17 10"></polyline>
+                    <line x1="12" y1="15" x2="12" y2="3"></line>
+                </svg>
+            </button>
             <button class="top-icon-btn" tabindex="0" onclick="openFactoryMapPage()" title="Schéma lisovny a strojů" id="btnHeaderFactoryMap">
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="color: var(--text-main);">
                     <polygon points="3 6 9 3 15 6 21 3 21 18 15 21 9 18 3 21"></polygon>
@@ -4984,7 +5385,7 @@
             <button class="top-icon-btn" tabindex="0" onclick="openAddModal()" title="Přidat formu">
                 <img src="icon3.png" alt="Přidat">
             </button>
-            <button class="top-icon-btn" tabindex="0" onclick="openLogsModal()" title="Historie">
+            <button class="top-icon-btn" tabindex="0" onclick="openLogsModal()" title="Historie" id="btnHeaderHistory" style="display: none;">
                 <img src="icon2.png" alt="Historie">
             </button>
         </div>
@@ -5147,6 +5548,15 @@
     <div id="onlineUsersContainer" style="display: flex; flex-direction: column; gap: 0.4rem; max-height: 250px; overflow-y: auto;">
         <div style="font-size: 0.78rem; color: var(--text-muted); font-style: italic;">Načítání...</div>
     </div>
+    <div style="margin-top: 0.55rem; padding-top: 0.45rem; border-top: 1px solid var(--border-color, #e2e8f0); display: flex; justify-content: flex-end;">
+        <button type="button" class="btn-secondary" onclick="closeOnlineUsersPopover(); openLogsModal();" style="width: 100%; justify-content: center; font-size: 0.75rem; padding: 0.4rem 0.6rem; display: inline-flex; align-items: center; gap: 0.4rem; color: var(--text-main); font-weight: 600;" title="Otevřít celou historii systému (Správce)">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="10"></circle>
+                <polyline points="12 6 12 12 16 14"></polyline>
+            </svg>
+            <span>Celková historie (Správce)</span>
+        </button>
+    </div>
 </div>
 
 <!-- Gmail-style Under-layer Track (Revealed under sliding row tile) -->
@@ -5240,8 +5650,10 @@
             </div>
 
             <!-- Chips carousel of days -->
-            <div class="cabinet-days-chips-bar" id="cabinetDaysChipsBar">
-                <div class="no-data" style="padding: 0.4rem 0; font-size: 0.8rem;">Načítání směn...</div>
+            <div class="cabinet-days-wrapper">
+                <div class="cabinet-days-chips-bar" id="cabinetDaysChipsBar">
+                    <div class="no-data" style="padding: 0.4rem 0; font-size: 0.8rem;">Načítání směn...</div>
+                </div>
             </div>
 
             <!-- Drill-down checklist of molds for selected day -->
@@ -5318,7 +5730,14 @@
                 <div class="no-data">Načítání aktivity...</div>
             </div>
         </div>
-        <div class="modal-footer" style="flex-shrink: 0; justify-content: flex-end; padding-top: 0.5rem;">
+        <div class="modal-footer" style="flex-shrink: 0; display: flex; justify-content: space-between; align-items: center; padding-top: 0.5rem;">
+            <button class="btn-secondary" onclick="closeUserActivityModal(); openLogsModal();" style="font-size: 0.78rem; padding: 0.4rem 0.75rem; display: inline-flex; align-items: center; gap: 0.35rem; color: var(--text-main); font-weight: 600;">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <polyline points="12 6 12 12 16 14"></polyline>
+                </svg>
+                <span>Celková historie (Správce)</span>
+            </button>
             <button class="btn-primary" onclick="closeUserActivityModal()">Zavřít</button>
         </div>
     </div>
@@ -5345,7 +5764,7 @@
                         <button type="button" class="shift-plan-machine-add-btn" onclick="openShiftPlanTaskModal()" title="Úkol pro lis (Pokračování / Rozjezd)" aria-label="Úkol pro lis">+</button>
                     </div>
                     <input type="text" id="shiftPlanAddInput" class="shift-plan-add-input" placeholder="Číslo formy" autocomplete="off" onkeydown="if(event.key==='Enter') submitShiftPlanManualAdd()">
-                    <button class="btn-primary" style="padding: 0.55rem 0.9rem; font-size: 0.88rem;" onclick="submitShiftPlanManualAdd()">+ Přidat</button>
+                    <button class="btn-primary shift-plan-submit-btn" onclick="submitShiftPlanManualAdd()">+ Přidat</button>
                 </div>
 
                 <div class="shift-plan-stats-bar" id="shiftPlanStatsBar">
@@ -5354,7 +5773,7 @@
                 </div>
 
                 <div class="shift-plan-list" id="shiftPlanListContainer">
-                    <div class="no-data">Načítání seznamu...</div>
+                    <div class="no-data" style="margin: auto; text-align: center;">Načítání seznamu...</div>
                 </div>
             </div>
         </div>
@@ -5757,6 +6176,40 @@
     </div>
 </div>
 
+<div class="modal-overlay" id="pwaInstallGuideModal">
+    <div class="modal-card" style="max-width: 380px; text-align: center;">
+        <div class="modal-header">
+            <h3>Instalace aplikace</h3>
+            <button class="close-modal-btn" onclick="closePwaInstallGuideModal()">✕</button>
+        </div>
+        <div class="modal-body" style="text-align: left; font-size: 0.9rem; line-height: 1.5; color: var(--text-main);">
+            <div style="display: flex; align-items: center; gap: 0.75rem; margin-bottom: 1rem; padding: 0.75rem; background: var(--row-hover); border-radius: 8px; border: 1px solid var(--border-color);">
+                <img src="favicon.png" alt="Adis Formy" style="width: 44px; height: 44px; border-radius: 10px; flex-shrink: 0;">
+                <div>
+                    <div style="font-weight: 700; font-size: 0.95rem;">Adis Formy</div>
+                    <div style="font-size: 0.75rem; color: var(--text-muted);">Integrovaný výrobní systém</div>
+                </div>
+            </div>
+            <div id="pwaIosGuideContent" style="display: none;">
+                <p style="margin-bottom: 0.5rem; font-weight: 600;">Jak nainstalovat na iPhone / iPad:</p>
+                <ol style="padding-left: 1.25rem; margin: 0 0 0.75rem 0; font-size: 0.85rem; color: var(--text-muted);">
+                    <li style="margin-bottom: 0.35rem;">Klepněte na ikonu <strong>Sdílet</strong> (čtvereček se šipkou nahoru) v Safari.</li>
+                    <li>Sjeďte dolů a zvolte <strong>Přidat na plochu</strong>.</li>
+                </ol>
+            </div>
+            <div id="pwaDesktopGuideContent" style="display: none;">
+                <p style="margin-bottom: 0.5rem; font-weight: 600;">Instalace do zařízení:</p>
+                <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 0.75rem;">
+                    V nabídce prohlížeče (tři tečky vpravo nahoře) zvolte <strong>Nainstalovat aplikaci</strong> nebo <strong>Přidat na plochu</strong>.
+                </p>
+            </div>
+        </div>
+        <div class="modal-footer" style="justify-content: flex-end;">
+            <button class="btn-primary" onclick="closePwaInstallGuideModal()">Rozumím</button>
+        </div>
+    </div>
+</div>
+
 <div class="modal-overlay" id="customConfirmModal">
     <div class="modal-card" style="max-width: 380px; text-align: center;">
         <div class="modal-header"><h3 id="customConfirmTitle">Potvrzení akce</h3><button class="close-modal-btn" onclick="closeCustomConfirm(false)">✕</button></div>
@@ -6076,18 +6529,18 @@
     <div class="factory-map-scroll-area">
         <div class="factory-monochrome-canvas" id="factoryMonochromeCanvas">
             
-            <!-- Horní spojovací trasa mezi 33 a 36 se žlutými šipkami a šтрихпунктиром -->
+            <!-- Horní spojovací trasa mezi 33 a 36 s Radiant Sunbeam Yellow šipkami a šтрихпунктиром -->
             <div class="factory-cross-way" title="Dopravní trasa mezi bloky 33 a 36">
                 <div class="factory-cross-line"></div>
                 <div class="factory-aisle-marker horizontal">
-                    <svg class="factory-yellow-arrow" width="13" height="11" viewBox="0 0 14 12" fill="none">
-                        <path d="M1 6H13M13 6L8 1M13 6L8 11" stroke="#64748b" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+                    <svg class="factory-yellow-arrow" width="10" height="8" viewBox="0 0 10 8" fill="none">
+                        <path d="M1 4h8M6 1.5l2.5 2.5L6 6.5" stroke="#ffbb00" stroke-width="2.0" stroke-linecap="round" stroke-linejoin="round"/>
                     </svg>
                 </div>
                 <div class="factory-cross-line"></div>
                 <div class="factory-aisle-marker horizontal">
-                    <svg class="factory-yellow-arrow" width="13" height="11" viewBox="0 0 14 12" fill="none">
-                        <path d="M13 6H1M1 6L6 1M1 6L6 11" stroke="#64748b" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+                    <svg class="factory-yellow-arrow" width="10" height="8" viewBox="0 0 10 8" fill="none">
+                        <path d="M9 4H1M4 1.5L1.5 4 4 6.5" stroke="#ffbb00" stroke-width="2.0" stroke-linecap="round" stroke-linejoin="round"/>
                     </svg>
                 </div>
                 <div class="factory-cross-line"></div>
@@ -6104,8 +6557,8 @@
                         <div class="factory-cross-passage" title="Vstup do haly / Spojovací trasa">
                             <div class="factory-cross-line"></div>
                             <div class="factory-aisle-marker horizontal">
-                                <svg class="factory-yellow-arrow" width="13" height="11" viewBox="0 0 14 12" fill="none">
-                                    <path d="M1 6H13M13 6L8 1M13 6L8 11" stroke="#64748b" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+                                <svg class="factory-yellow-arrow" width="10" height="8" viewBox="0 0 10 8" fill="none">
+                                    <path d="M1 4h8M6 1.5l2.5 2.5L6 6.5" stroke="#ffbb00" stroke-width="2.0" stroke-linecap="round" stroke-linejoin="round"/>
                                 </svg>
                             </div>
                             <div class="factory-cross-line"></div>
@@ -6121,38 +6574,41 @@
                 <div class="factory-aisle" title="Dopravní trasa">
                     <div class="factory-aisle-line"></div>
                     <div class="factory-aisle-marker">
-                        <svg class="factory-yellow-arrow" width="11" height="13" viewBox="0 0 12 14" fill="none">
-                            <path d="M6 1V13M6 13L1 8M6 13L11 8" stroke="#64748b" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+                        <svg class="factory-yellow-arrow" width="8" height="10" viewBox="0 0 8 10" fill="none">
+                            <path d="M4 1v8M1.5 6.5L4 9l2.5-2.5" stroke="#ffbb00" stroke-width="2.0" stroke-linecap="round" stroke-linejoin="round"/>
                         </svg>
                     </div>
                     <div class="factory-aisle-marker">
-                        <svg class="factory-yellow-arrow" width="11" height="13" viewBox="0 0 12 14" fill="none">
-                            <path d="M6 13V1M6 1L1 6M6 1L11 6" stroke="#64748b" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+                        <svg class="factory-yellow-arrow" width="8" height="10" viewBox="0 0 8 10" fill="none">
+                            <path d="M4 9V1M1.5 3.5L4 1l2.5 2.5" stroke="#ffbb00" stroke-width="2.0" stroke-linecap="round" stroke-linejoin="round"/>
                         </svg>
                     </div>
                     <div class="factory-aisle-line"></div>
                 </div>
 
-                <!-- STŘEDNÍ SLOUPEC: nahoře volný prostor -> MANIPULAČNÍ ZÓNA (přímo nad strojem 11) -> dole stroje [11, 12, 23, 25, 26, 27, 31] -->
+                <!-- STŘEDNÍ SLOUPEC: nahoře volný prostor / průchod -> MANIPULAČNÍ ZÓNA (přímo nad strojem 11) -> dole stroje [11, 12, 23, 25, 26, 27, 31] -->
                 <div class="factory-col col-center">
                     <div class="mach-col-spacer">
                         <div class="factory-cross-passage" title="Volný prostor / Spojovací ulička">
                             <div class="factory-cross-line"></div>
+                            <div class="factory-aisle-marker horizontal">
+                                <svg class="factory-yellow-arrow" width="10" height="8" viewBox="0 0 10 8" fill="none">
+                                    <path d="M1 4h8M6 1.5l2.5 2.5L6 6.5" stroke="#ffbb00" stroke-width="2.0" stroke-linecap="round" stroke-linejoin="round"/>
+                                </svg>
+                            </div>
+                            <div class="factory-cross-line"></div>
                         </div>
                     </div>
 
-                    <div class="factory-staging-zone">
-                        <div class="staging-zone-corner tl"></div>
-                        <div class="staging-zone-corner tr"></div>
-                        <div class="staging-zone-corner bl"></div>
-                        <div class="staging-zone-corner br"></div>
+                    <div class="factory-staging-zone" title="Manipulační zóna pro přesun a přípravu forem">
                         <span class="staging-zone-label">MANIPULAČNÍ ZÓNA</span>
-                        <div style="margin-top: 4px; display: flex; align-items: center; justify-content: center; gap: 8px;">
-                            <svg class="factory-yellow-arrow" width="11" height="13" viewBox="0 0 12 14" fill="none">
-                                <path d="M6 1V13M6 13L1 8M6 13L11 8" stroke="#64748b" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+                        <span class="staging-zone-sub">Příprava forem</span>
+                        <div class="staging-zone-arrows-wrap">
+                            <svg class="factory-yellow-arrow" width="10" height="13" viewBox="0 0 8 10" fill="none">
+                                <path d="M4 1v8M1.5 6.5L4 9l2.5-2.5" stroke="#ffbb00" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
                             </svg>
-                            <svg class="factory-yellow-arrow" width="11" height="13" viewBox="0 0 12 14" fill="none">
-                                <path d="M6 13V1M6 1L1 6M6 1L11 6" stroke="#64748b" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+                            <svg class="factory-yellow-arrow" width="10" height="13" viewBox="0 0 8 10" fill="none">
+                                <path d="M4 9V1M1.5 3.5L4 1l2.5 2.5" stroke="#ffbb00" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
                             </svg>
                         </div>
                     </div>
@@ -6166,13 +6622,13 @@
                 <div class="factory-aisle" title="Dopravní trasa">
                     <div class="factory-aisle-line"></div>
                     <div class="factory-aisle-marker">
-                        <svg class="factory-yellow-arrow" width="11" height="13" viewBox="0 0 12 14" fill="none">
-                            <path d="M6 1V13M6 13L1 8M6 13L11 8" stroke="#64748b" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+                        <svg class="factory-yellow-arrow" width="8" height="10" viewBox="0 0 8 10" fill="none">
+                            <path d="M4 1v8M1.5 6.5L4 9l2.5-2.5" stroke="#ffbb00" stroke-width="2.0" stroke-linecap="round" stroke-linejoin="round"/>
                         </svg>
                     </div>
                     <div class="factory-aisle-marker">
-                        <svg class="factory-yellow-arrow" width="11" height="13" viewBox="0 0 12 14" fill="none">
-                            <path d="M6 13V1M6 1L1 6M6 1L11 6" stroke="#64748b" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+                        <svg class="factory-yellow-arrow" width="8" height="10" viewBox="0 0 8 10" fill="none">
+                            <path d="M4 9V1M1.5 3.5L4 1l2.5 2.5" stroke="#ffbb00" stroke-width="2.0" stroke-linecap="round" stroke-linejoin="round"/>
                         </svg>
                     </div>
                     <div class="factory-aisle-line"></div>
@@ -6188,8 +6644,8 @@
                         <div class="factory-cross-passage" title="Průchod mezi řadami">
                             <div class="factory-cross-line"></div>
                             <div class="factory-aisle-marker horizontal">
-                                <svg class="factory-yellow-arrow" width="13" height="11" viewBox="0 0 14 12" fill="none">
-                                    <path d="M1 6H13M13 6L8 1M13 6L8 11" stroke="#64748b" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+                                <svg class="factory-yellow-arrow" width="10" height="8" viewBox="0 0 10 8" fill="none">
+                                    <path d="M1 4h8M6 1.5l2.5 2.5L6 6.5" stroke="#ffbb00" stroke-width="2.0" stroke-linecap="round" stroke-linejoin="round"/>
                                 </svg>
                             </div>
                             <div class="factory-cross-line"></div>
@@ -6202,18 +6658,18 @@
                 </div>
             </div>
 
-            <!-- Spodní spojovací trasa s grafitovými šipkami a šтрихпунктиром -->
+            <!-- Spodní spojovací trasa s Radiant Sunbeam Yellow šipkami a šтрихпунктиром -->
             <div class="factory-cross-way bottom" title="Dopravní trasa">
                 <div class="factory-cross-line"></div>
                 <div class="factory-aisle-marker horizontal">
-                    <svg class="factory-yellow-arrow" width="13" height="11" viewBox="0 0 14 12" fill="none">
-                        <path d="M1 6H13M13 6L8 1M13 6L8 11" stroke="#64748b" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+                    <svg class="factory-yellow-arrow" width="10" height="8" viewBox="0 0 10 8" fill="none">
+                        <path d="M1 4h8M6 1.5l2.5 2.5L6 6.5" stroke="#ffbb00" stroke-width="2.0" stroke-linecap="round" stroke-linejoin="round"/>
                     </svg>
                 </div>
                 <div class="factory-cross-line"></div>
                 <div class="factory-aisle-marker horizontal">
-                    <svg class="factory-yellow-arrow" width="13" height="11" viewBox="0 0 14 12" fill="none">
-                        <path d="M13 6H1M1 6L6 1M1 6L6 11" stroke="#64748b" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+                    <svg class="factory-yellow-arrow" width="10" height="8" viewBox="0 0 10 8" fill="none">
+                        <path d="M9 4H1M4 1.5L1.5 4 4 6.5" stroke="#ffbb00" stroke-width="2.0" stroke-linecap="round" stroke-linejoin="round"/>
                     </svg>
                 </div>
                 <div class="factory-cross-line"></div>
@@ -6231,7 +6687,12 @@
                 <h3 id="machDrawerTitle">LIS Č. 01</h3>
                 <div style="font-size: 0.74rem; color: var(--text-muted); font-weight: 600;">Provozní karta stroje & servisní chat</div>
             </div>
-            <button type="button" class="close-modal-btn" onclick="closeMachineDrawer()">✕</button>
+            <div class="mach-drawer-header-actions">
+                <span class="mach-drawer-icon-badge" id="machDrawerIconBadge" title="Vstřikovací lis ENGEL">
+                    <!-- Digitální dvojče 2.5D se dynamicky aktualizuje -->
+                </span>
+                <button type="button" class="close-modal-btn" onclick="closeMachineDrawer()">✕</button>
+            </div>
         </div>
 
         <div class="mach-drawer-body">
@@ -6338,6 +6799,60 @@
 </div>
 
 <script>
+    // ----------------------------------------------------
+    // IRONCLAD APP-SHELL ZOOM & GESTURE SHIELD
+    // Prevents accidental pinch-to-zoom and double-tap zoom
+    // while keeping local pan/zoom inside drawing/photo viewers
+    // ----------------------------------------------------
+    (function initAppShellShield() {
+        // 1. Prevent Safari pinch-to-zoom gesture on the window
+        const isViewerTarget = (target) => {
+            return target && target.closest && (
+                target.closest('#pdfModal') || 
+                target.closest('#photoModal') || 
+                target.closest('.pdf-scroll-area')
+            );
+        };
+
+        document.addEventListener('gesturestart', function(e) {
+            if (!isViewerTarget(e.target)) {
+                e.preventDefault();
+            }
+        }, { passive: false });
+
+        document.addEventListener('gesturechange', function(e) {
+            if (!isViewerTarget(e.target)) {
+                e.preventDefault();
+            }
+        }, { passive: false });
+
+        document.addEventListener('gestureend', function(e) {
+            if (!isViewerTarget(e.target)) {
+                e.preventDefault();
+            }
+        }, { passive: false });
+
+        // 2. Prevent multi-touch pinch zoom on document body
+        document.addEventListener('touchstart', function(e) {
+            if (e.touches.length > 1 && !isViewerTarget(e.target)) {
+                e.preventDefault();
+            }
+        }, { passive: false });
+
+        // 3. Prevent double-tap zoom on mobile webview
+        let lastTouchEndTime = 0;
+        document.addEventListener('touchend', function(e) {
+            const now = Date.now();
+            if (now - lastTouchEndTime <= 280) {
+                const isFormInput = e.target && e.target.matches && e.target.matches('input, textarea, select, [contenteditable]');
+                if (!isFormInput && !isViewerTarget(e.target)) {
+                    e.preventDefault();
+                }
+            }
+            lastTouchEndTime = now;
+        }, { passive: false });
+    })();
+
     const API_URL = "https://qjoovhagucdcaebgdmbx.supabase.co";
     const API_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFqb292aGFndWNkY2FlYmdkbWJ4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQ4OTYyMTEsImV4cCI6MjEwMDQ3MjIxMX0.Z-Pey6nbpo5b-RyXkc2cCCV7Uj3-YgbAqZsTUV1kZD0";
     const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbz2Zp-Me-bMX_2VY6Be2Mt0Z5HguRLwnjuYz9fNh1nXjbAXIOVXMIlcTNjs1Z72qiuM9Q/exec";
@@ -6674,8 +7189,17 @@
     let activeContextMenuTag = null;
     let activeContextMenuMoldId = null;
     let activeContextMenuCommentId = null;
+    let activeContextMenuShiftPlanItemId = null;
+    let activeContextMenuCabinetItem = null;
     let activeViewCommentId = null;
     let lastTouchInteractionTime = 0;
+    let shiftPlanItemLongPressTimer = null;
+    let shiftPlanItemLongPressTriggered = false;
+    let shiftPlanTouchStartX = 0;
+    let cabinetItemLongPressTimer = null;
+    let cabinetItemTouchStartX = 0;
+    let cabinetItemTouchStartY = 0;
+    let shiftPlanTouchStartY = 0;
 
     let isSubmittingAction = false;
     let realtimeDebounceTimer = null;
@@ -6883,8 +7407,8 @@
     let currentUserActivityFilter = 'ALL';
     let currentUserActivityTarget = '';
     const recentLogsRingBuffer = [];
-    const MAX_RECENT_LOGS_BUFFER = 25;
-    const LOG_DUPLICATE_TIME_WINDOW_MS = 20000; // 20s deduplication window
+    const MAX_RECENT_LOGS_BUFFER = 40;
+    const LOG_DUPLICATE_TIME_WINDOW_MS = 2000; // 2s micro-window to avoid rapid double-click while capturing all actions
 
     async function logUserAction(moldId, oldPos, newPos) {
         if (!currentUser) return;
@@ -6894,7 +7418,7 @@
         const cleanUser = String(currentUser).trim();
         const now = Date.now();
 
-        // Silent deduplication filter: prevent duplicate spam across all actions, searches, and tasks
+        // Prevent rapid double-tap duplicate spam
         const logSignature = `${cleanUser}___${cleanMoldId}___${cleanOldPos}___${cleanNewPos}`.toLowerCase();
 
         // Prune expired entries from buffer
@@ -6902,7 +7426,7 @@
             recentLogsRingBuffer.shift();
         }
 
-        // Check if identical action was logged recently
+        // Check if identical action was logged within 2s micro-window
         const isDuplicate = recentLogsRingBuffer.some(entry => entry.signature === logSignature && (now - entry.time) < LOG_DUPLICATE_TIME_WINDOW_MS);
         if (isDuplicate) {
             return;
@@ -6949,7 +7473,7 @@
         currentUserActivityTarget = userName;
         currentUserActivityFilter = 'ALL';
 
-        // Load logs in real-time first so there is zero flickering or counter resetting
+        // Load all logs in real-time first with limit 1000 to see complete historical activity
         let logs = [];
         try {
             const { data: logsExact, error: errExact } = await supabaseClient
@@ -6957,7 +7481,7 @@
                 .select('*')
                 .eq('user_name', userName)
                 .order('created_at', { ascending: false })
-                .limit(350);
+                .limit(1000);
 
             if (!errExact && logsExact) {
                 logs = logsExact;
@@ -6969,7 +7493,7 @@
                     .select('*')
                     .ilike('user_name', `%${userName}%`)
                     .order('created_at', { ascending: false })
-                    .limit(350);
+                    .limit(1000);
                 if (logsIlike && logsIlike.length > 0) {
                     logs = logsIlike;
                 }
@@ -6978,7 +7502,7 @@
             console.error("Chyba při načítání aktivity uživatele:", err);
         }
 
-        // Filter and deduplicate consecutive identical actions
+        // Preserve all actions, only drop immediate double-taps (< 2000ms)
         const rawLogs = (logs || []).filter(isUserActivityInspectorLog);
         const deduplicatedLogs = [];
         for (let i = 0; i < rawLogs.length; i++) {
@@ -6987,7 +7511,8 @@
             if (prev &&
                 String(prev.mold_id || '').trim().toUpperCase() === String(cur.mold_id || '').trim().toUpperCase() &&
                 String(prev.old_position || '').trim().toLowerCase() === String(cur.old_position || '').trim().toLowerCase() &&
-                String(prev.new_position || '').trim().toLowerCase() === String(cur.new_position || '').trim().toLowerCase()) {
+                String(prev.new_position || '').trim().toLowerCase() === String(cur.new_position || '').trim().toLowerCase() &&
+                Math.abs(new Date(prev.created_at).getTime() - new Date(cur.created_at).getTime()) < 2000) {
                 continue;
             }
             deduplicatedLogs.push(cur);
@@ -7217,6 +7742,15 @@
             } else if (isPhotoEdit) {
                 iconSvg = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width: 14px; height: 14px;"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>';
                 title = `Správa fotografií: #${moldIdStr}`;
+                detail = escapeHtml(newPos);
+            } else if (oldPos === 'Koš' || newPos === 'Koš' || combined.includes('do koše') || combined.includes('z koše')) {
+                iconSvg = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width: 14px; height: 14px;"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>';
+                title = `Koš: Forma #${moldIdStr}`;
+                detail = escapeHtml(newPos);
+            } else if (moldIdStr.startsWith('LIS_') || oldPos.toLowerCase().includes('lisu') || newPos.toLowerCase().includes('lisu') || oldPos.toLowerCase().includes('závad') || newPos.toLowerCase().includes('závad')) {
+                iconSvg = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width: 14px; height: 14px;"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect><line x1="8" y1="21" x2="16" y2="21"></line><line x1="12" y1="17" x2="12" y2="21"></line></svg>';
+                const machNum = moldIdStr.replace(/^LIS_/i, '');
+                title = `Lis č. ${machNum || ''}: ${escapeHtml(oldPos)}`;
                 detail = escapeHtml(newPos);
             } else {
                 const targetObj = formatMoldLogTarget(moldIdStr);
@@ -7983,7 +8517,12 @@
 
         document.getElementById('contextDeleteOption').addEventListener('click', () => {
             triggerHapticFeedback([20]);
-            if (activeContextMenuTag) deleteCustomerTagDirect(activeContextMenuTag);
+            if (activeContextMenuCabinetItem) {
+                const item = activeContextMenuCabinetItem;
+                deleteCabinetHistoryItem(item.logId, item.dayKey, item.titleLabel);
+            }
+            else if (activeContextMenuShiftPlanItemId) removeShiftPlanItemWithConfirm(activeContextMenuShiftPlanItemId);
+            else if (activeContextMenuTag) deleteCustomerTagDirect(activeContextMenuTag);
             else if (activeContextMenuMoldId) deleteMoldSoftDirect(activeContextMenuMoldId);
             else if (activeContextMenuCommentId) deleteComment(activeContextMenuCommentId);
             hideContextMenu();
@@ -8002,8 +8541,10 @@
         const activeBtn = document.querySelector('.tab-btn.active');
         const indicator = document.getElementById('tabIndicator');
         if (activeBtn && indicator) {
-            indicator.style.left = `${activeBtn.offsetLeft}px`;
-            indicator.style.width = `${activeBtn.offsetWidth}px`;
+            const left = activeBtn.offsetLeft;
+            const width = activeBtn.offsetWidth;
+            indicator.style.width = `${width}px`;
+            indicator.style.transform = `translate3d(${left}px, 0, 0)`;
         }
     }
 
@@ -8727,6 +9268,7 @@
         activeContextMenuCommentId = commentId;
         activeContextMenuTag = null;
         activeContextMenuMoldId = null;
+        activeContextMenuShiftPlanItemId = null;
 
         const editColorBtn = document.getElementById('contextEditColorOption');
         if (editColorBtn) editColorBtn.style.display = 'none';
@@ -8739,12 +9281,231 @@
         menu.style.display = 'block';
     }
 
+    function handleShiftPlanItemRightClick(e, itemId) {
+        if (e && e.preventDefault) e.preventDefault();
+        if (e && e.stopPropagation) e.stopPropagation();
+        triggerHapticFeedback([20]);
+
+        const cleanId = String(itemId || '').trim();
+        if (!cleanId) return;
+
+        activeContextMenuShiftPlanItemId = cleanId;
+        activeContextMenuTag = null;
+        activeContextMenuMoldId = null;
+        activeContextMenuCommentId = null;
+
+        const editColorBtn = document.getElementById('contextEditColorOption');
+        if (editColorBtn) editColorBtn.style.display = 'none';
+
+        const item = currentShiftPlan.find(p => String(p.id || p.num).trim() === cleanId);
+        const label = item ? (item.num ? ('formu #' + item.num) : ('Lis č. ' + item.machine)) : 'položku';
+        document.getElementById('contextMenuText').textContent = `Odebrat ${label} z plánu`;
+
+        const menu = document.getElementById('customContextMenu');
+        let clientX = e.clientX;
+        let clientY = e.clientY;
+        if (typeof clientX !== 'number' || typeof clientY !== 'number') {
+            const rect = e.currentTarget ? e.currentTarget.getBoundingClientRect() : null;
+            if (rect) {
+                clientX = rect.left + rect.width / 2;
+                clientY = rect.top + rect.height / 2;
+            } else {
+                clientX = window.innerWidth / 2;
+                clientY = window.innerHeight / 2;
+            }
+        }
+        // Adjust for viewport boundaries
+        const menuWidth = 190;
+        const menuHeight = 50;
+        const posX = Math.min(Math.max(clientX, 12), window.innerWidth - menuWidth - 12);
+        const posY = Math.min(Math.max(clientY, 12), window.innerHeight - menuHeight - 12);
+
+        menu.style.left = `${posX}px`;
+        menu.style.top = `${posY}px`;
+        menu.style.display = 'block';
+    }
+
+    function handleShiftPlanItemTouchStart(e, itemId) {
+        if (!e.touches || e.touches.length !== 1) return;
+        shiftPlanItemLongPressTriggered = false;
+        shiftPlanTouchStartX = e.touches[0].clientX;
+        shiftPlanTouchStartY = e.touches[0].clientY;
+        const targetEl = e.currentTarget;
+
+        if (shiftPlanItemLongPressTimer) clearTimeout(shiftPlanItemLongPressTimer);
+        shiftPlanItemLongPressTimer = setTimeout(() => {
+            shiftPlanItemLongPressTriggered = true;
+            if (targetEl) targetEl.classList.add('shift-plan-item-armed');
+            triggerHapticFeedback([30]);
+            handleShiftPlanItemRightClick(e.touches ? e.touches[0] : e, itemId);
+            setTimeout(() => {
+                if (targetEl) targetEl.classList.remove('shift-plan-item-armed');
+            }, 300);
+        }, 550);
+    }
+
+    function handleShiftPlanItemTouchMove(e) {
+        if (!e.touches || e.touches.length !== 1) return;
+        const dx = Math.abs(e.touches[0].clientX - shiftPlanTouchStartX);
+        const dy = Math.abs(e.touches[0].clientY - shiftPlanTouchStartY);
+        if (dx > 8 || dy > 8) {
+            if (shiftPlanItemLongPressTimer) {
+                clearTimeout(shiftPlanItemLongPressTimer);
+                shiftPlanItemLongPressTimer = null;
+            }
+            if (e.currentTarget) e.currentTarget.classList.remove('shift-plan-item-armed');
+        }
+    }
+
+    function handleShiftPlanItemTouchEnd(e) {
+        if (shiftPlanItemLongPressTimer) {
+            clearTimeout(shiftPlanItemLongPressTimer);
+            shiftPlanItemLongPressTimer = null;
+        }
+        if (e.currentTarget) e.currentTarget.classList.remove('shift-plan-item-armed');
+    }
+
+    function handleCabinetItemRightClick(e, logId, dayKey, titleLabel) {
+        if (e && e.preventDefault) e.preventDefault();
+        if (e && e.stopPropagation) e.stopPropagation();
+        triggerHapticFeedback([20]);
+
+        activeContextMenuCabinetItem = { logId, dayKey, titleLabel };
+        activeContextMenuShiftPlanItemId = null;
+        activeContextMenuTag = null;
+        activeContextMenuMoldId = null;
+        activeContextMenuCommentId = null;
+
+        const editColorBtn = document.getElementById('contextEditColorOption');
+        if (editColorBtn) editColorBtn.style.display = 'none';
+
+        document.getElementById('contextMenuText').textContent = 'Smazat záznam z historie';
+
+        const menu = document.getElementById('customContextMenu');
+        let clientX = e.clientX;
+        let clientY = e.clientY;
+        if (typeof clientX !== 'number' || typeof clientY !== 'number') {
+            const rect = e.currentTarget ? e.currentTarget.getBoundingClientRect() : null;
+            if (rect) {
+                clientX = rect.left + rect.width / 2;
+                clientY = rect.top + rect.height / 2;
+            } else {
+                clientX = window.innerWidth / 2;
+                clientY = window.innerHeight / 2;
+            }
+        }
+
+        const menuWidth = 200;
+        const menuHeight = 50;
+        const posX = Math.min(Math.max(clientX, 12), window.innerWidth - menuWidth - 12);
+        const posY = Math.min(Math.max(clientY, 12), window.innerHeight - menuHeight - 12);
+
+        menu.style.left = `${posX}px`;
+        menu.style.top = `${posY}px`;
+        menu.style.display = 'block';
+    }
+
+    function handleCabinetItemTouchStart(e, logId, dayKey, titleLabel) {
+        if (!e.touches || e.touches.length !== 1) return;
+        cabinetItemTouchStartX = e.touches[0].clientX;
+        cabinetItemTouchStartY = e.touches[0].clientY;
+        const targetEl = e.currentTarget;
+
+        if (cabinetItemLongPressTimer) clearTimeout(cabinetItemLongPressTimer);
+        cabinetItemLongPressTimer = setTimeout(() => {
+            if (targetEl) targetEl.classList.add('cabinet-item-armed');
+            triggerHapticFeedback([30]);
+            handleCabinetItemRightClick(e.touches ? e.touches[0] : e, logId, dayKey, titleLabel);
+            setTimeout(() => {
+                if (targetEl) targetEl.classList.remove('cabinet-item-armed');
+            }, 300);
+        }, 500);
+    }
+
+    function handleCabinetItemTouchMove(e) {
+        if (!e.touches || e.touches.length !== 1) return;
+        const dx = Math.abs(e.touches[0].clientX - cabinetItemTouchStartX);
+        const dy = Math.abs(e.touches[0].clientY - cabinetItemTouchStartY);
+        if (dx > 8 || dy > 8) {
+            if (cabinetItemLongPressTimer) {
+                clearTimeout(cabinetItemLongPressTimer);
+                cabinetItemLongPressTimer = null;
+            }
+            if (e.currentTarget) e.currentTarget.classList.remove('cabinet-item-armed');
+        }
+    }
+
+    function handleCabinetItemTouchEnd(e) {
+        if (cabinetItemLongPressTimer) {
+            clearTimeout(cabinetItemLongPressTimer);
+            cabinetItemLongPressTimer = null;
+        }
+        if (e.currentTarget) e.currentTarget.classList.remove('cabinet-item-armed');
+    }
+
+    async function deleteCabinetHistoryItem(logId, dayKey, titleLabel) {
+        if (!currentUser || !logId) return;
+        triggerHapticFeedback([18]);
+        hideContextMenu();
+
+        const displayLabel = titleLabel || 'Záznam';
+        showCustomConfirm(
+            "Smazat záznam z historie",
+            `Opravdu chcete odstranit "${displayLabel}" z historie?`,
+            "Smazat",
+            async () => {
+                try {
+                    // 1. Delete log row from Supabase mold_logs table
+                    const { error } = await supabaseClient
+                        .from('mold_logs')
+                        .delete()
+                        .eq('id', logId);
+
+                    if (error) {
+                        await fetch(`${API_URL}/rest/v1/mold_logs?id=eq.${logId}`, {
+                            method: 'DELETE',
+                            headers: { 
+                                'apikey': API_KEY, 
+                                'Authorization': `Bearer ${API_KEY}`,
+                                'Prefer': 'return=minimal' 
+                            }
+                        });
+                    }
+
+                    // 2. Remove locally from cabinetDaysData
+                    if (dayKey && cabinetDaysData.has(dayKey)) {
+                        const dayObj = cabinetDaysData.get(dayKey);
+                        dayObj.molds = dayObj.molds.filter(m => String(m.id) !== String(logId));
+                        dayObj.moves = dayObj.molds.length;
+
+                        // Pokud se smažou všechny záznamy daného dne, odstranit záložku/chip tohoto dne
+                        if (dayObj.molds.length === 0) {
+                            cabinetDaysData.delete(dayKey);
+                            const remainingDays = Array.from(cabinetDaysData.keys()).sort((a, b) => b.localeCompare(a));
+                            cabinetSelectedDayKey = remainingDays.length > 0 ? remainingDays[0] : null;
+                        }
+                    }
+
+                    showToast("Záznam byl smazán z historie");
+
+                    // 3. Fully recompute stats and re-render cabinet days and drilldown
+                    await loadAndRenderUserCabinetStats();
+                } catch (err) {
+                    console.error("Chyba při mazání záznamu z historie:", err);
+                    showToast("Chyba při mazání záznamu", true);
+                }
+            }
+        );
+    }
+
     function hideContextMenu() {
         const menu = document.getElementById('customContextMenu');
         if (menu) menu.style.display = 'none';
         activeContextMenuTag = null;
         activeContextMenuMoldId = null;
         activeContextMenuCommentId = null;
+        activeContextMenuShiftPlanItemId = null;
+        activeContextMenuCabinetItem = null;
     }
 
     async function deleteCustomerTagDirect(customerName) {
@@ -8970,9 +9731,6 @@
         
         if (currentActive === tabName || isTabTransitioning) return;
         isTabTransitioning = true;
-
-        const tabLabels = { search: 'Hledání', database: 'Databáze', dashboard: 'Přehled' };
-        logUserAction('SYSTEM', 'Navigace', `Přepnutí na záložku: ${tabLabels[tabName] || tabName}`);
 
         if (typeof isScannerRunning !== 'undefined' && isScannerRunning) {
             closeNumberScanner();
@@ -9689,60 +10447,37 @@
     async function fetchGeminiApi(endpointUrl, cleanKey, options = {}) {
         if (!cleanKey) throw new Error("API klíč je prázdný");
         
-        const attempts = [];
+        // ya29. is Google OAuth bearer token; AIzaSy and AQ. are Gemini API keys
+        const isBearer = cleanKey.startsWith('ya29.');
+        let finalUrl = endpointUrl;
+        const headers = { ...(options.headers || {}) };
 
-        // OAuth Bearer tokens (e.g. AQ.Ab8... or ya29....)
-        if (cleanKey.startsWith('AQ.') || cleanKey.startsWith('ya29.') || !cleanKey.startsWith('AIzaSy')) {
-            attempts.push({
-                url: endpointUrl,
-                opts: {
-                    ...options,
-                    headers: { ...(options.headers || {}), 'Authorization': `Bearer ${cleanKey}` }
-                }
-            });
-            attempts.push({
-                url: endpointUrl,
-                opts: {
-                    ...options,
-                    headers: { ...(options.headers || {}), 'X-Goog-Api-Key': cleanKey }
-                }
-            });
-            const urlWithKey = endpointUrl.includes('?') 
-                ? `${endpointUrl}&key=${encodeURIComponent(cleanKey)}` 
-                : `${endpointUrl}?key=${encodeURIComponent(cleanKey)}`;
-            attempts.push({ url: urlWithKey, opts: options });
+        if (isBearer) {
+            headers['Authorization'] = `Bearer ${cleanKey}`;
         } else {
             // Standard AIzaSy API key
-            const urlWithKey = endpointUrl.includes('?') 
+            finalUrl = endpointUrl.includes('?') 
                 ? `${endpointUrl}&key=${encodeURIComponent(cleanKey)}` 
                 : `${endpointUrl}?key=${encodeURIComponent(cleanKey)}`;
-            attempts.push({ url: urlWithKey, opts: options });
-            attempts.push({
-                url: endpointUrl,
-                opts: {
-                    ...options,
-                    headers: { ...(options.headers || {}), 'X-Goog-Api-Key': cleanKey }
-                }
-            });
-            attempts.push({
-                url: endpointUrl,
-                opts: {
-                    ...options,
-                    headers: { ...(options.headers || {}), 'Authorization': `Bearer ${cleanKey}` }
-                }
-            });
+            headers['X-Goog-Api-Key'] = cleanKey;
         }
 
-        let lastRes = null;
-        for (const attempt of attempts) {
-            try {
-                const res = await fetch(attempt.url, attempt.opts);
-                if (res.ok) return res;
-                lastRes = res;
-            } catch (e) {}
-        }
+        const controller = new AbortController();
+        const timeoutMs = options.timeoutMs || 20000;
+        const timer = setTimeout(() => controller.abort(), timeoutMs);
 
-        return lastRes;
+        try {
+            const res = await fetch(finalUrl, {
+                ...options,
+                headers,
+                signal: options.signal || controller.signal
+            });
+            clearTimeout(timer);
+            return res;
+        } catch (err) {
+            clearTimeout(timer);
+            throw err;
+        }
     }
 
     let _cachedGeminiModelsList = null;
@@ -9751,29 +10486,40 @@
 
     async function fetchAvailableGeminiModels(key) {
         const cleanKey = sanitizeGeminiApiKey(key);
-        if (!cleanKey) throw new Error("API klíč je prázdný");
+        if (!cleanKey) return [];
 
         const now = Date.now();
         if (_cachedGeminiModelsList && _cachedGeminiKey === cleanKey && (now - _cachedGeminiTime < 300000)) {
             return _cachedGeminiModelsList;
         }
 
-        const res = await fetchGeminiApi(`https://generativelanguage.googleapis.com/v1beta/models`, cleanKey);
-        if (!res.ok) {
-            const errJson = await res.json().catch(() => ({}));
-            throw new Error(errJson?.error?.message || `HTTP ${res.status}`);
-        }
-        const data = await res.json();
-        const models = (data?.models || [])
-            .filter(m => Array.isArray(m.supportedGenerationMethods) && m.supportedGenerationMethods.includes("generateContent"))
-            .map(m => m.name.replace(/^models\//, ''));
+        try {
+            const res = await fetchGeminiApi(`https://generativelanguage.googleapis.com/v1beta/models`, cleanKey, { timeoutMs: 15000 });
+            if (!res || !res.ok) {
+                return [];
+            }
+            const data = await res.json();
+            const models = (data?.models || [])
+                .filter(m => Array.isArray(m.supportedGenerationMethods) && m.supportedGenerationMethods.includes("generateContent"))
+                .map(m => m.name.replace(/^models\//, ''))
+                .filter(m => {
+                    const l = m.toLowerCase();
+                    // Must be a Gemini multimodal vision model (exclude Gemma LLM, aqa, etc.)
+                    if (!l.startsWith('gemini-')) return false;
+                    if (l.includes('2.5-') || l.includes('2.0-') || l.includes('1.5-') || l.includes('1.0-')) return false;
+                    if (l.includes('tts') || l.includes('embedding') || l.includes('audio') || l.includes('robotics')) return false;
+                    return true;
+                });
 
-        if (models.length > 0) {
-            _cachedGeminiModelsList = models;
-            _cachedGeminiKey = cleanKey;
-            _cachedGeminiTime = now;
+            if (models.length > 0) {
+                _cachedGeminiModelsList = models;
+                _cachedGeminiKey = cleanKey;
+                _cachedGeminiTime = now;
+            }
+            return models;
+        } catch (e) {
+            return [];
         }
-        return models;
     }
 
     function updateGeminiAiUiState() {
@@ -9978,23 +10724,28 @@
         if (testBtn) testBtn.disabled = true;
 
         try {
-            const availableModels = await fetchAvailableGeminiModels(key);
-            if (availableModels.length > 0) {
-                const primary = availableModels.find(m => m.includes('2.0-flash') || m.includes('1.5-flash') || m.includes('flash')) || availableModels[0];
+            // Instant 200ms authorization check via Google Gemini API
+            const res = await fetchGeminiApi('https://generativelanguage.googleapis.com/v1beta/models', key, { timeoutMs: 6000 });
+            if (res && res.ok) {
                 if (statusEl) {
-                    statusEl.innerHTML = `<span style="color: #22c55e; font-weight: 600;">✓ Spojení navázáno! Klíč je platný (${primary}).</span>`;
+                    statusEl.innerHTML = '<span style="color: #22c55e; font-weight: 600;">✓ Spojení navázáno! Firemní klíč Gemini Vision AI je platný a aktivní.</span>';
                 }
                 triggerHapticFeedback([20]);
             } else {
+                let errText = "Neplatný API klíč";
+                try {
+                    const errJson = await res.json();
+                    if (errJson?.error?.message) errText = errJson.error.message;
+                } catch (e) {}
                 if (statusEl) {
-                    statusEl.innerHTML = '<span style="color: #ef4444;">✕ Pro tento klíč nebyly nalezeny žádné dostupné Gemini modely.</span>';
+                    statusEl.innerHTML = `<span style="color: #ef4444;">✕ ODMÍTNUTO: ${escapeHtml(errText)}</span>`;
                 }
                 triggerHapticFeedback([40, 50, 40]);
             }
         } catch (err) {
             let msg = err.message || '';
-            if (msg.includes('invalid authentication credentials') || msg.includes('API key not valid') || msg.includes('401') || msg.includes('403') || msg.includes('UNAUTHENTICATED')) {
-                msg = 'Klíč byl odmítnut Googlem (neplatný, exspirovaný nebo zrušený klíč). Zkontrolujte, zda jste jej vytvořili na aistudio.google.com/app/apikey.';
+            if (msg.includes('invalid authentication credentials') || msg.includes('API key not valid') || msg.includes('401') || msg.includes('403')) {
+                msg = 'Klíč byl odmítnut Googlem (neplatný nebo zrušený klíč). Zkontrolujte, zda jste jej vytvořili na aistudio.google.com/app/apikey.';
             }
             if (statusEl) {
                 statusEl.innerHTML = `<span style="color: #ef4444;">✕ Neplatný klíč: ${escapeHtml(msg)}</span>`;
@@ -10113,47 +10864,52 @@ Return strictly valid JSON only without markdown formatting with this schema:
                     }
                 ],
                 generationConfig: {
-                    temperature: 0.0,
-                    maxOutputTokens: 1024
+                    maxOutputTokens: 1024,
+                    responseMimeType: "application/json",
+                    thinkingConfig: {
+                        thinkingLevel: "LOW"
+                    }
                 }
             };
 
-            let availableModels = [];
-            try {
-                availableModels = await fetchAvailableGeminiModels(apiKey);
-            } catch (e) {}
-
-            let modelsToTry = [];
-            if (availableModels.length > 0) {
-                const flash25 = availableModels.filter(m => m.includes('2.5-flash'));
-                const flash20 = availableModels.filter(m => m.includes('2.0-flash'));
-                const flash15 = availableModels.filter(m => m.includes('1.5-flash'));
-                const otherFlash = availableModels.filter(m => m.includes('flash') && !flash25.includes(m) && !flash20.includes(m) && !flash15.includes(m));
-                const remaining = availableModels.filter(m => !m.includes('flash'));
-                modelsToTry = [...flash25, ...flash20, ...flash15, ...otherFlash, ...remaining];
-            }
-            if (modelsToTry.length === 0) {
-                modelsToTry = ['gemini-2.5-flash', 'gemini-2.0-flash', 'gemini-1.5-flash', 'gemini-2.0-flash-lite'];
-            }
+            // Complete high-speed resilient model cascade (tries all free/active vision models in sequence)
+            const modelsToTry = [
+                'gemini-3.5-flash-lite',
+                'gemini-3.1-flash-lite',
+                'gemini-3.6-flash',
+                'gemini-3.8-flash',
+                'gemini-3.7-flash',
+                'gemini-3-flash-preview',
+                'gemini-flash-latest'
+            ];
 
             let res = null;
             let lastErrData = null;
 
             for (const modelName of modelsToTry) {
                 try {
+                    const reqPayload = JSON.parse(JSON.stringify(payload));
+                    if (modelName.includes('lite')) {
+                        delete reqPayload.generationConfig.thinkingConfig;
+                    }
                     const response = await fetchGeminiApi(`https://generativelanguage.googleapis.com/v1beta/models/${modelName}:generateContent`, apiKey, {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify(payload)
+                        body: JSON.stringify(reqPayload),
+                        timeoutMs: 6000
                     });
 
-                    if (response.ok) {
+                    if (response && response.ok) {
                         res = response;
                         break;
-                    } else {
+                    } else if (response) {
                         const errJson = await response.json().catch(() => ({}));
                         lastErrData = { status: response.status, data: errJson };
                         console.warn(`Gemini Vision model ${modelName} returned status ${response.status}:`, errJson);
+                        // If quota reached or auth failed, stop immediately without wasting time on remaining models
+                        if (response.status === 401 || response.status === 403 || response.status === 429) {
+                            break;
+                        }
                     }
                 } catch (fetchErr) {
                     console.warn(`Fetch error trying ${modelName}:`, fetchErr);
@@ -10359,24 +11115,34 @@ Return strictly valid JSON only without markdown formatting with this schema:
         if (tesseractWorker) return tesseractWorker;
         if (typeof Tesseract === 'undefined') return null;
         if (isInitializingTesseract) {
-            while (isInitializingTesseract) {
-                await new Promise(r => setTimeout(r, 80));
+            let waitAttempts = 0;
+            while (isInitializingTesseract && waitAttempts < 40) {
+                await new Promise(r => setTimeout(r, 100));
+                waitAttempts++;
             }
             return tesseractWorker;
         }
         isInitializingTesseract = true;
         try {
-            const worker = await Tesseract.createWorker('eng', 1, {
-                logger: () => {}
-            });
-            await worker.setParameters({
-                tessedit_pageseg_mode: '11', // Sparse text - finds characters/numbers in any layout without paragraph constraints
-                user_defined_dpi: '300'
-            });
+            // Guard with 5s timeout to prevent hanging when downloading CDN weights on slow network
+            const loadWorkerPromise = (async () => {
+                const worker = await Tesseract.createWorker('eng', 1, {
+                    logger: () => {}
+                });
+                await worker.setParameters({
+                    tessedit_pageseg_mode: '11',
+                    user_defined_dpi: '300'
+                });
+                return worker;
+            })();
+            const timeoutPromise = new Promise((_, reject) => 
+                setTimeout(() => reject(new Error("Tesseract CDN download timeout")), 15000)
+            );
+            const worker = await Promise.race([loadWorkerPromise, timeoutPromise]);
             tesseractWorker = worker;
             return tesseractWorker;
         } catch (err) {
-            console.warn("Chyba při inicializaci Tesseract OCR:", err);
+            console.warn("Chyba při inicializaci Tesseract OCR (timeout/offline):", err);
             return null;
         } finally {
             isInitializingTesseract = false;
@@ -10457,6 +11223,10 @@ Return strictly valid JSON only without markdown formatting with this schema:
         updateScannerSnapBtnState(false);
         updateGeminiAiUiState();
         syncGeminiApiKeyFromDb();
+        // Gentle background warmup so local OCR is pre-loaded without blocking UI
+        setTimeout(() => {
+            getTesseractWorker().catch(() => {});
+        }, 350);
 
         const reticle = document.getElementById('scannerReticle');
         if (reticle) {
@@ -10657,8 +11427,8 @@ Return strictly valid JSON only without markdown formatting with this schema:
         if (cropW <= 0 || cropH <= 0 || isNaN(cropW) || isNaN(cropH)) return null;
 
         const canvas = document.createElement('canvas');
-        // High resolution with preserved aspect ratio for crisp recognition of handwritten numbers & lists
-        const maxDim = 1280;
+        // Optimal resolution for high-accuracy vision AI with sub-second transmission
+        const maxDim = 960;
         let destW = Math.round(cropW);
         let destH = Math.round(cropH);
         if (destW > maxDim || destH > maxDim) {
@@ -10671,86 +11441,15 @@ Return strictly valid JSON only without markdown formatting with this schema:
 
         canvas.width = destW;
         canvas.height = destH;
-        const ctx = canvas.getContext('2d', { willReadFrequently: true });
-        
-        ctx.drawImage(video, cropX, cropY, cropW, cropH, 0, 0, destW, destH);
-
-        // Preprocessing: shadow removal & adaptive contrast for handwriting on paper
-        try {
-            const imgData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-            const d = imgData.data;
-            const w = canvas.width;
-            const h = canvas.height;
-
-            // Block grid background luminance estimation based on resolution
-            const gridCols = Math.max(6, Math.round(w / 70));
-            const gridRows = Math.max(6, Math.round(h / 70));
-            const cellW = Math.ceil(w / gridCols);
-            const cellH = Math.ceil(h / gridRows);
-            const bgGrid = [];
-
-            for (let gy = 0; gy < gridRows; gy++) {
-                bgGrid[gy] = [];
-                for (let gx = 0; gx < gridCols; gx++) {
-                    const startX = gx * cellW;
-                    const endX = Math.min(w, startX + cellW);
-                    const startY = gy * cellH;
-                    const endY = Math.min(h, startY + cellH);
-
-                    let cellLums = [];
-                    for (let y = startY; y < endY; y += 2) {
-                        for (let x = startX; x < endX; x += 2) {
-                            const idx = (y * w + x) * 4;
-                            const lum = 0.299 * d[idx] + 0.587 * d[idx+1] + 0.114 * d[idx+2];
-                            cellLums.push(lum);
-                        }
-                    }
-                    if (cellLums.length > 0) {
-                        cellLums.sort((a, b) => a - b);
-                        // 85th percentile represents local paper background
-                        const p85Idx = Math.floor(cellLums.length * 0.85);
-                        bgGrid[gy][gx] = cellLums[p85Idx];
-                    } else {
-                        bgGrid[gy][gx] = 200;
-                    }
-                }
-            }
-
-            // Normalize pixels against local background to eliminate hand/phone shadows & preserve fine ballpoint pen strokes
-            for (let y = 0; y < h; y++) {
-                const gy = Math.min(gridRows - 1, Math.floor(y / cellH));
-                for (let x = 0; x < w; x++) {
-                    const gx = Math.min(gridCols - 1, Math.floor(x / cellW));
-                    const localBg = Math.max(50, bgGrid[gy][gx]);
-                    const idx = (y * w + x) * 4;
-                    const r = d[idx], g = d[idx+1], b = d[idx+2];
-                    
-                    // For blue/black pen: Red channel is the darkest!
-                    const minCh = Math.min(r, g);
-                    const lum = 0.299 * r + 0.587 * g + 0.114 * b;
-                    const effectiveLum = Math.min(lum, minCh * 1.15);
-
-                    const ratio = effectiveLum / localBg;
-                    let enhanced;
-                    if (ratio < 0.85) {
-                        // Dark & medium ink stroke - push darker with smooth quadratic curve (supports light pencil to heavy marker)
-                        const normInk = ratio / 0.85;
-                        enhanced = Math.max(0, Math.round(normInk * normInk * 115));
-                    } else if (ratio < 0.94) {
-                        // Soft edge anti-aliasing transition (fine ballpoint pen & pencil stroke preservation)
-                        enhanced = Math.min(255, Math.round(115 + (ratio - 0.85) * 1550));
-                    } else {
-                        // Paper background - clean bright white
-                        enhanced = 255;
-                    }
-
-                    d[idx] = enhanced;
-                    d[idx+1] = enhanced;
-                    d[idx+2] = enhanced;
-                }
-            }
-            ctx.putImageData(imgData, 0, 0);
-        } catch (e) {}
+        const ctx = canvas.getContext('2d');
+        if (ctx) {
+            // Hardware-accelerated contrast & clarity boost for pen & pencil on industrial paper
+            ctx.filter = 'contrast(1.22) brightness(1.02)';
+            ctx.drawImage(video, cropX, cropY, cropW, cropH, 0, 0, destW, destH);
+        } else {
+            const fallbackCtx = canvas.getContext('2d');
+            if (fallbackCtx) fallbackCtx.drawImage(video, cropX, cropY, cropW, cropH, 0, 0, destW, destH);
+        }
 
         return canvas;
     }
@@ -11691,71 +12390,107 @@ Return strictly valid JSON only without markdown formatting with this schema:
             let detectedText = '';
 
             // ==========================================
-            // ON-DEMAND PHOTO RECOGNITION PIPELINE
-            // Tier 1 Priority: Gemini Vision AI (Instant recognition & open)
-            // Tier 2 Fallback: Barcode + Tesseract OCR (STRICTLY ONLY on Gemini error / offline / quota limit / no key)
+            // HIGH-SPEED SMART RECOGNITION PIPELINE
+            // Tier 1 Priority: High-speed server proxy /api/gemini/scan (~1s response)
+            // Tier 2 Priority: Direct client Gemini API (with thinkingLevel LOW)
+            // Tier 3 Fallback: Barcode + Guarded Tesseract OCR
             // ==========================================
-            const apiKey = getGeminiApiKey();
+            let geminiResult = null;
             let geminiProblem = false;
             let geminiErrorMessage = '';
 
-            if (apiKey) {
-                const geminiResult = await recognizeWithGeminiVision(cropCanvas, scannerActiveMode);
+            const dataUrl = cropCanvas.toDataURL('image/jpeg', 0.82);
+            const base64Data = dataUrl.split(',')[1];
 
-                if (geminiResult && geminiResult.error) {
-                    // Actual Gemini failure / problem
+            // 1. Primary: High-speed server-side Gemini API (using process.env.GEMINI_API_KEY)
+            try {
+                const proxyRes = await fetch('/api/gemini/scan', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ imageBase64: base64Data, mode: scannerActiveMode }),
+                    signal: AbortSignal.timeout(25000)
+                });
+                if (proxyRes.ok) {
+                    const json = await proxyRes.json();
+                    if (json.success && json.data) {
+                        geminiResult = {
+                            primaryNumber: json.data.primary_number || json.data.code || '',
+                            numbers: json.data.numbers || (json.data.primary_number ? [json.data.primary_number] : []),
+                            productName: json.data.product_name || json.data.name || '',
+                            rawText: json.data.raw_text || '',
+                            pairs: json.data.pairs || []
+                        };
+                    }
+                }
+            } catch (proxyErr) {
+                // Server proxy unreachable or timed out (e.g. static hosting)
+            }
+
+            // 2. Secondary: Direct client-side Gemini Vision API call if server wasn't available
+            if (!geminiResult) {
+                let apiKey = getGeminiApiKey();
+                if (!apiKey) {
+                    await syncGeminiApiKeyFromDb();
+                    apiKey = getGeminiApiKey();
+                }
+
+                if (apiKey) {
+                    geminiResult = await recognizeWithGeminiVision(cropCanvas, scannerActiveMode);
+                    if (geminiResult && geminiResult.error) {
+                        geminiProblem = true;
+                        geminiErrorMessage = (geminiResult.error === 'quota_exceeded')
+                            ? "Limit Gemini AI vyčerpán"
+                            : "Chyba připojení k Gemini AI";
+                        console.warn("Gemini Vision selhalo:", geminiResult);
+                    }
+                } else {
                     geminiProblem = true;
-                    geminiErrorMessage = (geminiResult.error === 'quota_exceeded')
-                        ? "Limit Gemini AI vyčerpán"
-                        : "Chyba připojení k Gemini AI";
-                    console.warn("Gemini Vision selhalo, spouštím záložní OCR:", geminiResult);
-                } else if (geminiResult) {
-                    // Gemini Vision processed the image successfully:
-                    // Under no circumstances do we call Tesseract here!
-                    if (scannerActiveMode === 'plan') {
-                        const batchMolds = matchGeminiPlanBatch(geminiResult, barcodeValues, cropCanvas);
-                        if (batchMolds && batchMolds.length > 0) {
-                            handleBatchMoldMatchFound(batchMolds);
+                    geminiErrorMessage = "Klíč Gemini AI není nastaven";
+                }
+            }
+
+            if (!geminiProblem && geminiResult) {
+                // Gemini Vision processed the image successfully:
+                // Under no circumstances do we call Tesseract here!
+                if (scannerActiveMode === 'plan') {
+                    const batchMolds = matchGeminiPlanBatch(geminiResult, barcodeValues, cropCanvas);
+                    if (batchMolds && batchMolds.length > 0) {
+                        handleBatchMoldMatchFound(batchMolds);
+                        return;
+                    } else {
+                        showToast("Gemini AI: Na listu nebyly nalezeny žádné formy z databáze.");
+                        if (statusText) statusText.textContent = "Žádné formy nerozpoznány.";
+                        playScannerAudioBeep(false);
+                        return;
+                    }
+                } else {
+                    const matchResult = matchGeminiData(geminiResult, barcodeValues, cropCanvas);
+                    if (matchResult) {
+                        if (matchResult.type === 'single') {
+                            const moldNum = matchResult.mold[0];
+                            haptic.cameraSuccess();
+                            playScannerAudioBeep(true);
+                            showToast(`✓ Gemini AI: Forma #${moldNum} nalezena`);
+                            scannerOpenSpecificMold(moldNum);
                             return;
-                        } else {
-                            showToast("Gemini AI: Na listu nebyly nalezeny žádné formy z databáze.");
-                            if (statusText) statusText.textContent = "Žádné formy nerozpoznány.";
-                            playScannerAudioBeep(false);
+                        } else if (matchResult.type === 'multi') {
+                            handleMultiMoldMatchFound(matchResult);
                             return;
                         }
                     } else {
-                        const matchResult = matchGeminiData(geminiResult, barcodeValues, cropCanvas);
-                        if (matchResult) {
-                            if (matchResult.type === 'single') {
-                                const moldNum = matchResult.mold[0];
-                                haptic.cameraSuccess();
-                                playScannerAudioBeep(true);
-                                showToast(`✓ Gemini AI: Forma #${moldNum} nalezena`);
-                                scannerOpenSpecificMold(moldNum);
-                                return;
-                            } else if (matchResult.type === 'multi') {
-                                handleMultiMoldMatchFound(matchResult);
-                                return;
-                            }
+                        const sampleFound = (geminiResult.primaryNumber || (geminiResult.numbers && geminiResult.numbers[0]) || geminiResult.productName || geminiResult.rawText || '').trim();
+                        if (sampleFound) {
+                            const previewText = sampleFound.length > 28 ? sampleFound.substring(0, 28) + '...' : sampleFound;
+                            showToast(`Gemini AI přečetlo: "${previewText}", ale v databázi nebyla nalezena shoda.`);
+                            if (statusText) statusText.textContent = `Nenalezeno v databázi: "${previewText}"`;
                         } else {
-                            // Gemini Vision successfully read the frame, but no matching mold exists in the database
-                            const sampleFound = (geminiResult.primaryNumber || (geminiResult.numbers && geminiResult.numbers[0]) || geminiResult.productName || geminiResult.rawText || '').trim();
-                            if (sampleFound) {
-                                const previewText = sampleFound.length > 28 ? sampleFound.substring(0, 28) + '...' : sampleFound;
-                                showToast(`Gemini AI přečetlo: "${previewText}", ale v databázi nebyla nalezena shoda.`);
-                                if (statusText) statusText.textContent = `Nenalezeno v databázi: "${previewText}"`;
-                            } else {
-                                showToast("Gemini AI: Na štítku nebylo nalezeno žádné čitelné číslo.");
-                                if (statusText) statusText.textContent = "Nerozpoznáno. Zkuste zaostřit.";
-                            }
-                            playScannerAudioBeep(false);
-                            return; // Gemini worked, do NOT start Tesseract!
+                            showToast("Gemini AI: Na štítku nebylo nalezeno žádné čitelné číslo.");
+                            if (statusText) statusText.textContent = "Nerozpoznáno. Zkuste zaostřit.";
                         }
+                        playScannerAudioBeep(false);
+                        return; // Gemini worked, do NOT start Tesseract!
                     }
                 }
-            } else {
-                geminiProblem = true;
-                geminiErrorMessage = "Klíč Gemini AI není nastaven";
             }
 
             // ==========================================
@@ -11763,7 +12498,7 @@ Return strictly valid JSON only without markdown formatting with this schema:
             // (No API key, quota limit, network outage, or API crash)
             // ==========================================
             if (geminiProblem) {
-                showToast(`${geminiErrorMessage}. Spouštím záložní OCR...`, 3200);
+                showToast(`${geminiErrorMessage}. Spouštím záložní OCR...`, 2400);
                 if (statusText) statusText.textContent = "Záložní čtení (Kód / OCR)...";
                 updateScannerSnapBtnState(true, "Záložní OCR...");
 
@@ -11780,50 +12515,33 @@ Return strictly valid JSON only without markdown formatting with this schema:
                     } catch (bErr) {}
                 }
 
-                // 2. Fallback: Local Tesseract worker (strictly lazy loaded on demand)
-                const worker = await getTesseractWorker();
-                if (worker) {
-                    try {
+                // 2. Fallback: Local Tesseract worker (lightweight resolution + 8s hard timeout)
+                try {
+                    const worker = await getTesseractWorker();
+                    if (worker) {
                         const desiredPsm = (scannerActiveMode === 'plan') ? '6' : '11';
                         if (scannerCurrentPsm !== desiredPsm) {
                             await worker.setParameters({ tessedit_pageseg_mode: desiredPsm });
                             scannerCurrentPsm = desiredPsm;
                         }
 
-                        const ret = await worker.recognize(cropCanvas);
+                        // Lightweight downsample for instant WASM OCR
+                        const ocrCanvas = document.createElement('canvas');
+                        const scale = Math.min(1, 520 / Math.max(cropCanvas.width, cropCanvas.height));
+                        ocrCanvas.width = Math.max(1, Math.round(cropCanvas.width * scale));
+                        ocrCanvas.height = Math.max(1, Math.round(cropCanvas.height * scale));
+                        const ocrCtx = ocrCanvas.getContext('2d');
+                        if (ocrCtx) ocrCtx.drawImage(cropCanvas, 0, 0, ocrCanvas.width, ocrCanvas.height);
+
+                        const ocrTask = worker.recognize(ocrCanvas);
+                        const timeoutTask = new Promise((_, reject) => setTimeout(() => reject(new Error("Timeout")), 3500));
+                        const ret = await Promise.race([ocrTask, timeoutTask]);
                         if (ret && ret.data && ret.data.text) {
                             detectedText = ret.data.text.trim();
                         }
-
-                        // Extra slice pass in plan mode if tall
-                        if (scannerActiveMode === 'plan' && cropCanvas.height > 350) {
-                            try {
-                                const halfH = Math.floor(cropCanvas.height / 2);
-                                const topCanvas = document.createElement('canvas');
-                                topCanvas.width = cropCanvas.width;
-                                topCanvas.height = halfH + 40;
-                                const topCtx = topCanvas.getContext('2d');
-                                topCtx.drawImage(cropCanvas, 0, 0, cropCanvas.width, halfH + 40, 0, 0, topCanvas.width, halfH + 40);
-
-                                const botCanvas = document.createElement('canvas');
-                                botCanvas.width = cropCanvas.width;
-                                botCanvas.height = halfH + 40;
-                                const botCtx = botCanvas.getContext('2d');
-                                botCtx.drawImage(cropCanvas, 0, halfH - 40, cropCanvas.width, halfH + 40, 0, 0, botCanvas.width, halfH + 40);
-
-                                const [topRet, botRet] = await Promise.all([
-                                    worker.recognize(topCanvas),
-                                    worker.recognize(botCanvas)
-                                ]);
-                                if (topRet?.data?.text) detectedText += '\n' + topRet.data.text;
-                                if (botRet?.data?.text) detectedText += '\n' + botRet.data.text;
-                            } catch (sliceErr) {
-                                console.warn("Slice OCR error:", sliceErr);
-                            }
-                        }
-                    } catch (ocrErr) {
-                        console.warn("Chyba záložního OCR:", ocrErr);
                     }
+                } catch (ocrErr) {
+                    console.warn("Záložní OCR přeskočeno (timeout / offline):", ocrErr);
                 }
 
                 // Evaluate fallback result
@@ -11871,6 +12589,7 @@ Return strictly valid JSON only without markdown formatting with this schema:
             console.error("Chyba při rozpoznávání snímku:", e);
         } finally {
             isScannerProcessing = false;
+            pendingManualSnap = false;
             updateScannerSnapBtnState(false);
         }
     }
@@ -13138,16 +13857,16 @@ Return strictly valid JSON only without markdown formatting with this schema:
 
         if (total === 0) {
             container.innerHTML = `
-                <div class="empty-state-card" style="padding: 1.5rem 1rem; border-color: var(--border-color); box-shadow: none;">
-                    <div class="empty-state-icon-box">
+                <div class="empty-state-card" style="margin: auto !important; align-self: center; justify-self: center; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 2rem 1rem; border-color: var(--border-color); box-shadow: none;">
+                    <div class="empty-state-icon-box" style="margin: 0 auto 0.75rem auto;">
                         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
                             <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path>
                             <rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect>
                             <path d="m9 14 2 2 4-4"></path>
                         </svg>
                     </div>
-                    <div class="empty-state-title" style="font-size: 0.95rem;">Žádné úkoly v plánu</div>
-                    <div class="empty-state-desc" style="font-size: 0.8rem;">Zadejte lis a klikněte + pro úkol (Rozjezd / Pokračování), nebo zadejte číslo formy a klikněte + Přidat.</div>
+                    <div class="empty-state-title" style="font-size: 0.95rem; text-align: center;">Žádné úkoly v plánu</div>
+                    <div class="empty-state-desc" style="font-size: 0.8rem; text-align: center; margin-left: auto; margin-right: auto;">Zadejte lis a klikněte + pro úkol (Rozjezd / Pokračování), nebo zadejte číslo formy a klikněte + Přidat.</div>
                 </div>
             `;
             return;
@@ -13193,7 +13912,14 @@ Return strictly valid JSON only without markdown formatting with this schema:
             ` : '';
 
             return `
-                <div class="shift-plan-item ${isChecked ? 'is-checked' : ''}" onclick="toggleShiftPlanItem('${escapeHtml(itemId)}', event)" style="cursor: pointer;">
+                <div class="shift-plan-item ${isChecked ? 'is-checked' : ''}" 
+                    onclick="toggleShiftPlanItem('${escapeHtml(itemId)}', event)" 
+                    oncontextmenu="handleShiftPlanItemRightClick(event, '${escapeHtml(itemId)}')"
+                    ontouchstart="handleShiftPlanItemTouchStart(event, '${escapeHtml(itemId)}')"
+                    ontouchmove="handleShiftPlanItemTouchMove(event)"
+                    ontouchend="handleShiftPlanItemTouchEnd(event)"
+                    ontouchcancel="handleShiftPlanItemTouchEnd(event)"
+                    style="cursor: pointer;">
                     <div class="shift-plan-left" style="pointer-events: none;">
                         <div class="shift-plan-checkbox" title="${isChecked ? 'Označeno jako hotové' : 'Označit jako hotové'}" role="checkbox" aria-checked="${isChecked}">
                             ${checkIcon}
@@ -13222,6 +13948,11 @@ Return strictly valid JSON only without markdown formatting with this schema:
     }
 
     function toggleShiftPlanItem(itemId, e) {
+        if (shiftPlanItemLongPressTriggered) {
+            shiftPlanItemLongPressTriggered = false;
+            if (e && typeof e.stopPropagation === 'function') e.stopPropagation();
+            return;
+        }
         if (!checkAuthOrPrompt()) return;
         if (e && typeof e.stopPropagation === 'function') {
             e.stopPropagation();
@@ -13278,6 +14009,7 @@ Return strictly valid JSON only without markdown formatting with this schema:
         renderShiftPlanList();
         triggerHapticFeedback([18]);
         if (!suppressToast) showToast(`Forma #${cleanNum} přidána do plánu`);
+        logUserAction(cleanNum, 'Plán na směnu', `Přidána forma #${cleanNum} do plánu směny${machineNum ? ` (Lis č. ${machineNum})` : ''}`);
         return true;
     }
 
@@ -13331,20 +14063,30 @@ Return strictly valid JSON only without markdown formatting with this schema:
         }
     }
 
+    function removeShiftPlanItemWithConfirm(itemId) {
+        if (!checkAuthOrPrompt()) return;
+        const cleanId = String(itemId || '').trim();
+        if (!cleanId) return;
+        const item = currentShiftPlan.find(p => String(p.id || p.num).trim() === cleanId);
+        if (!item) return;
+
+        const label = item.num ? `formu #${item.num}` : `úkol pro Lis č. ${item.machine}`;
+        showCustomConfirm("Odebrat z plánu", `Opravdu chcete odebrat ${label} ze seznamu forem na směnu?`, "Odebrat", () => {
+            currentShiftPlan = currentShiftPlan.filter(p => String(p.id || p.num).trim() !== cleanId);
+            saveShiftPlan();
+            renderShiftPlanList();
+            showToast(`${item.num ? ('Forma #' + item.num) : ('Lis č. ' + item.machine)} byla odebrána z plánu`);
+            logUserAction(item.num || ('LIS_' + (item.machine || '')), 'Plán na směnu', `Odebráno z plánu směny: ${label}`);
+        });
+    }
+
     function removeShiftPlanItem(itemId, e) {
         if (!checkAuthOrPrompt()) return;
         if (e && typeof e.stopPropagation === 'function') {
             e.stopPropagation();
         }
         triggerHapticFeedback([20]);
-        const cleanId = String(itemId || '').trim();
-        if (!cleanId) return;
-        const removedItem = currentShiftPlan.find(p => String(p.id || p.num).trim() === cleanId);
-        currentShiftPlan = currentShiftPlan.filter(p => String(p.id || p.num).trim() !== cleanId);
-        saveShiftPlan();
-        renderShiftPlanList();
-        const label = removedItem ? (removedItem.num ? ('Forma #' + removedItem.num) : ('Lis č. ' + removedItem.machine)) : 'Položka';
-        showToast(`${label} byla odebrána z plánu`);
+        removeShiftPlanItemWithConfirm(itemId);
     }
 
     function clearShiftPlan() {
@@ -13361,6 +14103,7 @@ Return strictly valid JSON only without markdown formatting with this schema:
             saveShiftPlan();
             renderShiftPlanList();
             showToast("Hotové položky byly odebrány ze seznamu");
+            logUserAction('PLÁN', 'Plán na směnu', `Vyčištěno ${checkedItems.length} dokončených položek z plánu`);
         });
     }
 
@@ -13440,6 +14183,59 @@ Return strictly valid JSON only without markdown formatting with this schema:
 
     let cabinetDaysData = new Map();
     let cabinetSelectedDayKey = null;
+
+    let isCabinetDragging = false;
+    let cabinetDragStartX = 0;
+    let cabinetDragScrollLeft = 0;
+    let cabinetDragMoved = false;
+
+    function initCabinetDaysScrolling() {
+        const container = document.getElementById('cabinetDaysChipsBar');
+        if (!container || container.dataset.dragInitialized) return;
+        container.dataset.dragInitialized = "true";
+
+        container.addEventListener('mousedown', (e) => {
+            if (e.button !== 0) return;
+            isCabinetDragging = true;
+            cabinetDragMoved = false;
+            cabinetDragStartX = e.pageX;
+            cabinetDragScrollLeft = container.scrollLeft;
+        });
+
+        container.addEventListener('wheel', (e) => {
+            if (e.deltaY !== 0 || e.deltaX !== 0) {
+                const delta = Math.abs(e.deltaX) > Math.abs(e.deltaY) ? e.deltaX : e.deltaY;
+                container.scrollLeft += delta;
+                e.preventDefault();
+            }
+        }, { passive: false });
+    }
+
+    window.addEventListener('mousemove', (e) => {
+        if (!isCabinetDragging) return;
+        const container = document.getElementById('cabinetDaysChipsBar');
+        if (!container) return;
+        const walk = e.pageX - cabinetDragStartX;
+        if (Math.abs(walk) > 4) {
+            cabinetDragMoved = true;
+            container.classList.add('is-dragging');
+        }
+        container.scrollLeft = cabinetDragScrollLeft - walk;
+    });
+
+    window.addEventListener('mouseup', () => {
+        if (!isCabinetDragging) return;
+        isCabinetDragging = false;
+        const container = document.getElementById('cabinetDaysChipsBar');
+        if (container) {
+            container.classList.remove('is-dragging');
+        }
+        if (cabinetDragMoved) {
+            setTimeout(() => {
+                cabinetDragMoved = false;
+            }, 60);
+        }
+    });
 
     async function promptClearUserCabinetHistory() {
         if (!currentUser) return;
@@ -13602,6 +14398,7 @@ Return strictly valid JSON only without markdown formatting with this schema:
                     dayObj.shiftType = logShift.shiftType;
                 }
                 dayObj.molds.push({
+                    id: log.id,
                     mold_id: moldId,
                     old_position: log.old_position,
                     new_position: log.new_position,
@@ -13650,6 +14447,7 @@ Return strictly valid JSON only without markdown formatting with this schema:
 
             renderCabinetDayChips(sortedDays, currentShiftDateStr, currentShift);
             renderCabinetMoldsDrilldown();
+            initCabinetDaysScrolling();
 
         } catch (err) {
             console.warn('Error loading cabinet stats:', err);
@@ -13692,9 +14490,19 @@ Return strictly valid JSON only without markdown formatting with this schema:
                 </button>
             `;
         }).join('');
+
+        initCabinetDaysScrolling();
+
+        setTimeout(() => {
+            const activeChip = chipsBar.querySelector('.cabinet-day-chip.active');
+            if (activeChip && typeof activeChip.scrollIntoView === 'function') {
+                activeChip.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+            }
+        }, 50);
     }
 
     function selectCabinetDay(dayKey, element) {
+        if (cabinetDragMoved) return;
         if (cabinetSelectedDayKey === dayKey) return;
         triggerHapticFeedback([12]);
         cabinetSelectedDayKey = dayKey;
@@ -13703,7 +14511,7 @@ Return strictly valid JSON only without markdown formatting with this schema:
             const isTarget = chip === element || (chip.getAttribute('data-day-key') === dayKey);
             chip.classList.toggle('active', Boolean(isTarget));
             if (isTarget && typeof chip.scrollIntoView === 'function') {
-                chip.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'nearest' });
+                chip.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
             }
         });
         renderCabinetMoldsDrilldown();
@@ -13749,7 +14557,19 @@ Return strictly valid JSON only without markdown formatting with this schema:
         }
 
         if (molds.length === 0) {
-            container.innerHTML = `<div class="no-data" style="padding: 1.5rem 0;">V této směně nebyly zaznamenány žádné formy</div>`;
+            container.innerHTML = `
+                <div class="empty-state-card" style="padding: 1.5rem 1rem; border-color: var(--border-color); box-shadow: none; margin: 0.5rem 0;">
+                    <div class="empty-state-icon-box">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path>
+                            <rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect>
+                            <path d="m9 14 2 2 4-4"></path>
+                        </svg>
+                    </div>
+                    <div class="empty-state-title" style="font-size: 0.95rem;">Žádné formy v této směně</div>
+                    <div class="empty-state-desc" style="font-size: 0.8rem;">V tento den nebyly zaznamenány žádné zpracované formy.</div>
+                </div>
+            `;
             return;
         }
 
@@ -13765,6 +14585,9 @@ Return strictly valid JSON only without markdown formatting with this schema:
             const actionText = item.new_position || 'Zpracováno';
 
             const titleLabel = targetObj.isMachine
+                ? `Lis č. ${targetObj.cleanId}`
+                : `Forma #${targetObj.cleanId}`;
+            const displayTitleHtml = targetObj.isMachine
                 ? `Lis č. ${escapeHtml(targetObj.cleanId)}`
                 : `Forma #${escapeHtml(targetObj.cleanId)}`;
 
@@ -13772,11 +14595,22 @@ Return strictly valid JSON only without markdown formatting with this schema:
             const cascadeClass = isCascade ? ' cascade-item' : '';
             const cascadeStyle = isCascade ? ` style="--cascade-delay: ${idx * 34}ms;"` : '';
 
+            const escapedDayKey = escapeHtml(cabinetSelectedDayKey || '');
+            const jsSafeTitle = (titleLabel || '').replace(/'/g, "\\'");
+
             return `
-                <div class="cabinet-mold-row${cascadeClass}"${cascadeStyle} style="cursor: default;">
+                <div class="cabinet-mold-row${cascadeClass}"${cascadeStyle} 
+                     data-log-id="${item.id}"
+                     data-day-key="${escapedDayKey}"
+                     oncontextmenu="handleCabinetItemRightClick(event, ${item.id}, '${escapedDayKey}', '${jsSafeTitle}')"
+                     ontouchstart="handleCabinetItemTouchStart(event, ${item.id}, '${escapedDayKey}', '${jsSafeTitle}')"
+                     ontouchmove="handleCabinetItemTouchMove(event)"
+                     ontouchend="handleCabinetItemTouchEnd(event)"
+                     ontouchcancel="handleCabinetItemTouchEnd(event)"
+                     style="cursor: default;">
                     <div class="cabinet-mold-row-left">
                         <div class="cabinet-mold-id-line">
-                            <span>${titleLabel}</span>
+                            <span>${displayTitleHtml}</span>
                             ${cust ? `<span class="tag-customer" style="font-size: 0.68rem; padding: 0.05rem 0.35rem;">${escapeHtml(cust)}</span>` : ''}
                         </div>
                         <div class="cabinet-mold-time-meta">
@@ -13784,8 +14618,18 @@ Return strictly valid JSON only without markdown formatting with this schema:
                             <span style="color: var(--text-main); font-weight: 500;">${escapeHtml(actionText)}</span>
                         </div>
                     </div>
-                    <div class="cabinet-mold-row-right" style="font-size: 0.75rem; color: var(--text-muted); font-variant-numeric: tabular-nums;">
-                        ${escapeHtml(timeStr)}
+                    <div class="cabinet-mold-row-right">
+                        <span style="font-size: 0.75rem; color: var(--text-muted); font-variant-numeric: tabular-nums;">
+                            ${escapeHtml(timeStr)}
+                        </span>
+                        <button type="button" class="cabinet-item-delete-btn" 
+                                onclick="event.stopPropagation(); deleteCabinetHistoryItem(${item.id}, '${escapedDayKey}', '${jsSafeTitle}')" 
+                                title="Smazat záznam z historie" aria-label="Smazat záznam z historie">
+                            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <line x1="18" y1="6" x2="6" y2="18"></line>
+                                <line x1="6" y1="6" x2="18" y2="18"></line>
+                            </svg>
+                        </button>
                     </div>
                 </div>
             `;
@@ -14729,6 +15573,10 @@ Return strictly valid JSON only without markdown formatting with this schema:
         const page = document.getElementById('factoryMapPage');
         if (!page) return;
         page.classList.add('active');
+        const scrollArea = page.querySelector('.factory-map-scroll-area');
+        if (scrollArea) {
+            scrollArea.scrollTop = 0;
+        }
         renderGraphicFactoryMap();
         syncFactoryMachinesFromDb();
     }
@@ -14748,6 +15596,56 @@ Return strictly valid JSON only without markdown formatting with this schema:
         renderGraphicFactoryMap();
     }
 
+    function renderMachineCadSilhouetteSvg(beaconColor = '#4cae2a') {
+        return `
+            <svg viewBox="0 0 38 18" fill="none" xmlns="http://www.w3.org/2000/svg" shape-rendering="geometricPrecision">
+                <!-- Kontaktní stín pod strojem na podlaze haly -->
+                <ellipse cx="19" cy="15.8" rx="16.5" ry="1.8" fill="#0f172a" fill-opacity="0.2"/>
+
+                <!-- Spodní podstavec a stůl operátora (tmavý průmyslový grafit) -->
+                <polygon points="2,10.2 12,6.8 15.5,8.5 5.5,11.8" fill="#1e293b" stroke="#0f172a" stroke-width="0.6"/>
+                <polygon points="5.5,11.8 15.5,8.5 15.5,12.5 5.5,15.8" fill="#0f172a" stroke="#020617" stroke-width="0.6"/>
+                <polygon points="2,10.2 5.5,11.8 5.5,15.8 2,14.2" fill="#334155" stroke="#0f172a" stroke-width="0.6"/>
+
+                <!-- Pravá skříň základny vstřiku (odstupňovaná níže - grafit/ocel) -->
+                <polygon points="15.5,8.5 32,3.5 35.5,5.2 19,10.2" fill="#334155" stroke="#0f172a" stroke-width="0.6"/>
+                <polygon points="19,10.2 35.5,5.2 35.5,9.8 19,14.8" fill="#1e293b" stroke="#0f172a" stroke-width="0.6"/>
+                <line x1="24.5" y1="8.5" x2="24.5" y2="13.1" stroke="#64748b" stroke-width="0.6"/>
+                <line x1="30" y1="6.8" x2="30" y2="11.4" stroke="#64748b" stroke-width="0.6"/>
+
+                <!-- Bezsloupkový kryt formy ENGEL - autentická firemní zelená ENGEL (#5ec437 / #4cae2a) -->
+                <polygon points="2,4.8 12,1.4 15.5,3.1 5.5,6.4" fill="#4ade80" stroke="#15803d" stroke-width="0.6"/>
+                <polygon points="5.5,6.4 15.5,3.1 15.5,8.5 5.5,11.8" fill="#22c55e" stroke="#16a34a" stroke-width="0.6"/>
+                <polygon points="2,4.8 5.5,6.4 5.5,11.8 2,10.2" fill="#16a34a" stroke="#15803d" stroke-width="0.6"/>
+                
+                <!-- Tmavá kabina operátora a zkosené inspekční okno (grafit) -->
+                <polygon points="7.8,5.8 14.5,3.6 14.5,7.2 9,9" fill="#0f172a" stroke="#020617" stroke-width="0.6"/>
+                <!-- Forma / upínací deska uvnitř -->
+                <polygon points="10.8,5.4 12.8,4.7 12.8,7.2 10.8,7.9" fill="#cbd5e1" stroke="#475569" stroke-width="0.5"/>
+
+                <!-- Řídicí pult CC300 a signální maják stavu -->
+                <polygon points="15.5,3.1 18,2.3 19,2.8 16.5,3.6" fill="#334155" stroke="#1e293b" stroke-width="0.5"/>
+                <polygon points="16.5,3.6 19,2.8 19,7 16.5,7.8" fill="#0f172a" stroke="#020617" stroke-width="0.6"/>
+                <polygon points="16.8,4.2 18.7,3.6 18.7,6.3 16.8,6.9" fill="#38bdf8" stroke="#0284c7" stroke-width="0.4"/>
+                <line x1="17.5" y1="2.2" x2="17.5" y2="0.6" stroke="${beaconColor}" stroke-width="1.3" stroke-linecap="round"/>
+                <circle cx="17.5" cy="0.6" r="0.75" fill="${beaconColor}" stroke="#ffffff" stroke-width="0.3"/>
+
+                <!-- Vstřikovací komora ENGEL v zelené barvě a nerezová násypka -->
+                <polygon points="18.5,5.8 29.5,2.4 31.5,3.3 20.5,6.6" fill="#4ade80" stroke="#15803d" stroke-width="0.6"/>
+                <polygon points="20.5,6.6 31.5,3.3 31.5,5.5 20.5,8.8" fill="#22c55e" stroke="#16a34a" stroke-width="0.6"/>
+                
+                <!-- Násypka granulátu (nerez / hliník) -->
+                <polygon points="23.5,2.2 26.5,1.2 27.5,1.7 24.5,2.7" fill="#ffffff" stroke="#94a3b8" stroke-width="0.5"/>
+                <polygon points="24.5,2.7 27.5,1.7 25.8,3.8" fill="#94a3b8" stroke="#475569" stroke-width="0.5"/>
+                <polygon points="23.5,2.2 24.5,2.7 25.8,3.8" fill="#cbd5e1" stroke="#64748b" stroke-width="0.5"/>
+
+                <!-- Zadní pohon a hydraulika (grafit) -->
+                <polygon points="29.5,2.4 34.5,0.9 35.5,1.4 30.5,2.9" fill="#475569" stroke="#1e293b" stroke-width="0.5"/>
+                <polygon points="30.5,2.9 35.5,1.4 35.5,3.8 30.5,5.3" fill="#1e293b" stroke="#0f172a" stroke-width="0.6"/>
+            </svg>
+        `;
+    }
+
     function createMachineSketchHtml(m) {
         const unresolvedIssues = (m.issues || []).filter(it => !it.resolved);
         const hasIssues = unresolvedIssues.length > 0;
@@ -14756,7 +15654,7 @@ Return strictly valid JSON only without markdown formatting with this schema:
         let effectiveStatus = m.status || (hasIssues ? 'warning' : 'ok');
 
         let statusTitle = 'V pořádku (v chodu)';
-        let beaconColor = '#16a34a';
+        let beaconColor = '#4cae2a'; // Firemní zelená ENGEL
         if (effectiveStatus === 'warning') {
             statusTitle = 'V chodu s problémy (servis)';
             beaconColor = '#f97316';
@@ -14765,68 +15663,20 @@ Return strictly valid JSON only without markdown formatting with this schema:
             beaconColor = '#dc2626';
         }
 
-        let moldSlotHtml = '<span class="mach-mold-empty-dash">—</span>';
-        let moldTooltip = m.currentMold ? `Forma: ${escapeHtml(m.currentMold)}` : 'Lis bez formy';
-        if (m.currentMold && m.currentMold.trim()) {
-            const cleanMold = String(m.currentMold).trim();
+        const cleanMold = (m.currentMold && String(m.currentMold).trim()) ? String(m.currentMold).trim() : '';
+        let prodName = '';
+        let moldTooltip = cleanMold ? `Forma: ${escapeHtml(cleanMold)}` : 'Lis bez formy';
+        if (cleanMold) {
             const moldInfo = rawDatabase.find(item => String(item[0]).trim().toLowerCase() === cleanMold.toLowerCase() && !item[4]);
-            const prodName = (moldInfo && moldInfo[5]) ? String(moldInfo[5]).trim() : '';
+            prodName = (moldInfo && moldInfo[5]) ? String(moldInfo[5]).trim() : '';
             if (prodName) {
                 moldTooltip = `Forma: ${escapeHtml(cleanMold)} • Výrobek: ${escapeHtml(prodName)}`;
             }
-            moldSlotHtml = `
-                ${prodName ? `<span class="mach-mold-product-name">${escapeHtml(prodName)}</span>` : ''}
-                <span class="mach-mold-tag-minimal">${escapeHtml(cleanMold)}</span>
-            `;
         }
 
         const cadSvgHtml = `
-            <span class="mach-cad-silhouette" aria-hidden="true" title="Vstřikovací lis ENGEL victory (2.5D Isometric)">
-                <svg viewBox="0 0 38 18" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <!-- Měkký kontaktní stín pod strojem -->
-                    <ellipse cx="19" cy="15.8" rx="16.5" ry="1.8" fill="#0f172a" fill-opacity="0.12"/>
-
-                    <!-- Spodní podstavec uzávěru (levá část v izometrii) -->
-                    <polygon points="2,10.2 12,6.8 15.5,8.5 5.5,11.8" fill="#cbd5e1" stroke="#94a3b8" stroke-width="0.35"/>
-                    <polygon points="5.5,11.8 15.5,8.5 15.5,12.5 5.5,15.8" fill="#94a3b8" stroke="#64748b" stroke-width="0.35"/>
-                    <polygon points="2,10.2 5.5,11.8 5.5,15.8 2,14.2" fill="#64748b" stroke="#475569" stroke-width="0.35"/>
-
-                    <!-- Pravá skříň základny vstřiku (odstupňovaná níže) -->
-                    <polygon points="15.5,8.5 32,3.5 35.5,5.2 19,10.2" fill="#e2e8f0" stroke="#cbd5e1" stroke-width="0.35"/>
-                    <polygon points="19,10.2 35.5,5.2 35.5,9.8 19,14.8" fill="#94a3b8" stroke="#64748b" stroke-width="0.35"/>
-                    <line x1="24.5" y1="8.5" x2="24.5" y2="13.1" stroke="#64748b" stroke-width="0.4"/>
-                    <line x1="30" y1="6.8" x2="30" y2="11.4" stroke="#64748b" stroke-width="0.4"/>
-
-                    <!-- Bezsloupkový kryt formy ENGEL (3D horní a přední plocha s oknem) -->
-                    <polygon points="2,4.8 12,1.4 15.5,3.1 5.5,6.4" fill="#f8fafc" stroke="#cbd5e1" stroke-width="0.35"/>
-                    <polygon points="5.5,6.4 15.5,3.1 15.5,8.5 5.5,11.8" fill="#cbd5e1" stroke="#94a3b8" stroke-width="0.35"/>
-                    <polygon points="2,4.8 5.5,6.4 5.5,11.8 2,10.2" fill="#64748b" stroke="#475569" stroke-width="0.35"/>
-                    
-                    <!-- Zkosené inspekční okno operátora -->
-                    <polygon points="7.8,5.8 14.5,3.6 14.5,7.2 9,9" fill="#1e293b" stroke="#0f172a" stroke-width="0.4"/>
-                    <!-- Forma / deska uvnitř -->
-                    <polygon points="10.8,5.4 12.8,4.7 12.8,7.2 10.8,7.9" fill="#94a3b8" stroke="#e2e8f0" stroke-width="0.3"/>
-
-                    <!-- Řídicí pult CC300 a signální maják -->
-                    <polygon points="15.5,3.1 18,2.3 19,2.8 16.5,3.6" fill="#f8fafc" stroke="#cbd5e1" stroke-width="0.3"/>
-                    <polygon points="16.5,3.6 19,2.8 19,7 16.5,7.8" fill="#0f172a" stroke="#020617" stroke-width="0.35"/>
-                    <polygon points="16.8,4.2 18.7,3.6 18.7,6.3 16.8,6.9" fill="#38bdf8" fill-opacity="0.9"/>
-                    <line x1="17.5" y1="2.2" x2="17.5" y2="0.8" stroke="#f97316" stroke-width="1.1" stroke-linecap="round"/>
-                    <circle cx="17.5" cy="0.8" r="0.6" fill="#fb923c"/>
-
-                    <!-- Vstřikovací komora, násypka a hydraulický pohon -->
-                    <polygon points="18.5,5.8 29.5,2.4 31.5,3.3 20.5,6.6" fill="#f8fafc" stroke="#cbd5e1" stroke-width="0.35"/>
-                    <polygon points="20.5,6.6 31.5,3.3 31.5,5.5 20.5,8.8" fill="#cbd5e1" stroke="#94a3b8" stroke-width="0.35"/>
-                    
-                    <!-- Násypka materiálu (3D jehlan) -->
-                    <polygon points="23.5,2.2 26.5,1.2 27.5,1.7 24.5,2.7" fill="#f8fafc" stroke="#cbd5e1" stroke-width="0.3"/>
-                    <polygon points="24.5,2.7 27.5,1.7 25.8,3.8" fill="#94a3b8" stroke="#64748b" stroke-width="0.3"/>
-                    <polygon points="23.5,2.2 24.5,2.7 25.8,3.8" fill="#cbd5e1" stroke="#94a3b8" stroke-width="0.3"/>
-
-                    <!-- Zadní pohon a válce vstřiku -->
-                    <polygon points="29.5,2.4 34.5,0.9 35.5,1.4 30.5,2.9" fill="#94a3b8" stroke="#64748b" stroke-width="0.3"/>
-                    <polygon points="30.5,2.9 35.5,1.4 35.5,3.8 30.5,5.3" fill="#64748b" stroke="#475569" stroke-width="0.3"/>
-                </svg>
+            <span class="mach-cad-silhouette" aria-hidden="true" title="Vstřikovací lis ENGEL (Digitální dvojče 2.5D)">
+                ${renderMachineCadSilhouetteSvg(beaconColor)}
             </span>
         `;
 
@@ -14837,14 +15687,24 @@ Return strictly valid JSON only without markdown formatting with this schema:
                  aria-label="Lis ${escapeHtml(m.number)} (${statusTitle})"
                  onclick="openMachineDrawer(${m.id})">
                 
-                <span class="mach-num">${effectiveStatus === 'warning' ? '<span class="mach-sketch-beacon beacon-warning"></span>' : (effectiveStatus === 'error' ? '<span class="mach-sketch-beacon beacon-error"></span>' : '')}${escapeHtml(m.number)}</span>
+                <div class="mach-tier-top">
+                    <div class="mach-num-box">
+                        <span class="mach-status-beacon status-${effectiveStatus}"></span>
+                        <span class="mach-num">${escapeHtml(m.number)}</span>
+                    </div>
 
-                ${cadSvgHtml}
+                    <div class="mach-brand-box">
+                        <span class="mach-engel-chip">ENGEL</span>
+                        ${cadSvgHtml}
+                    </div>
 
-                <div class="mach-sketch-divider"></div>
+                    <div class="mach-mold-tag-wrap" title="${moldTooltip}">
+                        ${cleanMold ? `<span class="mach-mold-tag-minimal">${escapeHtml(cleanMold)}</span>` : `<span class="mach-mold-empty-dash">—</span>`}
+                    </div>
+                </div>
 
-                <div class="mach-mold-slot-box" title="${moldTooltip}">
-                    ${moldSlotHtml}
+                <div class="mach-tier-bottom" title="${prodName ? escapeHtml(prodName) : (cleanMold ? 'Díl nespecifikován' : 'Lis bez formy')}">
+                    <span class="mach-mold-product-name ${!prodName ? 'is-empty' : ''}">${prodName ? escapeHtml(prodName) : (cleanMold ? '<span class="mach-prod-placeholder">Díl nespecifikován</span>' : '<span class="mach-prod-empty">Volný lis</span>')}</span>
                 </div>
             </div>
         `;
@@ -14882,7 +15742,7 @@ Return strictly valid JSON only without markdown formatting with this schema:
             container.innerHTML = nums.map(num => {
                 const m = machineMap[num] || { id: num, number: String(num), status: 'ok', currentMold: '', issues: [] };
                 return createMachineSketchHtml(m);
-            }).join('<div class="mach-walkway" title="Průchod mezi stroji"><div class="mach-walkway-line"></div><div class="mach-walkway-marker"><svg class="mach-walkway-arrow" width="11" height="6" viewBox="0 0 16 8" fill="none"><path d="M3.5 1L1 4M1 4L3.5 7M1 4H15M12.5 1L15 4M15 4L12.5 7" stroke="#64748b" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="mach-walkway-line"></div></div>');
+            }).join('');
         });
     }
 
@@ -14896,6 +15756,13 @@ Return strictly valid JSON only without markdown formatting with this schema:
         // Titulek
         const titleEl = document.getElementById('machDrawerTitle') || document.getElementById('machineDetailModalTitle');
         if (titleEl) titleEl.textContent = `LIS Č. ${machine.number}`;
+
+        // Mini silueta stroje v hlavičce
+        const headerIconBadge = document.getElementById('machDrawerIconBadge');
+        if (headerIconBadge) {
+            const bColor = machine.status === 'warning' ? '#f97316' : (machine.status === 'error' ? '#dc2626' : '#4cae2a');
+            headerIconBadge.innerHTML = renderMachineCadSilhouetteSvg(bColor);
+        }
 
         // Zvýrazněný status problémů
         renderMachineProblemStatusBanner(machine);
@@ -15027,9 +15894,15 @@ Return strictly valid JSON only without markdown formatting with this schema:
         saveFactoryMachinesState();
         updateMachineStatusButtonsUI(newStatus);
         renderMachineProblemStatusBanner(machine);
+        const headerIconBadge = document.getElementById('machDrawerIconBadge');
+        if (headerIconBadge) {
+            const bColor = newStatus === 'warning' ? '#f97316' : (newStatus === 'error' ? '#dc2626' : '#4cae2a');
+            headerIconBadge.innerHTML = renderMachineCadSilhouetteSvg(bColor);
+        }
         renderGraphicFactoryMap();
         const statusCzech = newStatus === 'ok' ? 'V pořádku (v chodu)' : (newStatus === 'warning' ? 'V chodu s problémy' : 'Odstaveno / Mimo provoz');
         showToast(`Stav lisu ${machine.number}: ${statusCzech}`);
+        logUserAction(machine.number ? `LIS_${machine.number}` : 'LIS', 'Stav lisu', `Stav lisu ${machine.number}: ${statusCzech}`);
     }
 
     function updateMachineMoldProductPreview(moldValue) {
@@ -15285,12 +16158,14 @@ Return strictly valid JSON only without markdown formatting with this schema:
 
         const machine = factoryMachinesData.find(m => m.id === currentActiveMachineId);
         if (machine && machine.currentMold) {
+            const oldMold = machine.currentMold;
             machine.currentMold = '';
             saveFactoryMachinesState();
             const goToMoldBtn = document.getElementById('btnGoToMachineMold');
             if (goToMoldBtn) goToMoldBtn.style.display = 'none';
             renderGraphicFactoryMap();
             showToast(`Forma odebrána z lisu ${machine.number}`);
+            logUserAction(oldMold, 'Odebrána z lisu', `Forma #${oldMold} odebrána z lisu č. ${machine.number}`);
         }
     }
 
@@ -15326,6 +16201,11 @@ Return strictly valid JSON only without markdown formatting with this schema:
 
         renderGraphicFactoryMap();
         showToast(val ? `Forma ${val} přiřazena k lisu ${machine.number}` : `Forma odebrána z lisu ${machine.number}`);
+        if (val) {
+            logUserAction(val, 'Nasazena na lis', `Forma #${val} nasazena na lis č. ${machine.number}`);
+        } else {
+            logUserAction(`LIS_${machine.number}`, 'Odebrána z lisu', `Forma odebrána z lisu č. ${machine.number}`);
+        }
     }
 
     function navigateToMachineMold() {
@@ -15447,6 +16327,7 @@ Return strictly valid JSON only without markdown formatting with this schema:
         renderGraphicFactoryMap();
 
         showToast('Závada byla zaznamenána do knihy lisu');
+        logUserAction(`LIS_${machine.number}`, 'Závada lisu', `Závada lisu č. ${machine.number} (${priority === 'critical' ? 'Kritická' : 'Běžná'}): ${text}`);
     }
 
     function toggleMachineIssueResolved(issueId) {
@@ -15466,6 +16347,7 @@ Return strictly valid JSON only without markdown formatting with this schema:
         renderGraphicFactoryMap();
 
         showToast(issue.resolved ? 'Závada označena jako vyřešená' : 'Závada vrácena mezi aktivní');
+        logUserAction(`LIS_${machine.number}`, 'Závada lisu', `${issue.resolved ? 'Závada vyřešena' : 'Závada vrácena mezi aktivní'}: ${issue.text}`);
     }
 
     function deleteMachineIssue(issueId) {
@@ -15482,6 +16364,7 @@ Return strictly valid JSON only without markdown formatting with this schema:
         renderGraphicFactoryMap();
 
         showToast('Záznam smazán');
+        logUserAction(`LIS_${machine.number}`, 'Závada lisu', `Smazána závada lisu č. ${machine.number}`);
     }
     document.addEventListener('click', (e) => {
         const input = document.getElementById('machineMoldInput');
@@ -15492,6 +16375,125 @@ Return strictly valid JSON only without markdown formatting with this schema:
             }
         }
     });
+
+    // ==========================================
+    // PWA & INSTALLATION LOGIC (WITH AI STUDIO SHIELD)
+    // ==========================================
+    // PWA INSTALLATION CONTROLLER & CAPTURE
+    // ==========================================
+    let deferredPwaPrompt = window.deferredPwaPrompt || null;
+
+    function checkIsAppStandalone() {
+        return window.matchMedia('(display-mode: standalone)').matches ||
+               window.matchMedia('(display-mode: window-controls-overlay)').matches ||
+               window.matchMedia('(display-mode: minimal-ui)').matches ||
+               window.navigator.standalone === true ||
+               document.referrer.includes('android-app://');
+    }
+    const isIOSDevice = /iphone|ipad|ipod/.test(window.navigator.userAgent.toLowerCase());
+
+    function updatePwaInstallButtonVisibility() {
+        const installBtn = document.getElementById('btnHeaderInstallApp');
+        if (!installBtn) return;
+        // Hide button when already running as an installed standalone app
+        if (checkIsAppStandalone()) {
+            installBtn.style.display = 'none';
+        } else {
+            // Show install button in regular browsers and preview
+            installBtn.style.display = 'flex';
+        }
+    }
+
+    window.addEventListener('beforeinstallprompt', (e) => {
+        e.preventDefault();
+        deferredPwaPrompt = e;
+        window.deferredPwaPrompt = e;
+        updatePwaInstallButtonVisibility();
+    });
+
+    window.addEventListener('appinstalled', () => {
+        deferredPwaPrompt = null;
+        window.deferredPwaPrompt = null;
+        const installBtn = document.getElementById('btnHeaderInstallApp');
+        if (installBtn) installBtn.style.display = 'none';
+        showToast('Aplikace byla úspěšně nainstalována');
+    });
+
+    function triggerPwaInstall() {
+        triggerHapticFeedback([15]);
+        const promptToUse = deferredPwaPrompt || window.deferredPwaPrompt;
+        if (promptToUse) {
+            promptToUse.prompt();
+            promptToUse.userChoice.then((choiceResult) => {
+                if (choiceResult && choiceResult.outcome === 'accepted') {
+                    deferredPwaPrompt = null;
+                    window.deferredPwaPrompt = null;
+                    const installBtn = document.getElementById('btnHeaderInstallApp');
+                    if (installBtn) installBtn.style.display = 'none';
+                }
+            });
+        } else {
+            const iosGuide = document.getElementById('pwaIosGuideContent');
+            const desktopGuide = document.getElementById('pwaDesktopGuideContent');
+            if (iosGuide && desktopGuide) {
+                if (isIOSDevice) {
+                    iosGuide.style.display = 'block';
+                    desktopGuide.style.display = 'none';
+                } else {
+                    iosGuide.style.display = 'none';
+                    desktopGuide.style.display = 'block';
+                }
+            }
+            showModalAnimated('pwaInstallGuideModal');
+        }
+    }
+
+    function closePwaInstallGuideModal() {
+        hideModalAnimated('pwaInstallGuideModal');
+    }
+
+    // ----------------------------------------------------
+    // IRONCLAD SERVICE WORKER REGISTRATION (SHIELD PROTECTED)
+    // ----------------------------------------------------
+    const isInsideIframe = window.self !== window.top;
+    const isDevOrStudioHost = 
+        location.hostname.includes('ais-dev') || 
+        location.hostname.includes('localhost') || 
+        location.hostname === '127.0.0.1';
+
+    if ('serviceWorker' in navigator) {
+        if (isInsideIframe || isDevOrStudioHost) {
+            // AI Studio / Dev Environment Shield:
+            // Ensure any legacy service workers on this dev origin are immediately cleaned up.
+            navigator.serviceWorker.getRegistrations().then((registrations) => {
+                for (const reg of registrations) {
+                    reg.unregister().then(() => {
+                        console.log('[PWA Shield] Active dev worker unregistered for stability');
+                    });
+                }
+            }).catch(() => {});
+        } else {
+            // Production deployment (Netlify / GitHub Pages / live domain):
+            const registerSW = () => {
+                navigator.serviceWorker.register('./sw.js')
+                    .then((reg) => {
+                        console.log('[PWA] Service Worker registered with scope:', reg.scope);
+                    })
+                    .catch((err) => {
+                        console.warn('[PWA] Service Worker registration failed:', err);
+                    });
+            };
+
+            if (document.readyState === 'complete') {
+                registerSW();
+            } else {
+                window.addEventListener('load', registerSW);
+            }
+        }
+    }
+
+    // Initialize button visibility
+    updatePwaInstallButtonVisibility();
 </script>
 </body>
 </html>
