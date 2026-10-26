@@ -11,7 +11,7 @@
       gtag('config', 'G-XZYF6MB88T');
     </script>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no, viewport-fit=cover, interactive-widget=resizes-content">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no, viewport-fit=cover, interactive-widget=overlays-content">
     <link rel="preconnect" href="https://qjoovhagucdcaebgdmbx.supabase.co" crossorigin>
     <link rel="dns-prefetch" href="https://qjoovhagucdcaebgdmbx.supabase.co">
     <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
@@ -1239,16 +1239,14 @@
         }
 
         @media (max-width: 768px) {
-            /* Ironclad iOS Safari Auto-Zoom Immunity: Inputs 16px or larger never trigger zoom */
-            input, select, textarea,
+            /* iOS Safari Auto-Zoom Immunity for standard forms */
+            input:not(.shift-plan-add-input):not(.shift-plan-machine-input), select, textarea,
             .search-input,
             .position-input,
-            .shift-plan-add-input,
-            .shift-plan-machine-input,
-            .modal-body input,
+            .modal-body input:not(.shift-plan-add-input):not(.shift-plan-machine-input),
             .modal-body select,
             .modal-body textarea {
-                font-size: 16px !important;
+                font-size: 16px;
             }
         }
 
@@ -2980,6 +2978,16 @@
             .floating-corner-btn-left { position: absolute; bottom: calc(1.25rem + 48px + 10px); left: 1.25rem; }
         }
 
+        body.has-modal-open .floating-corner-btn,
+        body.has-modal-open .floating-corner-btn-left,
+        body.has-modal-open .floating-corner-btn-list {
+            opacity: 0 !important;
+            pointer-events: none !important;
+            transform: scale(0.7) !important;
+            visibility: hidden !important;
+            transition: opacity 0.2s ease, transform 0.2s ease, visibility 0.2s !important;
+        }
+
         @media (max-width: 600px) {
             .floating-corner-btn { 
                 position: fixed !important; 
@@ -2995,6 +3003,111 @@
                 position: fixed !important; 
                 left: 1.25rem !important; 
                 bottom: calc(max(1.25rem, env(safe-area-inset-bottom, 1.25rem)) + 48px + 10px) !important; 
+            }
+
+            /* Shift Plan Modal Mobile Centering & Viewport Shield */
+            #shiftPlanModal {
+                align-items: center !important;
+                justify-content: center !important;
+                padding: 0.5rem !important;
+            }
+            #shiftPlanModal .modal-card {
+                max-width: 480px !important;
+                width: 100% !important;
+                min-height: 420px !important;
+                max-height: 84dvh !important;
+                max-height: 84vh !important;
+                display: flex !important;
+                flex-direction: column !important;
+                overflow: hidden !important;
+                border-radius: 14px !important;
+                margin: auto !important;
+            }
+            #shiftPlanModal .modal-header {
+                flex-shrink: 0 !important;
+                padding: 0.65rem 0.85rem !important;
+            }
+            #shiftPlanModal .modal-header h3 {
+                font-size: 0.95rem !important;
+            }
+            #shiftPlanModal .modal-body {
+                flex: 1 1 auto !important;
+                min-height: 0 !important;
+                overflow: hidden !important;
+                max-height: none !important;
+                padding: 0.5rem 0.75rem !important;
+                display: flex !important;
+                flex-direction: column !important;
+            }
+            #shiftPlanModal .shift-plan-container {
+                display: flex !important;
+                flex-direction: column !important;
+                flex: 1 1 auto !important;
+                min-height: 0 !important;
+                gap: 0.45rem !important;
+            }
+            #shiftPlanModal .shift-plan-add-bar {
+                flex-shrink: 0 !important;
+                gap: 0.35rem !important;
+            }
+            #shiftPlanModal .shift-plan-machine-input {
+                height: 29px !important;
+                width: 58px !important;
+                padding: 0 0.4rem !important;
+                font-size: 0.81rem !important;
+                touch-action: manipulation !important;
+                border-radius: 6px !important;
+                box-sizing: border-box !important;
+            }
+            #shiftPlanModal .shift-plan-machine-add-btn {
+                height: 29px !important;
+                width: 29px !important;
+                font-size: 0.95rem !important;
+                border-radius: 6px !important;
+                box-sizing: border-box !important;
+            }
+            #shiftPlanModal .shift-plan-add-input {
+                height: 29px !important;
+                padding: 0 0.5rem !important;
+                font-size: 0.81rem !important;
+                touch-action: manipulation !important;
+                border-radius: 6px !important;
+                box-sizing: border-box !important;
+            }
+            #shiftPlanModal .shift-plan-submit-btn,
+            #shiftPlanModal .shift-plan-add-bar .btn-primary {
+                height: 29px !important;
+                padding: 0 0.65rem !important;
+                font-size: 0.75rem !important;
+                border-radius: 6px !important;
+                box-sizing: border-box !important;
+            }
+            #shiftPlanModal .shift-plan-stats-bar {
+                flex-shrink: 0 !important;
+                padding: 0.25rem 0.55rem !important;
+                font-size: 0.75rem !important;
+                border-radius: 6px !important;
+            }
+            #shiftPlanModal .shift-plan-list {
+                height: auto !important;
+                min-height: 245px !important;
+                max-height: 48vh !important;
+                flex: 1 1 auto !important;
+                flex-shrink: 0 !important;
+                gap: 0.35rem !important;
+                overflow-y: auto !important;
+                overflow-x: hidden !important;
+                -webkit-overflow-scrolling: touch !important;
+            }
+            #shiftPlanModal .modal-footer {
+                flex-shrink: 0 !important;
+                padding: 0.55rem 0.85rem !important;
+            }
+            #shiftPlanModal .modal-footer .btn-secondary,
+            #shiftPlanModal .modal-footer .btn-primary {
+                padding: 0.38rem 0.75rem !important;
+                font-size: 0.78rem !important;
+                border-radius: 6px !important;
             }
         }
 
@@ -3190,18 +3303,43 @@
             color: var(--text-main);
             font-variant-numeric: tabular-nums;
         }
+        #shiftPlanModal .modal-card {
+            max-width: 520px;
+            min-height: 440px;
+            max-height: 86vh;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+        #shiftPlanModal .modal-body {
+            flex: 1 1 auto;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            min-height: 0;
+            padding: 0.85rem 1.25rem;
+        }
+        #shiftPlanModal .shift-plan-container {
+            display: flex;
+            flex-direction: column;
+            flex: 1 1 auto;
+            min-height: 0;
+            gap: 0.65rem;
+        }
         .shift-plan-list {
             display: flex;
             flex-direction: column;
             gap: 0.45rem;
-            height: 360px;
-            max-height: 50vh;
+            min-height: 250px;
+            max-height: 52vh;
             overflow-y: auto;
             overflow-x: hidden;
             padding-right: 0.25rem;
             margin-bottom: 0.15rem;
             -webkit-overflow-scrolling: touch;
             position: relative;
+            flex: 1 1 auto;
+            flex-shrink: 0;
         }
         .shift-plan-list .empty-state-card {
             margin: auto !important;
@@ -5744,7 +5882,7 @@
 </div>
 
 <div class="modal-overlay" id="shiftPlanModal">
-    <div class="modal-card" style="max-width: 520px; overflow: hidden;">
+    <div class="modal-card" style="max-width: 520px; min-height: 440px; overflow: hidden;">
         <div class="modal-header">
             <div style="display: flex; align-items: center; gap: 0.55rem;">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width: 20px; height: 20px; color: var(--text-main);">
@@ -6996,6 +7134,7 @@
 
     function showModalAnimated(modalId) {
         refreshUserSessionActivity();
+        document.body.classList.add('has-modal-open');
         document.querySelectorAll('.is-touched').forEach(el => el.classList.remove('is-touched'));
         const modal = document.getElementById(modalId);
         if (!modal) return;
@@ -7035,6 +7174,9 @@
         modal.classList.remove('active');
         setTimeout(() => {
             modal.style.display = 'none';
+            if (!document.querySelector('.modal-overlay.active')) {
+                document.body.classList.remove('has-modal-open');
+            }
         }, 320);
     }
 
