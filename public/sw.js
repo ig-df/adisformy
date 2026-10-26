@@ -1,5 +1,5 @@
 // Rock-solid, Safe Service Worker for Adis Formy PWA (Netlify & GitHub Pages compatible)
-const CACHE_NAME = 'adis-pwa-static-v5';
+const CACHE_NAME = 'adis-pwa-static-v6';
 const STATIC_ASSETS = [
   './manifest.json',
   './icon-192.png',
@@ -8,7 +8,17 @@ const STATIC_ASSETS = [
   './apple-touch-icon.png',
   './favicon.ico',
   './favicon.png',
-  './logo.png'
+  './favicon-16.png',
+  './favicon-32.png',
+  './logo.png',
+  './icon1.png',
+  './icon2.png',
+  './icon3.png',
+  './icon5.png',
+  './icon6.png',
+  './icon7.png',
+  './icon9.png',
+  './sql.png'
 ];
 
 self.addEventListener('install', (event) => {
