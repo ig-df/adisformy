@@ -5462,9 +5462,232 @@
             display: flex;
             justify-content: flex-end;
         }
+
+        /* ==========================================================================
+           PREMIUM ANIMATED SPLASH SCREEN (A • f)
+           ========================================================================== */
+        .app-splash-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            height: 100dvh;
+            background: #ffffff;
+            z-index: 9999999;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            user-select: none;
+            -webkit-user-select: none;
+            pointer-events: all;
+            opacity: 1;
+            transform: scale(1);
+            transition: opacity 0.45s cubic-bezier(0.16, 1, 0.3, 1), transform 0.45s cubic-bezier(0.16, 1, 0.3, 1), visibility 0.45s;
+            will-change: opacity, transform;
+        }
+
+        .app-splash-screen.splash-hidden {
+            opacity: 0 !important;
+            transform: scale(1.03) !important;
+            pointer-events: none !important;
+            visibility: hidden !important;
+        }
+
+        .splash-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 1.25rem;
+            position: relative;
+            max-width: 90vw;
+            text-align: center;
+        }
+
+        .splash-logo-stage {
+            position: relative;
+            width: 190px;
+            height: 190px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .splash-svg {
+            width: 100%;
+            height: 100%;
+            overflow: visible;
+        }
+
+        /* Orbit Rotator Group: full 360 clockwise turn */
+        .splash-orbit-group {
+            transform-origin: 256px 256px;
+            animation: splashOrbitRotate 1.45s cubic-bezier(0.42, 0, 0.25, 1) infinite;
+        }
+
+        /* The flying red dot: expands with pulse, takes off to orbit, and lands back */
+        .splash-dot {
+            transform-origin: 256px 256px;
+            animation: splashDotFlight 1.45s cubic-bezier(0.42, 0, 0.25, 1) infinite;
+            filter: drop-shadow(0 2px 7px rgba(234, 67, 38, 0.42));
+        }
+
+        /* The motion trail: graceful glowing arc behind the dot */
+        .splash-trail {
+            transform-origin: 256px 256px;
+            animation: splashTrailGlow 1.45s cubic-bezier(0.42, 0, 0.25, 1) infinite;
+        }
+
+        @keyframes splashOrbitRotate {
+            0%, 14% {
+                transform: rotate(0deg);
+            }
+            82%, 100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        @keyframes splashDotFlight {
+            0% {
+                transform: translate(45px, -10px) scale(1);
+            }
+            6% {
+                transform: translate(45px, -10px) scale(1.35);
+            }
+            11% {
+                transform: translate(45px, -10px) scale(1.15);
+            }
+            14% {
+                transform: translate(45px, -10px) scale(1.18);
+            }
+            22% {
+                transform: translate(0px, -158px) scale(1.22);
+            }
+            76% {
+                transform: translate(0px, -158px) scale(1.22);
+            }
+            84% {
+                transform: translate(45px, -10px) scale(1.18);
+            }
+            91% {
+                transform: translate(45px, -10px) scale(0.92);
+            }
+            96%, 100% {
+                transform: translate(45px, -10px) scale(1);
+            }
+        }
+
+        @keyframes splashTrailGlow {
+            0%, 14% {
+                opacity: 0;
+            }
+            22% {
+                opacity: 1;
+            }
+            74% {
+                opacity: 0.95;
+            }
+            82%, 100% {
+                opacity: 0;
+            }
+        }
+
+        .splash-text-wrap {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.25rem;
+            animation: splashTextFadeIn 0.8s ease-out forwards;
+        }
+
+        .splash-brand-title {
+            font-size: 1.18rem;
+            font-weight: 800;
+            letter-spacing: 0.12em;
+            color: #0f172a;
+            text-transform: uppercase;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        }
+
+        .splash-brand-sub {
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: #64748b;
+            letter-spacing: 0.04em;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        }
+
+        .splash-status-line {
+            margin-top: 0.75rem;
+            width: 130px;
+            height: 3px;
+            background: #f1f5f9;
+            border-radius: 999px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .splash-status-bar {
+            position: absolute;
+            top: 0;
+            left: 0;
+            height: 100%;
+            width: 40%;
+            background: linear-gradient(90deg, #ea4326, #f97316);
+            border-radius: 999px;
+            animation: splashStatusSlide 1.45s ease-in-out infinite alternate;
+        }
+
+        @keyframes splashStatusSlide {
+            0% { left: 0%; width: 25%; }
+            50% { width: 55%; }
+            100% { left: 75%; width: 25%; }
+        }
+
+        @keyframes splashTextFadeIn {
+            0% { opacity: 0; transform: translateY(6px); }
+            100% { opacity: 1; transform: translateY(0); }
+        }
     </style>
 </head>
 <body>
+
+<!-- PREMIUM ANIMATED SPLASH SCREEN (A • f) -->
+<div id="appSplash" class="app-splash-screen" aria-label="Načítání aplikace">
+    <div class="splash-container">
+        <div class="splash-logo-stage">
+            <svg class="splash-svg" viewBox="0 0 512 512" width="190" height="190" aria-hidden="true">
+                <defs>
+                    <linearGradient id="splashTrailGradient" x1="0%" y1="100%" x2="100%" y2="0%">
+                        <stop offset="0%" stop-color="#ea4326" stop-opacity="0" />
+                        <stop offset="65%" stop-color="#ea4326" stop-opacity="0.45" />
+                        <stop offset="100%" stop-color="#ea4326" stop-opacity="0.95" />
+                    </linearGradient>
+                </defs>
+                <!-- Base Monogram without center dot -->
+                <image href="af-base.png" x="0" y="0" width="512" height="512" />
+                
+                <!-- Orbiting Group (rotates clockwise during flight) -->
+                <g class="splash-orbit-group">
+                    <!-- Elegant arc trail trailing behind the dot -->
+                    <path class="splash-trail" d="M 98,256 A 158,158 0 0,1 256,98" fill="none" stroke="url(#splashTrailGradient)" stroke-width="8.5" stroke-linecap="round" />
+                    <!-- Flying Red Dot -->
+                    <circle class="splash-dot" cx="256" cy="256" r="20" fill="#ea4326" />
+                </g>
+            </svg>
+        </div>
+        <div class="splash-text-wrap">
+            <div class="splash-brand-title">Adis Formy</div>
+            <div class="splash-brand-sub">Systém správy a evidence forem</div>
+            <div class="splash-status-line">
+                <div class="splash-status-bar"></div>
+            </div>
+        </div>
+    </div>
+</div>
 
 <div class="container">
     <div class="header-logo">
@@ -8675,9 +8898,47 @@
 
         loadShiftPlan();
         initFactoryMachinesData();
+
+        // Stale-While-Revalidate: Instant 0ms render from cache on startup
+        if (rawDatabase && rawDatabase.length > 0) {
+            refreshUI();
+        }
+
         fetchData();
         setupRealtimeSubscription();
+
+        // Safety fallback: guaranteed splash exit after max 3.8s even on offline/very slow networks
+        setTimeout(() => { dismissSplashScreen(true); }, 3800);
     });
+
+    // ==========================================
+    // SPLASH SCREEN CONTROLLER (GOLDEN TIMING)
+    // ==========================================
+    let isSplashDismissed = false;
+    const splashStartTime = Date.now();
+
+    function dismissSplashScreen(force = false) {
+        if (isSplashDismissed) return;
+        const splashEl = document.getElementById('appSplash');
+        if (!splashEl) {
+            isSplashDismissed = true;
+            return;
+        }
+
+        const elapsed = Date.now() - splashStartTime;
+        // Perfect golden middle timing: wait until at least 1 full orbit cycle (1450ms) finishes
+        const minDuration = 1450;
+        const remaining = Math.max(0, minDuration - elapsed);
+
+        setTimeout(() => {
+            if (isSplashDismissed) return;
+            isSplashDismissed = true;
+            splashEl.classList.add('splash-hidden');
+            setTimeout(() => {
+                try { splashEl.remove(); } catch (e) {}
+            }, 500);
+        }, force ? 0 : remaining);
+    }
 
     function updateTabIndicator() {
         const activeBtn = document.querySelector('.tab-btn.active');
@@ -9225,6 +9486,7 @@
     }
 
     async function fetchCustomers() {
+        let changed = false;
         try {
             const res = await fetch(`${API_URL}/rest/v1/customers?select=*`, {
                 headers: { 'apikey': API_KEY, 'Authorization': `Bearer ${API_KEY}` }
@@ -9251,15 +9513,22 @@
                     let listWithoutOthers = fetchedList.filter(c => c.name.toLowerCase() !== 'others');
                     if (othersObj) listWithoutOthers.push(othersObj);
                     else listWithoutOthers.push({ name: "Others", bg: "#fdfbf7" });
+
+                    const prevSerialized = localStorage.getItem('adis_cached_customers_list_v1');
+                    const newSerialized = JSON.stringify(listWithoutOthers);
+                    if (prevSerialized !== newSerialized) {
+                        changed = true;
+                        try {
+                            localStorage.setItem('adis_cached_customers_list_v1', newSerialized);
+                        } catch (ce) {}
+                    }
                     customersList = listWithoutOthers;
-                    try {
-                        localStorage.setItem('adis_cached_customers_list_v1', JSON.stringify(customersList));
-                    } catch (ce) {}
                 }
             }
         } catch (e) {
             console.warn("Notice: could not refresh customers from cloud, keeping existing/cached customers:", e);
         }
+        return changed;
     }
 
     let isCustomerDragging = false;
@@ -9900,7 +10169,7 @@
 
     async function fetchData() {
         try {
-            await fetchCustomers();
+            const customersChanged = await fetchCustomers();
             const [moldsRes, commentsRes] = await Promise.all([
                 fetch(`${API_URL}/rest/v1/molds?select=*`, { headers: { 'apikey': API_KEY, 'Authorization': `Bearer ${API_KEY}` } }),
                 fetch(`${API_URL}/rest/v1/mold_comments?select=*&order=created_at.desc`, { headers: { 'apikey': API_KEY, 'Authorization': `Bearer ${API_KEY}` } }).catch(() => null)
@@ -9909,6 +10178,7 @@
             if (!moldsRes.ok) throw new Error("Chyba API");
             const data = await moldsRes.json();
             
+            const prevMoldsSerialized = localStorage.getItem('adis_cached_molds_v1');
             rawDatabase = data.map(item => {
                 let photosArr = [];
                 if (item.photo_url) {
@@ -9924,11 +10194,17 @@
                 ];
             }).sort((a, b) => String(a[0]).localeCompare(String(b[0]), undefined, { numeric: true, sensitivity: 'base' }));
 
-            try {
-                localStorage.setItem('adis_cached_molds_v1', JSON.stringify(rawDatabase));
-            } catch (ce) {}
+            const newMoldsSerialized = JSON.stringify(rawDatabase);
+            const moldsChanged = prevMoldsSerialized !== newMoldsSerialized;
+            if (moldsChanged) {
+                try {
+                    localStorage.setItem('adis_cached_molds_v1', newMoldsSerialized);
+                } catch (ce) {}
+            }
 
+            let commentsChanged = false;
             if (commentsRes && commentsRes.ok) {
+                const prevCommSerialized = localStorage.getItem('adis_cached_comments_v1');
                 const loadedComments = await commentsRes.json();
                 allComments = loadedComments.map(c => {
                     let parsedPhotoUrls = [];
@@ -9943,15 +10219,27 @@
                     }
                     return { ...c, photo_urls: parsedPhotoUrls };
                 });
-                try {
-                    localStorage.setItem('adis_cached_comments_v1', JSON.stringify(allComments));
-                } catch (ce) {}
+                const newCommSerialized = JSON.stringify(allComments);
+                commentsChanged = prevCommSerialized !== newCommSerialized;
+                if (commentsChanged) {
+                    try {
+                        localStorage.setItem('adis_cached_comments_v1', newCommSerialized);
+                    } catch (ce) {}
+                }
             }
 
-            refreshUI();
+            const isAlreadyRendered = Boolean(document.getElementById('databaseTable')?.querySelector('tr[id^="accordion-trigger-"]'));
+            if (moldsChanged || commentsChanged || customersChanged || !isAlreadyRendered) {
+                refreshUI();
+            }
         } catch (e) {
             console.warn("Fetch warning (using local cache if available):", e);
-            refreshUI();
+            const isAlreadyRendered = Boolean(document.getElementById('databaseTable')?.querySelector('tr[id^="accordion-trigger-"]'));
+            if (!isAlreadyRendered) {
+                refreshUI();
+            }
+        } finally {
+            dismissSplashScreen();
         }
     }
 
