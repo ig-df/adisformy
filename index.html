@@ -56,10 +56,9 @@
            CRITICAL HARDWARE-ACCELERATED SPLASH SCREEN (A • f)
            Early-parsed for instantaneous first-paint on mobile PWA cold start
            ========================================================================== */
-        html, body {
-            background-color: #ffffff !important;
-            margin: 0 !important;
-            padding: 0 !important;
+        html {
+            background-color: #ffffff;
+            -webkit-text-size-adjust: 100%;
         }
 
         .app-splash-screen {
@@ -136,7 +135,7 @@
             -webkit-transform: translate3d(0, 0, 0);
         }
 
-        /* Orbit Rotator Group: smooth 360 clockwise turn with GPU acceleration */
+        /* Orbit Rotator Group: smooth continuous 720deg (2 full loops) flight */
         .splash-orbit-group {
             transform-box: view-box;
             transform-origin: 256px 256px;
@@ -146,11 +145,11 @@
             -webkit-transform-style: preserve-3d;
             transform-style: preserve-3d;
             will-change: transform;
-            animation: splashOrbitRotate 1.40s cubic-bezier(0.38, 0.04, 0.22, 1) 2 normal forwards;
-            -webkit-animation: splashOrbitRotate 1.40s cubic-bezier(0.38, 0.04, 0.22, 1) 2 normal forwards;
+            animation: splashOrbitRotate 2.80s cubic-bezier(0.25, 0.1, 0.25, 1) 1 normal forwards;
+            -webkit-animation: splashOrbitRotate 2.80s cubic-bezier(0.25, 0.1, 0.25, 1) 1 normal forwards;
         }
 
-        /* The flying red dot: smooth curving trajectory with 120 FPS mobile GPU composition */
+        /* The flying red dot: single graceful takeoff -> continuous 2-orbit cruise -> landing */
         .splash-dot {
             transform-box: view-box;
             transform-origin: 256px 256px;
@@ -160,11 +159,11 @@
             -webkit-transform-style: preserve-3d;
             transform-style: preserve-3d;
             will-change: transform;
-            animation: splashDotFlight 1.40s cubic-bezier(0.38, 0.04, 0.22, 1) 2 normal forwards;
-            -webkit-animation: splashDotFlight 1.40s cubic-bezier(0.38, 0.04, 0.22, 1) 2 normal forwards;
+            animation: splashDotFlight 2.80s cubic-bezier(0.25, 0.1, 0.25, 1) 1 normal forwards;
+            -webkit-animation: splashDotFlight 2.80s cubic-bezier(0.25, 0.1, 0.25, 1) 1 normal forwards;
         }
 
-        /* The motion trail: graceful glowing arc trailing behind the dot */
+        /* The motion trail: luminous arc glowing steadily during the entire dual orbit */
         .splash-trail {
             transform-box: view-box;
             transform-origin: 256px 256px;
@@ -172,25 +171,25 @@
             -webkit-backface-visibility: hidden;
             backface-visibility: hidden;
             will-change: opacity;
-            animation: splashTrailGlow 1.40s cubic-bezier(0.38, 0.04, 0.22, 1) 2 normal forwards;
-            -webkit-animation: splashTrailGlow 1.40s cubic-bezier(0.38, 0.04, 0.22, 1) 2 normal forwards;
+            animation: splashTrailGlow 2.80s cubic-bezier(0.25, 0.1, 0.25, 1) 1 normal forwards;
+            -webkit-animation: splashTrailGlow 2.80s cubic-bezier(0.25, 0.1, 0.25, 1) 1 normal forwards;
         }
 
         @keyframes splashOrbitRotate {
-            0%, 14% {
+            0%, 8% {
                 transform: rotate(0deg) translate3d(0, 0, 0);
             }
-            82%, 100% {
-                transform: rotate(360deg) translate3d(0, 0, 0);
+            88%, 100% {
+                transform: rotate(720deg) translate3d(0, 0, 0);
             }
         }
 
         @-webkit-keyframes splashOrbitRotate {
-            0%, 14% {
+            0%, 8% {
                 -webkit-transform: rotate(0deg) translate3d(0, 0, 0);
             }
-            82%, 100% {
-                -webkit-transform: rotate(360deg) translate3d(0, 0, 0);
+            88%, 100% {
+                -webkit-transform: rotate(720deg) translate3d(0, 0, 0);
             }
         }
 
@@ -198,28 +197,25 @@
             0% {
                 transform: translate3d(45px, -10px, 0) scale(1);
             }
-            6% {
-                transform: translate3d(45px, -10px, 0) scale(1.30);
+            4% {
+                transform: translate3d(45px, -10px, 0) scale(1.28);
             }
-            11% {
-                transform: translate3d(45px, -10px, 0) scale(1.14);
+            8% {
+                transform: translate3d(45px, -10px, 0) scale(1.15);
             }
-            14% {
-                transform: translate3d(45px, -10px, 0) scale(1.16);
-            }
-            22% {
+            12% {
                 transform: translate3d(0px, -158px, 0) scale(1.20);
             }
-            76% {
+            86% {
                 transform: translate3d(0px, -158px, 0) scale(1.20);
-            }
-            84% {
-                transform: translate3d(45px, -10px, 0) scale(1.16);
             }
             91% {
-                transform: translate3d(45px, -10px, 0) scale(0.93);
+                transform: translate3d(45px, -10px, 0) scale(1.15);
             }
-            96%, 100% {
+            95% {
+                transform: translate3d(45px, -10px, 0) scale(0.94);
+            }
+            98%, 100% {
                 transform: translate3d(45px, -10px, 0) scale(1);
             }
         }
@@ -228,61 +224,58 @@
             0% {
                 -webkit-transform: translate3d(45px, -10px, 0) scale(1);
             }
-            6% {
-                -webkit-transform: translate3d(45px, -10px, 0) scale(1.30);
+            4% {
+                -webkit-transform: translate3d(45px, -10px, 0) scale(1.28);
             }
-            11% {
-                -webkit-transform: translate3d(45px, -10px, 0) scale(1.14);
+            8% {
+                -webkit-transform: translate3d(45px, -10px, 0) scale(1.15);
             }
-            14% {
-                -webkit-transform: translate3d(45px, -10px, 0) scale(1.16);
-            }
-            22% {
+            12% {
                 -webkit-transform: translate3d(0px, -158px, 0) scale(1.20);
             }
-            76% {
+            86% {
                 -webkit-transform: translate3d(0px, -158px, 0) scale(1.20);
-            }
-            84% {
-                -webkit-transform: translate3d(45px, -10px, 0) scale(1.16);
             }
             91% {
-                -webkit-transform: translate3d(45px, -10px, 0) scale(0.93);
+                -webkit-transform: translate3d(45px, -10px, 0) scale(1.15);
             }
-            96%, 100% {
+            95% {
+                -webkit-transform: translate3d(45px, -10px, 0) scale(0.94);
+            }
+            98%, 100% {
                 -webkit-transform: translate3d(45px, -10px, 0) scale(1);
             }
         }
 
         @keyframes splashTrailGlow {
-            0%, 14% {
+            0%, 8% {
                 opacity: 0;
             }
-            22% {
-                opacity: 1;
-            }
-            74% {
+            12% {
                 opacity: 0.95;
             }
-            82%, 100% {
+            84% {
+                opacity: 0.95;
+            }
+            90%, 100% {
                 opacity: 0;
             }
         }
 
         @-webkit-keyframes splashTrailGlow {
-            0%, 14% {
+            0%, 8% {
                 -webkit-opacity: 0;
                 opacity: 0;
             }
-            22% {
-                -webkit-opacity: 1;
-                opacity: 1;
-            }
-            74% {
+            12% {
                 -webkit-opacity: 0.95;
                 opacity: 0.95;
             }
-            82%, 100% {
+            84% {
+                -webkit-opacity: 0.95;
+                opacity: 0.95;
+            }
+            90%, 100% {
                 -webkit-opacity: 0;
                 opacity: 0;
             }
@@ -340,20 +333,20 @@
             transform-origin: 0 50%;
             -webkit-transform-origin: 0 50%;
             will-change: transform;
-            animation: splashStatusSlide 1.40s cubic-bezier(0.38, 0.04, 0.22, 1) 2 alternate forwards;
-            -webkit-animation: splashStatusSlide 1.40s cubic-bezier(0.38, 0.04, 0.22, 1) 2 alternate forwards;
+            animation: splashStatusSlide 2.80s cubic-bezier(0.25, 0.1, 0.25, 1) forwards;
+            -webkit-animation: splashStatusSlide 2.80s cubic-bezier(0.25, 0.1, 0.25, 1) forwards;
         }
 
         @keyframes splashStatusSlide {
-            0% { transform: translate3d(0, 0, 0) scaleX(0.22); }
-            50% { transform: translate3d(28%, 0, 0) scaleX(0.52); }
-            100% { transform: translate3d(74%, 0, 0) scaleX(0.26); }
+            0% { transform: translate3d(0, 0, 0) scaleX(0.18); }
+            50% { transform: translate3d(36%, 0, 0) scaleX(0.48); }
+            100% { transform: translate3d(78%, 0, 0) scaleX(0.22); }
         }
 
         @-webkit-keyframes splashStatusSlide {
-            0% { -webkit-transform: translate3d(0, 0, 0) scaleX(0.22); }
-            50% { -webkit-transform: translate3d(28%, 0, 0) scaleX(0.52); }
-            100% { -webkit-transform: translate3d(74%, 0, 0) scaleX(0.26); }
+            0% { -webkit-transform: translate3d(0, 0, 0) scaleX(0.18); }
+            50% { -webkit-transform: translate3d(36%, 0, 0) scaleX(0.48); }
+            100% { -webkit-transform: translate3d(78%, 0, 0) scaleX(0.22); }
         }
 
         @keyframes splashTextFadeIn {
@@ -640,7 +633,7 @@
 
         .header-logo {
             text-align: center;
-            padding: 1.6rem 1rem 1.1rem 1rem;
+            padding: max(1.6rem, calc(env(safe-area-inset-top, 0px) + 1.2rem)) 1rem 1.1rem 1rem;
             background-color: var(--card-bg);
             position: relative;
             flex-shrink: 0;
@@ -714,8 +707,8 @@
 
         .header-buttons-right {
             position: absolute;
-            top: 0.75rem;
-            right: 0.75rem;
+            top: max(0.75rem, calc(env(safe-area-inset-top, 0px) + 0.55rem));
+            right: max(0.75rem, env(safe-area-inset-right, 0.75rem));
             display: flex;
             gap: 0.4rem;
             z-index: 20;
@@ -723,8 +716,8 @@
 
         .header-auth-left {
             position: absolute;
-            top: 0.75rem;
-            left: 0.75rem;
+            top: max(0.75rem, calc(env(safe-area-inset-top, 0px) + 0.55rem));
+            left: max(0.75rem, env(safe-area-inset-left, 0.75rem));
             display: flex;
             gap: 0.4rem;
             align-items: center;
@@ -1598,7 +1591,7 @@
             }
 
             .header-logo {
-                padding: 1.05rem 0.6rem 0.85rem 0.6rem !important;
+                padding: max(1.1rem, calc(env(safe-area-inset-top, 0px) + 0.95rem)) 0.6rem 0.85rem 0.6rem !important;
             }
             .header-logo img#siteLogo {
                 max-height: 38px !important;
@@ -1617,13 +1610,13 @@
                 height: 11px !important;
             }
             .header-auth-left {
-                top: 0.75rem !important;
-                left: 0.5rem !important;
+                top: max(0.65rem, calc(env(safe-area-inset-top, 0px) + 0.5rem)) !important;
+                left: max(0.5rem, env(safe-area-inset-left, 0.5rem)) !important;
                 gap: 0.3rem !important;
             }
             .header-buttons-right {
-                top: 0.75rem !important;
-                right: 0.5rem !important;
+                top: max(0.65rem, calc(env(safe-area-inset-top, 0px) + 0.5rem)) !important;
+                right: max(0.5rem, env(safe-area-inset-right, 0.5rem)) !important;
                 gap: 0.3rem !important;
             }
             .top-icon-btn, .superuser-badge-btn, .auth-btn {
@@ -5786,7 +5779,7 @@
 
         </style>
 </head>
-<body style="background-color: #ffffff; margin: 0; padding: 0; overflow: hidden;">
+<body style="background-color: #ffffff;">
 
 <!-- PREMIUM ANIMATED SPLASH SCREEN (A • f) -->
 <div id="appSplash" class="app-splash-screen" aria-label="Načítání aplikace">
@@ -5849,7 +5842,7 @@
             </button>
         </div>
 
-        <img src="logo.png" alt="Adis Logo" id="siteLogo" tabindex="0" onclick="location.reload()" title="Aktualizovat" onerror="if(!this.dataset.step){this.dataset.step='1';this.src='./logo.png';}else if(this.dataset.step==='1'){this.dataset.step='2';this.src='public/logo.png';}">
+        <img src="logo.png" alt="Adis Logo" id="siteLogo" tabindex="0" onclick="reloadApp()" title="Aktualizovat" onerror="if(!this.dataset.step){this.dataset.step='1';this.src='./logo.png';}else if(this.dataset.step==='1'){this.dataset.step='2';this.src='public/logo.png';}">
         <div class="header-badge" title="Integrovaný výrobní systém">
             <span class="header-badge-icon">
                 <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -7663,7 +7656,23 @@
         }
     }
 
-    const supabaseClient = window.supabase.createClient(API_URL, API_KEY);
+    let supabaseClient = null;
+    try {
+        if (typeof window !== 'undefined' && window.supabase && typeof window.supabase.createClient === 'function') {
+            supabaseClient = window.supabase.createClient(API_URL, API_KEY);
+        }
+    } catch (e) {
+        console.warn('[Supabase] Client init deferred:', e);
+    }
+
+    function ensureSupabaseClient() {
+        if (!supabaseClient && typeof window !== 'undefined' && window.supabase && typeof window.supabase.createClient === 'function') {
+            try {
+                supabaseClient = window.supabase.createClient(API_URL, API_KEY);
+            } catch (e) {}
+        }
+        return supabaseClient;
+    }
     const BASE_SYSTEM_CUSTOMERS = ["Škoda", "Novares", "Witte", "Scherdel", "AFSI", "Adient", "Mubea", "Ideal", "Others"];
 
     let customersList = [
@@ -8987,6 +8996,11 @@
         document.addEventListener('touchcancel', releaseTouched, { passive: true });
     }
 
+        try {
+        if ('scrollRestoration' in history) history.scrollRestoration = 'manual';
+        window.scrollTo(0, 0);
+    } catch (e) {}
+
     document.addEventListener("DOMContentLoaded", () => {
         refreshUserSessionActivity();
         updateAuthUI();
@@ -9105,6 +9119,14 @@
     // ==========================================
     let isSplashDismissed = false;
     const SPLASH_TOTAL_RUN_MS = 2800; // Exactly 2 complete 1.40s orbit flight cycles
+
+        function reloadApp() {
+        try {
+            if ('scrollRestoration' in history) history.scrollRestoration = 'manual';
+            window.scrollTo(0, 0);
+        } catch (e) {}
+        location.reload();
+    }
 
     function dismissSplashScreen(force = false) {
         if (isSplashDismissed) return;
@@ -9643,13 +9665,15 @@
     }
 
     function setupRealtimeSubscription() {
+        const client = ensureSupabaseClient();
+        if (!client) return;
         const debouncedFetch = () => {
             if (isSubmittingAction) return; 
             if (realtimeDebounceTimer) clearTimeout(realtimeDebounceTimer);
             realtimeDebounceTimer = setTimeout(() => { fetchData(); }, 500);
         };
 
-        supabaseClient
+        client
             .channel('public-db-changes')
             .on('postgres_changes', { event: '*', schema: 'public', table: 'molds' }, debouncedFetch)
             .on('postgres_changes', { event: '*', schema: 'public', table: 'mold_comments' }, debouncedFetch)
