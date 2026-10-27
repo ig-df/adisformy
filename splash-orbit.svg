@@ -9,16 +9,29 @@
             .splash-orbit-group {
                 transform-box: view-box;
                 transform-origin: 256px 256px;
+                -webkit-transform: translateZ(0);
+                transform: translateZ(0);
+                will-change: transform;
+                -webkit-backface-visibility: hidden;
+                backface-visibility: hidden;
                 animation: splashOrbitRotate 2.20s cubic-bezier(0.35, 0.05, 0.25, 1) 1 normal forwards;
             }
             .splash-dot {
                 transform-box: view-box;
                 transform-origin: 256px 256px;
+                -webkit-transform: translateZ(0);
+                transform: translateZ(0);
+                will-change: transform;
+                -webkit-backface-visibility: hidden;
+                backface-visibility: hidden;
                 animation: splashDotFlight 2.20s cubic-bezier(0.35, 0.05, 0.25, 1) 1 normal forwards;
             }
             .splash-trail {
                 transform-box: view-box;
                 transform-origin: 256px 256px;
+                -webkit-backface-visibility: hidden;
+                backface-visibility: hidden;
+                will-change: opacity;
                 animation: splashTrailGlow 2.20s cubic-bezier(0.35, 0.05, 0.25, 1) 1 normal forwards;
             }
             @keyframes splashOrbitRotate {
