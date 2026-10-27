@@ -344,7 +344,14 @@
             width: auto;
             object-fit: contain;
             cursor: pointer;
-            transition: transform 0.2s ease, opacity 0.2s ease;
+            transition: transform 0.2s cubic-bezier(0.25, 1, 0.5, 1), opacity 0.2s ease;
+            will-change: transform, opacity;
+            transform: translateZ(0);
+            -webkit-transform: translateZ(0);
+            -webkit-tap-highlight-color: transparent;
+            touch-action: manipulation;
+            user-select: none;
+            -webkit-user-select: none;
         }
 
         .header-badge {
@@ -384,11 +391,14 @@
 
         .header-logo img#siteLogo:hover {
             opacity: 0.85;
-            transform: scale(1.02);
+            transform: scale(1.02) translateZ(0);
+            -webkit-transform: scale(1.02) translateZ(0);
         }
 
         .header-logo img#siteLogo:active {
-            transform: scale(0.98);
+            transform: scale(0.96) translateZ(0);
+            -webkit-transform: scale(0.96) translateZ(0);
+            opacity: 0.85;
         }
 
         .header-buttons-right {
@@ -7459,6 +7469,57 @@
         toastTimer = setTimeout(() => {
             toast.classList.remove('show');
         }, 2600);
+    }
+
+    async function resetAppToHomeState() {
+        if (navigator.vibrate) {
+            try { navigator.vibrate(12); } catch(e){}
+        }
+
+        const logo = document.getElementById('siteLogo');
+        if (logo) {
+            logo.style.transition = 'transform 0.22s cubic-bezier(0.175, 0.885, 0.32, 1.25)';
+            logo.style.transform = 'scale(0.9) rotate(-2deg)';
+            setTimeout(() => {
+                logo.style.transform = '';
+            }, 220);
+        }
+
+        if (typeof closeOnlineUsersPopover === 'function') closeOnlineUsersPopover();
+        
+        document.querySelectorAll('.modal-overlay.active').forEach(m => {
+            m.classList.remove('active');
+            m.style.display = 'none';
+        });
+        document.body.classList.remove('has-modal-open');
+
+        const searchInput = document.getElementById('searchInput') || document.getElementById('globalSearchInput');
+        if (searchInput && searchInput.value) {
+            searchInput.value = '';
+        }
+
+        document.querySelectorAll('.filter-chip.active').forEach(chip => {
+            chip.classList.remove('active');
+        });
+        if (typeof currentCustomerFilter !== 'undefined') {
+            currentCustomerFilter = 'ALL';
+        }
+
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+
+        if (typeof showToast === 'function') {
+            showToast('Aktualizace dat...');
+        }
+
+        if (typeof fetchData === 'function') {
+            await fetchData();
+        } else if (typeof refreshUI === 'function') {
+            refreshUI();
+        }
+
+        if (typeof showToast === 'function') {
+            showToast('Data byla úspěšně obnovena');
+        }
     }
 
     function showModalAnimated(modalId) {
