@@ -116,8 +116,8 @@
 
         .splash-logo-stage {
             position: relative;
-            width: 190px;
-            height: 190px;
+            width: 240px;
+            height: 240px;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -129,8 +129,8 @@
 
         @media (max-width: 600px) {
             .splash-logo-stage {
-                width: 156px;
-                height: 156px;
+                width: 220px;
+                height: 220px;
             }
         }
 
@@ -372,6 +372,38 @@
             100% { opacity: 1; -webkit-transform: translateY(0); }
         }
     </style>
+</head>
+<body style="background-color: #ffffff;">
+
+<!-- PREMIUM ANIMATED SPLASH SCREEN (A • f) -->
+<div id="appSplash" class="app-splash-screen" aria-label="Načítání aplikace">
+    <div class="splash-container">
+        <div id="splashLogoStage" class="splash-logo-stage"></div>
+        <div class="splash-text-wrap">
+            <div class="splash-brand-title">Adis Formy</div>
+            <div class="splash-brand-sub">Systém správy a evidence forem</div>
+            <div class="splash-status-line">
+                <div class="splash-status-bar"></div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+(function() {
+    var stage = document.getElementById("splashLogoStage");
+    if (!stage) return;
+    fetch("splash-orbit.svg")
+        .then(function(r) { return r.text(); })
+        .then(function(svgText) {
+            if (stage && !stage.firstElementChild) {
+                stage.innerHTML = svgText;
+            }
+        })
+        .catch(function(e) {});
+})();
+</script>
+
+
 <style>
         :root {
             color-scheme: light only;
@@ -5791,36 +5823,10 @@
         }
 
         </style>
-</head>
+
 <body style="background-color: #ffffff;">
 
-<!-- PREMIUM ANIMATED SPLASH SCREEN (A • f) -->
-<div id="appSplash" class="app-splash-screen" aria-label="Načítání aplikace">
-    <div class="splash-container">
-        <div id="splashLogoStage" class="splash-logo-stage"></div>
-        <div class="splash-text-wrap">
-            <div class="splash-brand-title">Adis Formy</div>
-            <div class="splash-brand-sub">Systém správy a evidence forem</div>
-            <div class="splash-status-line">
-                <div class="splash-status-bar"></div>
-            </div>
-        </div>
-    </div>
-</div>
-<script>
-(function() {
-    var stage = document.getElementById("splashLogoStage");
-    if (!stage) return;
-    fetch("splash-orbit.svg")
-        .then(function(r) { return r.text(); })
-        .then(function(svgText) {
-            if (stage && !stage.firstElementChild) {
-                stage.innerHTML = svgText;
-            }
-        })
-        .catch(function(e) {});
-})();
-</script>
+
 
 <div class="container">
     <div class="header-logo">
