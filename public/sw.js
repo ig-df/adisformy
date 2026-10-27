@@ -80,7 +80,7 @@ self.addEventListener('fetch', (event) => {
         })
         .catch(() => {
           return caches.match(req).then((cachedResponse) => {
-            return cachedResponse || caches.match('/index.html');
+            return cachedResponse || caches.match('./index.html');
           });
         })
     );
