@@ -2,9 +2,10 @@
   "name": "Adis Formy",
   "short_name": "Adis Formy",
   "description": "Evidence a správa forem pro lisovnu plastů",
-  "start_url": "./",
+  "start_url": "index.html",
   "scope": "./",
   "display": "standalone",
+  "orientation": "portrait",
   "background_color": "#ffffff",
   "theme_color": "#ffffff",
   "icons": [
