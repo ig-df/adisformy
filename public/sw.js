@@ -1,6 +1,8 @@
 // Rock-solid, Safe Service Worker for Adis Formy PWA (Netlify & GitHub Pages compatible)
-const CACHE_NAME = 'adis-pwa-static-v6';
+const CACHE_NAME = 'adis-pwa-static-v7';
 const STATIC_ASSETS = [
+  './',
+  './index.html',
   './manifest.json',
   './icon-192.png',
   './icon-512.png',
@@ -56,10 +58,23 @@ self.addEventListener('fetch', (event) => {
   // Never intercept external requests (Supabase, Google Apps Script, Gemini, CDN, etc.)
   if (url.origin !== self.location.origin) return;
 
-  // Never intercept navigation requests (always get fresh HTML directly from network)
+  // Stale-While-Revalidate for navigation requests: instant launch from local cache, revalidate in background
   if (req.mode === 'navigate' || url.pathname.endsWith('/') || url.pathname.endsWith('/index.html')) {
     event.respondWith(
-      fetch(req).catch(() => caches.match(req))
+      caches.match(req).then((cachedResponse) => {
+        const fetchPromise = fetch(req).then((networkResponse) => {
+          if (networkResponse && networkResponse.status === 200) {
+            const responseToCache = networkResponse.clone();
+            caches.open(CACHE_NAME).then((cache) => {
+              cache.put(req, responseToCache);
+            });
+          }
+          return networkResponse;
+        }).catch(() => null);
+
+        // Instant launch if cached, otherwise wait for network
+        return cachedResponse || fetchPromise;
+      })
     );
     return;
   }
