@@ -1,6 +1,28 @@
-// Rock-solid, Safe Service Worker for Adis Formy PWA (Netlify & GitHub Pages compatible)
-const CACHE_NAME = 'adis-pwa-static-v11';
+// Rock-solid, Safe Service Worker for Adis Formy PWA (Netlify & GitHub Pages dual compatible)
+const CACHE_NAME = 'adis-pwa-static-v12';
 const STATIC_ASSETS = [
+  './',
+  './index.html',
+  './splash-orbit.svg',
+  './af-base.png',
+  './manifest.json',
+  './icon-192.png',
+  './icon-512.png',
+  './icon-maskable-512.png',
+  './apple-touch-icon.png',
+  './favicon.ico',
+  './favicon.png',
+  './favicon-16.png',
+  './favicon-32.png',
+  './logo.png',
+  './icon1.png',
+  './icon2.png',
+  './icon3.png',
+  './icon5.png',
+  './icon6.png',
+  './icon7.png',
+  './icon9.png',
+  './sql.png',
   '/',
   '/index.html',
   '/splash-orbit.svg',
@@ -65,8 +87,8 @@ self.addEventListener('fetch', (event) => {
     return;
   }
 
-  // Network First for navigation requests: ensures latest deployed code & bundles on Netlify
-  if (req.mode === 'navigate' || url.pathname.endsWith('/') || url.pathname.endsWith('/index.html')) {
+  // Network First for navigation requests
+  if (req.mode === 'navigate' || url.pathname.endsWith('/') || url.pathname.endsWith('/index.html') || url.pathname === '') {
     event.respondWith(
       fetch(req)
         .then((networkResponse) => {
@@ -79,26 +101,38 @@ self.addEventListener('fetch', (event) => {
           return networkResponse;
         })
         .catch(() => {
-          return caches.match(req).then((cachedResponse) => {
-            return cachedResponse || caches.match('./index.html');
-          });
+          return caches.match(req)
+            .then((res) => res || caches.match('./index.html'))
+            .then((res) => res || caches.match('/index.html'))
+            .then((res) => res || caches.match('index.html'));
         })
     );
     return;
   }
 
-  // Never intercept dynamic APIs
-  if (url.pathname.includes('/api/') || url.pathname.includes('supabase')) {
-    return;
-  }
-
-  // Cache-first only for static icons and manifest
+  // Cache-first with resilient multi-fallback for static assets (Netlify & GitHub Pages dual support)
   event.respondWith(
     caches.match(req).then((cachedResponse) => {
-      if (cachedResponse) {
-        return cachedResponse;
-      }
-      return fetch(req);
+      if (cachedResponse) return cachedResponse;
+
+      const fileName = url.pathname.split('/').pop() || '';
+      return caches.match(url.pathname)
+        .then((res) => res || caches.match('./' + fileName))
+        .then((res) => res || caches.match('/' + fileName))
+        .then((res) => res || caches.match(fileName))
+        .then((res) => {
+          if (res) return res;
+          return fetch(req).then((networkResponse) => {
+            if (networkResponse && networkResponse.status === 200) {
+              const resToCache = networkResponse.clone();
+              caches.open(CACHE_NAME).then((cache) => {
+                cache.put(req, resToCache);
+              });
+            }
+            return networkResponse;
+          }).catch(() => null);
+        });
     })
   );
 });
+
