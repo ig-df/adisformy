@@ -51,10 +51,6 @@
     <meta name="supported-color-schemes" content="light">
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <!-- PDF.js for native in-app rendering of návodky (no external apps required) -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
-    <!-- Tesseract.js for fast camera scanning of numeric mold labels -->
-    <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
     <style>
         :root {
             color-scheme: light only;
@@ -5739,23 +5735,26 @@
             top: 0;
             left: 0;
             height: 100%;
-            width: 40%;
+            width: 100%;
             background: linear-gradient(90deg, #ea4326, #f97316);
             border-radius: 999px;
-            animation: splashStatusSlide 1.45s ease-in-out infinite alternate;
-            -webkit-animation: splashStatusSlide 1.45s ease-in-out infinite alternate;
+            transform-origin: 0 50%;
+            -webkit-transform-origin: 0 50%;
+            will-change: transform;
+            animation: splashStatusSlide 1.45s cubic-bezier(0.38, 0.04, 0.22, 1) infinite alternate;
+            -webkit-animation: splashStatusSlide 1.45s cubic-bezier(0.38, 0.04, 0.22, 1) infinite alternate;
         }
 
         @keyframes splashStatusSlide {
-            0% { left: 0%; width: 25%; }
-            50% { width: 55%; }
-            100% { left: 75%; width: 25%; }
+            0% { transform: translate3d(0, 0, 0) scaleX(0.22); }
+            50% { transform: translate3d(28%, 0, 0) scaleX(0.52); }
+            100% { transform: translate3d(74%, 0, 0) scaleX(0.26); }
         }
 
         @-webkit-keyframes splashStatusSlide {
-            0% { left: 0%; width: 25%; }
-            50% { width: 55%; }
-            100% { left: 75%; width: 25%; }
+            0% { -webkit-transform: translate3d(0, 0, 0) scaleX(0.22); }
+            50% { -webkit-transform: translate3d(28%, 0, 0) scaleX(0.52); }
+            100% { -webkit-transform: translate3d(74%, 0, 0) scaleX(0.26); }
         }
 
         @keyframes splashTextFadeIn {
@@ -9063,23 +9062,28 @@
         updateTabIndicator();
         window.addEventListener('resize', updateTabIndicator);
 
-        loadShiftPlan();
-        initFactoryMachinesData();
+        // Step 3 Yield: allow the browser to paint and start the GPU splash animation cleanly
+        requestAnimationFrame(() => {
+            setTimeout(() => {
+                loadShiftPlan();
+                initFactoryMachinesData();
 
-        // Stale-While-Revalidate: Instant 0ms render from cache on startup
-        if (rawDatabase && rawDatabase.length > 0) {
-            refreshUI();
-        }
+                // Stale-While-Revalidate: Instant render from cache on startup
+                if (rawDatabase && rawDatabase.length > 0) {
+                    refreshUI();
+                }
 
-        fetchData();
-        setupRealtimeSubscription();
+                fetchData();
+                setupRealtimeSubscription();
+            }, 10);
+        });
 
-        // Safety fallback: guaranteed splash exit after max 3.8s even on offline/very slow networks
-        setTimeout(() => { dismissSplashScreen(true); }, 3800);
+        // Safety fallback: guaranteed splash exit after max 3.5s even on offline/very slow networks
+        setTimeout(() => { dismissSplashScreen(true); }, 3500);
     });
 
     // ==========================================
-    // SPLASH SCREEN CONTROLLER (GOLDEN TIMING)
+    // SPLASH SCREEN CONTROLLER (TRUE ZERO-LAG)
     // ==========================================
     let isSplashDismissed = false;
     const splashStartTime = Date.now();
@@ -9093,8 +9097,8 @@
         }
 
         const elapsed = Date.now() - splashStartTime;
-        // Perfect golden middle timing: wait until at least 1 full orbit cycle (1450ms) finishes
-        const minDuration = 1450;
+        // Natural smooth timing: enough for 1 elegant micro-pulse (680ms) if cached, or immediately when data is ready
+        const minDuration = 680;
         const remaining = Math.max(0, minDuration - elapsed);
 
         setTimeout(() => {
@@ -9103,7 +9107,7 @@
             splashEl.classList.add('splash-hidden');
             setTimeout(() => {
                 try { splashEl.remove(); } catch (e) {}
-            }, 500);
+            }, 450);
         }, force ? 0 : remaining);
     }
 
@@ -10756,8 +10760,24 @@
     // ==========================================
     // IN-APP NÁVODKY / PDF VIEWER (PDF.JS)
     // ==========================================
-    if (window.pdfjsLib) {
-        window.pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+    async function ensurePdfJs() {
+        if (window.pdfjsLib) return true;
+        return new Promise((resolve) => {
+            const s = document.createElement('script');
+            s.src = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js';
+            s.async = true;
+            s.onload = () => {
+                if (window.pdfjsLib) {
+                    window.pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+                }
+                resolve(true);
+            };
+            s.onerror = () => {
+                console.warn("Nepodařilo se načíst PDF.js CDN.");
+                resolve(false);
+            };
+            document.head.appendChild(s);
+        });
     }
 
     let currentPdfDoc = null;
@@ -10828,6 +10848,9 @@
 
         // Load PDF via PDF.js
         try {
+            if (!window.pdfjsLib) {
+                await ensurePdfJs();
+            }
             if (!window.pdfjsLib) {
                 throw new Error("PDF.js knihovna není načtena.");
             }
@@ -11708,9 +11731,27 @@ Return strictly valid JSON only without markdown formatting with this schema:
         } catch (e) {}
     }
 
+    async function ensureTesseract() {
+        if (typeof Tesseract !== 'undefined') return true;
+        return new Promise((resolve) => {
+            const s = document.createElement('script');
+            s.src = 'https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js';
+            s.async = true;
+            s.onload = () => resolve(true);
+            s.onerror = () => {
+                console.warn("Nepodařilo se načíst Tesseract CDN.");
+                resolve(false);
+            };
+            document.head.appendChild(s);
+        });
+    }
+
     async function getTesseractWorker() {
         if (tesseractWorker) return tesseractWorker;
-        if (typeof Tesseract === 'undefined') return null;
+        if (typeof Tesseract === 'undefined') {
+            const loaded = await ensureTesseract();
+            if (!loaded || typeof Tesseract === 'undefined') return null;
+        }
         if (isInitializingTesseract) {
             let waitAttempts = 0;
             while (isInitializingTesseract && waitAttempts < 40) {
