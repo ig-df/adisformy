@@ -1,8 +1,10 @@
 // Rock-solid, Safe Service Worker for Adis Formy PWA (Netlify & GitHub Pages compatible)
-const CACHE_NAME = 'adis-pwa-static-v7';
+const CACHE_NAME = 'adis-pwa-static-v9';
 const STATIC_ASSETS = [
   './',
   './index.html',
+  './splash-orbit.svg',
+  './af-base.png',
   './manifest.json',
   './icon-192.png',
   './icon-512.png',
