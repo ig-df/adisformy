@@ -1,8 +1,1 @@
-/api/*    /api/:splat    200
-/*.png    /:splat        200
-/*.svg    /:splat        200
-/*.ico    /:splat        200
-/*.json   /:splat        200
-/*.js     /:splat        200
-/*.css    /:splat        200
-/*        /index.html    200
+/*  /index.html  200

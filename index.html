@@ -5855,7 +5855,17 @@
             </button>
         </div>
 
-        <img src="./logo.png" alt="Adis Logo" id="siteLogo" tabindex="0" onclick="reloadApp()" title="Aktualizovat" onerror="if(!this.dataset.step){this.dataset.step='1';this.src='logo.png';}else if(this.dataset.step==='1'){this.dataset.step='2';this.src='public/logo.png';}">
+        <img alt="Adis Logo" id="siteLogo" tabindex="0" onclick="reloadApp()" title="Aktualizovat">
+        <script>
+          (function() {
+            var img = document.getElementById('siteLogo');
+            if (img) {
+              var path = window.location.pathname;
+              var dir = path.substring(0, path.lastIndexOf('/') + 1);
+              img.src = window.location.origin + dir + 'logo.png';
+            }
+          })();
+        </script>
         <div class="header-badge" title="Integrovaný výrobní systém">
             <span class="header-badge-icon">
                 <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
