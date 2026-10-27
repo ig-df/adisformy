@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="cs" style="background-color: #ffffff; margin: 0; padding: 0;">
 <head>
-    <base href="./">
+    <base href=./>
     <!-- Google tag (gtag.js) -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-XZYF6MB88T"></script>
     <script>
@@ -45,15 +45,6 @@
           updatePwaInstallButtonVisibility();
         }
       });
-
-      // Register Service Worker for robust offline & Netlify/GitHub Pages PWA support
-      if ('serviceWorker' in navigator) {
-        window.addEventListener('load', function() {
-          navigator.serviceWorker.register('./sw.js').catch(function(err) {
-            console.warn('SW registration failed: ', err);
-          });
-        });
-      }
     </script>
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-title" content="Adis Formy">
