@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="cs" style="background-color: #ffffff; margin: 0; padding: 0;">
 <head>
-    <base href=./>
+    <base href="/">
     <!-- Google tag (gtag.js) -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-XZYF6MB88T"></script>
     <script>
@@ -25,16 +25,16 @@
     <meta property="og:description" content="Systém pro evidenci a správu forem skladu závodu s vyhledáváním, sledováním údržby a exportem do Heliosu.">
     
     <!-- Preload critical isolated splash animation asset for instant launch -->
-    <link rel="preload" href="splash-orbit.svg" as="fetch" crossorigin="anonymous">
+    <link rel="preload" href="/splash-orbit.svg" as="fetch" crossorigin="anonymous">
     
     <!-- Favicon & Mobile App Integration (GitHub Pages & Netlify compatible) -->
-        <link rel="manifest" href="manifest.json">
-    <link rel="shortcut icon" href="favicon.ico" type="image/x-icon">
-    <link rel="icon" type="image/x-icon" href="favicon.ico">
-    <link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
-    <link rel="icon" type="image/png" sizes="16x16" href="favicon-16.png">
-    <link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
-    <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
+    <link rel="manifest" href="/manifest.json">
+    <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon">
+    <link rel="icon" type="image/x-icon" href="/favicon.ico">
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16.png">
+    <link rel="icon" type="image/png" sizes="192x192" href="/icon-192.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
     <script>
       // Early capture of beforeinstallprompt to eliminate race conditions
       window.deferredPwaPrompt = null;
@@ -45,6 +45,15 @@
           updatePwaInstallButtonVisibility();
         }
       });
+
+      // Register Service Worker for robust offline & Netlify PWA support
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', function() {
+          navigator.serviceWorker.register('/sw.js').catch(function(err) {
+            console.warn('SW registration failed: ', err);
+          });
+        });
+      }
     </script>
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-title" content="Adis Formy">

@@ -1,28 +1,28 @@
 // Rock-solid, Safe Service Worker for Adis Formy PWA (Netlify & GitHub Pages compatible)
-const CACHE_NAME = 'adis-pwa-static-v10';
+const CACHE_NAME = 'adis-pwa-static-v11';
 const STATIC_ASSETS = [
-  './',
-  './index.html',
-  './splash-orbit.svg',
-  './af-base.png',
-  './manifest.json',
-  './icon-192.png',
-  './icon-512.png',
-  './icon-maskable-512.png',
-  './apple-touch-icon.png',
-  './favicon.ico',
-  './favicon.png',
-  './favicon-16.png',
-  './favicon-32.png',
-  './logo.png',
-  './icon1.png',
-  './icon2.png',
-  './icon3.png',
-  './icon5.png',
-  './icon6.png',
-  './icon7.png',
-  './icon9.png',
-  './sql.png'
+  '/',
+  '/index.html',
+  '/splash-orbit.svg',
+  '/af-base.png',
+  '/manifest.json',
+  '/icon-192.png',
+  '/icon-512.png',
+  '/icon-maskable-512.png',
+  '/apple-touch-icon.png',
+  '/favicon.ico',
+  '/favicon.png',
+  '/favicon-16.png',
+  '/favicon-32.png',
+  '/logo.png',
+  '/icon1.png',
+  '/icon2.png',
+  '/icon3.png',
+  '/icon5.png',
+  '/icon6.png',
+  '/icon7.png',
+  '/icon9.png',
+  '/sql.png'
 ];
 
 self.addEventListener('install', (event) => {
@@ -60,11 +60,16 @@ self.addEventListener('fetch', (event) => {
   // Never intercept external requests (Supabase, Google Apps Script, Gemini, CDN, etc.)
   if (url.origin !== self.location.origin) return;
 
-  // Stale-While-Revalidate for navigation requests: instant launch from local cache, revalidate in background
+  // Never intercept dynamic APIs
+  if (url.pathname.includes('/api/') || url.pathname.includes('supabase')) {
+    return;
+  }
+
+  // Network First for navigation requests: ensures latest deployed code & bundles on Netlify
   if (req.mode === 'navigate' || url.pathname.endsWith('/') || url.pathname.endsWith('/index.html')) {
     event.respondWith(
-      caches.match(req).then((cachedResponse) => {
-        const fetchPromise = fetch(req).then((networkResponse) => {
+      fetch(req)
+        .then((networkResponse) => {
           if (networkResponse && networkResponse.status === 200) {
             const responseToCache = networkResponse.clone();
             caches.open(CACHE_NAME).then((cache) => {
@@ -72,11 +77,12 @@ self.addEventListener('fetch', (event) => {
             });
           }
           return networkResponse;
-        }).catch(() => null);
-
-        // Instant launch if cached, otherwise wait for network
-        return cachedResponse || fetchPromise;
-      })
+        })
+        .catch(() => {
+          return caches.match(req).then((cachedResponse) => {
+            return cachedResponse || caches.match('/index.html');
+          });
+        })
     );
     return;
   }
