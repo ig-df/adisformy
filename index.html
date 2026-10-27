@@ -5484,14 +5484,17 @@
             -webkit-user-select: none;
             pointer-events: all;
             opacity: 1;
-            transform: scale(1);
+            transform: scale(1) translateZ(0);
+            -webkit-transform: scale(1) translateZ(0);
             transition: opacity 0.45s cubic-bezier(0.16, 1, 0.3, 1), transform 0.45s cubic-bezier(0.16, 1, 0.3, 1), visibility 0.45s;
             will-change: opacity, transform;
+            contain: strict;
         }
 
         .app-splash-screen.splash-hidden {
             opacity: 0 !important;
-            transform: scale(1.03) !important;
+            transform: scale(1.03) translateZ(0) !important;
+            -webkit-transform: scale(1.03) translateZ(0) !important;
             pointer-events: none !important;
             visibility: hidden !important;
         }
@@ -5505,6 +5508,9 @@
             position: relative;
             max-width: 90vw;
             text-align: center;
+            transform: translate3d(0, 0, 0);
+            -webkit-transform: translate3d(0, 0, 0);
+            will-change: transform;
         }
 
         .splash-logo-stage {
@@ -5514,6 +5520,9 @@
             display: flex;
             align-items: center;
             justify-content: center;
+            transform: translate3d(0, 0, 0);
+            -webkit-transform: translate3d(0, 0, 0);
+            contain: layout paint;
         }
 
         @media (max-width: 600px) {
@@ -5527,36 +5536,48 @@
             width: 100%;
             height: 100%;
             overflow: visible;
+            transform: translate3d(0, 0, 0);
+            -webkit-transform: translate3d(0, 0, 0);
         }
 
         /* Orbit Rotator Group: full 360 clockwise turn with GPU acceleration */
         .splash-orbit-group {
             transform-box: view-box;
             transform-origin: 256px 256px;
+            -webkit-transform-origin: 256px 256px;
             -webkit-backface-visibility: hidden;
             backface-visibility: hidden;
+            -webkit-transform-style: preserve-3d;
+            transform-style: preserve-3d;
             will-change: transform;
-            animation: splashOrbitRotate 1.45s cubic-bezier(0.42, 0, 0.25, 1) infinite;
+            animation: splashOrbitRotate 1.45s cubic-bezier(0.38, 0.04, 0.22, 1) infinite;
+            -webkit-animation: splashOrbitRotate 1.45s cubic-bezier(0.38, 0.04, 0.22, 1) infinite;
         }
 
         /* The flying red dot: optimized translate3d for 120 FPS mobile GPU composition */
         .splash-dot {
             transform-box: view-box;
             transform-origin: 256px 256px;
+            -webkit-transform-origin: 256px 256px;
             -webkit-backface-visibility: hidden;
             backface-visibility: hidden;
+            -webkit-transform-style: preserve-3d;
+            transform-style: preserve-3d;
             will-change: transform;
-            animation: splashDotFlight 1.45s cubic-bezier(0.42, 0, 0.25, 1) infinite;
+            animation: splashDotFlight 1.45s cubic-bezier(0.38, 0.04, 0.22, 1) infinite;
+            -webkit-animation: splashDotFlight 1.45s cubic-bezier(0.38, 0.04, 0.22, 1) infinite;
         }
 
         /* The motion trail: graceful glowing arc behind the dot */
         .splash-trail {
             transform-box: view-box;
             transform-origin: 256px 256px;
+            -webkit-transform-origin: 256px 256px;
             -webkit-backface-visibility: hidden;
             backface-visibility: hidden;
             will-change: opacity;
-            animation: splashTrailGlow 1.45s cubic-bezier(0.42, 0, 0.25, 1) infinite;
+            animation: splashTrailGlow 1.45s cubic-bezier(0.38, 0.04, 0.22, 1) infinite;
+            -webkit-animation: splashTrailGlow 1.45s cubic-bezier(0.38, 0.04, 0.22, 1) infinite;
         }
 
         @keyframes splashOrbitRotate {
@@ -5568,37 +5589,91 @@
             }
         }
 
+        @-webkit-keyframes splashOrbitRotate {
+            0%, 14% {
+                -webkit-transform: rotate(0deg) translate3d(0, 0, 0);
+            }
+            82%, 100% {
+                -webkit-transform: rotate(360deg) translate3d(0, 0, 0);
+            }
+        }
+
         @keyframes splashDotFlight {
             0% {
                 transform: translate3d(45px, -10px, 0) scale(1);
             }
             6% {
-                transform: translate3d(45px, -10px, 0) scale(1.35);
+                transform: translate3d(45px, -10px, 0) scale(1.30);
             }
             11% {
-                transform: translate3d(45px, -10px, 0) scale(1.15);
+                transform: translate3d(45px, -10px, 0) scale(1.14);
             }
             14% {
-                transform: translate3d(45px, -10px, 0) scale(1.18);
+                transform: translate3d(45px, -10px, 0) scale(1.16);
             }
             22% {
-                transform: translate3d(0px, -158px, 0) scale(1.22);
+                transform: translate3d(0px, -158px, 0) scale(1.20);
             }
             76% {
-                transform: translate3d(0px, -158px, 0) scale(1.22);
+                transform: translate3d(0px, -158px, 0) scale(1.20);
             }
             84% {
-                transform: translate3d(45px, -10px, 0) scale(1.18);
+                transform: translate3d(45px, -10px, 0) scale(1.16);
             }
             91% {
-                transform: translate3d(45px, -10px, 0) scale(0.92);
+                transform: translate3d(45px, -10px, 0) scale(0.93);
             }
             96%, 100% {
                 transform: translate3d(45px, -10px, 0) scale(1);
             }
         }
 
+        @-webkit-keyframes splashDotFlight {
+            0% {
+                -webkit-transform: translate3d(45px, -10px, 0) scale(1);
+            }
+            6% {
+                -webkit-transform: translate3d(45px, -10px, 0) scale(1.30);
+            }
+            11% {
+                -webkit-transform: translate3d(45px, -10px, 0) scale(1.14);
+            }
+            14% {
+                -webkit-transform: translate3d(45px, -10px, 0) scale(1.16);
+            }
+            22% {
+                -webkit-transform: translate3d(0px, -158px, 0) scale(1.20);
+            }
+            76% {
+                -webkit-transform: translate3d(0px, -158px, 0) scale(1.20);
+            }
+            84% {
+                -webkit-transform: translate3d(45px, -10px, 0) scale(1.16);
+            }
+            91% {
+                -webkit-transform: translate3d(45px, -10px, 0) scale(0.93);
+            }
+            96%, 100% {
+                -webkit-transform: translate3d(45px, -10px, 0) scale(1);
+            }
+        }
+
         @keyframes splashTrailGlow {
+            0%, 14% {
+                opacity: 0;
+            }
+            22% {
+                opacity: 1;
+            }
+            74% {
+                opacity: 0.95;
+            }
+            82%, 100% {
+                opacity: 0;
+            }
+        }
+
+        @-webkit-keyframes splashTrailGlow {
             0%, 14% {
                 opacity: 0;
             }
@@ -5619,6 +5694,7 @@
             align-items: center;
             gap: 0.25rem;
             animation: splashTextFadeIn 0.8s ease-out forwards;
+            -webkit-animation: splashTextFadeIn 0.8s ease-out forwards;
         }
 
         .splash-brand-title {
@@ -5657,6 +5733,7 @@
             background: linear-gradient(90deg, #ea4326, #f97316);
             border-radius: 999px;
             animation: splashStatusSlide 1.45s ease-in-out infinite alternate;
+            -webkit-animation: splashStatusSlide 1.45s ease-in-out infinite alternate;
         }
 
         @keyframes splashStatusSlide {
@@ -5665,9 +5742,20 @@
             100% { left: 75%; width: 25%; }
         }
 
+        @-webkit-keyframes splashStatusSlide {
+            0% { left: 0%; width: 25%; }
+            50% { width: 55%; }
+            100% { left: 75%; width: 25%; }
+        }
+
         @keyframes splashTextFadeIn {
             0% { opacity: 0; transform: translateY(6px); }
             100% { opacity: 1; transform: translateY(0); }
+        }
+
+        @-webkit-keyframes splashTextFadeIn {
+            0% { opacity: 0; -webkit-transform: translateY(6px); }
+            100% { opacity: 1; -webkit-transform: translateY(0); }
         }
     </style>
 </head>
