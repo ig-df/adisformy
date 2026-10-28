@@ -167,7 +167,7 @@
             -webkit-transform: translate3d(0, 0, 0);
         }
 
-        /* Orbit Rotator Group: smooth continuous 720deg (2 full loops) flight */
+        /* Orbit Rotator Group: smooth 1-loop 360deg flight over 1.50s */
         .splash-orbit-group {
             transform-box: view-box;
             transform-origin: 256px 256px;
@@ -177,11 +177,11 @@
             -webkit-transform-style: preserve-3d;
             transform-style: preserve-3d;
             will-change: transform;
-            animation: splashOrbitRotate 2.80s cubic-bezier(0.35, 0.05, 0.25, 1) 1 normal forwards;
-            -webkit-animation: splashOrbitRotate 2.80s cubic-bezier(0.35, 0.05, 0.25, 1) 1 normal forwards;
+            animation: splashOrbitRotate 1.50s cubic-bezier(0.35, 0.05, 0.25, 1) 1 normal forwards;
+            -webkit-animation: splashOrbitRotate 1.50s cubic-bezier(0.35, 0.05, 0.25, 1) 1 normal forwards;
         }
 
-        /* The flying red dot: single graceful takeoff -> continuous 2-orbit cruise -> landing */
+        /* The flying red dot: single graceful takeoff -> 1-orbit cruise -> landing */
         .splash-dot {
             transform-box: view-box;
             transform-origin: 256px 256px;
@@ -191,11 +191,11 @@
             -webkit-transform-style: preserve-3d;
             transform-style: preserve-3d;
             will-change: transform;
-            animation: splashDotFlight 2.80s cubic-bezier(0.35, 0.05, 0.25, 1) 1 normal forwards;
-            -webkit-animation: splashDotFlight 2.80s cubic-bezier(0.35, 0.05, 0.25, 1) 1 normal forwards;
+            animation: splashDotFlight 1.50s cubic-bezier(0.35, 0.05, 0.25, 1) 1 normal forwards;
+            -webkit-animation: splashDotFlight 1.50s cubic-bezier(0.35, 0.05, 0.25, 1) 1 normal forwards;
         }
 
-        /* The motion trail: luminous arc glowing steadily during the entire dual orbit */
+        /* The motion trail: luminous arc glowing steadily during the single orbit */
         .splash-trail {
             transform-box: view-box;
             transform-origin: 256px 256px;
@@ -203,19 +203,16 @@
             -webkit-backface-visibility: hidden;
             backface-visibility: hidden;
             will-change: opacity;
-            animation: splashTrailGlow 2.80s cubic-bezier(0.35, 0.05, 0.25, 1) 1 normal forwards;
-            -webkit-animation: splashTrailGlow 2.80s cubic-bezier(0.35, 0.05, 0.25, 1) 1 normal forwards;
+            animation: splashTrailGlow 1.50s cubic-bezier(0.35, 0.05, 0.25, 1) 1 normal forwards;
+            -webkit-animation: splashTrailGlow 1.50s cubic-bezier(0.35, 0.05, 0.25, 1) 1 normal forwards;
         }
 
         @keyframes splashOrbitRotate {
             0%, 6% {
                 transform: rotate(0deg) translate3d(0, 0, 0);
             }
-            47% {
-                transform: rotate(360deg) translate3d(0, 0, 0);
-            }
             88%, 100% {
-                transform: rotate(720deg) translate3d(0, 0, 0);
+                transform: rotate(360deg) translate3d(0, 0, 0);
             }
         }
 
@@ -223,11 +220,8 @@
             0%, 6% {
                 -webkit-transform: rotate(0deg) translate3d(0, 0, 0);
             }
-            47% {
-                -webkit-transform: rotate(360deg) translate3d(0, 0, 0);
-            }
             88%, 100% {
-                -webkit-transform: rotate(720deg) translate3d(0, 0, 0);
+                -webkit-transform: rotate(360deg) translate3d(0, 0, 0);
             }
         }
 
@@ -371,8 +365,8 @@
             transform-origin: 0 50%;
             -webkit-transform-origin: 0 50%;
             will-change: transform;
-            animation: splashStatusSlide 2.80s cubic-bezier(0.25, 0.1, 0.25, 1) forwards;
-            -webkit-animation: splashStatusSlide 2.80s cubic-bezier(0.25, 0.1, 0.25, 1) forwards;
+            animation: splashStatusSlide 1.50s cubic-bezier(0.25, 0.1, 0.25, 1) forwards;
+            -webkit-animation: splashStatusSlide 1.50s cubic-bezier(0.25, 0.1, 0.25, 1) forwards;
         }
 
         @keyframes splashStatusSlide {
@@ -9195,7 +9189,7 @@
     // PRESTIGE SPLASH SCREEN CONTROLLER: EXACTLY 2 FULL ORBIT CYCLES (2.80s)
     // ==========================================
     let isSplashDismissed = false;
-    const SPLASH_TOTAL_RUN_MS = 2200; // Exactly 2 complete orbit flight cycles
+    const SPLASH_TOTAL_RUN_MS = 1500; // Exactly 1 complete orbit flight cycle (1.5s)
 
         function reloadApp() {
         try {
