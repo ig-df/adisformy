@@ -107,11 +107,36 @@
             position: relative;
             max-width: 90vw;
             text-align: center;
-            transform: translate3d(0, 0, 0);
-            -webkit-transform: translate3d(0, 0, 0);
-            will-change: transform;
+            transform: translate3d(0, 0, 0) scale(0.94);
+            -webkit-transform: translate3d(0, 0, 0) scale(0.94);
+            opacity: 0;
+            animation: telegramSplashEntrance 0.55s cubic-bezier(0.16, 1, 0.3, 1) 0.05s forwards;
+            -webkit-animation: telegramSplashEntrance 0.55s cubic-bezier(0.16, 1, 0.3, 1) 0.05s forwards;
+            will-change: transform, opacity;
             contain: layout paint;
             isolation: isolate;
+        }
+
+        @keyframes telegramSplashEntrance {
+            0% {
+                opacity: 0;
+                transform: translate3d(0, 12px, 0) scale(0.94);
+            }
+            100% {
+                opacity: 1;
+                transform: translate3d(0, 0, 0) scale(1);
+            }
+        }
+
+        @-webkit-keyframes telegramSplashEntrance {
+            0% {
+                opacity: 0;
+                -webkit-transform: translate3d(0, 12px, 0) scale(0.94);
+            }
+            100% {
+                opacity: 1;
+                -webkit-transform: translate3d(0, 0, 0) scale(1);
+            }
         }
 
         .splash-logo-stage {
