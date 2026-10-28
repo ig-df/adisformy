@@ -1,8 +1,8 @@
 // Rock-solid, Dual-Host Safe Service Worker for Adis Formy PWA (Netlify & GitHub Pages)
-const CACHE_NAME = 'adis-pwa-static-v14';
+const CACHE_NAME = 'adis-pwa-static-v15';
 
+// Strict canonical list of static assets (NO duplicates like './' and './index.html')
 const RELATIVE_STATIC_ASSETS = [
-  './',
   './index.html',
   './splash-orbit.svg',
   './af-base.png',
@@ -30,7 +30,7 @@ self.addEventListener('install', (event) => {
   self.skipWaiting();
   event.waitUntil(
     caches.open(CACHE_NAME).then((cache) => {
-      // Dynamically resolve relative asset URLs against SW location (works seamlessly on GitHub Pages subpaths & Netlify root)
+      // Dynamically resolve relative asset URLs against SW location (works on GitHub Pages subpaths & Netlify root)
       const fullUrls = RELATIVE_STATIC_ASSETS.map((asset) => new URL(asset, self.location.href).href);
       return Promise.allSettled(
         fullUrls.map((url) =>
@@ -84,10 +84,13 @@ self.addEventListener('fetch', (event) => {
     return;
   }
 
-  // Stale-While-Revalidate for navigation requests (Instant <20ms boot on cold launch)
+  // Single normalized canonical URL for all navigation requests (index.html stored ONCE)
+  const canonicalIndexUrl = new URL('./index.html', self.location.href).href;
+
+  // Stale-While-Revalidate for navigation requests
   if (req.mode === 'navigate' || url.pathname.endsWith('/') || url.pathname.endsWith('/index.html')) {
     event.respondWith(
-      caches.match(req).then((cachedResponse) => {
+      caches.match(canonicalIndexUrl).then((cachedResponse) => {
         const fetchPromise = fetch(req)
           .then((networkResponse) => {
             if (networkResponse && networkResponse.status === 200) {
@@ -95,7 +98,8 @@ self.addEventListener('fetch', (event) => {
               if (contentType.includes('text/html')) {
                 const responseToCache = networkResponse.clone();
                 caches.open(CACHE_NAME).then((cache) => {
-                  cache.put(req, responseToCache);
+                  // Key strictly by canonicalIndexUrl to avoid duplicate entries for query parameters (?standalone=true etc.)
+                  cache.put(canonicalIndexUrl, responseToCache);
                 });
               }
             }
@@ -109,8 +113,7 @@ self.addEventListener('fetch', (event) => {
 
         return fetchPromise.then((netRes) => {
           if (netRes) return netRes;
-          const fallbackUrl = new URL('./index.html', self.location.href).href;
-          return caches.match(fallbackUrl);
+          return caches.match(canonicalIndexUrl);
         });
       })
     );
