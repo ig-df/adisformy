@@ -104,7 +104,16 @@ async function startServer() {
     });
     app.use(vite.middlewares);
   } else {
-    app.use(express.static('dist'));
+    app.use(express.static('dist', {
+      maxAge: '1d',
+      setHeaders: (res, path) => {
+        if (path.endsWith('.html')) {
+          res.setHeader('Cache-Control', 'no-cache');
+        } else {
+          res.setHeader('Cache-Control', 'public, max-age=31536000, immutable');
+        }
+      },
+    }));
   }
 
   app.listen(port, '0.0.0.0', () => {

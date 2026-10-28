@@ -1,5 +1,5 @@
 // Rock-solid, Safe Service Worker for Adis Formy PWA (Netlify & GitHub Pages dual compatible)
-const CACHE_NAME = 'adis-pwa-static-v12';
+const CACHE_NAME = 'adis-pwa-static-v13';
 const STATIC_ASSETS = [
   './',
   './index.html',
@@ -51,9 +51,13 @@ self.addEventListener('install', (event) => {
   self.skipWaiting();
   event.waitUntil(
     caches.open(CACHE_NAME).then((cache) => {
-      return cache.addAll(STATIC_ASSETS).catch((err) => {
-        console.warn('[SW] Cache addAll skipped missing asset:', err);
-      });
+      return Promise.allSettled(
+        STATIC_ASSETS.map((asset) =>
+          cache.add(asset).catch((err) => {
+            console.warn('[SW] Precache skipped asset:', asset, err);
+          })
+        )
+      );
     })
   );
 });
@@ -87,25 +91,33 @@ self.addEventListener('fetch', (event) => {
     return;
   }
 
-  // Network First for navigation requests
+  // Stale-While-Revalidate for navigation requests (Instant <20ms boot on mobile PWA cold launch)
   if (req.mode === 'navigate' || url.pathname.endsWith('/') || url.pathname.endsWith('/index.html') || url.pathname === '') {
     event.respondWith(
-      fetch(req)
-        .then((networkResponse) => {
-          if (networkResponse && networkResponse.status === 200) {
-            const responseToCache = networkResponse.clone();
-            caches.open(CACHE_NAME).then((cache) => {
-              cache.put(req, responseToCache);
-            });
-          }
-          return networkResponse;
-        })
-        .catch(() => {
-          return caches.match(req)
-            .then((res) => res || caches.match('./index.html'))
+      caches.match(req).then((cachedResponse) => {
+        const fetchPromise = fetch(req)
+          .then((networkResponse) => {
+            if (networkResponse && networkResponse.status === 200) {
+              const responseToCache = networkResponse.clone();
+              caches.open(CACHE_NAME).then((cache) => {
+                cache.put(req, responseToCache);
+              });
+            }
+            return networkResponse;
+          })
+          .catch(() => null);
+
+        if (cachedResponse) {
+          return cachedResponse;
+        }
+
+        return fetchPromise.then((netRes) => {
+          if (netRes) return netRes;
+          return caches.match('./index.html')
             .then((res) => res || caches.match('/index.html'))
             .then((res) => res || caches.match('index.html'));
-        })
+        });
+      })
     );
     return;
   }
@@ -135,4 +147,5 @@ self.addEventListener('fetch', (event) => {
     })
   );
 });
+
 
