@@ -9,8 +9,10 @@
             .splash-orbit-group {
                 transform-box: view-box;
                 transform-origin: 256px 256px;
-                -webkit-transform: translateZ(0);
-                transform: translateZ(0);
+                -webkit-transform: translate3d(0, 0, 0);
+                transform: translate3d(0, 0, 0);
+                -webkit-transform-style: preserve-3d;
+                transform-style: preserve-3d;
                 will-change: transform;
                 -webkit-backface-visibility: hidden;
                 backface-visibility: hidden;
@@ -19,8 +21,10 @@
             .splash-dot {
                 transform-box: view-box;
                 transform-origin: 256px 256px;
-                -webkit-transform: translateZ(0);
-                transform: translateZ(0);
+                -webkit-transform: translate3d(0, 0, 0);
+                transform: translate3d(0, 0, 0);
+                -webkit-transform-style: preserve-3d;
+                transform-style: preserve-3d;
                 will-change: transform;
                 -webkit-backface-visibility: hidden;
                 backface-visibility: hidden;
@@ -29,9 +33,11 @@
             .splash-trail {
                 transform-box: view-box;
                 transform-origin: 256px 256px;
+                -webkit-transform: translate3d(0, 0, 0);
+                transform: translate3d(0, 0, 0);
                 -webkit-backface-visibility: hidden;
                 backface-visibility: hidden;
-                will-change: opacity;
+                will-change: opacity, transform;
                 animation: splashTrailGlow 2.20s cubic-bezier(0.35, 0.05, 0.25, 1) 1 normal forwards;
             }
             @keyframes splashOrbitRotate {
