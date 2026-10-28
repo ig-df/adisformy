@@ -1,6 +1,7 @@
-// Rock-solid, Safe Service Worker for Adis Formy PWA (Netlify & GitHub Pages dual compatible)
-const CACHE_NAME = 'adis-pwa-static-v13';
-const STATIC_ASSETS = [
+// Rock-solid, Dual-Host Safe Service Worker for Adis Formy PWA (Netlify & GitHub Pages)
+const CACHE_NAME = 'adis-pwa-static-v14';
+
+const RELATIVE_STATIC_ASSETS = [
   './',
   './index.html',
   './splash-orbit.svg',
@@ -22,40 +23,32 @@ const STATIC_ASSETS = [
   './icon6.png',
   './icon7.png',
   './icon9.png',
-  './sql.png',
-  '/',
-  '/index.html',
-  '/splash-orbit.svg',
-  '/af-base.png',
-  '/manifest.json',
-  '/icon-192.png',
-  '/icon-512.png',
-  '/icon-maskable-512.png',
-  '/apple-touch-icon.png',
-  '/favicon.ico',
-  '/favicon.png',
-  '/favicon-16.png',
-  '/favicon-32.png',
-  '/logo.png',
-  '/icon1.png',
-  '/icon2.png',
-  '/icon3.png',
-  '/icon5.png',
-  '/icon6.png',
-  '/icon7.png',
-  '/icon9.png',
-  '/sql.png'
+  './sql.png'
 ];
 
 self.addEventListener('install', (event) => {
   self.skipWaiting();
   event.waitUntil(
     caches.open(CACHE_NAME).then((cache) => {
+      // Dynamically resolve relative asset URLs against SW location (works seamlessly on GitHub Pages subpaths & Netlify root)
+      const fullUrls = RELATIVE_STATIC_ASSETS.map((asset) => new URL(asset, self.location.href).href);
       return Promise.allSettled(
-        STATIC_ASSETS.map((asset) =>
-          cache.add(asset).catch((err) => {
-            console.warn('[SW] Precache skipped asset:', asset, err);
-          })
+        fullUrls.map((url) =>
+          fetch(url)
+            .then((res) => {
+              if (res && res.status === 200) {
+                const contentType = res.headers.get('content-type') || '';
+                // Safety check: Never cache HTML SPA fallback responses when fetching media/static assets
+                const isMediaFile = /\.(png|ico|svg|jpg|jpeg|webp|json|css|js)$/i.test(url);
+                if (isMediaFile && contentType.includes('text/html')) {
+                  return;
+                }
+                return cache.put(url, res);
+              }
+            })
+            .catch((err) => {
+              console.warn('[SW] Precache skipped asset:', url, err);
+            })
         )
       );
     })
@@ -91,17 +84,20 @@ self.addEventListener('fetch', (event) => {
     return;
   }
 
-  // Stale-While-Revalidate for navigation requests (Instant <20ms boot on mobile PWA cold launch)
-  if (req.mode === 'navigate' || url.pathname.endsWith('/') || url.pathname.endsWith('/index.html') || url.pathname === '') {
+  // Stale-While-Revalidate for navigation requests (Instant <20ms boot on cold launch)
+  if (req.mode === 'navigate' || url.pathname.endsWith('/') || url.pathname.endsWith('/index.html')) {
     event.respondWith(
       caches.match(req).then((cachedResponse) => {
         const fetchPromise = fetch(req)
           .then((networkResponse) => {
             if (networkResponse && networkResponse.status === 200) {
-              const responseToCache = networkResponse.clone();
-              caches.open(CACHE_NAME).then((cache) => {
-                cache.put(req, responseToCache);
-              });
+              const contentType = networkResponse.headers.get('content-type') || '';
+              if (contentType.includes('text/html')) {
+                const responseToCache = networkResponse.clone();
+                caches.open(CACHE_NAME).then((cache) => {
+                  cache.put(req, responseToCache);
+                });
+              }
             }
             return networkResponse;
           })
@@ -113,29 +109,35 @@ self.addEventListener('fetch', (event) => {
 
         return fetchPromise.then((netRes) => {
           if (netRes) return netRes;
-          return caches.match('./index.html')
-            .then((res) => res || caches.match('/index.html'))
-            .then((res) => res || caches.match('index.html'));
+          const fallbackUrl = new URL('./index.html', self.location.href).href;
+          return caches.match(fallbackUrl);
         });
       })
     );
     return;
   }
 
-  // Cache-first with resilient multi-fallback for static assets (Netlify & GitHub Pages dual support)
+  // Cache-first with resilient Content-Type protection for static assets
   event.respondWith(
     caches.match(req).then((cachedResponse) => {
       if (cachedResponse) return cachedResponse;
 
       const fileName = url.pathname.split('/').pop() || '';
-      return caches.match(url.pathname)
-        .then((res) => res || caches.match('./' + fileName))
-        .then((res) => res || caches.match('/' + fileName))
-        .then((res) => res || caches.match(fileName))
+      const resolvedRelativeUrl = new URL('./' + fileName, self.location.href).href;
+
+      return caches.match(resolvedRelativeUrl)
         .then((res) => {
           if (res) return res;
           return fetch(req).then((networkResponse) => {
             if (networkResponse && networkResponse.status === 200) {
+              const contentType = networkResponse.headers.get('content-type') || '';
+              const isMediaFile = /\.(png|ico|svg|jpg|jpeg|webp|json|css|js)$/i.test(url.pathname);
+              
+              // CRITICAL: Block Netlify SPA fallback HTML pages from being cached as images/assets!
+              if (isMediaFile && contentType.includes('text/html')) {
+                return networkResponse;
+              }
+
               const resToCache = networkResponse.clone();
               caches.open(CACHE_NAME).then((cache) => {
                 cache.put(req, resToCache);
@@ -147,5 +149,3 @@ self.addEventListener('fetch', (event) => {
     })
   );
 });
-
-
