@@ -16,7 +16,7 @@
                 will-change: transform;
                 -webkit-backface-visibility: hidden;
                 backface-visibility: hidden;
-                animation: splashOrbitRotate 1.10s cubic-bezier(0.35, 0.05, 0.25, 1) 1 normal forwards;
+                animation: splashOrbitRotate 1.50s cubic-bezier(0.35, 0.05, 0.25, 1) 1 normal forwards;
             }
             .splash-dot {
                 transform-box: view-box;
@@ -28,7 +28,7 @@
                 will-change: transform;
                 -webkit-backface-visibility: hidden;
                 backface-visibility: hidden;
-                animation: splashDotFlight 1.10s cubic-bezier(0.35, 0.05, 0.25, 1) 1 normal forwards;
+                animation: splashDotFlight 1.50s cubic-bezier(0.35, 0.05, 0.25, 1) 1 normal forwards;
             }
             .splash-trail {
                 transform-box: view-box;
@@ -38,7 +38,7 @@
                 -webkit-backface-visibility: hidden;
                 backface-visibility: hidden;
                 will-change: opacity, transform;
-                animation: splashTrailGlow 1.10s cubic-bezier(0.35, 0.05, 0.25, 1) 1 normal forwards;
+                animation: splashTrailGlow 1.50s cubic-bezier(0.35, 0.05, 0.25, 1) 1 normal forwards;
             }
             @keyframes splashOrbitRotate {
                 0%, 6% { transform: rotate(0deg); }
