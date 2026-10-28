@@ -9168,15 +9168,25 @@
             // Parallel background network fetch (runs in browser network thread)
             fetchData();
 
-            // Secondary features scheduled non-blockingly
+            // Secondary UI gestures scheduled non-blockingly
             requestAnimationFrame(() => {
                 initSwipeNavigation();
                 initTableRowsSwipeGestures();
                 initCustomerFiltersScrolling();
-                setupRealtimeSubscription();
-                pingUserPresence();
-                updateOnlineBadge();
-                syncGeminiApiKeyFromDb();
+
+                // Non-critical background telemetry scheduled strictly during browser idle ticks
+                var runIdleTasks = function() {
+                    setupRealtimeSubscription();
+                    pingUserPresence();
+                    updateOnlineBadge();
+                    syncGeminiApiKeyFromDb();
+                };
+
+                if ('requestIdleCallback' in window) {
+                    window.requestIdleCallback(runIdleTasks, { timeout: 2000 });
+                } else {
+                    setTimeout(runIdleTasks, 200);
+                }
             });
         }, 120);
     });
