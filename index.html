@@ -9161,6 +9161,11 @@
             // Instant fast initial render from local cache (under 5ms budget)
             if (rawDatabase && rawDatabase.length > 0) {
                 refreshUI();
+                if (typeof isFullDatabaseRendered !== 'undefined' && !isFullDatabaseRendered) {
+                    requestAnimationFrame(() => {
+                        if (!isFullDatabaseRendered) renderFullDatabase(true);
+                    });
+                }
             }
 
             updateTabIndicator();
