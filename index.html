@@ -20,6 +20,9 @@
     <link rel="preload" href="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2" as="script">
     <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
     <link rel="dns-prefetch" href="https://cdnjs.cloudflare.com">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
     <title>Adis Formy</title>
     <meta name="description" content="Systém pro evidenci a správu forem skladu závodu s vyhledáváním, sledováním údržby a exportem do Heliosu.">
     <meta property="og:title" content="Adis Formy">
@@ -334,7 +337,7 @@
             letter-spacing: 0.12em;
             color: #0f172a;
             text-transform: uppercase;
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, "Inter", "Segoe UI", Roboto, sans-serif;
         }
 
         .splash-brand-sub {
@@ -342,7 +345,7 @@
             font-weight: 600;
             color: #64748b;
             letter-spacing: 0.04em;
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, "Inter", "Segoe UI", Roboto, sans-serif;
         }
 
         .splash-status-line {
@@ -465,11 +468,19 @@
             box-sizing: border-box;
             margin: 0;
             padding: 0;
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, "Inter", "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
             -webkit-tap-highlight-color: transparent;
             -webkit-font-smoothing: antialiased;
             -moz-osx-font-smoothing: grayscale;
-            text-rendering: optimizeLegibility;
+        }
+
+        html, body {
+            font-family: -apple-system, BlinkMacSystemFont, "Inter", "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        }
+
+        /* Windows & Cross-platform crisp tabular digits & dense dashboard data */
+        table, .table-container, .dashboard-grid, .mach-grid, .molds-accordion-details, .status-pill, .tag-machine, th, td, .dash-card-value {
+            font-variant-numeric: tabular-nums;
         }
 
         /* Custom selection */
@@ -630,7 +641,7 @@
         }
 
         /* Hardware-Accelerated Off-screen Rendering for Ultra-smooth 120fps Scrolling */
-        tbody tr, .dash-card, .comment-item, .shift-plan-item {
+        tbody tr, .shift-plan-item {
             content-visibility: auto;
             contain-intrinsic-size: 0 48px;
         }
@@ -1021,8 +1032,7 @@
             opacity: 0;
             visibility: hidden;
             pointer-events: none;
-            transform: translateX(35px);
-            will-change: opacity, transform;
+            transform: translateX(25px);
             transition: opacity 0.22s ease-in-out, transform 0.22s cubic-bezier(0.16, 1, 0.3, 1);
             display: flex;
             flex-direction: column;
@@ -1032,7 +1042,8 @@
             visibility: visible;
             pointer-events: auto;
             opacity: 1;
-            transform: translateX(0);
+            transform: none !important;
+            will-change: auto !important;
         }
 
         .search-box {
@@ -1364,8 +1375,7 @@
             position: relative;
             -webkit-overflow-scrolling: touch;
             transition: min-height 0.47s cubic-bezier(0.16, 1, 0.3, 1);
-            transform: translateZ(0); /* Аппаратное ускорение и фикс обрезания sticky th по border-radius */
-            will-change: transform;
+            isolation: isolate;
             background: linear-gradient(to bottom, #f8fafc 46px, #ffffff 46px);
             scrollbar-width: none;
             -ms-overflow-style: none;
@@ -1595,6 +1605,7 @@
             cursor: pointer;
             transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
             min-height: 62px;
+            isolation: isolate;
         }
 
         .dash-card:hover {
@@ -2198,6 +2209,7 @@
             border: 1px solid var(--border-color);
             background: var(--card-bg);
             margin-left: 0.2rem;
+            isolation: isolate;
         }
 
         .status-dot { 
@@ -2214,6 +2226,8 @@
             position: relative;
             width: 7px;
             height: 7px;
+            display: inline-block;
+            isolation: isolate;
         }
 
         .dash-card .status-dot::after,
@@ -2226,22 +2240,28 @@
             height: 100%;
             border-radius: 50%;
             background-color: inherit;
-            transform: translate(-50%, -50%);
+            transform: translate3d(-50%, -50%, 0);
+            -webkit-transform: translate3d(-50%, -50%, 0);
             animation: statusRadialPulse 1.5s cubic-bezier(0.22, 1, 0.36, 1) infinite;
             pointer-events: none;
+            will-change: transform, opacity;
+            contain: strict;
         }
 
         @keyframes statusRadialPulse {
             0% {
-                transform: translate(-50%, -50%) scale(1);
+                transform: translate3d(-50%, -50%, 0) scale(1);
+                -webkit-transform: translate3d(-50%, -50%, 0) scale(1);
                 opacity: 0.9;
             }
             85% {
-                transform: translate(-50%, -50%) scale(3.4);
+                transform: translate3d(-50%, -50%, 0) scale(3.4);
+                -webkit-transform: translate3d(-50%, -50%, 0) scale(3.4);
                 opacity: 0;
             }
             100% {
-                transform: translate(-50%, -50%) scale(3.5);
+                transform: translate3d(-50%, -50%, 0) scale(3.5);
+                -webkit-transform: translate3d(-50%, -50%, 0) scale(3.5);
                 opacity: 0;
             }
         }
@@ -2300,7 +2320,7 @@
         }
 
         .comment-item { 
-            background: rgba(241, 245, 249, 0.65);
+            background: #f1f5f9;
             border-left: 3px solid #cbd5e1;
             border-radius: 6px;
             padding: 0.35rem 0.5rem;
@@ -2310,10 +2330,11 @@
             cursor: pointer;
             transition: all 0.15s ease;
             position: relative;
+            isolation: isolate;
         }
 
         .comment-item:hover {
-            background-color: rgba(226, 232, 240, 0.85);
+            background-color: #e2e8f0;
             border-left-color: #3b82f6;
         }
 
@@ -4907,7 +4928,7 @@
         .mach-num {
             font-size: 0.94rem;
             font-weight: 800;
-            font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", Roboto, sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, "Inter", "SF Pro Display", "Segoe UI", Roboto, sans-serif;
             font-variant-numeric: tabular-nums;
             color: #0f172a;
             line-height: 1;
@@ -4972,7 +4993,7 @@
             border-radius: 4px;
             font-size: 0.65rem;
             font-weight: 700;
-            font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", Roboto, sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, "Inter", "SF Pro Text", "Segoe UI", Roboto, sans-serif;
             font-variant-numeric: tabular-nums;
             padding: 0 4px;
             height: 16px;
@@ -5017,7 +5038,7 @@
             font-size: 0.58rem;
             font-weight: 600;
             color: #334155;
-            font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", Roboto, sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, "Inter", "SF Pro Text", "Segoe UI", Roboto, sans-serif;
             line-height: 1.1;
             overflow: hidden;
             text-overflow: ellipsis;
@@ -5251,7 +5272,7 @@
             font-size: 0.72rem;
             padding: 1.5px 5.5px;
             border-radius: 4px;
-            font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", Roboto, sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, "Inter", "SF Pro Text", "Segoe UI", Roboto, sans-serif;
             font-variant-numeric: tabular-nums;
             flex-shrink: 0;
             min-width: 46px;
@@ -6689,8 +6710,22 @@
         <div class="modal-header"><h3 id="viewCommentTitle">Detail poznámky</h3><button class="close-modal-btn" onclick="closeViewCommentModal()">✕</button></div>
         <div class="modal-body">
             <div class="form-group">
-                <label id="viewCommentMeta" style="font-size: 0.78rem; color: var(--text-muted);"></label>
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.35rem;">
+                    <label id="viewCommentMeta" style="font-size: 0.78rem; color: var(--text-muted); margin: 0;"></label>
+                    <button type="button" class="accordion-edit-trigger-btn" id="viewCommentEditBtn" onclick="startCommentEdit()" style="padding: 0.22rem 0.55rem; font-size: 0.75rem;">
+                        <span>Upravit</span>
+                    </button>
+                </div>
                 <div id="viewCommentDisplay" style="padding: 0.85rem; background: var(--row-hover); border: 1px solid var(--border-color); border-radius: 8px; white-space: pre-wrap; font-size: 0.88rem; color: var(--text-main);"></div>
+                
+                <div id="viewCommentEditBox" style="display: none; flex-direction: column; gap: 0.5rem; margin-top: 0.25rem;">
+                    <textarea id="viewCommentEditText" rows="3" spellcheck="false" autocorrect="off" autocapitalize="none" autocomplete="off" data-gramm="false" data-enable-grammarly="false" style="width: 100%; padding: 0.6rem; border: 1.5px solid var(--border-color); border-radius: 8px; background: var(--input-bg); color: var(--text-main); font-size: 0.88rem; box-sizing: border-box; resize: vertical;"></textarea>
+                    <div style="display: flex; gap: 0.4rem; justify-content: flex-end;">
+                        <button type="button" class="btn-secondary" style="font-size: 0.78rem; padding: 0.35rem 0.7rem;" onclick="cancelCommentEdit()">Zrušit</button>
+                        <button type="button" class="btn-primary" style="font-size: 0.78rem; padding: 0.35rem 0.85rem;" onclick="saveCommentEdit()">Uložit změny</button>
+                    </div>
+                </div>
+
                 <div id="viewCommentPhotosBox" style="margin-top: 0.75rem; display: none;">
                     <label style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 0.35rem; display: block;">Fotografie závady:</label>
                     <div id="viewCommentPhotosContainer" class="accordion-photo-box"></div>
@@ -6841,7 +6876,7 @@
 <div class="modal-overlay" id="commentModal">
     <div class="modal-card" style="max-width: 420px;">
         <div class="modal-header"><h3 id="commentModalTitle">Přidat poznámku</h3><button class="close-modal-btn" onclick="closeCommentModal()">✕</button></div>
-        <div class="modal-body"><div class="form-group"><label>Poznámka / Důležitá informace:</label><textarea id="commentText" rows="4" autocapitalization="sentences" autocapitalize="sentences"></textarea></div></div>
+        <div class="modal-body"><div class="form-group"><label>Poznámka / Důležitá informace:</label><textarea id="commentText" rows="4" spellcheck="false" autocorrect="off" autocapitalize="none" autocomplete="off" data-gramm="false" data-enable-grammarly="false"></textarea></div></div>
         <div class="modal-footer"><button class="btn-secondary" onclick="closeCommentModal()">Zrušit</button><button id="btnCommentSubmit" class="btn-primary" onclick="submitComment()">Přidat poznámku</button></div>
     </div>
 </div>
@@ -6869,7 +6904,7 @@
                 </select>
             </div>
 
-            <div class="form-group"><label>Poznámka / Problémy (nepovinné):</label><textarea id="directProdComment" rows="3" autocapitalization="sentences" autocapitalize="sentences" placeholder="Popište vzniklý problém..."></textarea></div>
+            <div class="form-group"><label>Poznámka / Problémy (nepovinné):</label><textarea id="directProdComment" rows="3" spellcheck="false" autocorrect="off" autocapitalize="none" autocomplete="off" data-gramm="false" data-enable-grammarly="false" placeholder="Popište vzniklý problém..."></textarea></div>
 
             <div class="form-group">
                 <label>Fotografie závady (max 2 fotky):</label>
@@ -6883,7 +6918,7 @@
                 </div>
             </div>
         </div>
-        <div class="modal-footer"><button class="btn-secondary" onclick="closeDirectProdModal()">Zrušit</button><button id="btnDirectSubmit" class="btn-primary" onclick="executeDirectProductionMove()">Odeslat do meziskladu</button></div>
+        <div class="modal-footer"><button class="btn-secondary" onclick="closeDirectProdModal()">Zrušit</button><button id="btnDirectSubmit" class="btn-primary" onclick="executeDirectProductionMove()">Odeslat do nástrojárny</button></div>
     </div>
 </div>
 
@@ -7322,7 +7357,7 @@
                     <div style="font-size: 0.78rem; font-weight: 700; color: var(--text-main);">
                         + Zapsat novou závadu nebo servisní poznámku:
                     </div>
-                    <textarea id="newIssueTextInput" placeholder="Popište zjištěnou závadu, únik oleje, teplotu, poškození..." rows="2" style="width: 100%; padding: 0.5rem; font-size: 0.84rem; border: 1px solid var(--border-color); border-radius: 6px; background: var(--input-bg); color: var(--text-main); resize: vertical; box-sizing: border-box;"></textarea>
+                    <textarea id="newIssueTextInput" placeholder="Popište zjištěnou závadu, únik oleje, teplotu, poškození..." rows="2" spellcheck="false" autocorrect="off" autocapitalize="none" autocomplete="off" data-gramm="false" data-enable-grammarly="false" style="width: 100%; padding: 0.5rem; font-size: 0.84rem; border: 1px solid var(--border-color); border-radius: 6px; background: var(--input-bg); color: var(--text-main); resize: vertical; box-sizing: border-box;"></textarea>
                     
                     <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.5rem;">
                         <div style="display: flex; align-items: center; gap: 0.75rem; font-size: 0.76rem; color: var(--text-muted);">
@@ -7514,13 +7549,28 @@
     }
 
     let toastTimer = null;
+    function clearToast() {
+        if (toastTimer) {
+            clearTimeout(toastTimer);
+            toastTimer = null;
+        }
+        const toast = document.getElementById('toastNotification');
+        if (toast) {
+            toast.classList.remove('show');
+            toast.classList.remove('toast-error');
+        }
+    }
+
     function showToast(message, isError = false) {
         let toast = document.getElementById('toastNotification');
         if (!toast) {
             toast = document.createElement('div');
             toast.id = 'toastNotification';
             toast.className = 'toast-notification';
+            toast.onclick = () => clearToast();
             document.body.appendChild(toast);
+        } else {
+            toast.onclick = () => clearToast();
         }
 
         toast.textContent = message;
@@ -7539,8 +7589,8 @@
         });
 
         toastTimer = setTimeout(() => {
-            toast.classList.remove('show');
-        }, 2600);
+            clearToast();
+        }, 3200);
     }
 
     async function resetAppToHomeState() {
@@ -8021,6 +8071,27 @@
             console.error("Chyba při načítání relací:", e);
             container.innerHTML = '<div style="font-size: 0.78rem; color: var(--error-badge);">Chyba načítání dat.</div>';
         }
+    }
+
+    function normalizeMoldId(id) {
+        if (!id && id !== 0) return '';
+        const s = String(id).trim();
+        const stripped = s.replace(/^0+([0-9]+)$/, '$1');
+        return stripped || s;
+    }
+
+    function findMoldInDatabase(inputVal) {
+        if (!inputVal && inputVal !== 0) return null;
+        const raw = String(inputVal).trim();
+        if (!raw) return null;
+        let found = rawDatabase.find(i => String(i[0]).trim() === raw);
+        if (found) return found;
+        found = rawDatabase.find(i => String(i[0]).trim().toLowerCase() === raw.toLowerCase());
+        if (found) return found;
+        const normInput = normalizeMoldId(raw);
+        found = rawDatabase.find(i => normalizeMoldId(i[0]) === normInput);
+        if (found) return found;
+        return null;
     }
 
     let currentUserActivityData = [];
@@ -9141,13 +9212,24 @@
         window.addEventListener('resize', updateTabIndicator);
 
         setInterval(pingUserPresence, 2 * 60 * 1000);
+        window.addEventListener('unhandledrejection', (event) => {
+            if (event && event.reason) {
+                console.warn('Background network promise event handled:', event.reason);
+            }
+            event.preventDefault();
+        });
+
         document.addEventListener('visibilitychange', () => {
+            clearToast();
             if (document.visibilityState === 'visible') {
                 pingUserPresence();
                 updateOnlineBadge();
                 refreshUserSessionActivity();
             }
         });
+
+        window.addEventListener('pageshow', () => { clearToast(); });
+        window.addEventListener('focus', () => { clearToast(); });
 
         // ----------------------------------------------------------------------------------
         // ZERO-JANK TIME-SLICED BACKGROUND HYDRATION (120 FPS FLIGHT + INSTANT UI READY):
@@ -9357,7 +9439,10 @@
         if (label) label.textContent = `Forma č. ${moldId} (stávající: ${currentCustomer}):`;
         const select = document.getElementById('modalCustomerSelect');
         if (select) {
-            select.innerHTML = customersList.map(c => `<option value="${escapeHtml(c.name)}" ${c.name === currentCustomer ? 'selected' : ''}>${escapeHtml(c.name)}</option>`).join('');
+            select.innerHTML = customersList.map(c => {
+                const isSelected = String(c.name || '').trim().toLowerCase() === String(currentCustomer || '').trim().toLowerCase();
+                return `<option value="${escapeHtml(c.name)}" ${isSelected ? 'selected' : ''}>${escapeHtml(c.name)}</option>`;
+            }).join('');
         }
         showModalAnimated('customerModal');
     }
@@ -9373,21 +9458,33 @@
         const newCustomer = document.getElementById('modalCustomerSelect').value;
         if (!activeCustomerChangeMoldId) return;
 
+        const targetMoldStr = String(activeCustomerChangeMoldId || '').trim();
+        const normId = normalizeMoldId(targetMoldStr);
+
         isSubmittingAction = true;
         closeCustomerModal();
 
-        const itemIdx = rawDatabase.findIndex(i => String(i[0]) === String(activeCustomerChangeMoldId));
+        let itemIdx = rawDatabase.findIndex(i => String(i[0]).trim() === targetMoldStr);
+        if (itemIdx === -1 && normId) {
+            itemIdx = rawDatabase.findIndex(i => normalizeMoldId(i[0]) === normId);
+        }
+
+        let dbMoldId = targetMoldStr;
         let oldCust = 'Neznámý';
         if (itemIdx !== -1) {
-            oldCust = rawDatabase[itemIdx][2];
+            dbMoldId = String(rawDatabase[itemIdx][0]);
+            oldCust = rawDatabase[itemIdx][2] || 'Neznámý';
             rawDatabase[itemIdx][2] = newCustomer;
             refreshUI();
+        } else {
+            refreshUI();
         }
+
         showToast(`Zákazník změněn na ${newCustomer}`);
 
         try {
-            await Promise.all([
-                fetch(`${API_URL}/rest/v1/molds?id=eq.${activeCustomerChangeMoldId}`, {
+            const patchPromises = [
+                fetch(`${API_URL}/rest/v1/molds?id=eq.${encodeURIComponent(dbMoldId)}`, {
                     method: 'PATCH',
                     headers: { 'apikey': API_KEY, 'Authorization': `Bearer ${API_KEY}`, 'Content-Type': 'application/json', 'Prefer': 'return=minimal' },
                     body: JSON.stringify({ customer: newCustomer })
@@ -9395,9 +9492,21 @@
                 fetch(`${API_URL}/rest/v1/mold_logs`, {
                     method: 'POST',
                     headers: { 'apikey': API_KEY, 'Authorization': `Bearer ${API_KEY}`, 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ mold_id: activeCustomerChangeMoldId, old_position: `Zákazník: ${oldCust}`, new_position: `Zákazník: ${newCustomer}`, user_name: currentUser })
+                    body: JSON.stringify({ mold_id: dbMoldId, old_position: `Zákazník: ${oldCust}`, new_position: `Zákazník: ${newCustomer}`, user_name: currentUser })
                 })
-            ]);
+            ];
+
+            if (targetMoldStr !== dbMoldId) {
+                patchPromises.push(
+                    fetch(`${API_URL}/rest/v1/molds?id=eq.${encodeURIComponent(targetMoldStr)}`, {
+                        method: 'PATCH',
+                        headers: { 'apikey': API_KEY, 'Authorization': `Bearer ${API_KEY}`, 'Content-Type': 'application/json', 'Prefer': 'return=minimal' },
+                        body: JSON.stringify({ customer: newCustomer })
+                    })
+                );
+            }
+
+            await Promise.all(patchPromises);
         } catch (e) { console.error(e); }
         finally { setTimeout(() => { isSubmittingAction = false; }, 800); }
     }
@@ -10460,6 +10569,8 @@
                 if (typeof isFullDatabaseRendered !== 'undefined' && !isFullDatabaseRendered) {
                     renderFullDatabase(true);
                 }
+            } else if (tabName === 'dashboard') {
+                renderDashboard();
             }
             setTimeout(() => { isTabTransitioning = false; }, 220);
         }
@@ -13868,11 +13979,85 @@ Return strictly valid JSON only without markdown formatting with this schema:
         }
     }
 
+    function startCommentEdit() {
+        if (!activeViewCommentId) return;
+        const commentObj = allComments.find(c => String(c.id) === String(activeViewCommentId));
+        if (!commentObj) return;
+
+        const displayEl = document.getElementById('viewCommentDisplay');
+        const editBox = document.getElementById('viewCommentEditBox');
+        const editText = document.getElementById('viewCommentEditText');
+        const editBtn = document.getElementById('viewCommentEditBtn');
+
+        if (displayEl) displayEl.style.display = 'none';
+        if (editBox) editBox.style.display = 'flex';
+        if (editText) {
+            editText.value = commentObj.comment || '';
+            editText.focus();
+        }
+        if (editBtn) editBtn.style.display = 'none';
+    }
+
+    function cancelCommentEdit() {
+        const displayEl = document.getElementById('viewCommentDisplay');
+        const editBox = document.getElementById('viewCommentEditBox');
+        const editBtn = document.getElementById('viewCommentEditBtn');
+
+        if (displayEl) displayEl.style.display = 'block';
+        if (editBox) editBox.style.display = 'none';
+        if (editBtn) editBtn.style.display = 'inline-flex';
+    }
+
+    async function saveCommentEdit() {
+        if (!checkAuthOrPrompt() || !activeViewCommentId || isSubmittingAction) return;
+        const editText = document.getElementById('viewCommentEditText');
+        if (!editText) return;
+        const newText = editText.value.trim();
+        if (!newText) {
+            alert("Poznámka nemůže být prázdná!");
+            return;
+        }
+
+        const commentObj = allComments.find(c => String(c.id) === String(activeViewCommentId));
+        if (!commentObj) return;
+
+        isSubmittingAction = true;
+        try {
+            const { error } = await supabaseClient
+                .from('mold_comments')
+                .update({ comment: newText })
+                .eq('id', activeViewCommentId);
+
+            if (error) {
+                await fetch(`${API_URL}/rest/v1/mold_comments?id=eq.${encodeURIComponent(activeViewCommentId)}`, {
+                    method: 'PATCH',
+                    headers: { 'apikey': API_KEY, 'Authorization': `Bearer ${API_KEY}`, 'Content-Type': 'application/json', 'Prefer': 'return=minimal' },
+                    body: JSON.stringify({ comment: newText })
+                });
+            }
+
+            commentObj.comment = newText;
+            const displayEl = document.getElementById('viewCommentDisplay');
+            if (displayEl) displayEl.textContent = newText;
+            cancelCommentEdit();
+            refreshUI();
+            showToast("Poznámka byla upravena");
+        } catch (e) {
+            console.error("Chyba při ukládání poznámky:", e);
+            showToast("Chyba při ukládání poznámky", true);
+        } finally {
+            isSubmittingAction = false;
+        }
+    }
+
     function openViewCommentModal(commentId) {
         const commentObj = allComments.find(c => String(c.id) === String(commentId));
         if (!commentObj) return;
 
         activeViewCommentId = commentId;
+        cancelCommentEdit();
+        const editBtn = document.getElementById('viewCommentEditBtn');
+        if (editBtn) editBtn.innerHTML = `${ACCORDION_EDIT_ICON_HTML} <span>Upravit</span>`;
         document.getElementById('viewCommentTitle').textContent = `Detail poznámky ${commentObj.mold_id}`;
         document.getElementById('viewCommentMeta').textContent = `Autor: ${commentObj.user_name || 'Neznámý'} | ${new Date(commentObj.created_at).toLocaleString('cs-CZ')}`;
         document.getElementById('viewCommentDisplay').textContent = commentObj.comment || '';
@@ -13902,6 +14087,7 @@ Return strictly valid JSON only without markdown formatting with this schema:
     }
 
     function closeViewCommentModal() {
+        cancelCommentEdit();
         hideModalAnimated('viewCommentModal');
         activeViewCommentId = null;
     }
@@ -14035,7 +14221,7 @@ Return strictly valid JSON only without markdown formatting with this schema:
             if (!file._previewUrl) file._previewUrl = URL.createObjectURL(file);
             return `
                 <div class="accordion-thumb-wrapper" style="border-color: #3b82f6;">
-                    <img src="${file._previewUrl}" class="accordion-thumb">
+                    <img src="${file._previewUrl}" class="accordion-thumb" onerror="this.style.display='none'">
                     <button type="button" class="accordion-thumb-remove" onclick="removeDirectProdFile(${idx})">&times;</button>
                 </div>
             `;
@@ -14050,46 +14236,56 @@ Return strictly valid JSON only without markdown formatting with this schema:
             document.activeElement.blur();
         }
         if (isSubmittingAction) return;
-        const moldId = document.getElementById('directProdMoldId').value.trim();
+        const rawMoldInput = document.getElementById('directProdMoldId').value.trim();
         const selectedStatus = document.getElementById('directProdStatus').value;
         const commentText = document.getElementById('directProdComment').value.trim();
 
-        if (!moldId) { alert("Zadejte číslo formy!"); return; }
+        if (!rawMoldInput) { alert("Zadejte číslo formy!"); return; }
 
-        isSubmittingAction = true;
-        const existing = rawDatabase.find(i => String(i[0]) === moldId);
-        const oldPos = existing ? existing[1] : 'Neznámá';
-        closeDirectProdModal();
+        const existing = findMoldInDatabase(rawMoldInput);
+        if (!existing) {
+            alert(`Forma "${rawMoldInput}" nebyla nalezena v databázi! Zkontrolujte zadané číslo.`);
+            return;
+        }
+
+        const canonicalMoldId = String(existing[0]).trim();
+        const oldPos = existing[1] || 'Neznámá';
+
+        // Capture pending files before closing modal so they are not wiped!
+        const filesToUpload = [...directProdPendingFiles];
+        directProdPendingFiles = [];
+        hideModalAnimated('directProdModal');
 
         let targetPosition = 'Mezisklad';
         if (selectedStatus === 'Na opravě pryč') targetPosition = 'Mezisklad Externí';
 
-        let prevPosToSave = existing ? existing[8] : '';
+        let prevPosToSave = existing[8] || '';
         if (oldPos && !oldPos.toLowerCase().includes('mezisklad')) prevPosToSave = oldPos;
 
-        if (existing) {
-            existing[1] = targetPosition; 
-            existing[3] = selectedStatus;
-            existing[8] = prevPosToSave;
-        }
+        existing[1] = targetPosition; 
+        existing[3] = selectedStatus;
+        existing[8] = prevPosToSave;
 
-        showToast(`Forma ${moldId} přesunuta na ${targetPosition}`);
+        showToast(`Forma #${canonicalMoldId} přesunuta na ${targetPosition}`);
 
         let uploadedPhotoUrls = [];
-        for (let file of directProdPendingFiles) {
+        for (let file of filesToUpload) {
             const cleanOrigName = sanitizeFileName(file.name || "photo.jpg");
-            const fileName = `defect_${moldId}_${Date.now()}_${cleanOrigName}`;
-            const { error } = await supabaseClient.storage.from('mold-photos').upload(fileName, file, { upsert: true });
-            if (!error) {
+            const fileName = `defect_${canonicalMoldId}_${Date.now()}_${cleanOrigName}`;
+            const { data: uploadData, error: uploadErr } = await supabaseClient.storage.from('mold-photos').upload(fileName, file, { upsert: true });
+            if (!uploadErr) {
                 const { data } = supabaseClient.storage.from('mold-photos').getPublicUrl(fileName);
-                uploadedPhotoUrls.push(data.publicUrl);
+                if (data && data.publicUrl) {
+                    uploadedPhotoUrls.push(data.publicUrl);
+                }
+            } else {
+                console.error("Chyba při nahrávání fotografie vady:", uploadErr);
             }
             if (file._previewUrl) URL.revokeObjectURL(file._previewUrl);
         }
-        directProdPendingFiles = [];
 
         try {
-            await fetch(`${API_URL}/rest/v1/molds?id=eq.${moldId}`, {
+            await fetch(`${API_URL}/rest/v1/molds?id=eq.${encodeURIComponent(canonicalMoldId)}`, {
                 method: 'PATCH',
                 headers: { 'apikey': API_KEY, 'Authorization': `Bearer ${API_KEY}`, 'Content-Type': 'application/json', 'Prefer': 'return=minimal' },
                 body: JSON.stringify({ position: targetPosition, status: selectedStatus, previous_position: prevPosToSave })
@@ -14098,7 +14294,7 @@ Return strictly valid JSON only without markdown formatting with this schema:
             await fetch(`${API_URL}/rest/v1/mold_logs`, {
                 method: 'POST',
                 headers: { 'apikey': API_KEY, 'Authorization': `Bearer ${API_KEY}`, 'Content-Type': 'application/json' },
-                body: JSON.stringify({ mold_id: moldId, old_position: `Pozice: ${oldPos}`, new_position: `Pozice: ${targetPosition}, Stav: ${selectedStatus}`, user_name: currentUser })
+                body: JSON.stringify({ mold_id: canonicalMoldId, old_position: `Pozice: ${oldPos}`, new_position: `Pozice: ${targetPosition}, Stav: ${selectedStatus}`, user_name: currentUser })
             });
 
             if (commentText || uploadedPhotoUrls.length > 0) {
@@ -14111,7 +14307,7 @@ Return strictly valid JSON only without markdown formatting with this schema:
                         'Prefer': 'return=representation' 
                     },
                     body: JSON.stringify({ 
-                        mold_id: moldId, 
+                        mold_id: canonicalMoldId, 
                         user_name: currentUser, 
                         comment: commentText || 'Odesláno z výroby', 
                         photo_urls: JSON.stringify(uploadedPhotoUrls)
@@ -14124,6 +14320,7 @@ Return strictly valid JSON only without markdown formatting with this schema:
                         const newC = inserted[0];
                         newC.photo_urls = uploadedPhotoUrls;
                         allComments.unshift(newC);
+                        try { localStorage.setItem('adis_cached_comments_v1', JSON.stringify(allComments)); } catch (e) {}
                     }
                 }
             }
@@ -14195,15 +14392,41 @@ Return strictly valid JSON only without markdown formatting with this schema:
                 prevPosToSave = '';
             }
 
-            const hasComments = allComments.some(c => String(c.mold_id) === String(activeEditMoldId));
-            if (hasComments) {
-                showCustomConfirm("Smazat poznámky?", "Chcete smazat staré poznámky a problémy k této formě?", "Smazat", async () => {
-                    await fetch(`${API_URL}/rest/v1/mold_comments?mold_id=eq.${activeEditMoldId}`, {
-                        method: 'DELETE',
-                        headers: { 'apikey': API_KEY, 'Authorization': `Bearer ${API_KEY}`, 'Prefer': 'return=minimal' }
+            const normEditId = normalizeMoldId(activeEditMoldId);
+            const targetComments = allComments.filter(c => {
+                const cId = String(c.mold_id || '').trim();
+                return cId === String(activeEditMoldId) || (normEditId && normalizeMoldId(cId) === normEditId);
+            });
+            if (targetComments.length > 0) {
+                showCustomConfirm("Smazat poznámky?", "Chcete smazat staré poznámky, fotografie a problémy k této formě?", "Smazat", async () => {
+                    let filesToRemove = [];
+                    targetComments.forEach(c => {
+                        let photoUrls = [];
+                        if (Array.isArray(c.photo_urls)) photoUrls = c.photo_urls;
+                        else if (typeof c.photo_urls === 'string') {
+                            try {
+                                const parsed = JSON.parse(c.photo_urls);
+                                photoUrls = Array.isArray(parsed) ? parsed : [c.photo_urls];
+                            } catch { photoUrls = [c.photo_urls]; }
+                        }
+                        photoUrls.forEach(url => {
+                            const parts = String(url).split('/mold-photos/');
+                            if (parts.length > 1) filesToRemove.push(parts[1]);
+                        });
                     });
-                    allComments = allComments.filter(c => String(c.mold_id) !== String(activeEditMoldId));
-                    showToast("Poznámky byly smazány");
+                    if (filesToRemove.length > 0) {
+                        try { await supabaseClient.storage.from('mold-photos').remove(filesToRemove); } catch (err) {}
+                    }
+
+                    for (let c of targetComments) {
+                        await fetch(`${API_URL}/rest/v1/mold_comments?id=eq.${encodeURIComponent(c.id)}`, {
+                            method: 'DELETE',
+                            headers: { 'apikey': API_KEY, 'Authorization': `Bearer ${API_KEY}`, 'Prefer': 'return=minimal' }
+                        });
+                    }
+                    allComments = allComments.filter(c => !targetComments.some(tc => String(tc.id) === String(c.id)));
+                    refreshUI();
+                    showToast("Poznámky a fotografie byly smazány");
                 });
             }
         } else if (autoMezisklad) {
@@ -15125,15 +15348,17 @@ Return strictly valid JSON only without markdown formatting with this schema:
                 const newPos = String(log.new_position || '').trim();
                 const combined = (oldPos + ' ' + newPos).toLowerCase();
 
-                // Exclude system logs, searches, raw scans, detail open, navigation, filters, exports, photo/pdf views
-                if (moldIdStr === 'HLEDÁNÍ' || moldIdStr === 'SKENER' || moldIdStr === 'SYSTEM' || moldIdStr === 'PLÁN' || moldIdStr === 'NÁVODKA') return;
-                if (oldPos === 'Vyhledávání' || oldPos === 'Skenování' || oldPos === 'Detail formy' || oldPos === 'Navigace' || oldPos === 'Filtr' || oldPos === 'Export') return;
-                if (combined.includes('hledal:') || combined.includes('forma rozpoznána') || combined.includes('rozpoznána forma') || combined.includes('naskenován') || newPos === 'Otevřen detail formy' || combined.includes('zobrazena fot') || combined.includes('zobrazena návodk') || combined.includes('přepnutí na záložku') || combined.includes('filtr zákazníka') || combined.includes('filtr stavu') || combined.includes('export dat')) return;
+                // In personal cabinet history: strictly include only items checked off and completed from the shift plan
+                if (oldPos !== 'Plán na směnu') return;
+                if (moldIdStr === 'PLÁN' || moldIdStr === 'SYSTEM' || moldIdStr === 'HLEDÁNÍ' || moldIdStr === 'SKENER') return;
+                if (combined.includes('přidána forma') || combined.includes('odebráno z plánu') || combined.includes('vyčištěno')) return;
 
-                const isShiftPlanCompletion = oldPos === 'Plán na směnu' && (combined.includes('odebráno z regálu') || combined.includes('splněn úkol') || combined.includes('splněno в plánu') || combined.includes('splněno v plánu'));
-                const isMainAction = isSignificantAuditLog(log, false);
+                const isShiftPlanCompletion = combined.includes('odebráno z regálu') || 
+                                              combined.includes('splněn úkol') || 
+                                              combined.includes('splněno в plánu') || 
+                                              combined.includes('splněno v plánu');
 
-                if (!isShiftPlanCompletion && !isMainAction) return;
+                if (!isShiftPlanCompletion) return;
 
                 const logDate = new Date(log.created_at);
                 const logShift = getShiftInfo(logDate);
@@ -15185,23 +15410,30 @@ Return strictly valid JSON only without markdown formatting with this schema:
             if (weekStatEl) weekStatEl.textContent = weekCount;
             if (monthStatEl) monthStatEl.textContent = monthCount;
 
+            const daysWrapper = chipsBar.closest('.cabinet-days-wrapper');
+            const summaryEl = document.getElementById('cabinetSelectedDaySummary');
+
             if (cabinetDaysData.size === 0) {
-                chipsBar.innerHTML = `<span style="font-size: 0.8rem; color: var(--text-muted); padding: 0.2rem 0;">Zatím žádná historie aktivit</span>`;
+                if (daysWrapper) daysWrapper.style.display = 'none';
+                chipsBar.innerHTML = '';
+                if (summaryEl) summaryEl.textContent = '0 forem';
                 drilldownContainer.innerHTML = `
-                    <div class="empty-state-card" style="padding: 1.5rem 1rem; border-color: var(--border-color); box-shadow: none;">
-                        <div class="empty-state-icon-box">
+                    <div class="empty-state-card" style="padding: 1.25rem 1rem; border-color: var(--border-color); box-shadow: none; margin: 0.35rem 0 0.25rem 0;">
+                        <div class="empty-state-icon-box" style="margin-bottom: 0.5rem;">
                             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
                                 <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path>
                                 <rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect>
                                 <path d="m9 14 2 2 4-4"></path>
                             </svg>
                         </div>
-                        <div class="empty-state-title" style="font-size: 0.95rem;">Žádné zpracované formy</div>
-                        <div class="empty-state-desc" style="font-size: 0.8rem;">Zde se zobrazuje přehled forem zpracovaných během vaší směny.</div>
+                        <div class="empty-state-title" style="font-size: 0.95rem; margin-bottom: 0.25rem;">Žádné zpracované formy</div>
+                        <div class="empty-state-desc" style="font-size: 0.8rem; max-width: 290px; margin: 0 auto;">Zde se zobrazuje přehled forem zpracovaných během vaší směny.</div>
                     </div>
                 `;
                 return;
             }
+
+            if (daysWrapper) daysWrapper.style.display = '';
 
             // Sort days descending
             const sortedDays = Array.from(cabinetDaysData.entries()).sort((a, b) => b[0].localeCompare(a[0]));
@@ -15727,26 +15959,44 @@ Return strictly valid JSON only without markdown formatting with this schema:
     }
 
     function renderCommentsHtml(moldId) {
-        const moldComms = allComments.filter(c => String(c.mold_id) === String(moldId));
+        const rawId = String(moldId || '').trim();
+        const normId = normalizeMoldId(rawId);
+        const moldComms = allComments.filter(c => {
+            const cId = String(c.mold_id || '').trim();
+            return cId === rawId || (normId && normalizeMoldId(cId) === normId);
+        });
         if (moldComms.length === 0) return '';
 
         return `
             <div class="comments-section">
-                ${moldComms.map(c => `
+                ${moldComms.map(c => {
+                    let photoUrls = [];
+                    if (c.photo_urls) {
+                        if (Array.isArray(c.photo_urls)) photoUrls = c.photo_urls;
+                        else if (typeof c.photo_urls === 'string') {
+                            try {
+                                const parsed = JSON.parse(c.photo_urls);
+                                photoUrls = Array.isArray(parsed) ? parsed : [c.photo_urls];
+                            } catch { photoUrls = c.photo_urls.trim() ? [c.photo_urls] : []; }
+                        }
+                    }
+                    const hasPhotos = photoUrls.length > 0;
+                    return `
                     <div class="comment-item" onclick="openViewCommentModal('${c.id}')" oncontextmenu="handleCommentRightClick(event, '${c.id}')">
                         <div class="comment-header-row">
                             <div class="comment-meta">
                                 <span>👤 ${escapeHtml(c.user_name || 'Neznámý')}</span>
                                 <span>•</span>
                                 <span>${new Date(c.created_at).toLocaleString('cs-CZ')}</span>
+                                ${hasPhotos ? `<span style="display: inline-flex; align-items: center; gap: 3px; font-weight: 600; color: #2563eb; background: rgba(37,99,235,0.08); padding: 1px 6px; border-radius: 4px; font-size: 0.7rem;">📷 ${photoUrls.length} ${photoUrls.length === 1 ? 'foto' : 'fotky'}</span>` : ''}
                             </div>
-                            <span class="comment-expand-hint" title="Zobrazit detail">
+                            <span class="comment-expand-hint" title="Zobrazit poznámku">
                                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
                             </span>
                         </div>
                         <div class="comment-text-faded">${escapeHtml(c.comment)}</div>
                     </div>
-                `).join('')}
+                `}).join('')}
             </div>
         `;
     }
