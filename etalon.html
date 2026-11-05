@@ -2278,15 +2278,15 @@
         .action-buttons-group { display: flex; align-items: center; gap: 4px; flex-shrink: 0; }
 
         .badge-position {
-            font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+            font-family: inherit;
             font-variant-numeric: tabular-nums;
             font-feature-settings: "tnum" 1;
-            font-weight: 700;
-            padding: 0.28rem 0.58rem;
-            border-radius: 6px;
-            font-size: 0.8rem;
+            font-weight: 500;
+            padding: 0.22rem 0.52rem;
+            border-radius: 5px;
+            font-size: 0.75rem;
             line-height: 1.25;
-            letter-spacing: 0.035em;
+            letter-spacing: 0.01em;
             white-space: nowrap;
             cursor: pointer;
             display: inline-flex;
@@ -2310,65 +2310,51 @@
         .pos-h { background-color: #9a3412 !important; color: #ffffff !important; }
         .pos-externi { background-color: #7c2d12 !important; color: #ffffff !important; }
 
-        /* Jemný pulzující stav V Nástrojárně ve stylu badge-position */
-        @keyframes pulse-nastrojarna-subtle {
-            0%, 100% {
-                box-shadow: 0 1px 2px rgba(15, 23, 42, 0.08), 0 0 0 0 rgba(220, 38, 38, 0.45);
-            }
-            50% {
-                box-shadow: 0 1px 3px rgba(15, 23, 42, 0.12), 0 0 0 4px rgba(220, 38, 38, 0);
-            }
-        }
-
-        @keyframes pulse-dot-soft {
-            0%, 100% { opacity: 1; transform: scale(1); }
-            50% { opacity: 0.35; transform: scale(0.8); }
-        }
-
+        /* Klidný, čistý stav V Nástrojárně bez rušivé pulzace - opticky sjednocený rozmér */
         .pos-nastrojarna {
             background-color: #dc2626 !important;
             color: #ffffff !important;
             border: 1px solid #b91c1c !important;
             display: inline-flex !important;
             align-items: center !important;
-            gap: 0.32rem !important;
+            justify-content: center !important;
             font-family: inherit !important;
-            letter-spacing: 0.015em !important;
+            font-size: 0.71rem !important;
+            font-weight: 500 !important;
+            padding: 0.22rem 0.48rem !important;
+            border-radius: 5px !important;
+            letter-spacing: 0.01em !important;
             text-transform: none !important;
-            animation: pulse-nastrojarna-subtle 2.2s infinite ease-in-out;
+            box-shadow: 0 1px 2px rgba(15, 23, 42, 0.06) !important;
+            animation: none !important;
+            line-height: 1.25 !important;
         }
 
         .pos-nastrojarna .pulse-dot-red,
         .tag-nastrojarna .pulse-dot-red {
-            width: 6px;
-            height: 6px;
-            border-radius: 50%;
-            background-color: #ffffff;
-            box-shadow: 0 0 3px rgba(255, 255, 255, 0.9);
-            animation: pulse-dot-soft 1.4s infinite ease-in-out;
-            display: inline-block;
-            flex-shrink: 0;
+            display: none !important;
         }
 
         .tag-nastrojarna {
             display: inline-flex;
             align-items: center;
-            gap: 0.3rem;
-            padding: 0.18rem 0.45rem;
-            font-size: 0.72rem;
-            font-weight: 600;
-            border-radius: 6px;
+            justify-content: center;
+            padding: 0.22rem 0.48rem;
+            font-size: 0.71rem;
+            font-weight: 500;
+            border-radius: 5px;
             color: #ffffff !important;
             background-color: #dc2626 !important;
             border: 1px solid #b91c1c !important;
             white-space: nowrap;
-            letter-spacing: normal;
+            letter-spacing: 0.01em;
             text-transform: none !important;
-            animation: pulse-nastrojarna-subtle 2.2s infinite ease-in-out;
+            box-shadow: 0 1px 2px rgba(15, 23, 42, 0.06);
             user-select: none;
             -webkit-user-select: none;
-            line-height: 1.2;
+            line-height: 1.25;
             cursor: pointer;
+            animation: none !important;
         }
 
         .comments-section {
@@ -4590,36 +4576,51 @@
         .factory-map-scroll-area {
             flex: 1;
             min-height: 0;
-            overflow: hidden;
-            padding: 0.25rem 0.5rem;
+            overflow-y: auto;
+            overflow-x: auto;
+            padding: 0.35rem 0.75rem;
             display: flex;
             justify-content: center;
-            align-items: center;
+            align-items: flex-start;
             background: #e9eef5; /* Světle šedý průmyslový podklad haly */
             position: relative;
             box-sizing: border-box;
         }
 
-        /* Průmyslový technický výkres lisovny - digitální dvojče s průmyslovou podlahou přizpůsobené výšce */
+        .factory-map-scroll-area::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        .factory-map-scroll-area::-webkit-scrollbar-track {
+            background: rgba(15, 23, 42, 0.05);
+            border-radius: 4px;
+        }
+        .factory-map-scroll-area::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 4px;
+        }
+        .factory-map-scroll-area::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+
+        /* Průmyslový technický výkres lisovny - digitální dvojče optimalizované pro 17"+ displeje (+10% rozvržení) */
         .factory-monochrome-canvas {
             background-color: #f1f5f9; /* Světle šedá průmyslová epoxidová podlaha */
             width: 100%;
-            max-width: 820px;
-            min-width: 600px;
-            height: 100%;
-            max-height: 100%;
+            max-width: 1320px;
+            min-width: 860px;
+            height: auto;
             min-height: 0;
             border: 1.5px solid #cbd5e1;
-            border-radius: 8px;
-            box-shadow: 0 1px 3px rgba(15, 23, 42, 0.04), 0 6px 20px -3px rgba(15, 23, 42, 0.07);
+            border-radius: 9px;
+            box-shadow: 0 1px 3px rgba(15, 23, 42, 0.04), 0 8px 24px -4px rgba(15, 23, 42, 0.08);
             position: relative;
-            padding: 0.25rem 0.65rem;
-            margin: 0 auto;
+            padding: 0.35rem 0.95rem;
+            margin: auto;
             box-sizing: border-box;
             display: flex;
             flex-direction: column;
             justify-content: space-between;
-            overflow: hidden;
         }
 
         /* Horní a spodní spojovací dopravní trasa - Radiant Sunbeam Yellow šтрихпунктир */
@@ -4627,14 +4628,14 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 8px;
-            padding: 0.1rem 0.3rem;
+            gap: 12px;
+            padding: 0.15rem 0.5rem;
             margin: 0;
             user-select: none;
             background: transparent;
             border: none;
             flex-shrink: 0;
-            height: clamp(14px, 2vh, 20px);
+            height: 20px;
         }
 
         .factory-cross-way.bottom {
@@ -4658,8 +4659,8 @@
         /* 5-sloupcová síť (3 sloupce strojů + 2 žluté dopravní koridory se šipkami) */
         .factory-layout-grid {
             display: grid;
-            grid-template-columns: 1fr 20px 1fr 20px 1fr;
-            gap: 0.35rem;
+            grid-template-columns: 1fr 28px 1fr 28px 1fr;
+            gap: 0.5rem;
             align-items: stretch;
             flex: 1;
             min-height: 0;
@@ -4694,7 +4695,7 @@
             align-items: center;
             justify-content: space-between;
             position: relative;
-            padding: 0.1rem 0;
+            padding: 0.15rem 0;
             user-select: none;
             background: transparent;
             border: none;
@@ -4705,9 +4706,9 @@
         .factory-aisle-line {
             flex: 1;
             width: 0;
-            border-left: 2px dashed #ffd000; /* Radiant Sunbeam Yellow */
+            border-left: 2.5px dashed #ffd000; /* Radiant Sunbeam Yellow */
             opacity: 1;
-            min-height: 10px;
+            min-height: 12px;
         }
 
         .factory-aisle-marker {
@@ -4727,16 +4728,16 @@
             writing-mode: vertical-rl;
             text-orientation: mixed;
             transform: rotate(180deg);
-            font-size: 0.6rem;
+            font-size: 0.70rem;
             font-weight: 800;
-            letter-spacing: 0.08em;
+            letter-spacing: 0.07em;
             color: #475569;
             background: #f1f5f9;
-            padding: 4px 2px;
-            border-radius: 3px;
+            padding: 5px 2px;
+            border-radius: 4px;
             border: 1px solid #cbd5e1;
             white-space: nowrap;
-            margin: 4px 0;
+            margin: 5px 0;
             flex-shrink: 0;
         }
 
@@ -4745,7 +4746,7 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 5px;
+            gap: 6px;
             height: 100%;
             position: relative;
             user-select: none;
@@ -4753,7 +4754,7 @@
 
         .factory-cross-line {
             flex: 1;
-            border-top: 2px dashed #ffd000; /* Radiant Sunbeam Yellow */
+            border-top: 2.5px dashed #ffd000; /* Radiant Sunbeam Yellow */
             opacity: 1;
         }
 
@@ -4761,6 +4762,7 @@
             display: inline-flex;
             filter: drop-shadow(0 0.5px 0.5px rgba(15, 23, 42, 0.06));
             flex-shrink: 0;
+            transform: scale(1.35);
         }
         .factory-yellow-arrow path {
             stroke: #ffbb00 !important; /* Radiant Sunbeam Yellow */
@@ -4773,42 +4775,42 @@
 
         .factory-staging-zone {
             flex-shrink: 0;
-            height: 200px;
-            min-height: 200px;
-            max-height: 200px;
+            height: 264px;
+            min-height: 245px;
+            max-height: 275px;
             width: 100%;
             border: 2.5px dashed #ffd000; /* Radiant Sunbeam Yellow */
-            border-radius: 6px !important;
+            border-radius: 8px !important;
             background: rgba(255, 210, 0, 0.28); /* Radiant Sunbeam Yellow */
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
             position: relative;
-            padding: 10px 8px;
+            padding: 12px 10px;
             box-sizing: border-box;
             text-align: center;
             user-select: none;
             margin-top: auto;
-            margin-bottom: 5px;
-            gap: 6px;
-            box-shadow: inset 0 0 16px rgba(255, 208, 0, 0.12);
+            margin-bottom: 7px;
+            gap: 7px;
+            box-shadow: inset 0 0 20px rgba(255, 208, 0, 0.15);
         }
 
         .staging-zone-label {
-            font-size: 0.84rem;
+            font-size: 1.12rem;
             font-weight: 900;
             color: #0f172a;
-            letter-spacing: 0.06em;
+            letter-spacing: 0.05em;
             text-transform: uppercase;
             line-height: 1.2;
         }
 
         .staging-zone-sub {
-            font-size: 0.65rem;
+            font-size: 0.82rem;
             font-weight: 700;
             color: #475569;
-            margin-top: 2px;
+            margin-top: 3px;
             letter-spacing: 0.02em;
         }
 
@@ -4816,21 +4818,21 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 8px;
-            margin-top: 4px;
+            gap: 12px;
+            margin-top: 6px;
         }
 
         /* Skupina vertikálně naskládaných strojů - rovnoměrná pevná mezera */
         .mach-stack {
             display: flex;
             flex-direction: column;
-            gap: 4px;
+            gap: 5px;
             min-height: 0;
         }
 
         /* Průchozí mezery */
         .mach-passage-spacer {
-            min-height: 14px;
+            min-height: 16px;
             flex: 1;
             margin: 0;
             display: flex;
@@ -4838,7 +4840,7 @@
         }
 
         .mach-col-spacer {
-            min-height: 14px;
+            min-height: 16px;
             flex: 1;
             margin: 0;
             display: flex;
@@ -4851,20 +4853,20 @@
         .mach-sketch {
             background-color: #ffffff;
             border: 1px solid #cbd5e1;
-            border-left: 4.5px solid #4cae2a; /* Výchozí stav V pořádku - firemní zelená ENGEL */
-            border-radius: 5px;
-            height: 38px;
-            min-height: 34px;
-            max-height: 42px;
+            border-left: 5px solid #4cae2a; /* Výchozí stav V pořádku - firemní zelená ENGEL */
+            border-radius: 6px;
+            height: 53px;
+            min-height: 50px;
+            max-height: 56px;
             width: 100%;
             margin: 0;
             display: flex;
             flex-direction: column;
             justify-content: space-between;
-            padding: 2px 5px;
+            padding: 2.5px 7.5px;
             position: relative;
             cursor: pointer;
-            box-shadow: 0 1px 2px rgba(15, 23, 42, 0.05);
+            box-shadow: 0 1px 3px rgba(15, 23, 42, 0.06);
             transition: border-color 0.15s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.15s cubic-bezier(0.16, 1, 0.3, 1), background-color 0.15s ease, transform 0.15s ease;
             user-select: none;
             -webkit-tap-highlight-color: transparent;
@@ -4876,25 +4878,37 @@
 
         .mach-sketch:hover {
             border-color: #64748b;
-            box-shadow: 0 2px 6px rgba(15, 23, 42, 0.08), 0 6px 14px -3px rgba(15, 23, 42, 0.08);
-            transform: translateY(-0.5px);
+            box-shadow: 0 4px 12px rgba(15, 23, 42, 0.1), 0 8px 18px -4px rgba(15, 23, 42, 0.1);
+            transform: translateY(-1px);
         }
 
         .mach-sketch:active {
             background-color: #f1f5f9;
             box-shadow: inset 0 1px 2px rgba(15, 23, 42, 0.08);
             border-color: #94a3b8;
-            transform: scale(0.982);
+            transform: scale(0.985);
         }
 
         .mach-sketch.active-selected {
             border-color: #0f172a;
-            box-shadow: 0 0 0 2px #0f172a, 0 4px 12px rgba(15, 23, 42, 0.14);
+            box-shadow: 0 0 0 2px #0f172a, 0 4px 14px rgba(15, 23, 42, 0.16);
         }
 
         /* Stavy strojů s barevným odlišením */
         .mach-sketch.status-ok {
             border-left-color: #4cae2a !important; /* ENGEL Signature Green */
+        }
+
+        .mach-sketch.status-standby {
+            border-left-color: #64748b !important;
+            background-image: linear-gradient(180deg, #ffffff 0%, #f8fafc 60%, #f1f5f9 100%) !important;
+            border-color: #cbd5e1 !important;
+            box-shadow: 0 1px 3px rgba(100, 116, 139, 0.08);
+        }
+
+        .mach-sketch.status-standby:hover {
+            border-color: #64748b !important;
+            box-shadow: 0 4px 12px -1px rgba(100, 116, 139, 0.2);
         }
 
         .mach-sketch.status-warning {
@@ -4906,7 +4920,7 @@
 
         .mach-sketch.status-warning:hover {
             border-color: #ea580c !important;
-            box-shadow: 0 2px 6px -1px rgba(249, 115, 22, 0.18);
+            box-shadow: 0 4px 12px -1px rgba(249, 115, 22, 0.22);
         }
 
         .mach-sketch.status-error {
@@ -4918,7 +4932,7 @@
 
         .mach-sketch.status-error:hover {
             border-color: #dc2626 !important;
-            box-shadow: 0 2px 6px -1px rgba(225, 29, 72, 0.14);
+            box-shadow: 0 4px 12px -1px rgba(225, 29, 72, 0.2);
         }
 
         /* Horní patro tlačítka: Číslo lisu + Silueta ENGEL + Štítek formy */
@@ -4928,32 +4942,49 @@
             justify-content: space-between;
             width: 100%;
             min-width: 0;
-            gap: 4px;
-            height: 22px;
+            gap: 5px;
+            height: 27px;
         }
 
         .mach-num-box {
             display: inline-flex;
             align-items: center;
-            gap: 4px;
+            gap: 5px;
             flex-shrink: 0;
         }
 
         .mach-status-beacon {
             position: relative;
-            width: 6px;
-            height: 6px;
+            width: 8.5px;
+            height: 8.5px;
             border-radius: 50%;
             display: inline-block;
             flex-shrink: 0;
         }
         .mach-status-beacon.status-ok {
             background-color: #4cae2a;
-            box-shadow: 0 0 4px rgba(76, 174, 42, 0.6);
+            box-shadow: 0 0 5px rgba(76, 174, 42, 0.7);
+        }
+        .mach-status-beacon.status-standby {
+            background-color: #64748b;
+            box-shadow: 0 0 4px rgba(100, 116, 139, 0.6);
+        }
+        .mach-status-beacon.status-standby::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            background-color: #94a3b8;
+            transform: translate(-50%, -50%);
+            animation: statusRadialPulse 2.2s cubic-bezier(0.22, 1, 0.36, 1) infinite;
+            pointer-events: none;
         }
         .mach-status-beacon.status-warning {
             background-color: #f97316;
-            box-shadow: 0 0 3px rgba(249, 115, 22, 0.6);
+            box-shadow: 0 0 4px rgba(249, 115, 22, 0.7);
         }
         .mach-status-beacon.status-warning::after {
             content: '';
@@ -4970,7 +5001,7 @@
         }
         .mach-status-beacon.status-error {
             background-color: #dc2626;
-            box-shadow: 0 0 4px rgba(220, 38, 38, 0.7);
+            box-shadow: 0 0 5px rgba(220, 38, 38, 0.8);
         }
         .mach-status-beacon.status-error::after {
             content: '';
@@ -4987,13 +5018,13 @@
         }
 
         .mach-num {
-            font-size: 0.94rem;
+            font-size: 1.25rem;
             font-weight: 800;
             font-family: -apple-system, BlinkMacSystemFont, "Inter", "SF Pro Display", "Segoe UI", Roboto, sans-serif;
             font-variant-numeric: tabular-nums;
             color: #0f172a;
             line-height: 1;
-            letter-spacing: -0.015em;
+            letter-spacing: -0.02em;
             pointer-events: none;
             white-space: nowrap;
         }
@@ -5002,21 +5033,21 @@
             display: inline-flex;
             align-items: center;
             justify-content: center;
-            gap: 4px;
+            gap: 5px;
             min-width: 0;
             flex: 1 1 auto;
             overflow: hidden;
         }
 
         .mach-engel-chip {
-            font-size: 0.52rem;
+            font-size: 0.65rem;
             font-weight: 900;
             letter-spacing: 0.06em;
             color: #4cae2a;
             background: #f0fdf4;
             border: 1px solid #bbf7d0;
-            padding: 0.5px 3px;
-            border-radius: 3px;
+            padding: 1px 4.5px;
+            border-radius: 4px;
             line-height: 1;
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, monospace;
             flex-shrink: 0;
@@ -5028,12 +5059,12 @@
             justify-content: center;
             flex-shrink: 0;
             pointer-events: none;
-            filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.1));
+            filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.08));
         }
 
         .mach-cad-silhouette svg {
-            width: 42px;
-            height: 20px;
+            width: 54px;
+            height: 26px;
             display: block;
         }
 
@@ -5050,20 +5081,20 @@
             justify-content: center;
             background: #ffffff;
             color: #0f172a;
-            border: 1px solid #94a3b8;
-            border-radius: 4px;
-            font-size: 0.65rem;
-            font-weight: 700;
+            border: 1.5px solid #94a3b8;
+            border-radius: 5px;
+            font-size: 0.92rem;
+            font-weight: 800;
             font-family: -apple-system, BlinkMacSystemFont, "Inter", "SF Pro Text", "Segoe UI", Roboto, sans-serif;
             font-variant-numeric: tabular-nums;
-            padding: 0 4px;
-            height: 16px;
-            min-width: 22px;
-            max-width: 48px;
+            padding: 0 5px;
+            height: 22px;
+            min-width: 30px;
+            max-width: 70px;
             line-height: 1;
             letter-spacing: -0.01em;
             flex-shrink: 0;
-            box-shadow: 0 1px 2px rgba(15, 23, 42, 0.06);
+            box-shadow: 0 1px 2px rgba(15, 23, 42, 0.08);
             text-align: center;
             overflow: hidden;
             text-overflow: ellipsis;
@@ -5071,32 +5102,33 @@
         }
 
         .mach-mold-empty-dash {
-            font-size: 0.65rem;
+            font-size: 0.92rem;
             font-weight: 700;
             color: #cbd5e1;
             line-height: 1;
-            padding: 0 3px;
-            min-width: 18px;
+            padding: 0 4px;
+            min-width: 25px;
             text-align: center;
             display: inline-flex;
             justify-content: center;
             align-items: center;
         }
 
-        /* Spodní patro tlačítka: Název dílu (celá šířka tlačítka bez tlačenice) */
+        /* Spodní patro tlačítka: Název dílu / Důvod odstávky */
         .mach-tier-bottom {
             display: flex;
             align-items: center;
             width: 100%;
             min-width: 0;
-            height: 15px;
-            padding-top: 1px;
+            height: 21px;
+            padding: 0;
             border-top: 1px solid #f1f5f9;
             overflow: hidden;
+            box-sizing: border-box;
         }
 
         .mach-mold-product-name {
-            font-size: 0.58rem;
+            font-size: 0.70rem;
             font-weight: 600;
             color: #334155;
             font-family: -apple-system, BlinkMacSystemFont, "Inter", "SF Pro Text", "Segoe UI", Roboto, sans-serif;
@@ -5135,6 +5167,25 @@
         .mach-status-pulse-dot.dot-ok {
             background-color: #16a34a;
             box-shadow: 0 0 3px rgba(22, 163, 74, 0.5);
+        }
+
+        .mach-status-pulse-dot.dot-standby {
+            background-color: #64748b;
+            box-shadow: 0 0 3px rgba(100, 116, 139, 0.5);
+        }
+
+        .mach-status-pulse-dot.dot-standby::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            background-color: #94a3b8;
+            transform: translate(-50%, -50%);
+            animation: statusRadialPulse 2.2s cubic-bezier(0.22, 1, 0.36, 1) infinite;
+            pointer-events: none;
         }
 
         .mach-status-pulse-dot.dot-warning {
@@ -5225,8 +5276,14 @@
            ========================================================================== */
         .mach-status-toggle-row {
             display: grid;
-            grid-template-columns: 1fr 1fr 1fr;
+            grid-template-columns: repeat(4, 1fr);
             gap: 0.35rem;
+        }
+
+        @media (max-width: 380px) {
+            .mach-status-toggle-row {
+                grid-template-columns: repeat(2, 1fr);
+            }
         }
 
         .mach-status-pill-btn {
@@ -5234,10 +5291,10 @@
             align-items: center;
             justify-content: center;
             gap: 0.35rem;
-            padding: 0.32rem 0.5rem;
+            padding: 0.32rem 0.35rem;
             min-height: 28px;
             border-radius: 6px;
-            font-size: 0.73rem;
+            font-size: 0.72rem;
             font-weight: 600;
             border: 1px solid var(--border-color);
             background: var(--card-bg);
@@ -5246,6 +5303,7 @@
             transition: all 0.14s ease;
             user-select: none;
             -webkit-tap-highlight-color: transparent;
+            white-space: nowrap;
         }
 
         .mach-status-pill-btn:hover {
@@ -5265,6 +5323,13 @@
             font-weight: 700;
         }
 
+        .mach-status-pill-btn.active.standby {
+            background: rgba(100, 116, 139, 0.14);
+            border-color: #64748b;
+            color: #334155;
+            font-weight: 700;
+        }
+
         .mach-status-pill-btn.active.warning {
             background: rgba(249, 115, 22, 0.14);
             border-color: #f97316;
@@ -5277,6 +5342,115 @@
             border-color: #dc2626;
             color: #b91c1c;
             font-weight: 700;
+        }
+
+        /* Plynulá, элегантная анимация появления блоков в шторке станка */
+        @keyframes drawerBlockEntrance {
+            0% {
+                opacity: 0;
+                transform: translate3d(0, 10px, 0);
+            }
+            100% {
+                opacity: 1;
+                transform: translate3d(0, 0, 0);
+            }
+        }
+
+        .mach-drawer-animated-block {
+            animation: drawerBlockEntrance 0.38s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+            will-change: transform, opacity;
+        }
+
+        /* Výběr konkrétního důvodu odstávky (Stojí) */
+        .standby-reasons-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0.35rem;
+        }
+
+        @media (max-width: 380px) {
+            .standby-reasons-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .standby-reason-chip.chip-wide {
+            grid-column: 1 / -1;
+        }
+
+        .standby-reason-chip {
+            display: flex;
+            align-items: center;
+            gap: 0.45rem;
+            padding: 0.42rem 0.55rem;
+            border-radius: 6px;
+            border: 1px solid var(--border-color);
+            background: var(--card-bg);
+            color: var(--text-main);
+            font-size: 0.72rem;
+            font-weight: 600;
+            cursor: pointer;
+            text-align: left;
+            transition: all 0.15s ease;
+            user-select: none;
+            -webkit-tap-highlight-color: transparent;
+            min-height: 32px;
+            box-sizing: border-box;
+        }
+
+        .standby-reason-chip:hover {
+            border-color: #64748b;
+            background: var(--row-hover);
+        }
+
+        .standby-reason-chip:active {
+            transform: scale(0.97);
+        }
+
+        .standby-reason-chip.active {
+            background: #334155;
+            border-color: #1e293b;
+            color: #ffffff;
+            box-shadow: 0 1px 3px rgba(15, 23, 42, 0.18);
+        }
+
+        .standby-reason-chip.active svg {
+            stroke: #ffffff;
+        }
+
+        .standby-reason-chip svg {
+            flex-shrink: 0;
+            stroke: #64748b;
+            transition: stroke 0.15s ease;
+        }
+
+        .mach-standby-reason-row {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            width: 100%;
+            min-width: 0;
+            height: 100%;
+            line-height: 1;
+        }
+
+        .mach-standby-reason-label {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.65rem;
+            font-weight: 700;
+            color: #475569;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            background: rgba(100, 116, 139, 0.12);
+            border-radius: 3px;
+            padding: 0 5px;
+            height: 16px;
+            line-height: 14px;
+            box-sizing: border-box;
+            border: 1px solid rgba(100, 116, 139, 0.28);
         }
 
         /* Našeptávač forem podle názvu výrobku i čísla formy */
@@ -5581,6 +5755,12 @@
                 flex-shrink: 0;
             }
 
+            .mach-sketch.status-standby {
+                background-color: #f8fafc !important;
+                border-color: #cbd5e1 !important;
+                border-left-color: #64748b !important;
+            }
+
             .mach-sketch.status-warning {
                 background-color: #fffaf5 !important;
                 border-color: #fed7aa !important;
@@ -5706,10 +5886,11 @@
                 align-items: center;
                 width: 100%;
                 min-width: 0;
-                height: 14px;
-                padding-top: 1px;
+                height: 15px;
+                padding: 0;
                 border-top: 1px solid #e2e8f0;
                 overflow: hidden;
+                box-sizing: border-box;
             }
 
             .mach-mold-product-name {
@@ -5738,6 +5919,17 @@
                 color: #94a3b8;
                 font-size: 0.48rem;
                 font-weight: 600;
+            }
+
+            .mach-standby-reason-label {
+                font-size: 0.48rem;
+                padding: 0 4px;
+                height: 11px;
+                line-height: 9px;
+                border-radius: 2px;
+                max-width: 100%;
+                box-sizing: border-box;
+                border: 1px solid rgba(100, 116, 139, 0.28);
             }
 
             .mach-stack {
@@ -7356,6 +7548,10 @@
                         <span class="mach-status-pulse-dot dot-ok"></span>
                         <span>V chodu</span>
                     </button>
+                    <button type="button" id="mStatusBtnStandby" class="mach-status-pill-btn standby" onclick="setMachineStatusDirectly('standby')" title="Lis dočasně stojí (výměna formy, sušení, materiál)">
+                        <span class="mach-status-pulse-dot dot-standby"></span>
+                        <span>Stojí</span>
+                    </button>
                     <button type="button" id="mStatusBtnWarning" class="mach-status-pill-btn warning" onclick="setMachineStatusDirectly('warning')" title="Lis je v chodu, ale vykazuje vady / vyžaduje servis">
                         <span class="mach-status-pulse-dot dot-warning"></span>
                         <span>S problémy</span>
@@ -7399,8 +7595,83 @@
                 <div id="machineMoldProductPreview" style="display: none;"></div>
             </div>
 
-            <!-- 3. Kniha závad a servisní chat -->
-            <div style="display: flex; flex-direction: column; gap: 0.6rem;">
+            <!-- 3. Konkrétní důvod odstávky pro stav "Stojí" (výběr 1 kliknutím pod blokem formy) -->
+            <div id="machineStandbyReasonsContainer" style="display: none; flex-direction: column; gap: 0.35rem; background: var(--row-hover); border: 1px solid var(--border-color); border-radius: 8px; padding: 0.55rem 0.65rem;">
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <span style="font-size: 0.72rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.03em; color: var(--text-muted);">
+                        Důvod odstávky lisu:
+                    </span>
+                    <span style="font-size: 0.68rem; color: #64748b; font-weight: 500;">(výběr 1 kliknutím)</span>
+                </div>
+                <div class="standby-reasons-grid">
+                    <button type="button" class="standby-reason-chip" onclick="setMachineStandbyReason('Výměna formy / Temperování')" data-reason="Výměna formy / Temperování" title="Výměna formy nebo temperování formy">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M21 2v6h-6"></path>
+                            <path d="M3 12a9 9 0 0 1 15-6.7L21 8"></path>
+                            <path d="M3 22v-6h6"></path>
+                            <path d="M21 12a9 9 0 0 1-15 6.7L3 16"></path>
+                        </svg>
+                        <span>Výměna formy / Temperování</span>
+                    </button>
+                    <button type="button" class="standby-reason-chip" onclick="setMachineStandbyReason('Sušení materiálu')" data-reason="Sušení materiálu" title="Sušení granulátu / materiálu">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M7 4c0 2-2 3-2 5s2 3 2 5"></path>
+                            <path d="M12 2c0 2.5-2 3.8-2 6.5s2 3.8 2 6.5"></path>
+                            <path d="M17 4c0 2-2 3-2 5s2 3 2 5"></path>
+                            <path d="M4 19h16"></path>
+                            <path d="M6 22h12"></path>
+                        </svg>
+                        <span>Sušení materiálu</span>
+                    </button>
+                    <button type="button" class="standby-reason-chip" onclick="setMachineStandbyReason('Není materiál')" data-reason="Není materiál" title="Materiál není k dispozici">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                            <line x1="2" y1="2" x2="22" y2="22"></line>
+                            <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path>
+                        </svg>
+                        <span>Není materiál</span>
+                    </button>
+                    <button type="button" class="standby-reason-chip" onclick="setMachineStandbyReason('Prázdná násypka / Nestíhá nasávat')" data-reason="Prázdná násypka / Nestíhá nasávat" title="Prázdná násypka nebo podtlakové nasávání nestíhá">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                            <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"></polygon>
+                        </svg>
+                        <span>Prázdná násypka / Nestíhá nasávat</span>
+                    </button>
+                    <button type="button" class="standby-reason-chip chip-wide" onclick="setMachineStandbyReason('Není obsluha')" data-reason="Není obsluha" title="Není obsluha / operátor (lis je v pořádku, ale chybí pracovník)">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path>
+                            <circle cx="9" cy="7" r="4"></circle>
+                            <line x1="17" y1="8" x2="22" y2="13"></line>
+                            <line x1="22" y1="8" x2="17" y2="13"></line>
+                        </svg>
+                        <span>Není obsluha (operátor)</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- 4. Formulář přidání nové závady (zobrazuje se při stavech S problémy nebo Odstaveno) -->
+            <div id="machineNewIssueFormCard" style="background: var(--card-bg); border: 1.5px solid var(--border-color); border-radius: 8px; padding: 0.75rem; display: none; flex-direction: column; gap: 0.5rem;">
+                <div style="font-size: 0.78rem; font-weight: 700; color: var(--text-main);">
+                    + Zapsat novou závadu nebo servisní poznámku:
+                </div>
+                <textarea id="newIssueTextInput" placeholder="Popište zjištěnou závadu, únik oleje, teplotu, poškození..." rows="2" spellcheck="false" autocorrect="off" autocapitalize="none" autocomplete="off" data-gramm="false" data-enable-grammarly="false" style="width: 100%; padding: 0.5rem; font-size: 0.84rem; border: 1px solid var(--border-color); border-radius: 6px; background: var(--input-bg); color: var(--text-main); resize: vertical; box-sizing: border-box;"></textarea>
+                
+                <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.5rem;">
+                    <div style="display: flex; align-items: center; gap: 0.75rem; font-size: 0.76rem; color: var(--text-muted);">
+                        <label style="display: flex; align-items: center; gap: 0.25rem; cursor: pointer;">
+                            <input type="radio" name="issuePriority" value="normal" checked> Běžná
+                        </label>
+                        <label style="display: flex; align-items: center; gap: 0.25rem; cursor: pointer; color: #dc2626; font-weight: 700;">
+                            <input type="radio" name="issuePriority" value="critical"> ⚠️ Kritická
+                        </label>
+                    </div>
+                    <button type="button" class="btn-primary" onclick="addNewMachineIssue()" style="padding: 0.45rem 0.9rem; font-size: 0.82rem;">
+                        Přidat záznam
+                    </button>
+                </div>
+            </div>
+
+            <!-- 5. Kniha závad a servisní chat (Vždy v nejspodnější části šторки lisu) -->
+            <div style="display: flex; flex-direction: column; gap: 0.6rem; margin-top: 0.2rem;">
                 <div style="display: flex; justify-content: space-between; align-items: center;">
                     <label style="font-size: 0.8rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.03em; color: var(--text-main); display: flex; align-items: center; gap: 0.4rem;">
                         <span>Kniha závad & servisní chat</span>
@@ -7411,28 +7682,6 @@
                 <!-- Seznam závad -->
                 <div id="machineIssuesList" style="display: flex; flex-direction: column; gap: 0.5rem; max-height: 220px; overflow-y: auto; padding-right: 2px;">
                     <!-- Dynamicky generováno -->
-                </div>
-
-                <!-- Formulář přidání nové závady -->
-                <div style="background: var(--card-bg); border: 1.5px solid var(--border-color); border-radius: 8px; padding: 0.75rem; display: flex; flex-direction: column; gap: 0.5rem;">
-                    <div style="font-size: 0.78rem; font-weight: 700; color: var(--text-main);">
-                        + Zapsat novou závadu nebo servisní poznámku:
-                    </div>
-                    <textarea id="newIssueTextInput" placeholder="Popište zjištěnou závadu, únik oleje, teplotu, poškození..." rows="2" spellcheck="false" autocorrect="off" autocapitalize="none" autocomplete="off" data-gramm="false" data-enable-grammarly="false" style="width: 100%; padding: 0.5rem; font-size: 0.84rem; border: 1px solid var(--border-color); border-radius: 6px; background: var(--input-bg); color: var(--text-main); resize: vertical; box-sizing: border-box;"></textarea>
-                    
-                    <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.5rem;">
-                        <div style="display: flex; align-items: center; gap: 0.75rem; font-size: 0.76rem; color: var(--text-muted);">
-                            <label style="display: flex; align-items: center; gap: 0.25rem; cursor: pointer;">
-                                <input type="radio" name="issuePriority" value="normal" checked> Běžná
-                            </label>
-                            <label style="display: flex; align-items: center; gap: 0.25rem; cursor: pointer; color: #dc2626; font-weight: 700;">
-                                <input type="radio" name="issuePriority" value="critical"> ⚠️ Kritická
-                            </label>
-                        </div>
-                        <button type="button" class="btn-primary" onclick="addNewMachineIssue()" style="padding: 0.45rem 0.9rem; font-size: 0.82rem;">
-                            Přidat záznam
-                        </button>
-                    </div>
                 </div>
             </div>
         </div>
@@ -16609,6 +16858,7 @@ Return strictly valid JSON only without markdown formatting with this schema:
                 id: num,
                 number: String(num),
                 status: existing?.status || 'ok',
+                standbyReason: existing?.standbyReason || '',
                 currentMold: existing?.currentMold || '',
                 issues: Array.isArray(existing?.issues) ? existing.issues : []
             };
@@ -16713,6 +16963,7 @@ Return strictly valid JSON only without markdown formatting with this schema:
                 id: num,
                 number: String(num),
                 status: existing?.status || 'ok',
+                standbyReason: existing?.standbyReason || '',
                 currentMold: existing?.currentMold || '',
                 issues: Array.isArray(existing?.issues) ? existing.issues : []
             };
@@ -16816,12 +17067,16 @@ Return strictly valid JSON only without markdown formatting with this schema:
         const unresolvedIssues = (m.issues || []).filter(it => !it.resolved);
         const hasIssues = unresolvedIssues.length > 0;
 
-        // Stav nastavený uživatelem má přímou prioritu ('ok' = zelená v chodu, 'warning' = oranžová s problémy, 'error' = červená odstaveno)
+        // Stav nastavený uživatelem má přímou prioritu ('ok' = zelená v chodu, 'standby' = šedá stojí, 'warning' = oranžová s problémy, 'error' = červená odstaveno)
         let effectiveStatus = m.status || (hasIssues ? 'warning' : 'ok');
 
         let statusTitle = 'V pořádku (v chodu)';
         let beaconColor = '#4cae2a'; // Firemní zelená ENGEL
-        if (effectiveStatus === 'warning') {
+        if (effectiveStatus === 'standby') {
+            const reason = m.standbyReason || 'Čekání / Příprava';
+            statusTitle = `Stojí: ${reason}`;
+            beaconColor = '#64748b';
+        } else if (effectiveStatus === 'warning') {
             statusTitle = 'V chodu s problémy (servis)';
             beaconColor = '#f97316';
         } else if (effectiveStatus === 'error') {
@@ -16846,6 +17101,28 @@ Return strictly valid JSON only without markdown formatting with this schema:
             </span>
         `;
 
+        let bottomTierHtml = '';
+        if (effectiveStatus === 'standby' && m.standbyReason) {
+            const reason = m.standbyReason;
+            bottomTierHtml = `
+                <div class="mach-tier-bottom" title="Důvod odstávky lisu: ${escapeHtml(reason)}">
+                    <div class="mach-standby-reason-row">
+                        <span class="mach-standby-reason-label">${escapeHtml(reason)}</span>
+                    </div>
+                </div>
+            `;
+        } else if (prodName) {
+            bottomTierHtml = `
+                <div class="mach-tier-bottom" title="Výrobek: ${escapeHtml(prodName)}">
+                    <span class="mach-mold-product-name">${escapeHtml(prodName)}</span>
+                </div>
+            `;
+        } else {
+            bottomTierHtml = `
+                <div class="mach-tier-bottom is-empty" style="border-top-color: transparent;" title="${cleanMold ? `Forma: ${escapeHtml(cleanMold)}` : `Lis ${escapeHtml(m.number)}`}"></div>
+            `;
+        }
+
         return `
             <div class="mach-sketch status-${effectiveStatus} ${hasIssues ? 'has-issues' : ''}" 
                  tabindex="0"
@@ -16869,9 +17146,7 @@ Return strictly valid JSON only without markdown formatting with this schema:
                     </div>
                 </div>
 
-                <div class="mach-tier-bottom" title="${prodName ? escapeHtml(prodName) : (cleanMold ? 'Díl nespecifikován' : 'Lis bez formy')}">
-                    <span class="mach-mold-product-name ${!prodName ? 'is-empty' : ''}">${prodName ? escapeHtml(prodName) : (cleanMold ? '<span class="mach-prod-placeholder">Díl nespecifikován</span>' : '<span class="mach-prod-empty">Volný lis</span>')}</span>
-                </div>
+                ${bottomTierHtml}
             </div>
         `;
     }
@@ -16926,7 +17201,7 @@ Return strictly valid JSON only without markdown formatting with this schema:
         // Mini silueta stroje v hlavičce
         const headerIconBadge = document.getElementById('machDrawerIconBadge');
         if (headerIconBadge) {
-            const bColor = machine.status === 'warning' ? '#f97316' : (machine.status === 'error' ? '#dc2626' : '#4cae2a');
+            const bColor = machine.status === 'standby' ? '#64748b' : (machine.status === 'warning' ? '#f97316' : (machine.status === 'error' ? '#dc2626' : '#4cae2a'));
             headerIconBadge.innerHTML = renderMachineCadSilhouetteSvg(bColor);
         }
 
@@ -16985,7 +17260,7 @@ Return strictly valid JSON only without markdown formatting with this schema:
             const count = unresolved.length;
             const issueText = count === 1 ? '1 aktivní závada' : (count >= 2 && count <= 4 ? `${count} aktivní závady` : `${count} aktivních závad`);
             box.innerHTML = `
-                <div style="background: rgba(220, 38, 38, 0.08); border: 1.5px solid #dc2626; border-radius: 7px; padding: 0.45rem 0.75rem; display: flex; align-items: center; justify-content: space-between; gap: 0.5rem;">
+                <div class="mach-drawer-animated-block" style="background: rgba(220, 38, 38, 0.08); border: 1.5px solid #dc2626; border-radius: 7px; padding: 0.45rem 0.75rem; display: flex; align-items: center; justify-content: space-between; gap: 0.5rem;">
                     <div style="display: flex; align-items: center; gap: 0.5rem;">
                         <span class="mach-status-pulse-dot dot-error"></span>
                         <div>
@@ -17001,7 +17276,7 @@ Return strictly valid JSON only without markdown formatting with this schema:
             const count = unresolved.length;
             const issueText = count > 0 ? ` • ${count} ${count === 1 ? 'závada k dořešení' : 'závady k dořešení'}` : '';
             box.innerHTML = `
-                <div style="background: rgba(249, 115, 22, 0.1); border: 1.5px solid #f97316; border-radius: 7px; padding: 0.45rem 0.75rem; display: flex; align-items: center; justify-content: space-between; gap: 0.5rem;">
+                <div class="mach-drawer-animated-block" style="background: rgba(249, 115, 22, 0.1); border: 1.5px solid #f97316; border-radius: 7px; padding: 0.45rem 0.75rem; display: flex; align-items: center; justify-content: space-between; gap: 0.5rem;">
                     <div style="display: flex; align-items: center; gap: 0.5rem;">
                         <span class="mach-status-pulse-dot dot-warning"></span>
                         <div>
@@ -17013,9 +17288,24 @@ Return strictly valid JSON only without markdown formatting with this schema:
                     </div>
                 </div>
             `;
+        } else if (currentStatus === 'standby') {
+            const reason = machine.standbyReason || 'Čekání / Příprava lisu';
+            box.innerHTML = `
+                <div class="mach-drawer-animated-block" style="background: rgba(100, 116, 139, 0.09); border: 1.5px solid #64748b; border-radius: 7px; padding: 0.45rem 0.75rem; display: flex; align-items: center; justify-content: space-between; gap: 0.5rem;">
+                    <div style="display: flex; align-items: center; gap: 0.5rem;">
+                        <span class="mach-status-pulse-dot dot-standby"></span>
+                        <div>
+                            <div style="font-weight: 800; font-size: 0.78rem; color: #334155; letter-spacing: 0.01em;">
+                                STOJÍ: ${escapeHtml(reason.toUpperCase())}
+                            </div>
+                            <div style="font-size: 0.7rem; color: #64748b; font-weight: 600;">Lis dočasně stojí z technologických důvodů — mimo aktivní takt</div>
+                        </div>
+                    </div>
+                </div>
+            `;
         } else {
             box.innerHTML = `
-                <div style="background: rgba(34, 197, 94, 0.08); border: 1.5px solid #16a34a; border-radius: 7px; padding: 0.45rem 0.75rem; display: flex; align-items: center; justify-content: space-between; gap: 0.5rem;">
+                <div class="mach-drawer-animated-block" style="background: rgba(34, 197, 94, 0.08); border: 1.5px solid #16a34a; border-radius: 7px; padding: 0.45rem 0.75rem; display: flex; align-items: center; justify-content: space-between; gap: 0.5rem;">
                     <div style="display: flex; align-items: center; gap: 0.5rem;">
                         <span class="mach-status-pulse-dot dot-ok"></span>
                         <div>
@@ -17032,10 +17322,13 @@ Return strictly valid JSON only without markdown formatting with this schema:
 
     function updateMachineStatusButtonsUI(status) {
         const btnOk = document.getElementById('mStatusBtnOk');
+        const btnStandby = document.getElementById('mStatusBtnStandby');
         const btnWarn = document.getElementById('mStatusBtnWarning');
         const btnErr = document.getElementById('mStatusBtnError');
+        const issueFormCard = document.getElementById('machineNewIssueFormCard');
+        const reasonsContainer = document.getElementById('machineStandbyReasonsContainer');
 
-        [btnOk, btnWarn, btnErr].forEach(b => {
+        [btnOk, btnStandby, btnWarn, btnErr].forEach(b => {
             if (b) {
                 b.classList.remove('active');
             }
@@ -17043,11 +17336,77 @@ Return strictly valid JSON only without markdown formatting with this schema:
 
         if (status === 'ok' && btnOk) {
             btnOk.classList.add('active');
+        } else if (status === 'standby' && btnStandby) {
+            btnStandby.classList.add('active');
         } else if (status === 'warning' && btnWarn) {
             btnWarn.classList.add('active');
         } else if (status === 'error' && btnErr) {
             btnErr.classList.add('active');
         }
+
+        // Zobrazení výběru konkrétního důvodu pouze při stavu "Stojí" (s plynulou animací při každém přepnutí)
+        if (reasonsContainer) {
+            const isStandby = (status === 'standby');
+            if (isStandby) {
+                reasonsContainer.style.display = 'flex';
+                reasonsContainer.classList.remove('mach-drawer-animated-block');
+                void reasonsContainer.offsetWidth; // Force reflow pro spuštění animace
+                reasonsContainer.classList.add('mach-drawer-animated-block');
+            } else {
+                reasonsContainer.style.display = 'none';
+                reasonsContainer.classList.remove('mach-drawer-animated-block');
+            }
+        }
+
+        // Formulář pro zápis nové závady se zobrazuje při stavech "V chodu s problémy" nebo "Odstaveno" (s plynulou animací při každém přepnutí)
+        if (issueFormCard) {
+            const shouldShow = (status === 'warning' || status === 'error');
+            if (shouldShow) {
+                issueFormCard.style.display = 'flex';
+                issueFormCard.classList.remove('mach-drawer-animated-block');
+                void issueFormCard.offsetWidth; // Force reflow pro spuštění animace
+                issueFormCard.classList.add('mach-drawer-animated-block');
+            } else {
+                issueFormCard.style.display = 'none';
+                issueFormCard.classList.remove('mach-drawer-animated-block');
+            }
+        }
+
+        if (currentActiveMachineId) {
+            const machine = factoryMachinesData.find(m => m.id === currentActiveMachineId);
+            updateStandbyReasonChipsUI(machine ? machine.standbyReason : '');
+        }
+    }
+
+    function updateStandbyReasonChipsUI(currentReason) {
+        const chips = document.querySelectorAll('.standby-reason-chip');
+        chips.forEach(chip => {
+            const reason = chip.getAttribute('data-reason');
+            if (currentReason && reason === currentReason) {
+                chip.classList.add('active');
+            } else {
+                chip.classList.remove('active');
+            }
+        });
+    }
+
+    function setMachineStandbyReason(reason) {
+        if (!checkAuthOrPrompt()) return;
+        triggerHapticFeedback([10]);
+        const machine = factoryMachinesData.find(m => m.id === currentActiveMachineId);
+        if (!machine) return;
+
+        machine.standbyReason = reason;
+        if (machine.status !== 'standby') {
+            machine.status = 'standby';
+            updateMachineStatusButtonsUI('standby');
+        }
+        saveFactoryMachinesState();
+        updateStandbyReasonChipsUI(reason);
+        renderMachineProblemStatusBanner(machine);
+        renderGraphicFactoryMap();
+        showToast(`Důvod odstávky lisu ${machine.number}: ${reason}`);
+        logUserAction(machine.number ? `LIS_${machine.number}` : 'LIS', 'Důvod odstávky', `Důvod: ${reason}`);
     }
 
     function setMachineStatusDirectly(newStatus) {
@@ -17057,16 +17416,24 @@ Return strictly valid JSON only without markdown formatting with this schema:
         if (!machine) return;
 
         machine.status = newStatus;
+        if (newStatus === 'standby') {
+            if (!machine.standbyReason) {
+                machine.standbyReason = 'Výměna formy / Temperování';
+            }
+        } else {
+            // Při přechodu do chodu nebo jiného provozního stavu se technologický důvod odstávky ukončí a vrátí se název výrobku
+            machine.standbyReason = '';
+        }
         saveFactoryMachinesState();
         updateMachineStatusButtonsUI(newStatus);
         renderMachineProblemStatusBanner(machine);
         const headerIconBadge = document.getElementById('machDrawerIconBadge');
         if (headerIconBadge) {
-            const bColor = newStatus === 'warning' ? '#f97316' : (newStatus === 'error' ? '#dc2626' : '#4cae2a');
+            const bColor = newStatus === 'standby' ? '#64748b' : (newStatus === 'warning' ? '#f97316' : (newStatus === 'error' ? '#dc2626' : '#4cae2a'));
             headerIconBadge.innerHTML = renderMachineCadSilhouetteSvg(bColor);
         }
         renderGraphicFactoryMap();
-        const statusCzech = newStatus === 'ok' ? 'V pořádku (v chodu)' : (newStatus === 'warning' ? 'V chodu s problémy' : 'Odstaveno / Mimo provoz');
+        const statusCzech = newStatus === 'ok' ? 'V pořádku (v chodu)' : (newStatus === 'standby' ? `Stojí (${machine.standbyReason || 'Technologická odstávka'})` : (newStatus === 'warning' ? 'V chodu s problémy' : 'Odstaveno / Mimo provoz'));
         showToast(`Stav lisu ${machine.number}: ${statusCzech}`);
         logUserAction(machine.number ? `LIS_${machine.number}` : 'LIS', 'Stav lisu', `Stav lisu ${machine.number}: ${statusCzech}`);
     }
@@ -17479,8 +17846,8 @@ Return strictly valid JSON only without markdown formatting with this schema:
 
         machine.issues.unshift(newIssue);
 
-        // Pokud je závada kritická a stroj byl 'ok', přepnout na 'error'
-        if (priority === 'critical' && machine.status === 'ok') {
+        // Pokud je závada kritická a stroj nebyl odstaven, přepnout na 'error'
+        if (priority === 'critical' && machine.status !== 'error') {
             machine.status = 'error';
             updateMachineStatusButtonsUI('error');
         }

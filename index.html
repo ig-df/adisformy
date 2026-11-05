@@ -5344,20 +5344,20 @@
             font-weight: 700;
         }
 
-        /* Plynulá animace objevení bloků ve štorce lisu */
+        /* Plynulá, элегантная анимация появления блоков в шторке станка */
         @keyframes drawerBlockEntrance {
             0% {
                 opacity: 0;
-                transform: translate3d(0, 6px, 0) scale(0.985);
+                transform: translate3d(0, 10px, 0);
             }
             100% {
                 opacity: 1;
-                transform: translate3d(0, 0, 0) scale(1);
+                transform: translate3d(0, 0, 0);
             }
         }
 
         .mach-drawer-animated-block {
-            animation: drawerBlockEntrance 0.22s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+            animation: drawerBlockEntrance 0.38s cubic-bezier(0.16, 1, 0.3, 1) forwards;
             will-change: transform, opacity;
         }
 
@@ -17344,32 +17344,28 @@ Return strictly valid JSON only without markdown formatting with this schema:
             btnErr.classList.add('active');
         }
 
-        // Zobrazení výběru konkrétního důvodu pouze při stavu "Stojí" (s plynulou animací)
+        // Zobrazení výběru konkrétního důvodu pouze při stavu "Stojí" (s plynulou animací při každém přepnutí)
         if (reasonsContainer) {
             const isStandby = (status === 'standby');
             if (isStandby) {
-                if (reasonsContainer.style.display !== 'flex') {
-                    reasonsContainer.style.display = 'flex';
-                    reasonsContainer.classList.remove('mach-drawer-animated-block');
-                    void reasonsContainer.offsetWidth; // Force reflow pro spuštění animace
-                    reasonsContainer.classList.add('mach-drawer-animated-block');
-                }
+                reasonsContainer.style.display = 'flex';
+                reasonsContainer.classList.remove('mach-drawer-animated-block');
+                void reasonsContainer.offsetWidth; // Force reflow pro spuštění animace
+                reasonsContainer.classList.add('mach-drawer-animated-block');
             } else {
                 reasonsContainer.style.display = 'none';
                 reasonsContainer.classList.remove('mach-drawer-animated-block');
             }
         }
 
-        // Formulář pro zápis nové závady se zobrazuje pouze při stavech "V chodu s problémy" nebo "Odstaveno" (s plynulou animací)
+        // Formulář pro zápis nové závady se zobrazuje při stavech "V chodu s problémy" nebo "Odstaveno" (s plynulou animací při každém přepnutí)
         if (issueFormCard) {
             const shouldShow = (status === 'warning' || status === 'error');
             if (shouldShow) {
-                if (issueFormCard.style.display !== 'flex') {
-                    issueFormCard.style.display = 'flex';
-                    issueFormCard.classList.remove('mach-drawer-animated-block');
-                    void issueFormCard.offsetWidth; // Force reflow pro spuštění animace
-                    issueFormCard.classList.add('mach-drawer-animated-block');
-                }
+                issueFormCard.style.display = 'flex';
+                issueFormCard.classList.remove('mach-drawer-animated-block');
+                void issueFormCard.offsetWidth; // Force reflow pro spuštění animace
+                issueFormCard.classList.add('mach-drawer-animated-block');
             } else {
                 issueFormCard.style.display = 'none';
                 issueFormCard.classList.remove('mach-drawer-animated-block');
