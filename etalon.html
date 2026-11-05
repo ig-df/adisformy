@@ -10198,6 +10198,15 @@
                 if (popover && (popover.classList.contains('popover-open') || popover.style.display === 'block')) renderOnlineUsers();
             })
             .subscribe();
+
+        // Pojistná фоновая синхронизация карты станков (каждые 12 секунд) на случай отключённого Realtime в Supabase
+        if (!window.factoryMachinesSyncInterval) {
+            window.factoryMachinesSyncInterval = setInterval(() => {
+                if (typeof syncFactoryMachinesFromDb === 'function' && !isSubmittingAction) {
+                    syncFactoryMachinesFromDb();
+                }
+            }, 12000);
+        }
     }
 
     async function fetchCustomers() {

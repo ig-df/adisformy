@@ -7331,6 +7331,28 @@
                 </div>
             </div>
 
+            <!-- PUSH Oznámení lisovny -->
+            <div class="helios-accordion-card" style="margin-top: 0.75rem;">
+                <div style="padding: 0.85rem; background: var(--card-bg); border-radius: 8px;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.4rem;">
+                        <span style="font-size: 0.82rem; font-weight: 700; color: var(--text-main); display: flex; align-items: center; gap: 0.35rem;">
+                            🔔 PUSH oznámení lisovny
+                        </span>
+                        <span id="pushNotificationStatusBadge" class="badge-status" style="font-size: 0.68rem; padding: 0.15rem 0.45rem;">
+                            Zjišťování...
+                        </span>
+                    </div>
+                    <div style="font-size: 0.74rem; color: var(--text-muted); line-height: 1.4; margin-bottom: 0.6rem;">
+                        Dostávejte okamžitá фоновая нотификации при изменении статусов 29 лисов (Odstaveno, Stojí, V chodu s problémy). Браузер запрашивает разрешение только при нажатии на кнопку.
+                    </div>
+                    <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;" id="pushNotificationActionsBox">
+                        <button type="button" class="btn-primary" onclick="requestPushNotificationPermission()" style="padding: 0.45rem 0.85rem; font-size: 0.82rem; font-weight: 700;">
+                            🔔 Aktivovat PUSH oznámení
+                        </button>
+                    </div>
+                </div>
+            </div>
+
         </div>
         <div class="modal-footer">
             <button class="btn-secondary" onclick="closeHeliosAdminModal()">Zavřít</button>
@@ -7357,7 +7379,14 @@
             </div>
         </div>
 
-        <div class="factory-map-actions">
+        <div class="factory-map-actions" style="display: flex; align-items: center; gap: 0.5rem;">
+            <button type="button" class="btn-secondary" id="btnMapNotificationToggle" onclick="requestPushNotificationPermission()" title="Nastavení PUSH oznámení lisovny" style="padding: 0.32rem 0.65rem; font-size: 0.76rem; font-weight: 600; display: inline-flex; align-items: center; gap: 0.35rem; border-radius: 6px;">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
+                    <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
+                </svg>
+                <span id="mapBellLabel">PUSH oznámení</span>
+            </button>
             <span class="factory-map-badge" id="factoryMapStatsBadge">29 LISŮ • 0 ZÁVAD</span>
         </div>
     </div>
@@ -9944,6 +9973,7 @@
     async function openHeliosAdminModal() {
         if (!isSuperUser) { alert("Nemáte oprávnění superuživatele!"); return; }
         await loadSavedEmailSettings();
+        updatePushNotificationUI();
         showModalAnimated('heliosAdminModal');
     }
 
@@ -10198,6 +10228,15 @@
                 if (popover && (popover.classList.contains('popover-open') || popover.style.display === 'block')) renderOnlineUsers();
             })
             .subscribe();
+
+        // Pojistná фоновая синхронизация карты станков (каждые 12 секунд) на случай отключённого Realtime в Supabase
+        if (!window.factoryMachinesSyncInterval) {
+            window.factoryMachinesSyncInterval = setInterval(() => {
+                if (typeof syncFactoryMachinesFromDb === 'function' && !isSubmittingAction) {
+                    syncFactoryMachinesFromDb();
+                }
+            }, 12000);
+        }
     }
 
     async function fetchCustomers() {
@@ -16842,6 +16881,185 @@ Return strictly valid JSON only without markdown formatting with this schema:
     };
 
     let isSyncingFactoryMachines = false;
+    let previousMachinesCacheMap = null;
+
+    function sendWebPushNotification(title, body, tag = 'adis-mach') {
+        if (typeof window === 'undefined' || !('Notification' in window)) return;
+        if (Notification.permission !== 'granted') return;
+
+        try {
+            if ('serviceWorker' in navigator && navigator.serviceWorker.controller) {
+                navigator.serviceWorker.ready.then(reg => {
+                    reg.showNotification(title, {
+                        body: body,
+                        icon: './icon-192.png',
+                        badge: './icon-192.png',
+                        tag: tag,
+                        renotify: true,
+                        vibrate: [150, 75, 150]
+                    });
+                }).catch(() => {
+                    new Notification(title, { body: body, icon: './icon-192.png', tag: tag });
+                });
+            } else {
+                new Notification(title, { body: body, icon: './icon-192.png', tag: tag });
+            }
+        } catch (e) {
+            console.warn('Web push notification dispatch error:', e);
+        }
+    }
+
+    async function requestPushNotificationPermission() {
+        if (typeof window === 'undefined' || !('Notification' in window)) {
+            showToast('Tento prohlížeč nepodporuje PUSH oznámení. In-app notifikace fungují v aplikaci.', true);
+            return;
+        }
+
+        if (Notification.permission === 'granted') {
+            showToast('PUSH oznámení jsou aktivní 👍');
+            sendWebPushNotification('ADIS Lisovna', 'Testovací PUSH oznámení: Notifikace lisovny fungují v pořádku!');
+            updatePushNotificationUI();
+            return;
+        }
+
+        if (Notification.permission === 'denied') {
+            showToast('Внутри приложения уведомления активны! Для системных Push откройте сайт в отдельной вкладке и разрешите уведомления в браузере 🔒', true);
+            updatePushNotificationUI();
+            return;
+        }
+
+        try {
+            const perm = await Notification.requestPermission();
+            if (perm === 'granted') {
+                showToast('PUSH oznámení byla úspěšně povolena! 🎉');
+                sendWebPushNotification('ADIS Lisovna', 'Oznámení byla aktivována. Budete dostávat živá upozornění o stavech lisů.');
+            } else if (perm === 'denied') {
+                showToast('Oznámení byla zamítnuta v nastavení prohlížeče. In-App нотификации продолжают работать.', true);
+            }
+        } catch (e) {
+            console.error('Push notification permission error:', e);
+            showToast('Внутри приложения уведомления активны! Для Push откройте сайт в отдельной вкладке.');
+        }
+        updatePushNotificationUI();
+    }
+
+    function updatePushNotificationUI() {
+        const badge = document.getElementById('pushNotificationStatusBadge');
+        const actionsBox = document.getElementById('pushNotificationActionsBox');
+        const mapBellLabel = document.getElementById('mapBellLabel');
+        const btnMapBell = document.getElementById('btnMapNotificationToggle');
+
+        if (typeof window === 'undefined' || !('Notification' in window)) {
+            if (badge) { badge.textContent = 'In-App (Aplikace)'; badge.className = 'badge-status status-ok'; }
+            if (actionsBox) actionsBox.innerHTML = `<span style="font-size: 0.75rem; color: var(--text-muted);">In-app notifikace jsou aktivní v aplikaci. System PUSH nepodporován.</span>`;
+            if (mapBellLabel) mapBellLabel.textContent = 'Oznámení (In-App)';
+            return;
+        }
+
+        const perm = Notification.permission;
+        if (perm === 'granted') {
+            if (badge) { badge.textContent = 'Aktivní (System PUSH)'; badge.className = 'badge-status status-ok'; }
+            if (actionsBox) {
+                actionsBox.innerHTML = `
+                    <button type="button" class="btn-secondary" onclick="requestPushNotificationPermission()" style="padding: 0.35rem 0.65rem; font-size: 0.78rem;">
+                        🔔 Odeslat testovací oznámení
+                    </button>
+                `;
+            }
+            if (mapBellLabel) mapBellLabel.textContent = 'PUSH Aktivní';
+            if (btnMapBell) btnMapBell.style.borderColor = '#16a34a';
+        } else if (perm === 'denied') {
+            if (badge) { badge.textContent = 'In-App Aktivní (System PUSH Blok)'; badge.className = 'badge-status status-warning'; }
+            if (actionsBox) {
+                actionsBox.innerHTML = `
+                    <div style="display: flex; flex-direction: column; gap: 0.35rem;">
+                        <span style="font-size: 0.75rem; color: var(--text-muted); font-weight: 500;">
+                            Внутренние уведомления в приложении **активны**. Системные Web Push заблокированы правилами iframe/браузера.
+                        </span>
+                        <button type="button" class="btn-secondary" onclick="requestPushNotificationPermission()" style="padding: 0.35rem 0.65rem; font-size: 0.78rem; align-self: flex-start;">
+                            ℹ️ Как включить системные Push
+                        </button>
+                    </div>
+                `;
+            }
+            if (mapBellLabel) mapBellLabel.textContent = 'Oznámení';
+            if (btnMapBell) btnMapBell.style.borderColor = 'var(--border-color)';
+        } else {
+            if (badge) { badge.textContent = 'Nekonfigurováno'; badge.className = 'badge-status status-warning'; }
+            if (actionsBox) {
+                actionsBox.innerHTML = `
+                    <button type="button" class="btn-primary" onclick="requestPushNotificationPermission()" style="padding: 0.45rem 0.85rem; font-size: 0.82rem; font-weight: 700;">
+                        🔔 Aktivovat PUSH oznámení
+                    </button>
+                `;
+            }
+            if (mapBellLabel) mapBellLabel.textContent = 'Aktivovat PUSH';
+            if (btnMapBell) btnMapBell.style.borderColor = '#f97316';
+        }
+    }
+
+    function detectAndTriggerMachinePushNotifications(machines) {
+        if (!Array.isArray(machines)) return;
+        if (!previousMachinesCacheMap) {
+            previousMachinesCacheMap = {};
+            machines.forEach(m => {
+                if (m && m.id) {
+                    previousMachinesCacheMap[m.id] = {
+                        status: m.status || 'ok',
+                        standbyReason: m.standbyReason || ''
+                    };
+                }
+            });
+            return;
+        }
+
+        machines.forEach(m => {
+            if (!m || !m.id) return;
+            const prev = previousMachinesCacheMap[m.id];
+            const newStatus = m.status || 'ok';
+            const newReason = m.standbyReason || '';
+            const num = m.number || String(m.id);
+
+            if (prev) {
+                const statusChanged = (prev.status !== newStatus);
+                const reasonChanged = (newStatus === 'standby' && prev.standbyReason !== newReason && newReason !== '');
+
+                if (statusChanged || reasonChanged) {
+                    let title = `ADIS • LIS ${num}`;
+                    let body = '';
+                    let icon = '🔔';
+
+                    if (newStatus === 'error') {
+                        title = `🔴 LIS ${num}: ODSTAVENO / ZÁVADA`;
+                        body = `Lis был остановлен. Требуется вмешательство сервиса!`;
+                        icon = '🔴';
+                        triggerHapticFeedback([100, 50, 100, 50, 150]);
+                    } else if (newStatus === 'warning') {
+                        title = `i LIS ${num}: V CHODU S PROBLÉMY`;
+                        body = `Lis vykazuje nedostatky nebo vyžaduje plánovaný servis.`;
+                        icon = '🟧';
+                        triggerHapticFeedback([40, 30, 40]);
+                    } else if (newStatus === 'standby') {
+                        title = `⚪ LIS ${num}: STOJÍ (${newReason || 'Technologická odstávka'})`;
+                        body = `Důvod odstávky: ${newReason || 'Příprava / Čekání'}`;
+                        icon = '⚪';
+                    } else if (newStatus === 'ok') {
+                        title = `🟢 LIS ${num}: V CHODU / V POŘÁDKU`;
+                        body = `Lis je zpět v полноценном рабочем такте.`;
+                        icon = '🟢';
+                    }
+
+                    showToast(`${icon} ${title}`);
+                    sendWebPushNotification(title, body, `mach-${num}`);
+                }
+            }
+
+            previousMachinesCacheMap[m.id] = {
+                status: newStatus,
+                standbyReason: newReason
+            };
+        });
+    }
 
     function applyFactoryMachinesData(newMachinesArray) {
         if (!Array.isArray(newMachinesArray) || newMachinesArray.length === 0) return;
@@ -16863,6 +17081,8 @@ Return strictly valid JSON only without markdown formatting with this schema:
                 issues: Array.isArray(existing?.issues) ? existing.issues : []
             };
         });
+
+        detectAndTriggerMachinePushNotifications(factoryMachinesData);
 
         try {
             localStorage.setItem(FACTORY_MACHINES_STORAGE_KEY, JSON.stringify(factoryMachinesData));
@@ -16995,6 +17215,7 @@ Return strictly valid JSON only without markdown formatting with this schema:
             scrollArea.scrollTop = 0;
         }
         renderGraphicFactoryMap();
+        updatePushNotificationUI();
         syncFactoryMachinesFromDb();
     }
 
