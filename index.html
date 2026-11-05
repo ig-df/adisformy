@@ -2310,65 +2310,46 @@
         .pos-h { background-color: #9a3412 !important; color: #ffffff !important; }
         .pos-externi { background-color: #7c2d12 !important; color: #ffffff !important; }
 
-        /* Jemný pulzující stav V Nástrojárně ve stylu badge-position */
-        @keyframes pulse-nastrojarna-subtle {
-            0%, 100% {
-                box-shadow: 0 1px 2px rgba(15, 23, 42, 0.08), 0 0 0 0 rgba(220, 38, 38, 0.45);
-            }
-            50% {
-                box-shadow: 0 1px 3px rgba(15, 23, 42, 0.12), 0 0 0 4px rgba(220, 38, 38, 0);
-            }
-        }
-
-        @keyframes pulse-dot-soft {
-            0%, 100% { opacity: 1; transform: scale(1); }
-            50% { opacity: 0.35; transform: scale(0.8); }
-        }
-
+        /* Klidný, čistý stav V Nástrojárně bez rušivé pulzace - velikost sjednocena s badge-position a tag-customer */
         .pos-nastrojarna {
             background-color: #dc2626 !important;
             color: #ffffff !important;
             border: 1px solid #b91c1c !important;
             display: inline-flex !important;
             align-items: center !important;
-            gap: 0.32rem !important;
+            justify-content: center !important;
             font-family: inherit !important;
-            letter-spacing: 0.015em !important;
+            letter-spacing: 0.02em !important;
             text-transform: none !important;
-            animation: pulse-nastrojarna-subtle 2.2s infinite ease-in-out;
+            box-shadow: 0 1px 2px rgba(15, 23, 42, 0.06) !important;
+            animation: none !important;
         }
 
         .pos-nastrojarna .pulse-dot-red,
         .tag-nastrojarna .pulse-dot-red {
-            width: 6px;
-            height: 6px;
-            border-radius: 50%;
-            background-color: #ffffff;
-            box-shadow: 0 0 3px rgba(255, 255, 255, 0.9);
-            animation: pulse-dot-soft 1.4s infinite ease-in-out;
-            display: inline-block;
-            flex-shrink: 0;
+            display: none !important;
         }
 
         .tag-nastrojarna {
             display: inline-flex;
             align-items: center;
-            gap: 0.3rem;
-            padding: 0.18rem 0.45rem;
-            font-size: 0.72rem;
-            font-weight: 600;
+            justify-content: center;
+            padding: 0.28rem 0.55rem;
+            font-size: 0.78rem;
+            font-weight: 700;
             border-radius: 6px;
             color: #ffffff !important;
             background-color: #dc2626 !important;
             border: 1px solid #b91c1c !important;
             white-space: nowrap;
-            letter-spacing: normal;
+            letter-spacing: 0.02em;
             text-transform: none !important;
-            animation: pulse-nastrojarna-subtle 2.2s infinite ease-in-out;
+            box-shadow: 0 1px 2px rgba(15, 23, 42, 0.06);
             user-select: none;
             -webkit-user-select: none;
-            line-height: 1.2;
+            line-height: 1.25;
             cursor: pointer;
+            animation: none !important;
         }
 
         .comments-section {
@@ -4617,11 +4598,11 @@
             background: #94a3b8;
         }
 
-        /* Průmyslový technický výkres lisovny - digitální dvojče optimalizované pro 17"+ displeje */
+        /* Průmyslový technický výkres lisovny - digitální dvojče optimalizované pro 17"+ displeje (+10% rozvržení) */
         .factory-monochrome-canvas {
             background-color: #f1f5f9; /* Světle šedá průmyslová epoxidová podlaha */
             width: 100%;
-            max-width: 1200px;
+            max-width: 1320px;
             min-width: 860px;
             height: auto;
             min-height: 0;
@@ -4629,7 +4610,7 @@
             border-radius: 9px;
             box-shadow: 0 1px 3px rgba(15, 23, 42, 0.04), 0 8px 24px -4px rgba(15, 23, 42, 0.08);
             position: relative;
-            padding: 0.30rem 0.85rem;
+            padding: 0.35rem 0.95rem;
             margin: auto;
             box-sizing: border-box;
             display: flex;
@@ -4642,14 +4623,14 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 10px;
-            padding: 0.1rem 0.5rem;
+            gap: 12px;
+            padding: 0.15rem 0.5rem;
             margin: 0;
             user-select: none;
             background: transparent;
             border: none;
             flex-shrink: 0;
-            height: 18px;
+            height: 20px;
         }
 
         .factory-cross-way.bottom {
@@ -4673,8 +4654,8 @@
         /* 5-sloupcová síť (3 sloupce strojů + 2 žluté dopravní koridory se šipkami) */
         .factory-layout-grid {
             display: grid;
-            grid-template-columns: 1fr 26px 1fr 26px 1fr;
-            gap: 0.45rem;
+            grid-template-columns: 1fr 28px 1fr 28px 1fr;
+            gap: 0.5rem;
             align-items: stretch;
             flex: 1;
             min-height: 0;
@@ -4742,16 +4723,16 @@
             writing-mode: vertical-rl;
             text-orientation: mixed;
             transform: rotate(180deg);
-            font-size: 0.68rem;
+            font-size: 0.70rem;
             font-weight: 800;
-            letter-spacing: 0.06em;
+            letter-spacing: 0.07em;
             color: #475569;
             background: #f1f5f9;
-            padding: 4px 2px;
+            padding: 5px 2px;
             border-radius: 4px;
             border: 1px solid #cbd5e1;
             white-space: nowrap;
-            margin: 4px 0;
+            margin: 5px 0;
             flex-shrink: 0;
         }
 
@@ -4789,9 +4770,9 @@
 
         .factory-staging-zone {
             flex-shrink: 0;
-            height: 240px;
-            min-height: 220px;
-            max-height: 250px;
+            height: 264px;
+            min-height: 245px;
+            max-height: 275px;
             width: 100%;
             border: 2.5px dashed #ffd000; /* Radiant Sunbeam Yellow */
             border-radius: 8px !important;
@@ -4801,18 +4782,18 @@
             align-items: center;
             justify-content: center;
             position: relative;
-            padding: 10px 8px;
+            padding: 12px 10px;
             box-sizing: border-box;
             text-align: center;
             user-select: none;
             margin-top: auto;
-            margin-bottom: 6px;
-            gap: 6px;
+            margin-bottom: 7px;
+            gap: 7px;
             box-shadow: inset 0 0 20px rgba(255, 208, 0, 0.15);
         }
 
         .staging-zone-label {
-            font-size: 1.05rem;
+            font-size: 1.12rem;
             font-weight: 900;
             color: #0f172a;
             letter-spacing: 0.05em;
@@ -4821,10 +4802,10 @@
         }
 
         .staging-zone-sub {
-            font-size: 0.78rem;
+            font-size: 0.82rem;
             font-weight: 700;
             color: #475569;
-            margin-top: 2px;
+            margin-top: 3px;
             letter-spacing: 0.02em;
         }
 
@@ -4840,13 +4821,13 @@
         .mach-stack {
             display: flex;
             flex-direction: column;
-            gap: 4px;
+            gap: 5px;
             min-height: 0;
         }
 
         /* Průchozí mezery */
         .mach-passage-spacer {
-            min-height: 14px;
+            min-height: 16px;
             flex: 1;
             margin: 0;
             display: flex;
@@ -4854,7 +4835,7 @@
         }
 
         .mach-col-spacer {
-            min-height: 14px;
+            min-height: 16px;
             flex: 1;
             margin: 0;
             display: flex;
@@ -4869,15 +4850,15 @@
             border: 1px solid #cbd5e1;
             border-left: 5px solid #4cae2a; /* Výchozí stav V pořádku - firemní zelená ENGEL */
             border-radius: 6px;
-            height: 48px;
-            min-height: 46px;
-            max-height: 50px;
+            height: 53px;
+            min-height: 50px;
+            max-height: 56px;
             width: 100%;
             margin: 0;
             display: flex;
             flex-direction: column;
             justify-content: space-between;
-            padding: 2.5px 7px;
+            padding: 2.5px 7.5px;
             position: relative;
             cursor: pointer;
             box-shadow: 0 1px 3px rgba(15, 23, 42, 0.06);
@@ -4957,7 +4938,7 @@
             width: 100%;
             min-width: 0;
             gap: 5px;
-            height: 25px;
+            height: 27px;
         }
 
         .mach-num-box {
@@ -4969,8 +4950,8 @@
 
         .mach-status-beacon {
             position: relative;
-            width: 8px;
-            height: 8px;
+            width: 8.5px;
+            height: 8.5px;
             border-radius: 50%;
             display: inline-block;
             flex-shrink: 0;
@@ -5032,7 +5013,7 @@
         }
 
         .mach-num {
-            font-size: 1.18rem;
+            font-size: 1.25rem;
             font-weight: 800;
             font-family: -apple-system, BlinkMacSystemFont, "Inter", "SF Pro Display", "Segoe UI", Roboto, sans-serif;
             font-variant-numeric: tabular-nums;
@@ -5077,8 +5058,8 @@
         }
 
         .mach-cad-silhouette svg {
-            width: 50px;
-            height: 24px;
+            width: 54px;
+            height: 26px;
             display: block;
         }
 
@@ -5097,14 +5078,14 @@
             color: #0f172a;
             border: 1.5px solid #94a3b8;
             border-radius: 5px;
-            font-size: 0.88rem;
+            font-size: 0.92rem;
             font-weight: 800;
             font-family: -apple-system, BlinkMacSystemFont, "Inter", "SF Pro Text", "Segoe UI", Roboto, sans-serif;
             font-variant-numeric: tabular-nums;
             padding: 0 5px;
-            height: 21px;
-            min-width: 28px;
-            max-width: 68px;
+            height: 22px;
+            min-width: 30px;
+            max-width: 70px;
             line-height: 1;
             letter-spacing: -0.01em;
             flex-shrink: 0;
@@ -5116,12 +5097,12 @@
         }
 
         .mach-mold-empty-dash {
-            font-size: 0.88rem;
+            font-size: 0.92rem;
             font-weight: 700;
             color: #cbd5e1;
             line-height: 1;
             padding: 0 4px;
-            min-width: 24px;
+            min-width: 25px;
             text-align: center;
             display: inline-flex;
             justify-content: center;
@@ -5134,15 +5115,15 @@
             align-items: center;
             width: 100%;
             min-width: 0;
-            height: 19px;
-            padding: 1px 0 0 0;
+            height: 21px;
+            padding: 0;
             border-top: 1px solid #f1f5f9;
             overflow: hidden;
             box-sizing: border-box;
         }
 
         .mach-mold-product-name {
-            font-size: 0.67rem;
+            font-size: 0.70rem;
             font-weight: 600;
             color: #334155;
             font-family: -apple-system, BlinkMacSystemFont, "Inter", "SF Pro Text", "Segoe UI", Roboto, sans-serif;
@@ -5423,12 +5404,14 @@
             gap: 4px;
             width: 100%;
             min-width: 0;
+            height: 100%;
             line-height: 1;
         }
 
         .mach-standby-reason-label {
             display: inline-flex;
             align-items: center;
+            justify-content: center;
             font-size: 0.65rem;
             font-weight: 700;
             color: #475569;
@@ -5437,11 +5420,11 @@
             text-overflow: ellipsis;
             background: rgba(100, 116, 139, 0.12);
             border-radius: 3px;
-            padding: 1px 5px;
+            padding: 0 5px;
             height: 16px;
+            line-height: 14px;
             box-sizing: border-box;
-            line-height: 1;
-            border: 1px solid rgba(100, 116, 139, 0.22);
+            border: 1px solid rgba(100, 116, 139, 0.28);
         }
 
         /* Našeptávač forem podle názvu výrobku i čísla formy */
@@ -5877,10 +5860,11 @@
                 align-items: center;
                 width: 100%;
                 min-width: 0;
-                height: 14px;
-                padding-top: 1px;
+                height: 15px;
+                padding: 0;
                 border-top: 1px solid #e2e8f0;
                 overflow: hidden;
+                box-sizing: border-box;
             }
 
             .mach-mold-product-name {
@@ -5912,13 +5896,14 @@
             }
 
             .mach-standby-reason-label {
-                font-size: 0.50rem;
-                padding: 0 3px;
-                height: 12px;
-                line-height: 12px;
+                font-size: 0.48rem;
+                padding: 0 4px;
+                height: 11px;
+                line-height: 9px;
                 border-radius: 2px;
                 max-width: 100%;
                 box-sizing: border-box;
+                border: 1px solid rgba(100, 116, 139, 0.28);
             }
 
             .mach-stack {
