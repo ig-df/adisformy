@@ -5348,7 +5348,7 @@
         @keyframes drawerBlockEntrance {
             0% {
                 opacity: 0;
-                transform: translate3d(0, 10px, 0);
+                transform: translate3d(0, 4px, 0);
             }
             100% {
                 opacity: 1;
@@ -5357,8 +5357,23 @@
         }
 
         .mach-drawer-animated-block {
-            animation: drawerBlockEntrance 0.38s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+            animation: drawerBlockEntrance 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards;
             will-change: transform, opacity;
+        }
+
+        .mach-status-pill-btn {
+            transition: background-color 0.2s cubic-bezier(0.16, 1, 0.3, 1),
+                        border-color 0.2s cubic-bezier(0.16, 1, 0.3, 1),
+                        color 0.2s cubic-bezier(0.16, 1, 0.3, 1),
+                        transform 0.12s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .standby-reason-chip {
+            transition: background-color 0.18s cubic-bezier(0.16, 1, 0.3, 1),
+                        border-color 0.18s cubic-bezier(0.16, 1, 0.3, 1),
+                        color 0.18s cubic-bezier(0.16, 1, 0.3, 1),
+                        box-shadow 0.18s cubic-bezier(0.16, 1, 0.3, 1),
+                        transform 0.1s cubic-bezier(0.16, 1, 0.3, 1);
         }
 
         /* Výběr konkrétního důvodu odstávky (Stojí) */
@@ -6114,12 +6129,198 @@
             gap: 1.15rem;
         }
 
-        .mach-drawer-footer {
-            padding: 0.85rem 1.25rem;
-            border-top: 1px solid #cbd5e1;
+        /* ==========================================================================
+           IOS/ANDROID STYLE UNREAD NOTIFICATION BADGE DOT & POPUP LIST
+           ========================================================================== */
+        .notification-unread-dot {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            width: 9px;
+            height: 9px;
+            background-color: #ef4444;
+            border: 2px solid #ffffff;
+            border-radius: 50%;
+            box-shadow: 0 0 0 1px rgba(239, 68, 68, 0.4);
+            animation: notificationPulse 2.2s ease-in-out infinite;
+            pointer-events: none;
+            z-index: 10;
+        }
+
+        @keyframes notificationPulse {
+            0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7); }
+            70% { transform: scale(1.15); box-shadow: 0 0 0 5px rgba(239, 68, 68, 0); }
+            100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); }
+        }
+
+        .notifications-popover {
+            position: fixed;
+            top: 60px;
+            right: 16px;
+            width: 360px;
+            max-width: calc(100vw - 32px);
+            max-height: 480px;
+            background: #ffffff;
+            border: 1px solid #cbd5e1;
+            border-radius: 14px;
+            box-shadow: 0 12px 32px -4px rgba(15, 23, 42, 0.16), 0 4px 12px -2px rgba(15, 23, 42, 0.08);
+            z-index: 99999;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(-10px) scale(0.97);
+            transition: opacity 0.22s cubic-bezier(0.16, 1, 0.3, 1), transform 0.22s cubic-bezier(0.16, 1, 0.3, 1), visibility 0.22s;
+            will-change: transform, opacity;
+        }
+
+        .notifications-popover.open {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0) scale(1);
+        }
+
+        .notifications-header {
+            padding: 0.85rem 1rem;
+            border-bottom: 1px solid #f1f5f9;
             background: #f8fafc;
             display: flex;
-            justify-content: flex-end;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .notifications-header h4 {
+            font-size: 0.88rem;
+            font-weight: 800;
+            color: #0f172a;
+            display: flex;
+            align-items: center;
+            gap: 0.45rem;
+            letter-spacing: -0.01em;
+            margin: 0;
+        }
+
+        .notifications-clear-btn {
+            font-size: 0.72rem;
+            font-weight: 700;
+            color: #64748b;
+            background: transparent;
+            border: none;
+            cursor: pointer;
+            padding: 0.2rem 0.45rem;
+            border-radius: 6px;
+            transition: all 0.15s ease;
+        }
+
+        .notifications-clear-btn:hover {
+            color: #0f172a;
+            background: #e2e8f0;
+        }
+
+        .notifications-list {
+            flex: 1;
+            overflow-y: auto;
+            padding: 0.5rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.4rem;
+        }
+
+        .notif-item {
+            padding: 0.65rem 0.75rem;
+            border-radius: 10px;
+            border: 1px solid #f1f5f9;
+            background: #ffffff;
+            display: flex;
+            align-items: flex-start;
+            gap: 0.65rem;
+            cursor: pointer;
+            transition: all 0.18s ease;
+            position: relative;
+        }
+
+        .notif-item:hover {
+            background: #f8fafc;
+            border-color: #cbd5e1;
+            transform: translateX(2px);
+        }
+
+        .notif-item.unread {
+            background: #f0f9ff;
+            border-color: #bae6fd;
+        }
+
+        .notif-status-indicator {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            margin-top: 5px;
+            flex-shrink: 0;
+        }
+
+        .notif-status-indicator.ok { background-color: #22c55e; box-shadow: 0 0 6px rgba(34, 197, 94, 0.4); }
+        .notif-status-indicator.warning { background-color: #f97316; box-shadow: 0 0 6px rgba(249, 115, 22, 0.4); }
+        .notif-status-indicator.error { background-color: #ef4444; box-shadow: 0 0 6px rgba(239, 68, 68, 0.4); }
+        .notif-status-indicator.standby { background-color: #64748b; }
+
+        .notif-content {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .notif-top {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 0.5rem;
+            margin-bottom: 0.15rem;
+        }
+
+        .notif-machine-title {
+            font-size: 0.8rem;
+            font-weight: 800;
+            color: #0f172a;
+        }
+
+        .notif-time {
+            font-size: 0.68rem;
+            font-weight: 600;
+            color: #94a3b8;
+            font-variant-numeric: tabular-nums;
+        }
+
+        .notif-body {
+            font-size: 0.74rem;
+            color: #475569;
+            font-weight: 500;
+            line-height: 1.35;
+        }
+
+        .notif-status-badge {
+            display: inline-block;
+            font-size: 0.68rem;
+            font-weight: 700;
+            padding: 0.1rem 0.4rem;
+            border-radius: 4px;
+            margin-top: 0.25rem;
+        }
+
+        .notif-status-badge.ok { background: #f0fdf4; color: #15803d; border: 1px solid #bbf7d0; }
+        .notif-status-badge.warning { background: #fff7ed; color: #c2410c; border: 1px solid #fed7aa; }
+        .notif-status-badge.error { background: #fef2f2; color: #b91c1c; border: 1px solid #fecaca; }
+        .notif-status-badge.standby { background: #f8fafc; color: #334155; border: 1px solid #e2e8f0; }
+
+        .notifications-empty {
+            padding: 2.5rem 1rem;
+            text-align: center;
+            color: #94a3b8;
+            font-size: 0.78rem;
+            font-weight: 600;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.5rem;
         }
 
         </style>
@@ -6184,7 +6385,6 @@
                     <polyline points="7 10 12 15 17 10"></polyline>
                     <line x1="12" y1="15" x2="12" y2="3"></line>
                 </svg>
-            </button>
             <button class="top-icon-btn" tabindex="0" onclick="openFactoryMapPage()" title="Schéma lisovny a strojů" id="btnHeaderFactoryMap">
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="color: var(--text-main);">
                     <polygon points="3 6 9 3 15 6 21 3 21 18 15 21 9 18 3 21"></polygon>
@@ -7357,7 +7557,14 @@
             </div>
         </div>
 
-        <div class="factory-map-actions">
+        <div class="factory-map-actions" style="display: flex; align-items: center; gap: 0.55rem;">
+            <button class="top-icon-btn" tabindex="0" onclick="toggleNotificationsPanel(event)" title="Oznámení lisu" id="btnFactoryMapNotifications" style="position: relative; background: #ffffff; border: 1px solid rgba(15, 23, 42, 0.15); box-shadow: 0 1px 3px rgba(0,0,0,0.08); border-radius: 9px; width: 34px; height: 34px; display: inline-flex; align-items: center; justify-content: center; cursor: pointer;">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M12 2.75C8.82436 2.75 6.25 5.32436 6.25 8.5V11.8891C6.25 12.6515 5.94056 13.3813 5.39121 13.9103L4.29811 14.9628C3.47352 15.7567 4.03607 17.15 5.17066 17.15H18.8293C19.9639 17.15 20.5265 15.7567 19.7019 14.9628L18.6088 13.9103C18.0594 13.3813 17.75 12.6515 17.75 11.8891V8.5C17.75 5.32436 15.1756 2.75 12 2.75Z" fill="#0f172a" stroke="#0f172a" stroke-width="0.5"/>
+                    <path d="M9.75 19.25C9.75 20.4926 10.7574 21.5 12 21.5C13.2426 21.5 14.25 20.4926 14.25 19.25" stroke="#0f172a" stroke-width="2" stroke-linecap="round"/>
+                </svg>
+                <span id="notificationsMapBadge" class="notification-unread-dot" style="display: none;"></span>
+            </button>
             <span class="factory-map-badge" id="factoryMapStatsBadge">29 LISŮ • 0 ZÁVAD</span>
         </div>
     </div>
@@ -7636,7 +7843,15 @@
                         </svg>
                         <span>Prázdná násypka / Nestíhá nasávat</span>
                     </button>
-                    <button type="button" class="standby-reason-chip chip-wide" onclick="setMachineStandbyReason('Není obsluha')" data-reason="Není obsluha" title="Není obsluha / operátor (lis je v pořádku, ale chybí pracovník)">
+                    <button type="button" class="standby-reason-chip" onclick="setMachineStandbyReason('Není zakázka')" data-reason="Není zakázka" title="Pro stroj v tuto chvíli není přidělena zakázka">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"></path>
+                            <polyline points="14 2 14 8 20 8"></polyline>
+                            <line x1="3" y1="3" x2="21" y2="21"></line>
+                        </svg>
+                        <span>Není zakázka</span>
+                    </button>
+                    <button type="button" class="standby-reason-chip" onclick="setMachineStandbyReason('Není obsluha')" data-reason="Není obsluha" title="Není obsluha / operátor (lis je v pořádku, ale chybí pracovník)">
                         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
                             <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path>
                             <circle cx="9" cy="7" r="4"></circle>
@@ -7684,11 +7899,6 @@
                     <!-- Dynamicky generováno -->
                 </div>
             </div>
-        </div>
-
-        <div class="mach-drawer-footer">
-            <button type="button" class="btn-secondary" onclick="closeMachineDrawer()">Zavřít</button>
-        </div>
     </div>
 </div>
 
@@ -16852,8 +17062,16 @@ Return strictly valid JSON only without markdown formatting with this schema:
 
     let isSyncingFactoryMachines = false;
 
+    let lastAppliedFactoryMachinesHash = '';
     function applyFactoryMachinesData(newMachinesArray) {
         if (!Array.isArray(newMachinesArray) || newMachinesArray.length === 0) return;
+        
+        const newHash = JSON.stringify(newMachinesArray);
+        if (newHash === lastAppliedFactoryMachinesHash) {
+            return;
+        }
+        lastAppliedFactoryMachinesHash = newHash;
+
         const incomingMap = {};
         newMachinesArray.forEach(item => {
             if (item && item.id) {
@@ -16980,7 +17198,207 @@ Return strictly valid JSON only without markdown formatting with this schema:
 
         saveFactoryMachinesState(false);
         syncFactoryMachinesFromDb();
+        initMachineNotifications();
     }
+
+    // ==========================================================================
+    // VNITROPROGRAMOVÁ OZNÁMENÍ LISOVNY (iOS/Android Bell System)
+    // ==========================================================================
+    const NOTIFICATIONS_STORAGE_KEY = 'adis_machine_notifications_v2';
+    let machineNotificationsList = [];
+
+    function saveNotificationsState() {
+        try {
+            localStorage.setItem(NOTIFICATIONS_STORAGE_KEY, JSON.stringify(machineNotificationsList));
+        } catch (e) {
+            console.error('Chyba ukládání oznámení:', e);
+        }
+    }
+
+    function initMachineNotifications() {
+        try {
+            const saved = localStorage.getItem(NOTIFICATIONS_STORAGE_KEY);
+            if (saved) {
+                machineNotificationsList = JSON.parse(saved);
+            } else {
+                machineNotificationsList = [];
+            }
+        } catch (e) {
+            machineNotificationsList = [];
+        }
+
+        if (!Array.isArray(machineNotificationsList)) {
+            machineNotificationsList = [];
+        }
+
+        updateNotificationsBadgeUI();
+        renderNotificationsListUI();
+    }
+
+    function addMachineNotification(machine, status, messageText) {
+        if (!machine) return;
+        const cleanNum = String(machine.number || '').replace('#', '').trim();
+        const cleanTitle = cleanNum ? `Lis ${cleanNum}` : 'Lis';
+
+        let statusCzech = 'V pořádku';
+        if (status === 'warning') statusCzech = 'V chodu s problémy';
+        else if (status === 'error') statusCzech = 'Odstaveno / Závada';
+        else if (status === 'standby') statusCzech = `Stojí (${machine.standbyReason || 'Technologická odstávka'})`;
+
+        const now = new Date();
+        const timeStr = now.toLocaleTimeString('cs-CZ', { hour: '2-digit', minute: '2-digit' });
+
+        const newNotif = {
+            id: 'notif_' + Date.now() + '_' + Math.floor(Math.random() * 1000),
+            machineId: machine.id,
+            machineNumber: cleanNum,
+            title: cleanTitle,
+            status: status,
+            statusLabel: statusCzech,
+            message: messageText || `Změna stavu: ${statusCzech}`,
+            timestamp: timeStr,
+            createdAt: now.toISOString(),
+            read: false
+        };
+
+        machineNotificationsList.unshift(newNotif);
+        if (machineNotificationsList.length > 50) {
+            machineNotificationsList = machineNotificationsList.slice(0, 50);
+        }
+
+        saveNotificationsState();
+        updateNotificationsBadgeUI();
+        renderNotificationsListUI();
+    }
+
+    function updateNotificationsBadgeUI() {
+        const hasUnread = (machineNotificationsList || []).some(n => !n.read);
+        const headerBadge = document.getElementById('notificationsHeaderBadge');
+        const mapBadge = document.getElementById('notificationsMapBadge');
+
+        if (headerBadge) headerBadge.style.display = hasUnread ? 'block' : 'none';
+        if (mapBadge) mapBadge.style.display = hasUnread ? 'block' : 'none';
+    }
+
+    function toggleNotificationsPanel(event) {
+        if (event) {
+            event.stopPropagation();
+            event.preventDefault();
+        }
+        const panel = document.getElementById('notificationsPopover');
+        if (!panel) return;
+
+        const isOpen = panel.classList.contains('open');
+        if (isOpen) {
+            closeNotificationsPanel();
+        } else {
+            openNotificationsPanel();
+        }
+    }
+
+    function openNotificationsPanel() {
+        const panel = document.getElementById('notificationsPopover');
+        if (!panel) return;
+        triggerHapticFeedback([10]);
+
+        panel.classList.add('open');
+        markAllNotificationsAsRead();
+    }
+
+    function closeNotificationsPanel() {
+        const panel = document.getElementById('notificationsPopover');
+        if (panel) {
+            panel.classList.remove('open');
+        }
+    }
+
+    function markAllNotificationsAsRead() {
+        let changed = false;
+        (machineNotificationsList || []).forEach(n => {
+            if (!n.read) {
+                n.read = true;
+                changed = true;
+            }
+        });
+        if (changed) {
+            saveNotificationsState();
+            updateNotificationsBadgeUI();
+            renderNotificationsListUI();
+        }
+    }
+
+    function clearAllNotifications() {
+        triggerHapticFeedback([15]);
+        machineNotificationsList = [];
+        saveNotificationsState();
+        updateNotificationsBadgeUI();
+        renderNotificationsListUI();
+        showToast('Oznámení vymazána');
+    }
+
+    function renderNotificationsListUI() {
+        const listEl = document.getElementById('notificationsListContainer');
+        if (!listEl) return;
+
+        if (!machineNotificationsList || machineNotificationsList.length === 0) {
+            listEl.innerHTML = `
+                <div class="notifications-empty">
+                    <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#cbd5e1" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
+                        <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
+                    </svg>
+                    <span>V lisovně nejsou žádná nová oznámení</span>
+                </div>
+            `;
+            return;
+        }
+
+        listEl.innerHTML = machineNotificationsList.map(n => {
+            const stClass = n.status || 'ok';
+            const cleanTitle = escapeHtml(n.title || (n.machineNumber ? `Lis ${n.machineNumber}` : 'Lis'));
+            return `
+                <div class="notif-item ${n.read ? '' : 'unread'}" onclick="handleNotificationItemClick('${n.machineId}')">
+                    <span class="notif-status-indicator ${stClass}"></span>
+                    <div class="notif-content">
+                        <div class="notif-top">
+                            <span class="notif-machine-title">${cleanTitle}</span>
+                            <span class="notif-time">${escapeHtml(n.timestamp || '')}</span>
+                        </div>
+                        <div class="notif-body">${escapeHtml(n.message || '')}</div>
+                        <span class="notif-status-badge ${stClass}">${escapeHtml(n.statusLabel || '')}</span>
+                    </div>
+                </div>
+            `;
+        }).join('');
+    }
+
+    function handleNotificationItemClick(machineId) {
+        closeNotificationsPanel();
+        if (machineId) {
+            openFactoryMapPage();
+            setTimeout(() => {
+                if (typeof openMachineDrawer === 'function') {
+                    openMachineDrawer(machineId);
+                }
+            }, 120);
+        }
+    }
+    const openMachineDrawerById = openMachineDrawer;
+
+    // zavření panelu při kliknutí mimo
+    document.addEventListener('click', function(e) {
+        const panel = document.getElementById('notificationsPopover');
+        if (panel && panel.classList.contains('open')) {
+            const btnHeader = document.getElementById('btnHeaderNotifications');
+            const btnMap = document.getElementById('btnFactoryMapNotifications');
+            
+            if (!panel.contains(e.target) && 
+                (!btnHeader || !btnHeader.contains(e.target)) && 
+                (!btnMap || !btnMap.contains(e.target))) {
+                closeNotificationsPanel();
+            }
+        }
+    });
 
     function saveFactoryMachinesState(shouldSyncToDb = true) {
         try {
@@ -17196,12 +17614,27 @@ Return strictly valid JSON only without markdown formatting with this schema:
         });
     }
 
+    let activeDrawerInitialState = null;
+
     function openMachineDrawer(machineId) {
         triggerHapticFeedback([12]);
-        const machine = factoryMachinesData.find(m => m.id === machineId);
+        const targetStr = String(machineId || '').replace(/^m/i, '').trim();
+        const machine = factoryMachinesData.find(m => 
+            String(m.id) === String(machineId) || 
+            String(m.number) === String(machineId) || 
+            String(m.id) === targetStr || 
+            String(m.number) === targetStr
+        );
         if (!machine) return;
 
-        currentActiveMachineId = machineId;
+        currentActiveMachineId = machine.id;
+
+        // Uložíme počiáteční stav při otevření karty
+        activeDrawerInitialState = {
+            machineId: machine.id,
+            status: machine.status || 'ok',
+            standbyReason: machine.standbyReason || ''
+        };
 
         // Titulek
         const titleEl = document.getElementById('machDrawerTitle') || document.getElementById('machineDetailModalTitle');
@@ -17247,6 +17680,34 @@ Return strictly valid JSON only without markdown formatting with this schema:
     function closeMachineDrawer() {
         triggerHapticFeedback([10]);
         closeMachineMoldSuggestions();
+
+        // По требованию: уведомление генерируется ТОЛЬКО ПРИ ЗАКРЫТИИ КАРТОЧКИ,
+        // если итоговый статус/причина действительно изменились по сравнению с моментом открытия.
+        if (activeDrawerInitialState && currentActiveMachineId && activeDrawerInitialState.machineId === currentActiveMachineId) {
+            const machine = factoryMachinesData.find(m => m.id === currentActiveMachineId);
+            if (machine) {
+                const initStatus = activeDrawerInitialState.status;
+                const initReason = activeDrawerInitialState.standbyReason || '';
+                const finalStatus = machine.status || 'ok';
+                const finalReason = machine.standbyReason || '';
+
+                const statusChanged = (initStatus !== finalStatus);
+                const reasonChanged = (initReason !== finalReason);
+
+                if (statusChanged || reasonChanged) {
+                    let statusCzech = 'V pořádku (v chodu)';
+                    if (finalStatus === 'warning') statusCzech = 'V chodu s problémy';
+                    else if (finalStatus === 'error') statusCzech = 'Odstaveno / Mimo provoz';
+                    else if (finalStatus === 'standby') statusCzech = finalReason ? `Stojí (${finalReason})` : 'Stojí';
+
+                    if (typeof addMachineNotification === 'function') {
+                        addMachineNotification(machine, finalStatus, `Změna stavu: ${statusCzech}`);
+                    }
+                }
+            }
+        }
+        activeDrawerInitialState = null;
+
         const panel = document.getElementById('machDrawerPanel');
         const backdrop = document.getElementById('machDrawerBackdrop');
         if (panel) panel.classList.remove('open');
@@ -17265,11 +17726,12 @@ Return strictly valid JSON only without markdown formatting with this schema:
         const hasIssues = unresolved.length > 0;
         const currentStatus = machine.status || (hasIssues ? 'warning' : 'ok');
 
+        let newHtml = '';
         if (currentStatus === 'error') {
             const count = unresolved.length;
             const issueText = count === 1 ? '1 aktivní závada' : (count >= 2 && count <= 4 ? `${count} aktivní závady` : `${count} aktivních závad`);
-            box.innerHTML = `
-                <div class="mach-drawer-animated-block" style="background: rgba(220, 38, 38, 0.08); border: 1.5px solid #dc2626; border-radius: 7px; padding: 0.45rem 0.75rem; display: flex; align-items: center; justify-content: space-between; gap: 0.5rem;">
+            newHtml = `
+                <div style="background: rgba(220, 38, 38, 0.08); border: 1.5px solid #dc2626; border-radius: 7px; padding: 0.45rem 0.75rem; display: flex; align-items: center; justify-content: space-between; gap: 0.5rem; transition: background-color 0.2s ease, border-color 0.2s ease;">
                     <div style="display: flex; align-items: center; gap: 0.5rem;">
                         <span class="mach-status-pulse-dot dot-error"></span>
                         <div>
@@ -17284,8 +17746,8 @@ Return strictly valid JSON only without markdown formatting with this schema:
         } else if (currentStatus === 'warning') {
             const count = unresolved.length;
             const issueText = count > 0 ? ` • ${count} ${count === 1 ? 'závada k dořešení' : 'závady k dořešení'}` : '';
-            box.innerHTML = `
-                <div class="mach-drawer-animated-block" style="background: rgba(249, 115, 22, 0.1); border: 1.5px solid #f97316; border-radius: 7px; padding: 0.45rem 0.75rem; display: flex; align-items: center; justify-content: space-between; gap: 0.5rem;">
+            newHtml = `
+                <div style="background: rgba(249, 115, 22, 0.1); border: 1.5px solid #f97316; border-radius: 7px; padding: 0.45rem 0.75rem; display: flex; align-items: center; justify-content: space-between; gap: 0.5rem; transition: background-color 0.2s ease, border-color 0.2s ease;">
                     <div style="display: flex; align-items: center; gap: 0.5rem;">
                         <span class="mach-status-pulse-dot dot-warning"></span>
                         <div>
@@ -17298,23 +17760,23 @@ Return strictly valid JSON only without markdown formatting with this schema:
                 </div>
             `;
         } else if (currentStatus === 'standby') {
-            const reason = machine.standbyReason || 'Čekání / Příprava lisu';
-            box.innerHTML = `
-                <div class="mach-drawer-animated-block" style="background: rgba(100, 116, 139, 0.09); border: 1.5px solid #64748b; border-radius: 7px; padding: 0.45rem 0.75rem; display: flex; align-items: center; justify-content: space-between; gap: 0.5rem;">
+            const reasonStr = machine.standbyReason ? `: ${machine.standbyReason.toUpperCase()}` : '';
+            newHtml = `
+                <div style="background: rgba(100, 116, 139, 0.09); border: 1.5px solid #64748b; border-radius: 7px; padding: 0.45rem 0.75rem; display: flex; align-items: center; justify-content: space-between; gap: 0.5rem; transition: background-color 0.2s ease, border-color 0.2s ease;">
                     <div style="display: flex; align-items: center; gap: 0.5rem;">
                         <span class="mach-status-pulse-dot dot-standby"></span>
                         <div>
                             <div style="font-weight: 800; font-size: 0.78rem; color: #334155; letter-spacing: 0.01em;">
-                                STOJÍ: ${escapeHtml(reason.toUpperCase())}
+                                STOJÍ${escapeHtml(reasonStr)}
                             </div>
-                            <div style="font-size: 0.7rem; color: #64748b; font-weight: 600;">Lis dočasně stojí z technologických důvodů — mimo aktivní takt</div>
+                            <div style="font-size: 0.7rem; color: #64748b; font-weight: 600;">${machine.standbyReason ? 'Lis dočasně stojí z technologických důvodů — mimo aktivní takt' : 'Vyberte konkrétní důvod odstávky lisu níže'}</div>
                         </div>
                     </div>
                 </div>
             `;
         } else {
-            box.innerHTML = `
-                <div class="mach-drawer-animated-block" style="background: rgba(34, 197, 94, 0.08); border: 1.5px solid #16a34a; border-radius: 7px; padding: 0.45rem 0.75rem; display: flex; align-items: center; justify-content: space-between; gap: 0.5rem;">
+            newHtml = `
+                <div style="background: rgba(34, 197, 94, 0.08); border: 1.5px solid #16a34a; border-radius: 7px; padding: 0.45rem 0.75rem; display: flex; align-items: center; justify-content: space-between; gap: 0.5rem; transition: background-color 0.2s ease, border-color 0.2s ease;">
                     <div style="display: flex; align-items: center; gap: 0.5rem;">
                         <span class="mach-status-pulse-dot dot-ok"></span>
                         <div>
@@ -17326,6 +17788,10 @@ Return strictly valid JSON only without markdown formatting with this schema:
                     </div>
                 </div>
             `;
+        }
+
+        if (box.innerHTML.trim() !== newHtml.trim()) {
+            box.innerHTML = newHtml;
         }
     }
 
@@ -17353,28 +17819,34 @@ Return strictly valid JSON only without markdown formatting with this schema:
             btnErr.classList.add('active');
         }
 
-        // Zobrazení výběru konkrétního důvodu pouze při stavu "Stojí" (s plynulou animací při každém přepnutí)
+        // Zobrazení výběru konkrétního důvodu pouze při stavu "Stojí" (bez zbytečného přeblikávání)
         if (reasonsContainer) {
             const isStandby = (status === 'standby');
+            const wasVisible = (reasonsContainer.style.display === 'flex');
             if (isStandby) {
                 reasonsContainer.style.display = 'flex';
-                reasonsContainer.classList.remove('mach-drawer-animated-block');
-                void reasonsContainer.offsetWidth; // Force reflow pro spuštění animace
-                reasonsContainer.classList.add('mach-drawer-animated-block');
+                if (!wasVisible) {
+                    reasonsContainer.classList.remove('mach-drawer-animated-block');
+                    void reasonsContainer.offsetWidth;
+                    reasonsContainer.classList.add('mach-drawer-animated-block');
+                }
             } else {
                 reasonsContainer.style.display = 'none';
                 reasonsContainer.classList.remove('mach-drawer-animated-block');
             }
         }
 
-        // Formulář pro zápis nové závady se zobrazuje při stavech "V chodu s problémy" nebo "Odstaveno" (s plynulou animací při každém přepnutí)
+        // Formulář pro zápis nové závady se zobrazuje při stavech "V chodu s problémy" nebo "Odstaveno"
         if (issueFormCard) {
             const shouldShow = (status === 'warning' || status === 'error');
+            const wasVisible = (issueFormCard.style.display === 'flex');
             if (shouldShow) {
                 issueFormCard.style.display = 'flex';
-                issueFormCard.classList.remove('mach-drawer-animated-block');
-                void issueFormCard.offsetWidth; // Force reflow pro spuštění animace
-                issueFormCard.classList.add('mach-drawer-animated-block');
+                if (!wasVisible) {
+                    issueFormCard.classList.remove('mach-drawer-animated-block');
+                    void issueFormCard.offsetWidth;
+                    issueFormCard.classList.add('mach-drawer-animated-block');
+                }
             } else {
                 issueFormCard.style.display = 'none';
                 issueFormCard.classList.remove('mach-drawer-animated-block');
@@ -17405,15 +17877,21 @@ Return strictly valid JSON only without markdown formatting with this schema:
         const machine = factoryMachinesData.find(m => m.id === currentActiveMachineId);
         if (!machine) return;
 
+        const reasonChanged = (machine.standbyReason !== reason);
+        const statusWasStandby = (machine.status === 'standby');
+
         machine.standbyReason = reason;
-        if (machine.status !== 'standby') {
+        if (!statusWasStandby) {
             machine.status = 'standby';
             updateMachineStatusButtonsUI('standby');
+        } else {
+            updateStandbyReasonChipsUI(reason);
         }
+
         saveFactoryMachinesState();
-        updateStandbyReasonChipsUI(reason);
         renderMachineProblemStatusBanner(machine);
         renderGraphicFactoryMap();
+
         showToast(`Důvod odstávky lisu ${machine.number}: ${reason}`);
         logUserAction(machine.number ? `LIS_${machine.number}` : 'LIS', 'Důvod odstávky', `Důvod: ${reason}`);
     }
@@ -17424,18 +17902,20 @@ Return strictly valid JSON only without markdown formatting with this schema:
         const machine = factoryMachinesData.find(m => m.id === currentActiveMachineId);
         if (!machine) return;
 
+        if (machine.status === newStatus && newStatus !== 'standby') {
+            return;
+        }
+
+        const prevStatus = machine.status;
         machine.status = newStatus;
-        if (newStatus === 'standby') {
-            if (!machine.standbyReason) {
-                machine.standbyReason = 'Výměna formy / Temperování';
-            }
-        } else {
-            // Při přechodu do chodu nebo jiného provozního stavu se technologický důvod odstávky ukončí a vrátí se název výrobku
+        if (newStatus !== 'standby') {
             machine.standbyReason = '';
         }
+
         saveFactoryMachinesState();
         updateMachineStatusButtonsUI(newStatus);
         renderMachineProblemStatusBanner(machine);
+
         const headerIconBadge = document.getElementById('machDrawerIconBadge');
         if (headerIconBadge) {
             const bColor = newStatus === 'standby' ? '#64748b' : (newStatus === 'warning' ? '#f97316' : (newStatus === 'error' ? '#dc2626' : '#4cae2a'));
@@ -17870,6 +18350,11 @@ Return strictly valid JSON only without markdown formatting with this schema:
 
         showToast('Závada byla zaznamenána do knihy lisu');
         logUserAction(`LIS_${machine.number}`, 'Závada lisu', `Závada lisu č. ${machine.number} (${priority === 'critical' ? 'Kritická' : 'Běžná'}): ${text}`);
+
+        if (typeof addMachineNotification === 'function') {
+            const notifSt = priority === 'critical' ? 'error' : 'warning';
+            addMachineNotification(machine, notifSt, `Nahlášena závada (${priority === 'critical' ? 'Kritická' : 'Běžná'}): ${text}`);
+        }
     }
 
     function toggleMachineIssueResolved(issueId) {
@@ -18035,9 +18520,29 @@ Return strictly valid JSON only without markdown formatting with this schema:
             }
         }
     }
-
     // Initialize button visibility
     updatePwaInstallButtonVisibility();
 </script>
+
+<!-- Výsuvný popover внутрипрограммных уведомлений (iOS/Android style bell drawer) -->
+<div class="notifications-popover" id="notificationsPopover">
+    <div class="notifications-header">
+        <h4>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M12 2.75C8.82436 2.75 6.25 5.32436 6.25 8.5V11.8891C6.25 12.6515 5.94056 13.3813 5.39121 13.9103L4.29811 14.9628C3.47352 15.7567 4.03607 17.15 5.17066 17.15H18.8293C19.9639 17.15 20.5265 15.7567 19.7019 14.9628L18.6088 13.9103C18.0594 13.3813 17.75 12.6515 17.75 11.8891V8.5C17.75 5.32436 15.1756 2.75 12 2.75Z" fill="#0f172a" stroke="#0f172a" stroke-width="0.5"/>
+                <path d="M9.75 19.25C9.75 20.4926 10.7574 21.5 12 21.5C13.2426 21.5 14.25 20.4926 14.25 19.25" stroke="#0f172a" stroke-width="2" stroke-linecap="round"/>
+            </svg>
+            <span>Oznámení lisovny</span>
+        </h4>
+        <div style="display: flex; align-items: center; gap: 0.3rem;">
+            <button class="notifications-clear-btn" onclick="clearAllNotifications()">Smazat vše</button>
+            <button class="notifications-clear-btn" onclick="closeNotificationsPanel()" style="font-weight: 900; padding: 0.2rem 0.4rem;">✕</button>
+        </div>
+    </div>
+    <div class="notifications-list" id="notificationsListContainer">
+        <!-- JS dynamicky generovaný obsah -->
+    </div>
+</div>
+
 </body>
 </html>
