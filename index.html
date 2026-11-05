@@ -7343,7 +7343,7 @@
                         </span>
                     </div>
                     <div style="font-size: 0.74rem; color: var(--text-muted); line-height: 1.4; margin-bottom: 0.6rem;">
-                        Dostávejte okamžitá фоновая нотификации при изменении статусов 29 лисов (Odstaveno, Stojí, V chodu s problémy). Браузер запрашивает разрешение только при нажатии на кнопку.
+                        Získejte okamžitá systémová oznámení při změně stavu 29 lisů (Odstaveno, Stojí, V chodu s problémy). Prohlížeč požádá o povolení pouze po kliknutí na tlačítko.
                     </div>
                     <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;" id="pushNotificationActionsBox">
                         <button type="button" class="btn-primary" onclick="requestPushNotificationPermission()" style="padding: 0.45rem 0.85rem; font-size: 0.82rem; font-weight: 700;">
@@ -7356,6 +7356,33 @@
         </div>
         <div class="modal-footer">
             <button class="btn-secondary" onclick="closeHeliosAdminModal()">Zavřít</button>
+        </div>
+    </div>
+</div>
+
+<!-- Modal: Historie oznámení lisovny -->
+<div class="modal-backdrop" id="notificationHistoryModal" onclick="if(event.target===this)closeNotificationHistoryModal()">
+    <div class="modal-card" style="max-width: 520px; width: 92%;">
+        <div class="modal-header" style="padding: 0.85rem 1rem;">
+            <h3 style="font-size: 0.95rem; font-weight: 800; display: flex; align-items: center; gap: 0.4rem; color: var(--text-main);">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M12 8v4l3 3"></path>
+                    <circle cx="12" cy="12" r="9"></circle>
+                </svg>
+                Historie oznámení lisovny
+            </h3>
+            <button class="close-modal-btn" onclick="closeNotificationHistoryModal()">✕</button>
+        </div>
+        <div class="modal-body" style="padding: 0.85rem 1rem; gap: 0.5rem; max-height: 60vh; overflow-y: auto;" id="notificationHistoryContainer">
+            <!-- Dynamic notification history cards -->
+        </div>
+        <div class="modal-footer" style="padding: 0.75rem 1rem; display: flex; justify-content: space-between; align-items: center;">
+            <button type="button" class="btn-secondary" onclick="clearNotificationHistory()" style="color: #dc2626; border-color: #fecdd3; font-size: 0.78rem; font-weight: 600;">
+                🗑️ Vymazat historii
+            </button>
+            <button type="button" class="btn-secondary" onclick="closeNotificationHistoryModal()" style="font-size: 0.82rem; font-weight: 600;">
+                Zavřít
+            </button>
         </div>
     </div>
 </div>
@@ -7380,12 +7407,12 @@
         </div>
 
         <div class="factory-map-actions" style="display: flex; align-items: center; gap: 0.5rem;">
-            <button type="button" class="btn-secondary" id="btnMapNotificationToggle" onclick="requestPushNotificationPermission()" title="Nastavení PUSH oznámení lisovny" style="padding: 0.32rem 0.65rem; font-size: 0.76rem; font-weight: 600; display: inline-flex; align-items: center; gap: 0.35rem; border-radius: 6px;">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <button type="button" class="btn-secondary" id="btnMapNotificationToggle" onclick="openNotificationHistoryModal()" title="Historie oznámení lisovny" style="padding: 0.38rem 0.52rem; display: inline-flex; align-items: center; justify-content: center; border-radius: 6px; position: relative;">
+                <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
                     <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
                     <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
                 </svg>
-                <span id="mapBellLabel">PUSH oznámení</span>
+                <span id="notifHistoryCountBadge" style="display: none; position: absolute; top: 1px; right: 1px; width: 8px; height: 8px; background: #dc2626; border-radius: 50%; box-shadow: 0 0 0 2px var(--card-bg);"></span>
             </button>
             <span class="factory-map-badge" id="factoryMapStatsBadge">29 LISŮ • 0 ZÁVAD</span>
         </div>
@@ -8086,6 +8113,8 @@
             closeClearLogsModal();
         } else if (modalId === 'heliosAdminModal') {
             closeHeliosAdminModal();
+        } else if (modalId === 'notificationHistoryModal') {
+            closeNotificationHistoryModal();
         } else if (modalId === 'userActivityModal') {
             closeUserActivityModal();
         } else if (modalId === 'loginModal') {
@@ -16882,8 +16911,136 @@ Return strictly valid JSON only without markdown formatting with this schema:
 
     let isSyncingFactoryMachines = false;
     let previousMachinesCacheMap = null;
+    const NOTIFICATION_HISTORY_KEY = 'adis_notifications_history_v1';
+
+    function getNotificationHistory() {
+        try {
+            const raw = localStorage.getItem(NOTIFICATION_HISTORY_KEY);
+            return raw ? JSON.parse(raw) : [];
+        } catch (e) {
+            return [];
+        }
+    }
+
+    function addNotificationToHistory(item) {
+        let history = getNotificationHistory();
+        history.unshift({
+            id: Date.now(),
+            timestamp: new Date().toISOString(),
+            timeStr: new Date().toLocaleTimeString('cs-CZ', { hour: '2-digit', minute: '2-digit' }),
+            dateStr: new Date().toLocaleDateString('cs-CZ', { day: '2-digit', month: '2-digit' }),
+            title: item.title,
+            body: item.body,
+            status: item.status,
+            icon: item.icon,
+            machineNum: item.machineNum
+        });
+
+        if (history.length > 60) {
+            history = history.slice(0, 60);
+        }
+
+        try {
+            localStorage.setItem(NOTIFICATION_HISTORY_KEY, JSON.stringify(history));
+            localStorage.setItem('adis_unread_notifications', 'true');
+        } catch (e) {}
+
+        updateNotificationHistoryBadge();
+    }
+
+    function updateNotificationHistoryBadge() {
+        const badge = document.getElementById('notifHistoryCountBadge');
+        const hasUnread = localStorage.getItem('adis_unread_notifications') === 'true';
+        if (badge) {
+            badge.style.display = hasUnread ? 'block' : 'none';
+        }
+    }
+
+    function openNotificationHistoryModal() {
+        triggerHapticFeedback([12]);
+        try {
+            localStorage.setItem('adis_unread_notifications', 'false');
+        } catch (e) {}
+        updateNotificationHistoryBadge();
+        renderNotificationHistoryList();
+        showModalAnimated('notificationHistoryModal');
+    }
+
+    function closeNotificationHistoryModal() {
+        hideModalAnimated('notificationHistoryModal');
+    }
+
+    function clearNotificationHistory() {
+        if (!confirm('Opravdu chcete vymazat historii oznámení?')) return;
+        localStorage.removeItem(NOTIFICATION_HISTORY_KEY);
+        renderNotificationHistoryList();
+        updateNotificationHistoryBadge();
+        showToast('Historie oznámení byla vymazána');
+    }
+
+    function renderNotificationHistoryList() {
+        const container = document.getElementById('notificationHistoryContainer');
+        if (!container) return;
+
+        const history = getNotificationHistory();
+        if (history.length === 0) {
+            container.innerHTML = `
+                <div style="text-align: center; padding: 2rem 1rem; color: var(--text-muted); font-size: 0.85rem;">
+                    <div style="font-size: 1.8rem; margin-bottom: 0.4rem;">🔕</div>
+                    Žádná zaznamenaná oznámení v historii.
+                </div>
+            `;
+            return;
+        }
+
+        container.innerHTML = history.map(item => {
+            let bgColor = 'var(--row-hover)';
+            let borderColor = 'var(--border-color)';
+            let titleColor = 'var(--text-main)';
+
+            if (item.status === 'error') {
+                bgColor = 'rgba(220, 38, 38, 0.06)';
+                borderColor = 'rgba(220, 38, 38, 0.25)';
+                titleColor = '#b91c1c';
+            } else if (item.status === 'warning') {
+                bgColor = 'rgba(249, 115, 22, 0.07)';
+                borderColor = 'rgba(249, 115, 22, 0.25)';
+                titleColor = '#c2410c';
+            } else if (item.status === 'standby') {
+                bgColor = 'rgba(100, 116, 139, 0.08)';
+                borderColor = 'rgba(100, 116, 139, 0.25)';
+                titleColor = '#334155';
+            } else if (item.status === 'ok') {
+                bgColor = 'rgba(34, 197, 94, 0.06)';
+                borderColor = 'rgba(34, 197, 94, 0.22)';
+                titleColor = '#15803d';
+            }
+
+            return `
+                <div style="background: ${bgColor}; border: 1px solid ${borderColor}; border-radius: 8px; padding: 0.55rem 0.75rem; display: flex; flex-direction: column; gap: 0.2rem;">
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <span style="font-size: 0.78rem; font-weight: 700; color: ${titleColor}; display: flex; align-items: center; gap: 0.35rem;">
+                            <span>${item.icon || '🔔'}</span>
+                            <span>${escapeHtml(item.title)}</span>
+                        </span>
+                        <span style="font-size: 0.68rem; color: var(--text-muted); font-variant-numeric: tabular-nums;">
+                            ${escapeHtml(item.dateStr)} • ${escapeHtml(item.timeStr)}
+                        </span>
+                    </div>
+                    ${item.body ? `<div style="font-size: 0.72rem; color: var(--text-muted); font-weight: 500; margin-left: 1.3rem;">${escapeHtml(item.body)}</div>` : ''}
+                </div>
+            `;
+        }).join('');
+    }
+
+    function isPushNotificationEnabled() {
+        return localStorage.getItem('adis_push_enabled') !== 'false';
+    }
 
     function sendWebPushNotification(title, body, tag = 'adis-mach') {
+        // System PUSH is restricted to superuser test mode
+        if (!isSuperUser) return;
+        if (!isPushNotificationEnabled()) return;
         if (typeof window === 'undefined' || !('Notification' in window)) return;
         if (Notification.permission !== 'granted') return;
 
@@ -16909,92 +17066,131 @@ Return strictly valid JSON only without markdown formatting with this schema:
         }
     }
 
-    async function requestPushNotificationPermission() {
+    async function togglePushNotificationPermission() {
         if (typeof window === 'undefined' || !('Notification' in window)) {
-            showToast('Tento prohlížeč nepodporuje PUSH oznámení. In-app notifikace fungují v aplikaci.', true);
+            showToast('Tento prohlížeč nepodporuje PUSH oznámení.', true);
             return;
         }
 
-        if (Notification.permission === 'granted') {
-            showToast('PUSH oznámení jsou aktivní 👍');
-            sendWebPushNotification('ADIS Lisovna', 'Testovací PUSH oznámení: Notifikace lisovny fungují v pořádku!');
+        const perm = Notification.permission;
+
+        if (perm === 'granted') {
+            const currentEnabled = isPushNotificationEnabled();
+            if (currentEnabled) {
+                localStorage.setItem('adis_push_enabled', 'false');
+                showToast('Systémová PUSH oznámení vypnuta 🔕');
+            } else {
+                localStorage.setItem('adis_push_enabled', 'true');
+                showToast('Systémová PUSH oznámení zapnuta 🔔');
+                sendWebPushNotification('ADIS Lisovna', 'PUSH oznámení jsou aktivní.');
+            }
             updatePushNotificationUI();
             return;
         }
 
-        if (Notification.permission === 'denied') {
-            showToast('Внутри приложения уведомления активны! Для системных Push откройте сайт в отдельной вкладке и разрешите уведомления в браузере 🔒', true);
+        if (perm === 'denied') {
+            showToast('V aplikaci jsou notifikace aktivní. Pro systémové Push povolte oznámení v prohlížeči 🔒', true);
             updatePushNotificationUI();
             return;
         }
 
         try {
-            const perm = await Notification.requestPermission();
-            if (perm === 'granted') {
-                showToast('PUSH oznámení byla úspěšně povolena! 🎉');
-                sendWebPushNotification('ADIS Lisovna', 'Oznámení byla aktivována. Budete dostávat živá upozornění o stavech lisů.');
-            } else if (perm === 'denied') {
-                showToast('Oznámení byla zamítnuta v nastavení prohlížeče. In-App нотификации продолжают работать.', true);
+            const requestedPerm = await Notification.requestPermission();
+            if (requestedPerm === 'granted') {
+                localStorage.setItem('adis_push_enabled', 'true');
+                showToast('PUSH oznámení byla úspěšně aktivována! 🎉');
+                sendWebPushNotification('ADIS Lisovna', 'Oznámení aktivní.');
+            } else if (requestedPerm === 'denied') {
+                showToast('Oznámení byla zamítnuta v prohlížeči', true);
             }
         } catch (e) {
             console.error('Push notification permission error:', e);
-            showToast('Внутри приложения уведомления активны! Для Push откройте сайт в отдельной вкладке.');
         }
         updatePushNotificationUI();
+    }
+
+    async function requestPushNotificationPermission() {
+        return togglePushNotificationPermission();
     }
 
     function updatePushNotificationUI() {
         const badge = document.getElementById('pushNotificationStatusBadge');
         const actionsBox = document.getElementById('pushNotificationActionsBox');
-        const mapBellLabel = document.getElementById('mapBellLabel');
         const btnMapBell = document.getElementById('btnMapNotificationToggle');
+
+        const activeBellSvg = `<svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#16a34a" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></svg>`;
+        const mutedBellSvg = `<svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#dc2626" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M13.73 21a2 2 0 0 1-3.46 0"></path><path d="M18.63 13A17.89 17.89 0 0 1 18 8"></path><path d="M6.26 6.26A5.86 5.86 0 0 0 6 8c0 7-3 9-3 9h14"></path><path d="M18 8a6 6 0 0 0-9.33-5"></path><line x1="1" y1="1" x2="23" y2="23"></line></svg>`;
+        const neutralBellSvg = `<svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#64748b" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></svg>`;
 
         if (typeof window === 'undefined' || !('Notification' in window)) {
             if (badge) { badge.textContent = 'In-App (Aplikace)'; badge.className = 'badge-status status-ok'; }
-            if (actionsBox) actionsBox.innerHTML = `<span style="font-size: 0.75rem; color: var(--text-muted);">In-app notifikace jsou aktivní v aplikaci. System PUSH nepodporován.</span>`;
-            if (mapBellLabel) mapBellLabel.textContent = 'Oznámení (In-App)';
+            if (actionsBox) actionsBox.innerHTML = `<span style="font-size: 0.75rem; color: var(--text-muted);">In-app notifikace aktivní. System PUSH nepodporován.</span>`;
+            if (btnMapBell) {
+                btnMapBell.innerHTML = mutedBellSvg;
+                btnMapBell.title = 'System PUSH notifikace nejsou podporovány prohlížečem';
+            }
             return;
         }
 
         const perm = Notification.permission;
-        if (perm === 'granted') {
+        const enabled = isPushNotificationEnabled();
+
+        if (perm === 'granted' && enabled) {
             if (badge) { badge.textContent = 'Aktivní (System PUSH)'; badge.className = 'badge-status status-ok'; }
             if (actionsBox) {
                 actionsBox.innerHTML = `
-                    <button type="button" class="btn-secondary" onclick="requestPushNotificationPermission()" style="padding: 0.35rem 0.65rem; font-size: 0.78rem;">
-                        🔔 Odeslat testovací oznámení
+                    <button type="button" class="btn-secondary" onclick="togglePushNotificationPermission()" style="padding: 0.35rem 0.65rem; font-size: 0.78rem;">
+                        🔕 Vypnout PUSH oznámení
                     </button>
                 `;
             }
-            if (mapBellLabel) mapBellLabel.textContent = 'PUSH Aktivní';
-            if (btnMapBell) btnMapBell.style.borderColor = '#16a34a';
-        } else if (perm === 'denied') {
-            if (badge) { badge.textContent = 'In-App Aktivní (System PUSH Blok)'; badge.className = 'badge-status status-warning'; }
+            if (btnMapBell) {
+                btnMapBell.innerHTML = activeBellSvg;
+                btnMapBell.style.borderColor = '#16a34a';
+                btnMapBell.title = 'PUSH oznámení: AKTIVNÍ (Klikněte pro vypnutí)';
+            }
+        } else if (perm === 'granted' && !enabled) {
+            if (badge) { badge.textContent = 'Vypnuto uživatelem'; badge.className = 'badge-status status-warning'; }
             if (actionsBox) {
                 actionsBox.innerHTML = `
-                    <div style="display: flex; flex-direction: column; gap: 0.35rem;">
-                        <span style="font-size: 0.75rem; color: var(--text-muted); font-weight: 500;">
-                            Внутренние уведомления в приложении **активны**. Системные Web Push заблокированы правилами iframe/браузера.
-                        </span>
-                        <button type="button" class="btn-secondary" onclick="requestPushNotificationPermission()" style="padding: 0.35rem 0.65rem; font-size: 0.78rem; align-self: flex-start;">
-                            ℹ️ Как включить системные Push
-                        </button>
-                    </div>
+                    <button type="button" class="btn-primary" onclick="togglePushNotificationPermission()" style="padding: 0.35rem 0.65rem; font-size: 0.78rem;">
+                        🔔 Zapnout PUSH oznámení
+                    </button>
                 `;
             }
-            if (mapBellLabel) mapBellLabel.textContent = 'Oznámení';
-            if (btnMapBell) btnMapBell.style.borderColor = 'var(--border-color)';
+            if (btnMapBell) {
+                btnMapBell.innerHTML = mutedBellSvg;
+                btnMapBell.style.borderColor = '#cbd5e1';
+                btnMapBell.title = 'PUSH oznámení: VYPNUTO (Klikněte pro zapnutí)';
+            }
+        } else if (perm === 'denied') {
+            if (badge) { badge.textContent = 'Zablokováno v prohlížeči'; badge.className = 'badge-status status-error'; }
+            if (actionsBox) {
+                actionsBox.innerHTML = `
+                    <span style="font-size: 0.75rem; color: #dc2626; font-weight: 600;">
+                        Oznámení byla zablokována v nastavení prohlížeče.
+                    </span>
+                `;
+            }
+            if (btnMapBell) {
+                btnMapBell.innerHTML = mutedBellSvg;
+                btnMapBell.style.borderColor = '#dc2626';
+                btnMapBell.title = 'PUSH oznámení: ZABLOKOVÁNO V PROHLÍŽEČI';
+            }
         } else {
             if (badge) { badge.textContent = 'Nekonfigurováno'; badge.className = 'badge-status status-warning'; }
             if (actionsBox) {
                 actionsBox.innerHTML = `
-                    <button type="button" class="btn-primary" onclick="requestPushNotificationPermission()" style="padding: 0.45rem 0.85rem; font-size: 0.82rem; font-weight: 700;">
+                    <button type="button" class="btn-primary" onclick="togglePushNotificationPermission()" style="padding: 0.45rem 0.85rem; font-size: 0.82rem; font-weight: 700;">
                         🔔 Aktivovat PUSH oznámení
                     </button>
                 `;
             }
-            if (mapBellLabel) mapBellLabel.textContent = 'Aktivovat PUSH';
-            if (btnMapBell) btnMapBell.style.borderColor = '#f97316';
+            if (btnMapBell) {
+                btnMapBell.innerHTML = neutralBellSvg;
+                btnMapBell.style.borderColor = '#f97316';
+                btnMapBell.title = 'Klikněte pro aktivaci PUSH oznámení';
+            }
         }
     }
 
@@ -17031,11 +17227,11 @@ Return strictly valid JSON only without markdown formatting with this schema:
 
                     if (newStatus === 'error') {
                         title = `🔴 LIS ${num}: ODSTAVENO / ZÁVADA`;
-                        body = `Lis был остановлен. Требуется вмешательство сервиса!`;
+                        body = `Lis byl odstaven z výroby. Vyžaduje zásah údržby nebo servisu!`;
                         icon = '🔴';
                         triggerHapticFeedback([100, 50, 100, 50, 150]);
                     } else if (newStatus === 'warning') {
-                        title = `i LIS ${num}: V CHODU S PROBLÉMY`;
+                        title = `🟧 LIS ${num}: V CHODU S PROBLÉMY`;
                         body = `Lis vykazuje nedostatky nebo vyžaduje plánovaný servis.`;
                         icon = '🟧';
                         triggerHapticFeedback([40, 30, 40]);
@@ -17045,12 +17241,19 @@ Return strictly valid JSON only without markdown formatting with this schema:
                         icon = '⚪';
                     } else if (newStatus === 'ok') {
                         title = `🟢 LIS ${num}: V CHODU / V POŘÁDKU`;
-                        body = `Lis je zpět v полноценном рабочем такте.`;
+                        body = `Lis je zpět v plně optimálním provozním taktu.`;
                         icon = '🟢';
                     }
 
                     showToast(`${icon} ${title}`);
                     sendWebPushNotification(title, body, `mach-${num}`);
+                    addNotificationToHistory({
+                        title: title,
+                        body: body,
+                        status: newStatus,
+                        icon: icon,
+                        machineNum: num
+                    });
                 }
             }
 
@@ -17216,6 +17419,7 @@ Return strictly valid JSON only without markdown formatting with this schema:
         }
         renderGraphicFactoryMap();
         updatePushNotificationUI();
+        updateNotificationHistoryBadge();
         syncFactoryMachinesFromDb();
     }
 
