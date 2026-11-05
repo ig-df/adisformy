@@ -2278,15 +2278,15 @@
         .action-buttons-group { display: flex; align-items: center; gap: 4px; flex-shrink: 0; }
 
         .badge-position {
-            font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+            font-family: inherit;
             font-variant-numeric: tabular-nums;
             font-feature-settings: "tnum" 1;
-            font-weight: 700;
-            padding: 0.28rem 0.58rem;
-            border-radius: 6px;
-            font-size: 0.8rem;
+            font-weight: 500;
+            padding: 0.22rem 0.52rem;
+            border-radius: 5px;
+            font-size: 0.75rem;
             line-height: 1.25;
-            letter-spacing: 0.035em;
+            letter-spacing: 0.01em;
             white-space: nowrap;
             cursor: pointer;
             display: inline-flex;
@@ -2310,7 +2310,7 @@
         .pos-h { background-color: #9a3412 !important; color: #ffffff !important; }
         .pos-externi { background-color: #7c2d12 !important; color: #ffffff !important; }
 
-        /* Klidný, čistý stav V Nástrojárně bez rušivé pulzace - velikost sjednocena s badge-position a tag-customer */
+        /* Klidný, čistý stav V Nástrojárně bez rušivé pulzace - opticky sjednocený rozmér */
         .pos-nastrojarna {
             background-color: #dc2626 !important;
             color: #ffffff !important;
@@ -2319,10 +2319,15 @@
             align-items: center !important;
             justify-content: center !important;
             font-family: inherit !important;
-            letter-spacing: 0.02em !important;
+            font-size: 0.71rem !important;
+            font-weight: 500 !important;
+            padding: 0.22rem 0.48rem !important;
+            border-radius: 5px !important;
+            letter-spacing: 0.01em !important;
             text-transform: none !important;
             box-shadow: 0 1px 2px rgba(15, 23, 42, 0.06) !important;
             animation: none !important;
+            line-height: 1.25 !important;
         }
 
         .pos-nastrojarna .pulse-dot-red,
@@ -2334,15 +2339,15 @@
             display: inline-flex;
             align-items: center;
             justify-content: center;
-            padding: 0.28rem 0.55rem;
-            font-size: 0.78rem;
-            font-weight: 700;
-            border-radius: 6px;
+            padding: 0.22rem 0.48rem;
+            font-size: 0.71rem;
+            font-weight: 500;
+            border-radius: 5px;
             color: #ffffff !important;
             background-color: #dc2626 !important;
             border: 1px solid #b91c1c !important;
             white-space: nowrap;
-            letter-spacing: 0.02em;
+            letter-spacing: 0.01em;
             text-transform: none !important;
             box-shadow: 0 1px 2px rgba(15, 23, 42, 0.06);
             user-select: none;
@@ -5339,6 +5344,23 @@
             font-weight: 700;
         }
 
+        /* Plynulá animace objevení bloků ve štorce lisu */
+        @keyframes drawerBlockEntrance {
+            0% {
+                opacity: 0;
+                transform: translate3d(0, 6px, 0) scale(0.985);
+            }
+            100% {
+                opacity: 1;
+                transform: translate3d(0, 0, 0) scale(1);
+            }
+        }
+
+        .mach-drawer-animated-block {
+            animation: drawerBlockEntrance 0.22s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+            will-change: transform, opacity;
+        }
+
         /* Výběr konkrétního důvodu odstávky (Stojí) */
         .standby-reasons-grid {
             display: grid;
@@ -5350,6 +5372,10 @@
             .standby-reasons-grid {
                 grid-template-columns: 1fr;
             }
+        }
+
+        .standby-reason-chip.chip-wide {
+            grid-column: 1 / -1;
         }
 
         .standby-reason-chip {
@@ -7535,49 +7561,6 @@
                         <span>Odstaveno</span>
                     </button>
                 </div>
-                <!-- Konkrétní důvod odstávky pro stav "Stojí" (výběr 1 kliknutím, monochromatické ikony) -->
-                <div id="machineStandbyReasonsContainer" style="display: none; flex-direction: column; gap: 0.35rem; background: var(--row-hover); border: 1px solid var(--border-color); border-radius: 8px; padding: 0.55rem 0.65rem; transition: all 0.2s ease;">
-                    <div style="display: flex; justify-content: space-between; align-items: center;">
-                        <span style="font-size: 0.72rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.03em; color: var(--text-muted);">
-                            Důvod odstávky lisu:
-                        </span>
-                        <span style="font-size: 0.68rem; color: #64748b; font-weight: 500;">(výběr 1 kliknutím)</span>
-                    </div>
-                    <div class="standby-reasons-grid">
-                        <button type="button" class="standby-reason-chip" onclick="setMachineStandbyReason('Výměna formy / Temperování')" data-reason="Výměna formy / Temperování" title="Výměna formy nebo temperování formy">
-                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-                                <path d="M21 2v6h-6"></path>
-                                <path d="M3 12a9 9 0 0 1 15-6.7L21 8"></path>
-                                <path d="M3 22v-6h6"></path>
-                                <path d="M21 12a9 9 0 0 1-15 6.7L3 16"></path>
-                            </svg>
-                            <span>Výměna formy / Temperování</span>
-                        </button>
-                        <button type="button" class="standby-reason-chip" onclick="setMachineStandbyReason('Sušení materiálu')" data-reason="Sušení materiálu" title="Sušení granulátu / materiálu">
-                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                <path d="M7 4c0 2-2 3-2 5s2 3 2 5"></path>
-                                <path d="M12 2c0 2.5-2 3.8-2 6.5s2 3.8 2 6.5"></path>
-                                <path d="M17 4c0 2-2 3-2 5s2 3 2 5"></path>
-                                <path d="M4 19h16"></path>
-                                <path d="M6 22h12"></path>
-                            </svg>
-                            <span>Sušení materiálu</span>
-                        </button>
-                        <button type="button" class="standby-reason-chip" onclick="setMachineStandbyReason('Není materiál')" data-reason="Není materiál" title="Materiál není k dispozici">
-                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-                                <line x1="2" y1="2" x2="22" y2="22"></line>
-                                <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path>
-                            </svg>
-                            <span>Není materiál</span>
-                        </button>
-                        <button type="button" class="standby-reason-chip" onclick="setMachineStandbyReason('Prázdná násypka / Nestíhá nasávat')" data-reason="Prázdná násypka / Nestíhá nasávat" title="Prázdná násypka nebo podtlakové nasávání nestíhá">
-                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-                                <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"></polygon>
-                            </svg>
-                            <span>Prázdná násypka / Nestíhá nasávat</span>
-                        </button>
-                    </div>
-                </div>
             </div>
 
             <!-- 2. Forma v lisu (zadání čísla formy nebo názvu výrobku s našeptávačem) -->
@@ -7612,8 +7595,83 @@
                 <div id="machineMoldProductPreview" style="display: none;"></div>
             </div>
 
-            <!-- 3. Kniha závad a servisní chat -->
-            <div style="display: flex; flex-direction: column; gap: 0.6rem;">
+            <!-- 3. Konkrétní důvod odstávky pro stav "Stojí" (výběr 1 kliknutím pod blokem formy) -->
+            <div id="machineStandbyReasonsContainer" style="display: none; flex-direction: column; gap: 0.35rem; background: var(--row-hover); border: 1px solid var(--border-color); border-radius: 8px; padding: 0.55rem 0.65rem;">
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <span style="font-size: 0.72rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.03em; color: var(--text-muted);">
+                        Důvod odstávky lisu:
+                    </span>
+                    <span style="font-size: 0.68rem; color: #64748b; font-weight: 500;">(výběr 1 kliknutím)</span>
+                </div>
+                <div class="standby-reasons-grid">
+                    <button type="button" class="standby-reason-chip" onclick="setMachineStandbyReason('Výměna formy / Temperování')" data-reason="Výměna formy / Temperování" title="Výměna formy nebo temperování formy">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M21 2v6h-6"></path>
+                            <path d="M3 12a9 9 0 0 1 15-6.7L21 8"></path>
+                            <path d="M3 22v-6h6"></path>
+                            <path d="M21 12a9 9 0 0 1-15 6.7L3 16"></path>
+                        </svg>
+                        <span>Výměna formy / Temperování</span>
+                    </button>
+                    <button type="button" class="standby-reason-chip" onclick="setMachineStandbyReason('Sušení materiálu')" data-reason="Sušení materiálu" title="Sušení granulátu / materiálu">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M7 4c0 2-2 3-2 5s2 3 2 5"></path>
+                            <path d="M12 2c0 2.5-2 3.8-2 6.5s2 3.8 2 6.5"></path>
+                            <path d="M17 4c0 2-2 3-2 5s2 3 2 5"></path>
+                            <path d="M4 19h16"></path>
+                            <path d="M6 22h12"></path>
+                        </svg>
+                        <span>Sušení materiálu</span>
+                    </button>
+                    <button type="button" class="standby-reason-chip" onclick="setMachineStandbyReason('Není materiál')" data-reason="Není materiál" title="Materiál není k dispozici">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                            <line x1="2" y1="2" x2="22" y2="22"></line>
+                            <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path>
+                        </svg>
+                        <span>Není materiál</span>
+                    </button>
+                    <button type="button" class="standby-reason-chip" onclick="setMachineStandbyReason('Prázdná násypka / Nestíhá nasávat')" data-reason="Prázdná násypka / Nestíhá nasávat" title="Prázdná násypka nebo podtlakové nasávání nestíhá">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                            <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"></polygon>
+                        </svg>
+                        <span>Prázdná násypka / Nestíhá nasávat</span>
+                    </button>
+                    <button type="button" class="standby-reason-chip chip-wide" onclick="setMachineStandbyReason('Není obsluha')" data-reason="Není obsluha" title="Není obsluha / operátor (lis je v pořádku, ale chybí pracovník)">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path>
+                            <circle cx="9" cy="7" r="4"></circle>
+                            <line x1="17" y1="8" x2="22" y2="13"></line>
+                            <line x1="22" y1="8" x2="17" y2="13"></line>
+                        </svg>
+                        <span>Není obsluha (operátor)</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- 4. Formulář přidání nové závady (zobrazuje se při stavech S problémy nebo Odstaveno) -->
+            <div id="machineNewIssueFormCard" style="background: var(--card-bg); border: 1.5px solid var(--border-color); border-radius: 8px; padding: 0.75rem; display: none; flex-direction: column; gap: 0.5rem;">
+                <div style="font-size: 0.78rem; font-weight: 700; color: var(--text-main);">
+                    + Zapsat novou závadu nebo servisní poznámku:
+                </div>
+                <textarea id="newIssueTextInput" placeholder="Popište zjištěnou závadu, únik oleje, teplotu, poškození..." rows="2" spellcheck="false" autocorrect="off" autocapitalize="none" autocomplete="off" data-gramm="false" data-enable-grammarly="false" style="width: 100%; padding: 0.5rem; font-size: 0.84rem; border: 1px solid var(--border-color); border-radius: 6px; background: var(--input-bg); color: var(--text-main); resize: vertical; box-sizing: border-box;"></textarea>
+                
+                <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.5rem;">
+                    <div style="display: flex; align-items: center; gap: 0.75rem; font-size: 0.76rem; color: var(--text-muted);">
+                        <label style="display: flex; align-items: center; gap: 0.25rem; cursor: pointer;">
+                            <input type="radio" name="issuePriority" value="normal" checked> Běžná
+                        </label>
+                        <label style="display: flex; align-items: center; gap: 0.25rem; cursor: pointer; color: #dc2626; font-weight: 700;">
+                            <input type="radio" name="issuePriority" value="critical"> ⚠️ Kritická
+                        </label>
+                    </div>
+                    <button type="button" class="btn-primary" onclick="addNewMachineIssue()" style="padding: 0.45rem 0.9rem; font-size: 0.82rem;">
+                        Přidat záznam
+                    </button>
+                </div>
+            </div>
+
+            <!-- 5. Kniha závad a servisní chat (Vždy v nejspodnější části šторки lisu) -->
+            <div style="display: flex; flex-direction: column; gap: 0.6rem; margin-top: 0.2rem;">
                 <div style="display: flex; justify-content: space-between; align-items: center;">
                     <label style="font-size: 0.8rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.03em; color: var(--text-main); display: flex; align-items: center; gap: 0.4rem;">
                         <span>Kniha závad & servisní chat</span>
@@ -7624,28 +7682,6 @@
                 <!-- Seznam závad -->
                 <div id="machineIssuesList" style="display: flex; flex-direction: column; gap: 0.5rem; max-height: 220px; overflow-y: auto; padding-right: 2px;">
                     <!-- Dynamicky generováno -->
-                </div>
-
-                <!-- Formulář přidání nové závady -->
-                <div id="machineNewIssueFormCard" style="background: var(--card-bg); border: 1.5px solid var(--border-color); border-radius: 8px; padding: 0.75rem; display: none; flex-direction: column; gap: 0.5rem; transition: all 0.2s ease;">
-                    <div style="font-size: 0.78rem; font-weight: 700; color: var(--text-main);">
-                        + Zapsat novou závadu nebo servisní poznámku:
-                    </div>
-                    <textarea id="newIssueTextInput" placeholder="Popište zjištěnou závadu, únik oleje, teplotu, poškození..." rows="2" spellcheck="false" autocorrect="off" autocapitalize="none" autocomplete="off" data-gramm="false" data-enable-grammarly="false" style="width: 100%; padding: 0.5rem; font-size: 0.84rem; border: 1px solid var(--border-color); border-radius: 6px; background: var(--input-bg); color: var(--text-main); resize: vertical; box-sizing: border-box;"></textarea>
-                    
-                    <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.5rem;">
-                        <div style="display: flex; align-items: center; gap: 0.75rem; font-size: 0.76rem; color: var(--text-muted);">
-                            <label style="display: flex; align-items: center; gap: 0.25rem; cursor: pointer;">
-                                <input type="radio" name="issuePriority" value="normal" checked> Běžná
-                            </label>
-                            <label style="display: flex; align-items: center; gap: 0.25rem; cursor: pointer; color: #dc2626; font-weight: 700;">
-                                <input type="radio" name="issuePriority" value="critical"> ⚠️ Kritická
-                            </label>
-                        </div>
-                        <button type="button" class="btn-primary" onclick="addNewMachineIssue()" style="padding: 0.45rem 0.9rem; font-size: 0.82rem;">
-                            Přidat záznam
-                        </button>
-                    </div>
                 </div>
             </div>
         </div>
@@ -17224,7 +17260,7 @@ Return strictly valid JSON only without markdown formatting with this schema:
             const count = unresolved.length;
             const issueText = count === 1 ? '1 aktivní závada' : (count >= 2 && count <= 4 ? `${count} aktivní závady` : `${count} aktivních závad`);
             box.innerHTML = `
-                <div style="background: rgba(220, 38, 38, 0.08); border: 1.5px solid #dc2626; border-radius: 7px; padding: 0.45rem 0.75rem; display: flex; align-items: center; justify-content: space-between; gap: 0.5rem;">
+                <div class="mach-drawer-animated-block" style="background: rgba(220, 38, 38, 0.08); border: 1.5px solid #dc2626; border-radius: 7px; padding: 0.45rem 0.75rem; display: flex; align-items: center; justify-content: space-between; gap: 0.5rem;">
                     <div style="display: flex; align-items: center; gap: 0.5rem;">
                         <span class="mach-status-pulse-dot dot-error"></span>
                         <div>
@@ -17240,7 +17276,7 @@ Return strictly valid JSON only without markdown formatting with this schema:
             const count = unresolved.length;
             const issueText = count > 0 ? ` • ${count} ${count === 1 ? 'závada k dořešení' : 'závady k dořešení'}` : '';
             box.innerHTML = `
-                <div style="background: rgba(249, 115, 22, 0.1); border: 1.5px solid #f97316; border-radius: 7px; padding: 0.45rem 0.75rem; display: flex; align-items: center; justify-content: space-between; gap: 0.5rem;">
+                <div class="mach-drawer-animated-block" style="background: rgba(249, 115, 22, 0.1); border: 1.5px solid #f97316; border-radius: 7px; padding: 0.45rem 0.75rem; display: flex; align-items: center; justify-content: space-between; gap: 0.5rem;">
                     <div style="display: flex; align-items: center; gap: 0.5rem;">
                         <span class="mach-status-pulse-dot dot-warning"></span>
                         <div>
@@ -17255,7 +17291,7 @@ Return strictly valid JSON only without markdown formatting with this schema:
         } else if (currentStatus === 'standby') {
             const reason = machine.standbyReason || 'Čekání / Příprava lisu';
             box.innerHTML = `
-                <div style="background: rgba(100, 116, 139, 0.09); border: 1.5px solid #64748b; border-radius: 7px; padding: 0.45rem 0.75rem; display: flex; align-items: center; justify-content: space-between; gap: 0.5rem;">
+                <div class="mach-drawer-animated-block" style="background: rgba(100, 116, 139, 0.09); border: 1.5px solid #64748b; border-radius: 7px; padding: 0.45rem 0.75rem; display: flex; align-items: center; justify-content: space-between; gap: 0.5rem;">
                     <div style="display: flex; align-items: center; gap: 0.5rem;">
                         <span class="mach-status-pulse-dot dot-standby"></span>
                         <div>
@@ -17269,7 +17305,7 @@ Return strictly valid JSON only without markdown formatting with this schema:
             `;
         } else {
             box.innerHTML = `
-                <div style="background: rgba(34, 197, 94, 0.08); border: 1.5px solid #16a34a; border-radius: 7px; padding: 0.45rem 0.75rem; display: flex; align-items: center; justify-content: space-between; gap: 0.5rem;">
+                <div class="mach-drawer-animated-block" style="background: rgba(34, 197, 94, 0.08); border: 1.5px solid #16a34a; border-radius: 7px; padding: 0.45rem 0.75rem; display: flex; align-items: center; justify-content: space-between; gap: 0.5rem;">
                     <div style="display: flex; align-items: center; gap: 0.5rem;">
                         <span class="mach-status-pulse-dot dot-ok"></span>
                         <div>
@@ -17308,15 +17344,36 @@ Return strictly valid JSON only without markdown formatting with this schema:
             btnErr.classList.add('active');
         }
 
-        // Zobrazení výběru konkrétního důvodu pouze při stavu "Stojí"
+        // Zobrazení výběru konkrétního důvodu pouze při stavu "Stojí" (s plynulou animací)
         if (reasonsContainer) {
-            reasonsContainer.style.display = (status === 'standby') ? 'flex' : 'none';
+            const isStandby = (status === 'standby');
+            if (isStandby) {
+                if (reasonsContainer.style.display !== 'flex') {
+                    reasonsContainer.style.display = 'flex';
+                    reasonsContainer.classList.remove('mach-drawer-animated-block');
+                    void reasonsContainer.offsetWidth; // Force reflow pro spuštění animace
+                    reasonsContainer.classList.add('mach-drawer-animated-block');
+                }
+            } else {
+                reasonsContainer.style.display = 'none';
+                reasonsContainer.classList.remove('mach-drawer-animated-block');
+            }
         }
 
-        // Formulář pro zápis nové závady se zobrazuje pouze při stavech "V chodu s problémy" nebo "Odstaveno"
+        // Formulář pro zápis nové závady se zobrazuje pouze při stavech "V chodu s problémy" nebo "Odstaveno" (s plynulou animací)
         if (issueFormCard) {
             const shouldShow = (status === 'warning' || status === 'error');
-            issueFormCard.style.display = shouldShow ? 'flex' : 'none';
+            if (shouldShow) {
+                if (issueFormCard.style.display !== 'flex') {
+                    issueFormCard.style.display = 'flex';
+                    issueFormCard.classList.remove('mach-drawer-animated-block');
+                    void issueFormCard.offsetWidth; // Force reflow pro spuštění animace
+                    issueFormCard.classList.add('mach-drawer-animated-block');
+                }
+            } else {
+                issueFormCard.style.display = 'none';
+                issueFormCard.classList.remove('mach-drawer-animated-block');
+            }
         }
 
         if (currentActiveMachineId) {
