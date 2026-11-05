@@ -4592,7 +4592,7 @@
             min-height: 0;
             overflow-y: auto;
             overflow-x: auto;
-            padding: 0.75rem 1rem;
+            padding: 0.35rem 0.75rem;
             display: flex;
             justify-content: center;
             align-items: flex-start;
@@ -4617,19 +4617,19 @@
             background: #94a3b8;
         }
 
-        /* Průmyslový technický výkres lisovny - digitální dvojče s průmyslovou podlahou přizpůsobené výšce (zvětšeno o 50% pro PC) */
+        /* Průmyslový technický výkres lisovny - digitální dvojče optimalizované pro 17"+ displeje */
         .factory-monochrome-canvas {
             background-color: #f1f5f9; /* Světle šedá průmyslová epoxidová podlaha */
             width: 100%;
-            max-width: 1240px;
+            max-width: 1200px;
             min-width: 860px;
             height: auto;
             min-height: 0;
             border: 1.5px solid #cbd5e1;
-            border-radius: 10px;
+            border-radius: 9px;
             box-shadow: 0 1px 3px rgba(15, 23, 42, 0.04), 0 8px 24px -4px rgba(15, 23, 42, 0.08);
             position: relative;
-            padding: 0.45rem 1rem;
+            padding: 0.30rem 0.85rem;
             margin: auto;
             box-sizing: border-box;
             display: flex;
@@ -4642,14 +4642,14 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 12px;
-            padding: 0.2rem 0.5rem;
+            gap: 10px;
+            padding: 0.1rem 0.5rem;
             margin: 0;
             user-select: none;
             background: transparent;
             border: none;
             flex-shrink: 0;
-            height: 24px;
+            height: 18px;
         }
 
         .factory-cross-way.bottom {
@@ -4673,8 +4673,8 @@
         /* 5-sloupcová síť (3 sloupce strojů + 2 žluté dopravní koridory se šipkami) */
         .factory-layout-grid {
             display: grid;
-            grid-template-columns: 1fr 28px 1fr 28px 1fr;
-            gap: 0.6rem;
+            grid-template-columns: 1fr 26px 1fr 26px 1fr;
+            gap: 0.45rem;
             align-items: stretch;
             flex: 1;
             min-height: 0;
@@ -4742,16 +4742,16 @@
             writing-mode: vertical-rl;
             text-orientation: mixed;
             transform: rotate(180deg);
-            font-size: 0.72rem;
+            font-size: 0.68rem;
             font-weight: 800;
-            letter-spacing: 0.08em;
+            letter-spacing: 0.06em;
             color: #475569;
             background: #f1f5f9;
-            padding: 6px 3px;
+            padding: 4px 2px;
             border-radius: 4px;
             border: 1px solid #cbd5e1;
             white-space: nowrap;
-            margin: 6px 0;
+            margin: 4px 0;
             flex-shrink: 0;
         }
 
@@ -4789,11 +4789,11 @@
 
         .factory-staging-zone {
             flex-shrink: 0;
-            height: 275px;
-            min-height: 275px;
-            max-height: 275px;
+            height: 240px;
+            min-height: 220px;
+            max-height: 250px;
             width: 100%;
-            border: 3px dashed #ffd000; /* Radiant Sunbeam Yellow */
+            border: 2.5px dashed #ffd000; /* Radiant Sunbeam Yellow */
             border-radius: 8px !important;
             background: rgba(255, 210, 0, 0.28); /* Radiant Sunbeam Yellow */
             display: flex;
@@ -4801,30 +4801,30 @@
             align-items: center;
             justify-content: center;
             position: relative;
-            padding: 14px 12px;
+            padding: 10px 8px;
             box-sizing: border-box;
             text-align: center;
             user-select: none;
             margin-top: auto;
-            margin-bottom: 8px;
-            gap: 8px;
+            margin-bottom: 6px;
+            gap: 6px;
             box-shadow: inset 0 0 20px rgba(255, 208, 0, 0.15);
         }
 
         .staging-zone-label {
-            font-size: 1.15rem;
+            font-size: 1.05rem;
             font-weight: 900;
             color: #0f172a;
-            letter-spacing: 0.06em;
+            letter-spacing: 0.05em;
             text-transform: uppercase;
-            line-height: 1.25;
+            line-height: 1.2;
         }
 
         .staging-zone-sub {
-            font-size: 0.82rem;
+            font-size: 0.78rem;
             font-weight: 700;
             color: #475569;
-            margin-top: 3px;
+            margin-top: 2px;
             letter-spacing: 0.02em;
         }
 
@@ -4840,13 +4840,13 @@
         .mach-stack {
             display: flex;
             flex-direction: column;
-            gap: 6px;
+            gap: 4px;
             min-height: 0;
         }
 
         /* Průchozí mezery */
         .mach-passage-spacer {
-            min-height: 20px;
+            min-height: 14px;
             flex: 1;
             margin: 0;
             display: flex;
@@ -4854,7 +4854,7 @@
         }
 
         .mach-col-spacer {
-            min-height: 20px;
+            min-height: 14px;
             flex: 1;
             margin: 0;
             display: flex;
@@ -4867,17 +4867,17 @@
         .mach-sketch {
             background-color: #ffffff;
             border: 1px solid #cbd5e1;
-            border-left: 6px solid #4cae2a; /* Výchozí stav V pořádku - firemní zelená ENGEL */
-            border-radius: 7px;
-            height: 56px;
-            min-height: 52px;
-            max-height: 60px;
+            border-left: 5px solid #4cae2a; /* Výchozí stav V pořádku - firemní zelená ENGEL */
+            border-radius: 6px;
+            height: 48px;
+            min-height: 46px;
+            max-height: 50px;
             width: 100%;
             margin: 0;
             display: flex;
             flex-direction: column;
             justify-content: space-between;
-            padding: 3px 8px;
+            padding: 2.5px 7px;
             position: relative;
             cursor: pointer;
             box-shadow: 0 1px 3px rgba(15, 23, 42, 0.06);
@@ -4956,21 +4956,21 @@
             justify-content: space-between;
             width: 100%;
             min-width: 0;
-            gap: 6px;
-            height: 30px;
+            gap: 5px;
+            height: 25px;
         }
 
         .mach-num-box {
             display: inline-flex;
             align-items: center;
-            gap: 6px;
+            gap: 5px;
             flex-shrink: 0;
         }
 
         .mach-status-beacon {
             position: relative;
-            width: 9px;
-            height: 9px;
+            width: 8px;
+            height: 8px;
             border-radius: 50%;
             display: inline-block;
             flex-shrink: 0;
@@ -5032,7 +5032,7 @@
         }
 
         .mach-num {
-            font-size: 1.32rem;
+            font-size: 1.18rem;
             font-weight: 800;
             font-family: -apple-system, BlinkMacSystemFont, "Inter", "SF Pro Display", "Segoe UI", Roboto, sans-serif;
             font-variant-numeric: tabular-nums;
@@ -5047,7 +5047,7 @@
             display: inline-flex;
             align-items: center;
             justify-content: center;
-            gap: 6px;
+            gap: 5px;
             min-width: 0;
             flex: 1 1 auto;
             overflow: hidden;
@@ -5073,12 +5073,12 @@
             justify-content: center;
             flex-shrink: 0;
             pointer-events: none;
-            filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.1));
+            filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.08));
         }
 
         .mach-cad-silhouette svg {
-            width: 58px;
-            height: 28px;
+            width: 50px;
+            height: 24px;
             display: block;
         }
 
@@ -5097,14 +5097,14 @@
             color: #0f172a;
             border: 1.5px solid #94a3b8;
             border-radius: 5px;
-            font-size: 0.95rem;
+            font-size: 0.88rem;
             font-weight: 800;
             font-family: -apple-system, BlinkMacSystemFont, "Inter", "SF Pro Text", "Segoe UI", Roboto, sans-serif;
             font-variant-numeric: tabular-nums;
-            padding: 0 6px;
-            height: 24px;
-            min-width: 32px;
-            max-width: 72px;
+            padding: 0 5px;
+            height: 21px;
+            min-width: 28px;
+            max-width: 68px;
             line-height: 1;
             letter-spacing: -0.01em;
             flex-shrink: 0;
@@ -5116,12 +5116,12 @@
         }
 
         .mach-mold-empty-dash {
-            font-size: 0.95rem;
+            font-size: 0.88rem;
             font-weight: 700;
             color: #cbd5e1;
             line-height: 1;
             padding: 0 4px;
-            min-width: 26px;
+            min-width: 24px;
             text-align: center;
             display: inline-flex;
             justify-content: center;
@@ -5134,7 +5134,7 @@
             align-items: center;
             width: 100%;
             min-width: 0;
-            height: 22px;
+            height: 19px;
             padding: 1px 0 0 0;
             border-top: 1px solid #f1f5f9;
             overflow: hidden;
@@ -5142,7 +5142,7 @@
         }
 
         .mach-mold-product-name {
-            font-size: 0.72rem;
+            font-size: 0.67rem;
             font-weight: 600;
             color: #334155;
             font-family: -apple-system, BlinkMacSystemFont, "Inter", "SF Pro Text", "Segoe UI", Roboto, sans-serif;
@@ -5429,16 +5429,16 @@
         .mach-standby-reason-label {
             display: inline-flex;
             align-items: center;
-            font-size: 0.69rem;
+            font-size: 0.65rem;
             font-weight: 700;
             color: #475569;
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
             background: rgba(100, 116, 139, 0.12);
-            border-radius: 4px;
-            padding: 2px 6px;
-            height: 18px;
+            border-radius: 3px;
+            padding: 1px 5px;
+            height: 16px;
             box-sizing: border-box;
             line-height: 1;
             border: 1px solid rgba(100, 116, 139, 0.22);
