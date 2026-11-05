@@ -2310,6 +2310,67 @@
         .pos-h { background-color: #9a3412 !important; color: #ffffff !important; }
         .pos-externi { background-color: #7c2d12 !important; color: #ffffff !important; }
 
+        /* Jemný pulzující stav V Nástrojárně ve stylu badge-position */
+        @keyframes pulse-nastrojarna-subtle {
+            0%, 100% {
+                box-shadow: 0 1px 2px rgba(15, 23, 42, 0.08), 0 0 0 0 rgba(220, 38, 38, 0.45);
+            }
+            50% {
+                box-shadow: 0 1px 3px rgba(15, 23, 42, 0.12), 0 0 0 4px rgba(220, 38, 38, 0);
+            }
+        }
+
+        @keyframes pulse-dot-soft {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.35; transform: scale(0.8); }
+        }
+
+        .pos-nastrojarna {
+            background-color: #dc2626 !important;
+            color: #ffffff !important;
+            border: 1px solid #b91c1c !important;
+            display: inline-flex !important;
+            align-items: center !important;
+            gap: 0.32rem !important;
+            font-family: inherit !important;
+            letter-spacing: 0.015em !important;
+            text-transform: none !important;
+            animation: pulse-nastrojarna-subtle 2.2s infinite ease-in-out;
+        }
+
+        .pos-nastrojarna .pulse-dot-red,
+        .tag-nastrojarna .pulse-dot-red {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background-color: #ffffff;
+            box-shadow: 0 0 3px rgba(255, 255, 255, 0.9);
+            animation: pulse-dot-soft 1.4s infinite ease-in-out;
+            display: inline-block;
+            flex-shrink: 0;
+        }
+
+        .tag-nastrojarna {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.3rem;
+            padding: 0.18rem 0.45rem;
+            font-size: 0.72rem;
+            font-weight: 600;
+            border-radius: 6px;
+            color: #ffffff !important;
+            background-color: #dc2626 !important;
+            border: 1px solid #b91c1c !important;
+            white-space: nowrap;
+            letter-spacing: normal;
+            text-transform: none !important;
+            animation: pulse-nastrojarna-subtle 2.2s infinite ease-in-out;
+            user-select: none;
+            -webkit-user-select: none;
+            line-height: 1.2;
+            cursor: pointer;
+        }
+
         .comments-section {
             margin-top: 0.45rem;
             display: flex;
@@ -4529,36 +4590,51 @@
         .factory-map-scroll-area {
             flex: 1;
             min-height: 0;
-            overflow: hidden;
-            padding: 0.25rem 0.5rem;
+            overflow-y: auto;
+            overflow-x: auto;
+            padding: 0.75rem 1rem;
             display: flex;
             justify-content: center;
-            align-items: center;
+            align-items: flex-start;
             background: #e9eef5; /* Světle šedý průmyslový podklad haly */
             position: relative;
             box-sizing: border-box;
         }
 
-        /* Průmyslový technický výkres lisovny - digitální dvojče s průmyslovou podlahou přizpůsobené výšce */
+        .factory-map-scroll-area::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        .factory-map-scroll-area::-webkit-scrollbar-track {
+            background: rgba(15, 23, 42, 0.05);
+            border-radius: 4px;
+        }
+        .factory-map-scroll-area::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 4px;
+        }
+        .factory-map-scroll-area::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+
+        /* Průmyslový technický výkres lisovny - digitální dvojče s průmyslovou podlahou přizpůsobené výšce (zvětšeno o 50% pro PC) */
         .factory-monochrome-canvas {
             background-color: #f1f5f9; /* Světle šedá průmyslová epoxidová podlaha */
             width: 100%;
-            max-width: 820px;
-            min-width: 600px;
-            height: 100%;
-            max-height: 100%;
+            max-width: 1240px;
+            min-width: 860px;
+            height: auto;
             min-height: 0;
             border: 1.5px solid #cbd5e1;
-            border-radius: 8px;
-            box-shadow: 0 1px 3px rgba(15, 23, 42, 0.04), 0 6px 20px -3px rgba(15, 23, 42, 0.07);
+            border-radius: 10px;
+            box-shadow: 0 1px 3px rgba(15, 23, 42, 0.04), 0 8px 24px -4px rgba(15, 23, 42, 0.08);
             position: relative;
-            padding: 0.25rem 0.65rem;
-            margin: 0 auto;
+            padding: 0.45rem 1rem;
+            margin: auto;
             box-sizing: border-box;
             display: flex;
             flex-direction: column;
             justify-content: space-between;
-            overflow: hidden;
         }
 
         /* Horní a spodní spojovací dopravní trasa - Radiant Sunbeam Yellow šтрихпунктир */
@@ -4566,14 +4642,14 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 8px;
-            padding: 0.1rem 0.3rem;
+            gap: 12px;
+            padding: 0.2rem 0.5rem;
             margin: 0;
             user-select: none;
             background: transparent;
             border: none;
             flex-shrink: 0;
-            height: clamp(14px, 2vh, 20px);
+            height: 24px;
         }
 
         .factory-cross-way.bottom {
@@ -4597,8 +4673,8 @@
         /* 5-sloupcová síť (3 sloupce strojů + 2 žluté dopravní koridory se šipkami) */
         .factory-layout-grid {
             display: grid;
-            grid-template-columns: 1fr 20px 1fr 20px 1fr;
-            gap: 0.35rem;
+            grid-template-columns: 1fr 28px 1fr 28px 1fr;
+            gap: 0.6rem;
             align-items: stretch;
             flex: 1;
             min-height: 0;
@@ -4633,7 +4709,7 @@
             align-items: center;
             justify-content: space-between;
             position: relative;
-            padding: 0.1rem 0;
+            padding: 0.15rem 0;
             user-select: none;
             background: transparent;
             border: none;
@@ -4644,9 +4720,9 @@
         .factory-aisle-line {
             flex: 1;
             width: 0;
-            border-left: 2px dashed #ffd000; /* Radiant Sunbeam Yellow */
+            border-left: 2.5px dashed #ffd000; /* Radiant Sunbeam Yellow */
             opacity: 1;
-            min-height: 10px;
+            min-height: 12px;
         }
 
         .factory-aisle-marker {
@@ -4666,16 +4742,16 @@
             writing-mode: vertical-rl;
             text-orientation: mixed;
             transform: rotate(180deg);
-            font-size: 0.6rem;
+            font-size: 0.72rem;
             font-weight: 800;
             letter-spacing: 0.08em;
             color: #475569;
             background: #f1f5f9;
-            padding: 4px 2px;
-            border-radius: 3px;
+            padding: 6px 3px;
+            border-radius: 4px;
             border: 1px solid #cbd5e1;
             white-space: nowrap;
-            margin: 4px 0;
+            margin: 6px 0;
             flex-shrink: 0;
         }
 
@@ -4684,7 +4760,7 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 5px;
+            gap: 6px;
             height: 100%;
             position: relative;
             user-select: none;
@@ -4692,7 +4768,7 @@
 
         .factory-cross-line {
             flex: 1;
-            border-top: 2px dashed #ffd000; /* Radiant Sunbeam Yellow */
+            border-top: 2.5px dashed #ffd000; /* Radiant Sunbeam Yellow */
             opacity: 1;
         }
 
@@ -4700,6 +4776,7 @@
             display: inline-flex;
             filter: drop-shadow(0 0.5px 0.5px rgba(15, 23, 42, 0.06));
             flex-shrink: 0;
+            transform: scale(1.35);
         }
         .factory-yellow-arrow path {
             stroke: #ffbb00 !important; /* Radiant Sunbeam Yellow */
@@ -4712,42 +4789,42 @@
 
         .factory-staging-zone {
             flex-shrink: 0;
-            height: 200px;
-            min-height: 200px;
-            max-height: 200px;
+            height: 275px;
+            min-height: 275px;
+            max-height: 275px;
             width: 100%;
-            border: 2.5px dashed #ffd000; /* Radiant Sunbeam Yellow */
-            border-radius: 6px !important;
+            border: 3px dashed #ffd000; /* Radiant Sunbeam Yellow */
+            border-radius: 8px !important;
             background: rgba(255, 210, 0, 0.28); /* Radiant Sunbeam Yellow */
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
             position: relative;
-            padding: 10px 8px;
+            padding: 14px 12px;
             box-sizing: border-box;
             text-align: center;
             user-select: none;
             margin-top: auto;
-            margin-bottom: 5px;
-            gap: 6px;
-            box-shadow: inset 0 0 16px rgba(255, 208, 0, 0.12);
+            margin-bottom: 8px;
+            gap: 8px;
+            box-shadow: inset 0 0 20px rgba(255, 208, 0, 0.15);
         }
 
         .staging-zone-label {
-            font-size: 0.84rem;
+            font-size: 1.15rem;
             font-weight: 900;
             color: #0f172a;
             letter-spacing: 0.06em;
             text-transform: uppercase;
-            line-height: 1.2;
+            line-height: 1.25;
         }
 
         .staging-zone-sub {
-            font-size: 0.65rem;
+            font-size: 0.82rem;
             font-weight: 700;
             color: #475569;
-            margin-top: 2px;
+            margin-top: 3px;
             letter-spacing: 0.02em;
         }
 
@@ -4755,21 +4832,21 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 8px;
-            margin-top: 4px;
+            gap: 12px;
+            margin-top: 6px;
         }
 
         /* Skupina vertikálně naskládaných strojů - rovnoměrná pevná mezera */
         .mach-stack {
             display: flex;
             flex-direction: column;
-            gap: 4px;
+            gap: 6px;
             min-height: 0;
         }
 
         /* Průchozí mezery */
         .mach-passage-spacer {
-            min-height: 14px;
+            min-height: 20px;
             flex: 1;
             margin: 0;
             display: flex;
@@ -4777,7 +4854,7 @@
         }
 
         .mach-col-spacer {
-            min-height: 14px;
+            min-height: 20px;
             flex: 1;
             margin: 0;
             display: flex;
@@ -4790,20 +4867,20 @@
         .mach-sketch {
             background-color: #ffffff;
             border: 1px solid #cbd5e1;
-            border-left: 4.5px solid #4cae2a; /* Výchozí stav V pořádku - firemní zelená ENGEL */
-            border-radius: 5px;
-            height: 38px;
-            min-height: 34px;
-            max-height: 42px;
+            border-left: 6px solid #4cae2a; /* Výchozí stav V pořádku - firemní zelená ENGEL */
+            border-radius: 7px;
+            height: 56px;
+            min-height: 52px;
+            max-height: 60px;
             width: 100%;
             margin: 0;
             display: flex;
             flex-direction: column;
             justify-content: space-between;
-            padding: 2px 5px;
+            padding: 3px 8px;
             position: relative;
             cursor: pointer;
-            box-shadow: 0 1px 2px rgba(15, 23, 42, 0.05);
+            box-shadow: 0 1px 3px rgba(15, 23, 42, 0.06);
             transition: border-color 0.15s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.15s cubic-bezier(0.16, 1, 0.3, 1), background-color 0.15s ease, transform 0.15s ease;
             user-select: none;
             -webkit-tap-highlight-color: transparent;
@@ -4815,25 +4892,37 @@
 
         .mach-sketch:hover {
             border-color: #64748b;
-            box-shadow: 0 2px 6px rgba(15, 23, 42, 0.08), 0 6px 14px -3px rgba(15, 23, 42, 0.08);
-            transform: translateY(-0.5px);
+            box-shadow: 0 4px 12px rgba(15, 23, 42, 0.1), 0 8px 18px -4px rgba(15, 23, 42, 0.1);
+            transform: translateY(-1px);
         }
 
         .mach-sketch:active {
             background-color: #f1f5f9;
             box-shadow: inset 0 1px 2px rgba(15, 23, 42, 0.08);
             border-color: #94a3b8;
-            transform: scale(0.982);
+            transform: scale(0.985);
         }
 
         .mach-sketch.active-selected {
             border-color: #0f172a;
-            box-shadow: 0 0 0 2px #0f172a, 0 4px 12px rgba(15, 23, 42, 0.14);
+            box-shadow: 0 0 0 2px #0f172a, 0 4px 14px rgba(15, 23, 42, 0.16);
         }
 
         /* Stavy strojů s barevným odlišením */
         .mach-sketch.status-ok {
             border-left-color: #4cae2a !important; /* ENGEL Signature Green */
+        }
+
+        .mach-sketch.status-standby {
+            border-left-color: #64748b !important;
+            background-image: linear-gradient(180deg, #ffffff 0%, #f8fafc 60%, #f1f5f9 100%) !important;
+            border-color: #cbd5e1 !important;
+            box-shadow: 0 1px 3px rgba(100, 116, 139, 0.08);
+        }
+
+        .mach-sketch.status-standby:hover {
+            border-color: #64748b !important;
+            box-shadow: 0 4px 12px -1px rgba(100, 116, 139, 0.2);
         }
 
         .mach-sketch.status-warning {
@@ -4845,7 +4934,7 @@
 
         .mach-sketch.status-warning:hover {
             border-color: #ea580c !important;
-            box-shadow: 0 2px 6px -1px rgba(249, 115, 22, 0.18);
+            box-shadow: 0 4px 12px -1px rgba(249, 115, 22, 0.22);
         }
 
         .mach-sketch.status-error {
@@ -4857,7 +4946,7 @@
 
         .mach-sketch.status-error:hover {
             border-color: #dc2626 !important;
-            box-shadow: 0 2px 6px -1px rgba(225, 29, 72, 0.14);
+            box-shadow: 0 4px 12px -1px rgba(225, 29, 72, 0.2);
         }
 
         /* Horní patro tlačítka: Číslo lisu + Silueta ENGEL + Štítek formy */
@@ -4867,32 +4956,49 @@
             justify-content: space-between;
             width: 100%;
             min-width: 0;
-            gap: 4px;
-            height: 22px;
+            gap: 6px;
+            height: 30px;
         }
 
         .mach-num-box {
             display: inline-flex;
             align-items: center;
-            gap: 4px;
+            gap: 6px;
             flex-shrink: 0;
         }
 
         .mach-status-beacon {
             position: relative;
-            width: 6px;
-            height: 6px;
+            width: 9px;
+            height: 9px;
             border-radius: 50%;
             display: inline-block;
             flex-shrink: 0;
         }
         .mach-status-beacon.status-ok {
             background-color: #4cae2a;
-            box-shadow: 0 0 4px rgba(76, 174, 42, 0.6);
+            box-shadow: 0 0 5px rgba(76, 174, 42, 0.7);
+        }
+        .mach-status-beacon.status-standby {
+            background-color: #64748b;
+            box-shadow: 0 0 4px rgba(100, 116, 139, 0.6);
+        }
+        .mach-status-beacon.status-standby::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            background-color: #94a3b8;
+            transform: translate(-50%, -50%);
+            animation: statusRadialPulse 2.2s cubic-bezier(0.22, 1, 0.36, 1) infinite;
+            pointer-events: none;
         }
         .mach-status-beacon.status-warning {
             background-color: #f97316;
-            box-shadow: 0 0 3px rgba(249, 115, 22, 0.6);
+            box-shadow: 0 0 4px rgba(249, 115, 22, 0.7);
         }
         .mach-status-beacon.status-warning::after {
             content: '';
@@ -4909,7 +5015,7 @@
         }
         .mach-status-beacon.status-error {
             background-color: #dc2626;
-            box-shadow: 0 0 4px rgba(220, 38, 38, 0.7);
+            box-shadow: 0 0 5px rgba(220, 38, 38, 0.8);
         }
         .mach-status-beacon.status-error::after {
             content: '';
@@ -4926,13 +5032,13 @@
         }
 
         .mach-num {
-            font-size: 0.94rem;
+            font-size: 1.32rem;
             font-weight: 800;
             font-family: -apple-system, BlinkMacSystemFont, "Inter", "SF Pro Display", "Segoe UI", Roboto, sans-serif;
             font-variant-numeric: tabular-nums;
             color: #0f172a;
             line-height: 1;
-            letter-spacing: -0.015em;
+            letter-spacing: -0.02em;
             pointer-events: none;
             white-space: nowrap;
         }
@@ -4941,21 +5047,21 @@
             display: inline-flex;
             align-items: center;
             justify-content: center;
-            gap: 4px;
+            gap: 6px;
             min-width: 0;
             flex: 1 1 auto;
             overflow: hidden;
         }
 
         .mach-engel-chip {
-            font-size: 0.52rem;
+            font-size: 0.65rem;
             font-weight: 900;
             letter-spacing: 0.06em;
             color: #4cae2a;
             background: #f0fdf4;
             border: 1px solid #bbf7d0;
-            padding: 0.5px 3px;
-            border-radius: 3px;
+            padding: 1px 4.5px;
+            border-radius: 4px;
             line-height: 1;
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, monospace;
             flex-shrink: 0;
@@ -4971,8 +5077,8 @@
         }
 
         .mach-cad-silhouette svg {
-            width: 42px;
-            height: 20px;
+            width: 58px;
+            height: 28px;
             display: block;
         }
 
@@ -4989,20 +5095,20 @@
             justify-content: center;
             background: #ffffff;
             color: #0f172a;
-            border: 1px solid #94a3b8;
-            border-radius: 4px;
-            font-size: 0.65rem;
-            font-weight: 700;
+            border: 1.5px solid #94a3b8;
+            border-radius: 5px;
+            font-size: 0.95rem;
+            font-weight: 800;
             font-family: -apple-system, BlinkMacSystemFont, "Inter", "SF Pro Text", "Segoe UI", Roboto, sans-serif;
             font-variant-numeric: tabular-nums;
-            padding: 0 4px;
-            height: 16px;
-            min-width: 22px;
-            max-width: 48px;
+            padding: 0 6px;
+            height: 24px;
+            min-width: 32px;
+            max-width: 72px;
             line-height: 1;
             letter-spacing: -0.01em;
             flex-shrink: 0;
-            box-shadow: 0 1px 2px rgba(15, 23, 42, 0.06);
+            box-shadow: 0 1px 2px rgba(15, 23, 42, 0.08);
             text-align: center;
             overflow: hidden;
             text-overflow: ellipsis;
@@ -5010,32 +5116,33 @@
         }
 
         .mach-mold-empty-dash {
-            font-size: 0.65rem;
+            font-size: 0.95rem;
             font-weight: 700;
             color: #cbd5e1;
             line-height: 1;
-            padding: 0 3px;
-            min-width: 18px;
+            padding: 0 4px;
+            min-width: 26px;
             text-align: center;
             display: inline-flex;
             justify-content: center;
             align-items: center;
         }
 
-        /* Spodní patro tlačítka: Název dílu (celá šířka tlačítka bez tlačenice) */
+        /* Spodní patro tlačítka: Název dílu / Důvod odstávky */
         .mach-tier-bottom {
             display: flex;
             align-items: center;
             width: 100%;
             min-width: 0;
-            height: 15px;
-            padding-top: 1px;
+            height: 22px;
+            padding: 1px 0 0 0;
             border-top: 1px solid #f1f5f9;
             overflow: hidden;
+            box-sizing: border-box;
         }
 
         .mach-mold-product-name {
-            font-size: 0.58rem;
+            font-size: 0.72rem;
             font-weight: 600;
             color: #334155;
             font-family: -apple-system, BlinkMacSystemFont, "Inter", "SF Pro Text", "Segoe UI", Roboto, sans-serif;
@@ -5074,6 +5181,25 @@
         .mach-status-pulse-dot.dot-ok {
             background-color: #16a34a;
             box-shadow: 0 0 3px rgba(22, 163, 74, 0.5);
+        }
+
+        .mach-status-pulse-dot.dot-standby {
+            background-color: #64748b;
+            box-shadow: 0 0 3px rgba(100, 116, 139, 0.5);
+        }
+
+        .mach-status-pulse-dot.dot-standby::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            background-color: #94a3b8;
+            transform: translate(-50%, -50%);
+            animation: statusRadialPulse 2.2s cubic-bezier(0.22, 1, 0.36, 1) infinite;
+            pointer-events: none;
         }
 
         .mach-status-pulse-dot.dot-warning {
@@ -5164,8 +5290,14 @@
            ========================================================================== */
         .mach-status-toggle-row {
             display: grid;
-            grid-template-columns: 1fr 1fr 1fr;
+            grid-template-columns: repeat(4, 1fr);
             gap: 0.35rem;
+        }
+
+        @media (max-width: 380px) {
+            .mach-status-toggle-row {
+                grid-template-columns: repeat(2, 1fr);
+            }
         }
 
         .mach-status-pill-btn {
@@ -5173,10 +5305,10 @@
             align-items: center;
             justify-content: center;
             gap: 0.35rem;
-            padding: 0.32rem 0.5rem;
+            padding: 0.32rem 0.35rem;
             min-height: 28px;
             border-radius: 6px;
-            font-size: 0.73rem;
+            font-size: 0.72rem;
             font-weight: 600;
             border: 1px solid var(--border-color);
             background: var(--card-bg);
@@ -5185,6 +5317,7 @@
             transition: all 0.14s ease;
             user-select: none;
             -webkit-tap-highlight-color: transparent;
+            white-space: nowrap;
         }
 
         .mach-status-pill-btn:hover {
@@ -5204,6 +5337,13 @@
             font-weight: 700;
         }
 
+        .mach-status-pill-btn.active.standby {
+            background: rgba(100, 116, 139, 0.14);
+            border-color: #64748b;
+            color: #334155;
+            font-weight: 700;
+        }
+
         .mach-status-pill-btn.active.warning {
             background: rgba(249, 115, 22, 0.14);
             border-color: #f97316;
@@ -5216,6 +5356,92 @@
             border-color: #dc2626;
             color: #b91c1c;
             font-weight: 700;
+        }
+
+        /* Výběr konkrétního důvodu odstávky (Stojí) */
+        .standby-reasons-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0.35rem;
+        }
+
+        @media (max-width: 380px) {
+            .standby-reasons-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .standby-reason-chip {
+            display: flex;
+            align-items: center;
+            gap: 0.45rem;
+            padding: 0.42rem 0.55rem;
+            border-radius: 6px;
+            border: 1px solid var(--border-color);
+            background: var(--card-bg);
+            color: var(--text-main);
+            font-size: 0.72rem;
+            font-weight: 600;
+            cursor: pointer;
+            text-align: left;
+            transition: all 0.15s ease;
+            user-select: none;
+            -webkit-tap-highlight-color: transparent;
+            min-height: 32px;
+            box-sizing: border-box;
+        }
+
+        .standby-reason-chip:hover {
+            border-color: #64748b;
+            background: var(--row-hover);
+        }
+
+        .standby-reason-chip:active {
+            transform: scale(0.97);
+        }
+
+        .standby-reason-chip.active {
+            background: #334155;
+            border-color: #1e293b;
+            color: #ffffff;
+            box-shadow: 0 1px 3px rgba(15, 23, 42, 0.18);
+        }
+
+        .standby-reason-chip.active svg {
+            stroke: #ffffff;
+        }
+
+        .standby-reason-chip svg {
+            flex-shrink: 0;
+            stroke: #64748b;
+            transition: stroke 0.15s ease;
+        }
+
+        .mach-standby-reason-row {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            width: 100%;
+            min-width: 0;
+            line-height: 1;
+        }
+
+        .mach-standby-reason-label {
+            display: inline-flex;
+            align-items: center;
+            font-size: 0.69rem;
+            font-weight: 700;
+            color: #475569;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            background: rgba(100, 116, 139, 0.12);
+            border-radius: 4px;
+            padding: 2px 6px;
+            height: 18px;
+            box-sizing: border-box;
+            line-height: 1;
+            border: 1px solid rgba(100, 116, 139, 0.22);
         }
 
         /* Našeptávač forem podle názvu výrobku i čísla formy */
@@ -5520,6 +5746,12 @@
                 flex-shrink: 0;
             }
 
+            .mach-sketch.status-standby {
+                background-color: #f8fafc !important;
+                border-color: #cbd5e1 !important;
+                border-left-color: #64748b !important;
+            }
+
             .mach-sketch.status-warning {
                 background-color: #fffaf5 !important;
                 border-color: #fed7aa !important;
@@ -5677,6 +5909,16 @@
                 color: #94a3b8;
                 font-size: 0.48rem;
                 font-weight: 600;
+            }
+
+            .mach-standby-reason-label {
+                font-size: 0.50rem;
+                padding: 0 3px;
+                height: 12px;
+                line-height: 12px;
+                border-radius: 2px;
+                max-width: 100%;
+                box-sizing: border-box;
             }
 
             .mach-stack {
@@ -6078,7 +6320,7 @@
         </svg>
         <span class="corner-badge-counter" id="shiftPlanBadge" style="display: none;">0</span>
     </button>
-    <button class="floating-corner-btn" tabindex="0" onclick="openDirectProdModal()" title="Forma po výrobě (Mezisklad)">
+    <button class="floating-corner-btn" tabindex="0" onclick="openDirectProdModal()" title="Odeslat formu do nástrojárny / po výrobě">
         <img src="data:image/png;base64,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" alt="Forma po výrobě">
     </button>
 </div>
@@ -6850,6 +7092,7 @@
         <div class="modal-body">
             <div class="form-group"><label>Pozice:</label>
                 <div class="autocomplete-wrapper"><input type="text" id="fullEditPositionInput" class="position-input" autocomplete="off" oninput="onPositionInput(this)" autocapitalization="sentences" autocapitalize="sentences"><div id="fullEditPositionInputDropdown" class="autocomplete-dropdown"></div></div>
+                <div id="fullEditPrevPosHint" style="display: none; font-size: 0.78rem; color: var(--text-muted); margin-top: 0.35rem; padding: 0.25rem 0.45rem; background: var(--row-hover); border-radius: 4px;"></div>
             </div>
             <div class="form-group"><label>Stav formy:</label>
                 <select id="fullEditStatusSelect" onchange="onStatusSelectChange(this)">
@@ -6861,7 +7104,6 @@
                     <option value="Na opravě pryč">Na opravě pryč</option>
                 </select>
             </div>
-            <div class="form-group" style="flex-direction: row; align-items: center; gap: 0.5rem;"><input type="checkbox" id="autoMeziskladCheckbox" style="width: 18px; height: 18px;"><label for="autoMeziskladCheckbox">Přesunout na Mezisklad</label></div>
         </div>
         <div class="modal-footer" style="display: flex; justify-content: space-between; align-items: center;">
             <button type="button" id="fullEditDeleteBtn" class="btn-danger" style="display: flex; align-items: center; gap: 0.35rem; padding: 0.45rem 0.8rem; font-size: 0.82rem;" onclick="deleteCurrentEditMold()">
@@ -6891,7 +7133,7 @@
 
 <div class="modal-overlay" id="directProdModal">
     <div class="modal-card" style="max-width: 440px;">
-        <div class="modal-header"><h3>Forma po výrobě</h3><button class="close-modal-btn" onclick="closeDirectProdModal()">✕</button></div>
+        <div class="modal-header"><h3>Odeslat formu do nástrojárny</h3><button class="close-modal-btn" onclick="closeDirectProdModal()">✕</button></div>
         <div class="modal-body">
             <div class="form-group"><label>Číslo formy:</label><input type="text" id="directProdMoldId" autocomplete="off" autocapitalization="none" autocapitalize="none"></div>
             
@@ -6900,7 +7142,7 @@
                 <select id="directProdStatus">
                     <option value="Ve frontě na údržbu">Ve frontě na údržbu</option>
                     <option value="Ve frontě na opravu">Ve frontě na opravu</option>
-                    <option value="Na opravě pryč">Na opravě pryč (Mezisklad Externí)</option>
+                    <option value="Na opravě pryč">Na opravě pryč (Externí oprava)</option>
                 </select>
             </div>
 
@@ -7295,6 +7537,10 @@
                         <span class="mach-status-pulse-dot dot-ok"></span>
                         <span>V chodu</span>
                     </button>
+                    <button type="button" id="mStatusBtnStandby" class="mach-status-pill-btn standby" onclick="setMachineStatusDirectly('standby')" title="Lis dočasně stojí (výměna formy, sušení, materiál)">
+                        <span class="mach-status-pulse-dot dot-standby"></span>
+                        <span>Stojí</span>
+                    </button>
                     <button type="button" id="mStatusBtnWarning" class="mach-status-pill-btn warning" onclick="setMachineStatusDirectly('warning')" title="Lis je v chodu, ale vykazuje vady / vyžaduje servis">
                         <span class="mach-status-pulse-dot dot-warning"></span>
                         <span>S problémy</span>
@@ -7303,6 +7549,49 @@
                         <span class="mach-status-pulse-dot dot-error"></span>
                         <span>Odstaveno</span>
                     </button>
+                </div>
+                <!-- Konkrétní důvod odstávky pro stav "Stojí" (výběr 1 kliknutím, monochromatické ikony) -->
+                <div id="machineStandbyReasonsContainer" style="display: none; flex-direction: column; gap: 0.35rem; background: var(--row-hover); border: 1px solid var(--border-color); border-radius: 8px; padding: 0.55rem 0.65rem; transition: all 0.2s ease;">
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <span style="font-size: 0.72rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.03em; color: var(--text-muted);">
+                            Důvod odstávky lisu:
+                        </span>
+                        <span style="font-size: 0.68rem; color: #64748b; font-weight: 500;">(výběr 1 kliknutím)</span>
+                    </div>
+                    <div class="standby-reasons-grid">
+                        <button type="button" class="standby-reason-chip" onclick="setMachineStandbyReason('Výměna formy / Temperování')" data-reason="Výměna formy / Temperování" title="Výměna formy nebo temperování formy">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M21 2v6h-6"></path>
+                                <path d="M3 12a9 9 0 0 1 15-6.7L21 8"></path>
+                                <path d="M3 22v-6h6"></path>
+                                <path d="M21 12a9 9 0 0 1-15 6.7L3 16"></path>
+                            </svg>
+                            <span>Výměna formy / Temperování</span>
+                        </button>
+                        <button type="button" class="standby-reason-chip" onclick="setMachineStandbyReason('Sušení materiálu')" data-reason="Sušení materiálu" title="Sušení granulátu / materiálu">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M7 4c0 2-2 3-2 5s2 3 2 5"></path>
+                                <path d="M12 2c0 2.5-2 3.8-2 6.5s2 3.8 2 6.5"></path>
+                                <path d="M17 4c0 2-2 3-2 5s2 3 2 5"></path>
+                                <path d="M4 19h16"></path>
+                                <path d="M6 22h12"></path>
+                            </svg>
+                            <span>Sušení materiálu</span>
+                        </button>
+                        <button type="button" class="standby-reason-chip" onclick="setMachineStandbyReason('Není materiál')" data-reason="Není materiál" title="Materiál není k dispozici">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                                <line x1="2" y1="2" x2="22" y2="22"></line>
+                                <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path>
+                            </svg>
+                            <span>Není materiál</span>
+                        </button>
+                        <button type="button" class="standby-reason-chip" onclick="setMachineStandbyReason('Prázdná násypka / Nestíhá nasávat')" data-reason="Prázdná násypka / Nestíhá nasávat" title="Prázdná násypka nebo podtlakové nasávání nestíhá">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                                <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"></polygon>
+                            </svg>
+                            <span>Prázdná násypka / Nestíhá nasávat</span>
+                        </button>
+                    </div>
                 </div>
             </div>
 
@@ -7353,7 +7642,7 @@
                 </div>
 
                 <!-- Formulář přidání nové závady -->
-                <div style="background: var(--card-bg); border: 1.5px solid var(--border-color); border-radius: 8px; padding: 0.75rem; display: flex; flex-direction: column; gap: 0.5rem;">
+                <div id="machineNewIssueFormCard" style="background: var(--card-bg); border: 1.5px solid var(--border-color); border-radius: 8px; padding: 0.75rem; display: none; flex-direction: column; gap: 0.5rem; transition: all 0.2s ease;">
                     <div style="font-size: 0.78rem; font-weight: 700; color: var(--text-main);">
                         + Zapsat novou závadu nebo servisní poznámku:
                     </div>
@@ -10499,6 +10788,22 @@
         finally { isSubmittingAction = false; }
     }
 
+    function isMoldInNastrojarna(status) {
+        if (!status) return false;
+        const s = String(status).trim().toLowerCase();
+        if (s.includes('po údržbě') || s.includes('po udrzbe')) return false;
+        return s.includes('frontě na údržbu') || s.includes('fronte na udrzbe') ||
+               s.includes('frontě na opravu') || s.includes('fronte na opravu') ||
+               s.includes('na údržbě') || s.includes('na udrzbe') ||
+               s.includes('na opravě') || s.includes('na oprave') ||
+               s.includes('nástrojárn') || s.includes('nastrojarn');
+    }
+
+    function renderNastrojarnaTag(status) {
+        if (!isMoldInNastrojarna(status)) return '';
+        return '<span class="tag-nastrojarna" title="Forma je fyzicky v nástrojárně"><span class="pulse-dot-red"></span>V Nástrojárně</span>';
+    }
+
     function getPositionBadgeClass(pos) {
         const p = String(pos || "").trim().toLowerCase();
         if (p.includes("externí") || p.includes("externi")) return 'badge-position pos-externi';
@@ -13565,16 +13870,18 @@ Return strictly valid JSON only without markdown formatting with this schema:
         if (listContainer) {
             listContainer.innerHTML = molds.map(m => {
                 const [num, pos, cust, status, isDel, pName, photos, navodka, prevPos] = m;
-                const badgeClass = getPositionBadgeClass(pos);
-                const displayPos = formatPositionDisplay(pos);
+                const inNastrojarna = isMoldInNastrojarna(status);
+                const posBadgeHtml = inNastrojarna 
+                    ? `<span class="badge-position pos-nastrojarna" style="margin: 0; font-size: 0.74rem;"><span class="pulse-dot-red"></span>V Nástrojárně</span>`
+                    : `<span class="${getPositionBadgeClass(pos)}" style="margin: 0; font-size: 0.78rem;">${escapeHtml(formatPositionDisplay(pos))}</span>`;
                 return `
                     <div class="scanner-multi-item" onclick="scannerOpenSpecificMold('${escapeHtml(num)}')">
                         <div class="scanner-multi-item-left">
                             <span class="scanner-multi-mold-num">#${escapeHtml(num)}</span>
                             <span class="scanner-multi-cust">${escapeHtml(cust || 'Bez zákazníka')}</span>
                         </div>
-                        <div class="scanner-multi-item-right">
-                            <span class="${badgeClass}" style="margin: 0; font-size: 0.78rem;">${escapeHtml(displayPos)}</span>
+                        <div class="scanner-multi-item-right" style="display: flex; align-items: center; gap: 0.4rem;">
+                            ${posBadgeHtml}
                             <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="#94a3b8" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
                                 <polyline points="9 18 15 12 9 6"></polyline>
                             </svg>
@@ -13697,8 +14004,10 @@ Return strictly valid JSON only without markdown formatting with this schema:
             const [num, pos, cust, status, isDel, pName] = m;
             const idStr = String(num);
             const isSelected = scannerSelectedBatchMoldIds.has(idStr);
-            const badgeClass = getPositionBadgeClass(pos);
-            const displayPos = formatPositionDisplay(pos);
+            const inNastrojarna = isMoldInNastrojarna(status);
+            const posBadgeHtml = inNastrojarna 
+                ? `<span class="badge-position pos-nastrojarna" style="margin: 0; font-size: 0.72rem;"><span class="pulse-dot-red"></span>V Nástrojárně</span>`
+                : `<span class="${getPositionBadgeClass(pos)}" style="margin: 0; font-size: 0.74rem;">${escapeHtml(formatPositionDisplay(pos))}</span>`;
             const machineNum = m._machine ? String(m._machine) : '';
 
             return `
@@ -13708,7 +14017,7 @@ Return strictly valid JSON only without markdown formatting with this schema:
                         <div>
                             <div style="display: flex; align-items: center; gap: 0.4rem; flex-wrap: wrap;">
                                 <span style="font-weight: 800; font-size: 0.96rem; color: #f8fafc; font-family: monospace;">#${escapeHtml(idStr)}</span>
-                                <span class="${badgeClass}" style="margin: 0; font-size: 0.74rem;">${escapeHtml(displayPos)}</span>
+                                ${posBadgeHtml}
                                 ${machineNum ? `<span style="background: #0f172a; color: #38bdf8; font-weight: 700; font-size: 0.7rem; padding: 0.12rem 0.45rem; border-radius: 4px; font-family: monospace; border: 1px solid #334155;">STROJ ${escapeHtml(machineNum)}</span>` : ''}
                             </div>
                             <div style="font-size: 0.78rem; color: #94a3b8; margin-top: 2px;">
@@ -14097,13 +14406,20 @@ Return strictly valid JSON only without markdown formatting with this schema:
         activeEditMoldId = moldId;
         activeEditOldPos = currentPos;
         
+        const itm = rawDatabase.find(i => String(i[0]) === String(moldId));
         let fallbackPos = currentPos;
-        if (currentPos.toLowerCase().includes('mezisklad')) {
-            const itm = rawDatabase.find(i => String(i[0]) === String(moldId));
-            fallbackPos = (itm && itm[8]) ? itm[8] : '';
+        const prevPos = (itm && itm[8]) ? itm[8] : '';
+        if (currentPos.toLowerCase().includes('mezisklad') && prevPos) {
+            fallbackPos = prevPos;
+        } else if (prevPos && isMoldInNastrojarna(itm ? itm[3] : '')) {
+            fallbackPos = prevPos;
         }
 
-        document.getElementById('positionModalLabel').textContent = `Forma č. ${moldId} (stávající: ${currentPos}):`;
+        const isNastrojarna = itm && isMoldInNastrojarna(itm[3]);
+        const displayLabel = isNastrojarna 
+            ? `Forma č. ${moldId} (V Nástrojárně${prevPos ? ` — původně: ${prevPos}` : ''}):` 
+            : `Forma č. ${moldId} (stávající: ${currentPos}):`;
+        document.getElementById('positionModalLabel').textContent = displayLabel;
         const inputEl = document.getElementById('modalPositionInput');
         inputEl.value = fallbackPos;
         
@@ -14124,7 +14440,10 @@ Return strictly valid JSON only without markdown formatting with this schema:
         if (isSubmittingAction) return;
         const newPos = autoDotPosition(document.getElementById('modalPositionInput').value);
         if (!newPos) { alert("Zadejte pozici!"); return; }
-        if (newPos === activeEditOldPos) { closePositionModal(); return; }
+        if (newPos === activeEditOldPos && !isMoldInNastrojarna(rawDatabase.find(i => String(i[0]) === String(activeEditMoldId))?.[3])) { 
+            closePositionModal(); 
+            return; 
+        }
 
         isSubmittingAction = true;
         closePositionModal();
@@ -14142,7 +14461,16 @@ Return strictly valid JSON only without markdown formatting with this schema:
             }
             rawDatabase[itemIdx][1] = newPos;
             rawDatabase[itemIdx][8] = prevPosToSave;
-            updateBody = { position: newPos, previous_position: prevPosToSave };
+            
+            // If the mold was in tool shop and toolmaker returns it to a rack position, also set status to Po údržbě!
+            let newStatus = rawDatabase[itemIdx][3];
+            if (isMoldInNastrojarna(newStatus) && !newPos.toLowerCase().includes('mezisklad')) {
+                newStatus = 'Po údržbě';
+                rawDatabase[itemIdx][3] = newStatus;
+                updateBody.status = newStatus;
+            }
+            updateBody.position = newPos;
+            updateBody.previous_position = prevPosToSave;
             refreshUI();
         }
         showToast(`Pozice změněna na ${newPos}`);
@@ -14256,9 +14584,7 @@ Return strictly valid JSON only without markdown formatting with this schema:
         directProdPendingFiles = [];
         hideModalAnimated('directProdModal');
 
-        let targetPosition = 'Mezisklad';
-        if (selectedStatus === 'Na opravě pryč') targetPosition = 'Mezisklad Externí';
-
+        let targetPosition = oldPos;
         let prevPosToSave = existing[8] || '';
         if (oldPos && !oldPos.toLowerCase().includes('mezisklad')) prevPosToSave = oldPos;
 
@@ -14266,7 +14592,7 @@ Return strictly valid JSON only without markdown formatting with this schema:
         existing[3] = selectedStatus;
         existing[8] = prevPosToSave;
 
-        showToast(`Forma #${canonicalMoldId} přesunuta na ${targetPosition}`);
+        showToast(`Forma #${canonicalMoldId} odeslána do nástrojárny (${selectedStatus})`);
 
         let uploadedPhotoUrls = [];
         for (let file of filesToUpload) {
@@ -14294,7 +14620,7 @@ Return strictly valid JSON only without markdown formatting with this schema:
             await fetch(`${API_URL}/rest/v1/mold_logs`, {
                 method: 'POST',
                 headers: { 'apikey': API_KEY, 'Authorization': `Bearer ${API_KEY}`, 'Content-Type': 'application/json' },
-                body: JSON.stringify({ mold_id: canonicalMoldId, old_position: `Pozice: ${oldPos}`, new_position: `Pozice: ${targetPosition}, Stav: ${selectedStatus}`, user_name: currentUser })
+                body: JSON.stringify({ mold_id: canonicalMoldId, old_position: `Pozice: ${oldPos}`, new_position: `Pozice: ${targetPosition}, Stav: ${selectedStatus} (V Nástrojárně)`, user_name: currentUser })
             });
 
             if (commentText || uploadedPhotoUrls.length > 0) {
@@ -14309,7 +14635,7 @@ Return strictly valid JSON only without markdown formatting with this schema:
                     body: JSON.stringify({ 
                         mold_id: canonicalMoldId, 
                         user_name: currentUser, 
-                        comment: commentText || 'Odesláno z výroby', 
+                        comment: commentText || 'Odesláno z výroby do nástrojárny', 
                         photo_urls: JSON.stringify(uploadedPhotoUrls)
                     })
                 });
@@ -14332,7 +14658,17 @@ Return strictly valid JSON only without markdown formatting with this schema:
     }
 
     function onStatusSelectChange(selectElem) {
-        document.getElementById('autoMeziskladCheckbox').checked = ['Ve frontě na údržbu', 'Ve frontě na opravu', 'Na údržbě / Na opravě', 'Na opravě pryč'].includes(selectElem.value);
+        const val = selectElem.value;
+        const itm = rawDatabase.find(i => String(i[0]) === String(activeEditMoldId));
+        const prevPos = (itm && itm[8]) ? itm[8] : '';
+        const posInput = document.getElementById('fullEditPositionInput');
+        
+        // If returning from maintenance/repair into completed or no status, auto-restore original position if available
+        if ((!val || val === 'Po údržbě') && prevPos && posInput) {
+            if (!posInput.value || posInput.value.toLowerCase().includes('mezisklad')) {
+                posInput.value = prevPos;
+            }
+        }
     }
 
     function openFullEdit(moldId, currentPos, currentStatus, currentProductName) {
@@ -14340,15 +14676,29 @@ Return strictly valid JSON only without markdown formatting with this schema:
         activeEditMoldId = moldId;
         activeEditOldPos = currentPos;
 
+        const itm = rawDatabase.find(i => String(i[0]) === String(moldId));
         let fallbackPos = currentPos;
-        if (currentPos.toLowerCase().includes('mezisklad')) {
-            const itm = rawDatabase.find(i => String(i[0]) === String(moldId));
-            fallbackPos = (itm && itm[8]) ? itm[8] : '';
+        const prevPos = (itm && itm[8]) ? itm[8] : '';
+
+        if (currentPos.toLowerCase().includes('mezisklad') && prevPos) {
+            fallbackPos = prevPos;
         }
 
-        document.getElementById('fullEditPositionInput').value = fallbackPos;
-        document.getElementById('fullEditStatusSelect').value = currentStatus || '';
-        document.getElementById('autoMeziskladCheckbox').checked = ['Ve frontě na údržbu', 'Ve frontě na opravu', 'Na údržbě / Na opravě', 'Na opravě pryč'].includes(currentStatus);
+        const posInput = document.getElementById('fullEditPositionInput');
+        if (posInput) posInput.value = fallbackPos;
+
+        const statusSelect = document.getElementById('fullEditStatusSelect');
+        if (statusSelect) statusSelect.value = currentStatus || '';
+        
+        const hintEl = document.getElementById('fullEditPrevPosHint');
+        if (hintEl) {
+            if (prevPos && prevPos !== fallbackPos) {
+                hintEl.innerHTML = `Původní pozice před nástrojárnou: <strong style="cursor:pointer; color: var(--accent-color); text-decoration: underline;" onclick="document.getElementById('fullEditPositionInput').value='${escapeHtml(prevPos)}'">${escapeHtml(prevPos)} (obnovit)</strong>`;
+                hintEl.style.display = 'block';
+            } else {
+                hintEl.style.display = 'none';
+            }
+        }
         
         const deleteBtn = document.getElementById('fullEditDeleteBtn');
         if (deleteBtn) {
@@ -14376,19 +14726,20 @@ Return strictly valid JSON only without markdown formatting with this schema:
         
         let newPos = autoDotPosition(document.getElementById('fullEditPositionInput').value);
         const newStatus = document.getElementById('fullEditStatusSelect').value;
-        const autoMezisklad = document.getElementById('autoMeziskladCheckbox').checked;
 
         const itemIdx = rawDatabase.findIndex(i => String(i[0]) === String(activeEditMoldId));
         if (itemIdx === -1) return;
         
         const item = rawDatabase[itemIdx];
-        let prevPosToSave = item[8];
+        let prevPosToSave = item[8] || '';
 
-        const isRepairStatus = ['Ve frontě na údržbu', 'Ve frontě na opravu', 'Na údržbě / Na opravě', 'Na opravě pryč'].includes(newStatus);
+        const isRepairStatus = isMoldInNastrojarna(newStatus);
         
-        if (!isRepairStatus && !autoMezisklad) {
+        if (!isRepairStatus) {
             if (item[8] && item[8].trim() !== "") {
-                newPos = item[8];
+                if (!newPos || newPos.trim() === "" || newPos.toLowerCase().includes('mezisklad')) {
+                    newPos = item[8];
+                }
                 prevPosToSave = '';
             }
 
@@ -14429,10 +14780,11 @@ Return strictly valid JSON only without markdown formatting with this schema:
                     showToast("Poznámky a fotografie byly smazány");
                 });
             }
-        } else if (autoMezisklad) {
-            if (item[1] && !item[1].toLowerCase().includes('mezisklad')) prevPosToSave = item[1];
-            if (newStatus === 'Na opravě pryč') newPos = 'Mezisklad Externí';
-            else newPos = 'Mezisklad';
+        } else {
+            // In maintenance / tool shop: preserve original position in item[8] if known
+            if (item[1] && !item[1].toLowerCase().includes('mezisklad') && !prevPosToSave) {
+                prevPosToSave = item[1];
+            }
         }
 
         isSubmittingAction = true;
@@ -15811,12 +16163,31 @@ Return strictly valid JSON only without markdown formatting with this schema:
     }
 
     function renderPositionCellHtml(num, pos, status, productName, prevPos = '') {
+        const inNastrojarna = isMoldInNastrojarna(status);
+        const origPos = prevPos || pos;
+
+        if (inNastrojarna) {
+            const sub = origPos ? `<span class="prev-position-sub" style="cursor: pointer;" onclick="editPosition('${escapeHtml(num)}', '${escapeHtml(pos)}')">(Původně: ${escapeHtml(origPos)})</span>` : '';
+            return `
+                <div class="position-cell">
+                    <div class="position-wrapper" style="display: flex; flex-direction: column; align-items: flex-end; gap: 0.15rem;">
+                        <span class="badge-position pos-nastrojarna" tabindex="0" onclick="editPosition('${escapeHtml(num)}', '${escapeHtml(pos)}')" title="Forma je v nástrojárně. Klikněte pro vrácení na pozici."><span class="pulse-dot-red"></span>V Nástrojárně</span>
+                        ${sub}
+                    </div>
+                    <div class="action-buttons-group">
+                        <button class="comment-btn" onclick="openCommentModal('${escapeHtml(num)}')">${COMMENT_ICON_HTML}</button>
+                        <button class="edit-btn" onclick="openFullEdit('${escapeHtml(num)}', '${escapeHtml(pos)}', '${escapeHtml(status || '')}', '${escapeHtml(productName || '')}')">${GEAR_ICON_HTML}</button>
+                    </div>
+                </div>
+            `;
+        }
+
         const badgeClass = getPositionBadgeClass(pos);
         const displayPos = formatPositionDisplay(pos);
-        const sub = pos.toLowerCase().includes('mezisklad') && prevPos ? `<span class="prev-position-sub">(Původně: ${escapeHtml(prevPos)})</span>` : '';
+        const sub = pos.toLowerCase().includes('mezisklad') && prevPos && prevPos !== pos ? `<span class="prev-position-sub">(Původně: ${escapeHtml(prevPos)})</span>` : '';
         return `
             <div class="position-cell">
-                <div class="position-wrapper">
+                <div class="position-wrapper" style="display: flex; flex-direction: column; align-items: flex-end; gap: 0.15rem;">
                     <span class="${badgeClass}" tabindex="0" onclick="editPosition('${escapeHtml(num)}', '${escapeHtml(pos)}')">${escapeHtml(displayPos)}</span>
                     ${sub}
                 </div>
@@ -16466,6 +16837,7 @@ Return strictly valid JSON only without markdown formatting with this schema:
                 id: num,
                 number: String(num),
                 status: existing?.status || 'ok',
+                standbyReason: existing?.standbyReason || '',
                 currentMold: existing?.currentMold || '',
                 issues: Array.isArray(existing?.issues) ? existing.issues : []
             };
@@ -16570,6 +16942,7 @@ Return strictly valid JSON only without markdown formatting with this schema:
                 id: num,
                 number: String(num),
                 status: existing?.status || 'ok',
+                standbyReason: existing?.standbyReason || '',
                 currentMold: existing?.currentMold || '',
                 issues: Array.isArray(existing?.issues) ? existing.issues : []
             };
@@ -16673,12 +17046,16 @@ Return strictly valid JSON only without markdown formatting with this schema:
         const unresolvedIssues = (m.issues || []).filter(it => !it.resolved);
         const hasIssues = unresolvedIssues.length > 0;
 
-        // Stav nastavený uživatelem má přímou prioritu ('ok' = zelená v chodu, 'warning' = oranžová s problémy, 'error' = červená odstaveno)
+        // Stav nastavený uživatelem má přímou prioritu ('ok' = zelená v chodu, 'standby' = šedá stojí, 'warning' = oranžová s problémy, 'error' = červená odstaveno)
         let effectiveStatus = m.status || (hasIssues ? 'warning' : 'ok');
 
         let statusTitle = 'V pořádku (v chodu)';
         let beaconColor = '#4cae2a'; // Firemní zelená ENGEL
-        if (effectiveStatus === 'warning') {
+        if (effectiveStatus === 'standby') {
+            const reason = m.standbyReason || 'Čekání / Příprava';
+            statusTitle = `Stojí: ${reason}`;
+            beaconColor = '#64748b';
+        } else if (effectiveStatus === 'warning') {
             statusTitle = 'V chodu s problémy (servis)';
             beaconColor = '#f97316';
         } else if (effectiveStatus === 'error') {
@@ -16703,6 +17080,28 @@ Return strictly valid JSON only without markdown formatting with this schema:
             </span>
         `;
 
+        let bottomTierHtml = '';
+        if (effectiveStatus === 'standby' && m.standbyReason) {
+            const reason = m.standbyReason;
+            bottomTierHtml = `
+                <div class="mach-tier-bottom" title="Důvod odstávky lisu: ${escapeHtml(reason)}">
+                    <div class="mach-standby-reason-row">
+                        <span class="mach-standby-reason-label">${escapeHtml(reason)}</span>
+                    </div>
+                </div>
+            `;
+        } else if (prodName) {
+            bottomTierHtml = `
+                <div class="mach-tier-bottom" title="Výrobek: ${escapeHtml(prodName)}">
+                    <span class="mach-mold-product-name">${escapeHtml(prodName)}</span>
+                </div>
+            `;
+        } else {
+            bottomTierHtml = `
+                <div class="mach-tier-bottom is-empty" style="border-top-color: transparent;" title="${cleanMold ? `Forma: ${escapeHtml(cleanMold)}` : `Lis ${escapeHtml(m.number)}`}"></div>
+            `;
+        }
+
         return `
             <div class="mach-sketch status-${effectiveStatus} ${hasIssues ? 'has-issues' : ''}" 
                  tabindex="0"
@@ -16726,9 +17125,7 @@ Return strictly valid JSON only without markdown formatting with this schema:
                     </div>
                 </div>
 
-                <div class="mach-tier-bottom" title="${prodName ? escapeHtml(prodName) : (cleanMold ? 'Díl nespecifikován' : 'Lis bez formy')}">
-                    <span class="mach-mold-product-name ${!prodName ? 'is-empty' : ''}">${prodName ? escapeHtml(prodName) : (cleanMold ? '<span class="mach-prod-placeholder">Díl nespecifikován</span>' : '<span class="mach-prod-empty">Volný lis</span>')}</span>
-                </div>
+                ${bottomTierHtml}
             </div>
         `;
     }
@@ -16783,7 +17180,7 @@ Return strictly valid JSON only without markdown formatting with this schema:
         // Mini silueta stroje v hlavičce
         const headerIconBadge = document.getElementById('machDrawerIconBadge');
         if (headerIconBadge) {
-            const bColor = machine.status === 'warning' ? '#f97316' : (machine.status === 'error' ? '#dc2626' : '#4cae2a');
+            const bColor = machine.status === 'standby' ? '#64748b' : (machine.status === 'warning' ? '#f97316' : (machine.status === 'error' ? '#dc2626' : '#4cae2a'));
             headerIconBadge.innerHTML = renderMachineCadSilhouetteSvg(bColor);
         }
 
@@ -16870,6 +17267,21 @@ Return strictly valid JSON only without markdown formatting with this schema:
                     </div>
                 </div>
             `;
+        } else if (currentStatus === 'standby') {
+            const reason = machine.standbyReason || 'Čekání / Příprava lisu';
+            box.innerHTML = `
+                <div style="background: rgba(100, 116, 139, 0.09); border: 1.5px solid #64748b; border-radius: 7px; padding: 0.45rem 0.75rem; display: flex; align-items: center; justify-content: space-between; gap: 0.5rem;">
+                    <div style="display: flex; align-items: center; gap: 0.5rem;">
+                        <span class="mach-status-pulse-dot dot-standby"></span>
+                        <div>
+                            <div style="font-weight: 800; font-size: 0.78rem; color: #334155; letter-spacing: 0.01em;">
+                                STOJÍ: ${escapeHtml(reason.toUpperCase())}
+                            </div>
+                            <div style="font-size: 0.7rem; color: #64748b; font-weight: 600;">Lis dočasně stojí z technologických důvodů — mimo aktivní takt</div>
+                        </div>
+                    </div>
+                </div>
+            `;
         } else {
             box.innerHTML = `
                 <div style="background: rgba(34, 197, 94, 0.08); border: 1.5px solid #16a34a; border-radius: 7px; padding: 0.45rem 0.75rem; display: flex; align-items: center; justify-content: space-between; gap: 0.5rem;">
@@ -16889,10 +17301,13 @@ Return strictly valid JSON only without markdown formatting with this schema:
 
     function updateMachineStatusButtonsUI(status) {
         const btnOk = document.getElementById('mStatusBtnOk');
+        const btnStandby = document.getElementById('mStatusBtnStandby');
         const btnWarn = document.getElementById('mStatusBtnWarning');
         const btnErr = document.getElementById('mStatusBtnError');
+        const issueFormCard = document.getElementById('machineNewIssueFormCard');
+        const reasonsContainer = document.getElementById('machineStandbyReasonsContainer');
 
-        [btnOk, btnWarn, btnErr].forEach(b => {
+        [btnOk, btnStandby, btnWarn, btnErr].forEach(b => {
             if (b) {
                 b.classList.remove('active');
             }
@@ -16900,11 +17315,60 @@ Return strictly valid JSON only without markdown formatting with this schema:
 
         if (status === 'ok' && btnOk) {
             btnOk.classList.add('active');
+        } else if (status === 'standby' && btnStandby) {
+            btnStandby.classList.add('active');
         } else if (status === 'warning' && btnWarn) {
             btnWarn.classList.add('active');
         } else if (status === 'error' && btnErr) {
             btnErr.classList.add('active');
         }
+
+        // Zobrazení výběru konkrétního důvodu pouze při stavu "Stojí"
+        if (reasonsContainer) {
+            reasonsContainer.style.display = (status === 'standby') ? 'flex' : 'none';
+        }
+
+        // Formulář pro zápis nové závady se zobrazuje pouze při stavech "V chodu s problémy" nebo "Odstaveno"
+        if (issueFormCard) {
+            const shouldShow = (status === 'warning' || status === 'error');
+            issueFormCard.style.display = shouldShow ? 'flex' : 'none';
+        }
+
+        if (currentActiveMachineId) {
+            const machine = factoryMachinesData.find(m => m.id === currentActiveMachineId);
+            updateStandbyReasonChipsUI(machine ? machine.standbyReason : '');
+        }
+    }
+
+    function updateStandbyReasonChipsUI(currentReason) {
+        const chips = document.querySelectorAll('.standby-reason-chip');
+        chips.forEach(chip => {
+            const reason = chip.getAttribute('data-reason');
+            if (currentReason && reason === currentReason) {
+                chip.classList.add('active');
+            } else {
+                chip.classList.remove('active');
+            }
+        });
+    }
+
+    function setMachineStandbyReason(reason) {
+        if (!checkAuthOrPrompt()) return;
+        triggerHapticFeedback([10]);
+        const machine = factoryMachinesData.find(m => m.id === currentActiveMachineId);
+        if (!machine) return;
+
+        machine.standbyReason = reason;
+        if (machine.status !== 'standby') {
+            machine.status = 'standby';
+            updateMachineStatusButtonsUI('standby');
+        }
+        saveFactoryMachinesState();
+        updateStandbyReasonChipsUI(reason);
+        renderMachineProblemStatusBanner(machine);
+        renderGraphicFactoryMap();
+        showToast(`Důvod odstávky lisu ${machine.number}: ${reason}`);
+        logUserAction(machine.number ? `LIS_${machine.number}` : 'LIS', 'Důvod odstávky', `Důvod: ${reason}`);
     }
 
     function setMachineStatusDirectly(newStatus) {
@@ -16914,16 +17378,24 @@ Return strictly valid JSON only without markdown formatting with this schema:
         if (!machine) return;
 
         machine.status = newStatus;
+        if (newStatus === 'standby') {
+            if (!machine.standbyReason) {
+                machine.standbyReason = 'Výměna formy / Temperování';
+            }
+        } else {
+            // Při přechodu do chodu nebo jiného provozního stavu se technologický důvod odstávky ukončí a vrátí se název výrobku
+            machine.standbyReason = '';
+        }
         saveFactoryMachinesState();
         updateMachineStatusButtonsUI(newStatus);
         renderMachineProblemStatusBanner(machine);
         const headerIconBadge = document.getElementById('machDrawerIconBadge');
         if (headerIconBadge) {
-            const bColor = newStatus === 'warning' ? '#f97316' : (newStatus === 'error' ? '#dc2626' : '#4cae2a');
+            const bColor = newStatus === 'standby' ? '#64748b' : (newStatus === 'warning' ? '#f97316' : (newStatus === 'error' ? '#dc2626' : '#4cae2a'));
             headerIconBadge.innerHTML = renderMachineCadSilhouetteSvg(bColor);
         }
         renderGraphicFactoryMap();
-        const statusCzech = newStatus === 'ok' ? 'V pořádku (v chodu)' : (newStatus === 'warning' ? 'V chodu s problémy' : 'Odstaveno / Mimo provoz');
+        const statusCzech = newStatus === 'ok' ? 'V pořádku (v chodu)' : (newStatus === 'standby' ? `Stojí (${machine.standbyReason || 'Technologická odstávka'})` : (newStatus === 'warning' ? 'V chodu s problémy' : 'Odstaveno / Mimo provoz'));
         showToast(`Stav lisu ${machine.number}: ${statusCzech}`);
         logUserAction(machine.number ? `LIS_${machine.number}` : 'LIS', 'Stav lisu', `Stav lisu ${machine.number}: ${statusCzech}`);
     }
@@ -17336,8 +17808,8 @@ Return strictly valid JSON only without markdown formatting with this schema:
 
         machine.issues.unshift(newIssue);
 
-        // Pokud je závada kritická a stroj byl 'ok', přepnout na 'error'
-        if (priority === 'critical' && machine.status === 'ok') {
+        // Pokud je závada kritická a stroj nebyl odstaven, přepnout na 'error'
+        if (priority === 'critical' && machine.status !== 'error') {
             machine.status = 'error';
             updateMachineStatusButtonsUI('error');
         }

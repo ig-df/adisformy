@@ -20,6 +20,9 @@
     <link rel="preload" href="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2" as="script">
     <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
     <link rel="dns-prefetch" href="https://cdnjs.cloudflare.com">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
     <title>Adis Formy</title>
     <meta name="description" content="Systém pro evidenci a správu forem skladu závodu s vyhledáváním, sledováním údržby a exportem do Heliosu.">
     <meta property="og:title" content="Adis Formy">
@@ -334,7 +337,7 @@
             letter-spacing: 0.12em;
             color: #0f172a;
             text-transform: uppercase;
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, "Inter", "Segoe UI", Roboto, sans-serif;
         }
 
         .splash-brand-sub {
@@ -342,7 +345,7 @@
             font-weight: 600;
             color: #64748b;
             letter-spacing: 0.04em;
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, "Inter", "Segoe UI", Roboto, sans-serif;
         }
 
         .splash-status-line {
@@ -465,11 +468,19 @@
             box-sizing: border-box;
             margin: 0;
             padding: 0;
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, "Inter", "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
             -webkit-tap-highlight-color: transparent;
             -webkit-font-smoothing: antialiased;
             -moz-osx-font-smoothing: grayscale;
-            text-rendering: optimizeLegibility;
+        }
+
+        html, body {
+            font-family: -apple-system, BlinkMacSystemFont, "Inter", "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        }
+
+        /* Windows & Cross-platform crisp tabular digits & dense dashboard data */
+        table, .table-container, .dashboard-grid, .mach-grid, .molds-accordion-details, .status-pill, .tag-machine, th, td, .dash-card-value {
+            font-variant-numeric: tabular-nums;
         }
 
         /* Custom selection */
@@ -630,7 +641,7 @@
         }
 
         /* Hardware-Accelerated Off-screen Rendering for Ultra-smooth 120fps Scrolling */
-        tbody tr, .dash-card, .comment-item, .shift-plan-item {
+        tbody tr, .shift-plan-item {
             content-visibility: auto;
             contain-intrinsic-size: 0 48px;
         }
@@ -1021,8 +1032,7 @@
             opacity: 0;
             visibility: hidden;
             pointer-events: none;
-            transform: translateX(35px);
-            will-change: opacity, transform;
+            transform: translateX(25px);
             transition: opacity 0.22s ease-in-out, transform 0.22s cubic-bezier(0.16, 1, 0.3, 1);
             display: flex;
             flex-direction: column;
@@ -1032,7 +1042,8 @@
             visibility: visible;
             pointer-events: auto;
             opacity: 1;
-            transform: translateX(0);
+            transform: none !important;
+            will-change: auto !important;
         }
 
         .search-box {
@@ -1364,8 +1375,7 @@
             position: relative;
             -webkit-overflow-scrolling: touch;
             transition: min-height 0.47s cubic-bezier(0.16, 1, 0.3, 1);
-            transform: translateZ(0); /* Аппаратное ускорение и фикс обрезания sticky th по border-radius */
-            will-change: transform;
+            isolation: isolate;
             background: linear-gradient(to bottom, #f8fafc 46px, #ffffff 46px);
             scrollbar-width: none;
             -ms-overflow-style: none;
@@ -1595,6 +1605,7 @@
             cursor: pointer;
             transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
             min-height: 62px;
+            isolation: isolate;
         }
 
         .dash-card:hover {
@@ -2198,6 +2209,7 @@
             border: 1px solid var(--border-color);
             background: var(--card-bg);
             margin-left: 0.2rem;
+            isolation: isolate;
         }
 
         .status-dot { 
@@ -2214,6 +2226,8 @@
             position: relative;
             width: 7px;
             height: 7px;
+            display: inline-block;
+            isolation: isolate;
         }
 
         .dash-card .status-dot::after,
@@ -2226,22 +2240,28 @@
             height: 100%;
             border-radius: 50%;
             background-color: inherit;
-            transform: translate(-50%, -50%);
+            transform: translate3d(-50%, -50%, 0);
+            -webkit-transform: translate3d(-50%, -50%, 0);
             animation: statusRadialPulse 1.5s cubic-bezier(0.22, 1, 0.36, 1) infinite;
             pointer-events: none;
+            will-change: transform, opacity;
+            contain: strict;
         }
 
         @keyframes statusRadialPulse {
             0% {
-                transform: translate(-50%, -50%) scale(1);
+                transform: translate3d(-50%, -50%, 0) scale(1);
+                -webkit-transform: translate3d(-50%, -50%, 0) scale(1);
                 opacity: 0.9;
             }
             85% {
-                transform: translate(-50%, -50%) scale(3.4);
+                transform: translate3d(-50%, -50%, 0) scale(3.4);
+                -webkit-transform: translate3d(-50%, -50%, 0) scale(3.4);
                 opacity: 0;
             }
             100% {
-                transform: translate(-50%, -50%) scale(3.5);
+                transform: translate3d(-50%, -50%, 0) scale(3.5);
+                -webkit-transform: translate3d(-50%, -50%, 0) scale(3.5);
                 opacity: 0;
             }
         }
@@ -2290,6 +2310,67 @@
         .pos-h { background-color: #9a3412 !important; color: #ffffff !important; }
         .pos-externi { background-color: #7c2d12 !important; color: #ffffff !important; }
 
+        /* Jemný pulzující stav V Nástrojárně ve stylu badge-position */
+        @keyframes pulse-nastrojarna-subtle {
+            0%, 100% {
+                box-shadow: 0 1px 2px rgba(15, 23, 42, 0.08), 0 0 0 0 rgba(220, 38, 38, 0.45);
+            }
+            50% {
+                box-shadow: 0 1px 3px rgba(15, 23, 42, 0.12), 0 0 0 4px rgba(220, 38, 38, 0);
+            }
+        }
+
+        @keyframes pulse-dot-soft {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.35; transform: scale(0.8); }
+        }
+
+        .pos-nastrojarna {
+            background-color: #dc2626 !important;
+            color: #ffffff !important;
+            border: 1px solid #b91c1c !important;
+            display: inline-flex !important;
+            align-items: center !important;
+            gap: 0.32rem !important;
+            font-family: inherit !important;
+            letter-spacing: 0.015em !important;
+            text-transform: none !important;
+            animation: pulse-nastrojarna-subtle 2.2s infinite ease-in-out;
+        }
+
+        .pos-nastrojarna .pulse-dot-red,
+        .tag-nastrojarna .pulse-dot-red {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background-color: #ffffff;
+            box-shadow: 0 0 3px rgba(255, 255, 255, 0.9);
+            animation: pulse-dot-soft 1.4s infinite ease-in-out;
+            display: inline-block;
+            flex-shrink: 0;
+        }
+
+        .tag-nastrojarna {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.3rem;
+            padding: 0.18rem 0.45rem;
+            font-size: 0.72rem;
+            font-weight: 600;
+            border-radius: 6px;
+            color: #ffffff !important;
+            background-color: #dc2626 !important;
+            border: 1px solid #b91c1c !important;
+            white-space: nowrap;
+            letter-spacing: normal;
+            text-transform: none !important;
+            animation: pulse-nastrojarna-subtle 2.2s infinite ease-in-out;
+            user-select: none;
+            -webkit-user-select: none;
+            line-height: 1.2;
+            cursor: pointer;
+        }
+
         .comments-section {
             margin-top: 0.45rem;
             display: flex;
@@ -2300,7 +2381,7 @@
         }
 
         .comment-item { 
-            background: rgba(241, 245, 249, 0.65);
+            background: #f1f5f9;
             border-left: 3px solid #cbd5e1;
             border-radius: 6px;
             padding: 0.35rem 0.5rem;
@@ -2310,10 +2391,11 @@
             cursor: pointer;
             transition: all 0.15s ease;
             position: relative;
+            isolation: isolate;
         }
 
         .comment-item:hover {
-            background-color: rgba(226, 232, 240, 0.85);
+            background-color: #e2e8f0;
             border-left-color: #3b82f6;
         }
 
@@ -4907,7 +4989,7 @@
         .mach-num {
             font-size: 0.94rem;
             font-weight: 800;
-            font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", Roboto, sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, "Inter", "SF Pro Display", "Segoe UI", Roboto, sans-serif;
             font-variant-numeric: tabular-nums;
             color: #0f172a;
             line-height: 1;
@@ -4972,7 +5054,7 @@
             border-radius: 4px;
             font-size: 0.65rem;
             font-weight: 700;
-            font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", Roboto, sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, "Inter", "SF Pro Text", "Segoe UI", Roboto, sans-serif;
             font-variant-numeric: tabular-nums;
             padding: 0 4px;
             height: 16px;
@@ -5017,7 +5099,7 @@
             font-size: 0.58rem;
             font-weight: 600;
             color: #334155;
-            font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", Roboto, sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, "Inter", "SF Pro Text", "Segoe UI", Roboto, sans-serif;
             line-height: 1.1;
             overflow: hidden;
             text-overflow: ellipsis;
@@ -5251,7 +5333,7 @@
             font-size: 0.72rem;
             padding: 1.5px 5.5px;
             border-radius: 4px;
-            font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", Roboto, sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, "Inter", "SF Pro Text", "Segoe UI", Roboto, sans-serif;
             font-variant-numeric: tabular-nums;
             flex-shrink: 0;
             min-width: 46px;
@@ -6057,7 +6139,7 @@
         </svg>
         <span class="corner-badge-counter" id="shiftPlanBadge" style="display: none;">0</span>
     </button>
-    <button class="floating-corner-btn" tabindex="0" onclick="openDirectProdModal()" title="Forma po výrobě (Mezisklad)">
+    <button class="floating-corner-btn" tabindex="0" onclick="openDirectProdModal()" title="Odeslat formu do nástrojárny / po výrobě">
         <img src="data:image/png;base64,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" alt="Forma po výrobě">
     </button>
 </div>
@@ -6689,8 +6771,22 @@
         <div class="modal-header"><h3 id="viewCommentTitle">Detail poznámky</h3><button class="close-modal-btn" onclick="closeViewCommentModal()">✕</button></div>
         <div class="modal-body">
             <div class="form-group">
-                <label id="viewCommentMeta" style="font-size: 0.78rem; color: var(--text-muted);"></label>
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.35rem;">
+                    <label id="viewCommentMeta" style="font-size: 0.78rem; color: var(--text-muted); margin: 0;"></label>
+                    <button type="button" class="accordion-edit-trigger-btn" id="viewCommentEditBtn" onclick="startCommentEdit()" style="padding: 0.22rem 0.55rem; font-size: 0.75rem;">
+                        <span>Upravit</span>
+                    </button>
+                </div>
                 <div id="viewCommentDisplay" style="padding: 0.85rem; background: var(--row-hover); border: 1px solid var(--border-color); border-radius: 8px; white-space: pre-wrap; font-size: 0.88rem; color: var(--text-main);"></div>
+                
+                <div id="viewCommentEditBox" style="display: none; flex-direction: column; gap: 0.5rem; margin-top: 0.25rem;">
+                    <textarea id="viewCommentEditText" rows="3" spellcheck="false" autocorrect="off" autocapitalize="none" autocomplete="off" data-gramm="false" data-enable-grammarly="false" style="width: 100%; padding: 0.6rem; border: 1.5px solid var(--border-color); border-radius: 8px; background: var(--input-bg); color: var(--text-main); font-size: 0.88rem; box-sizing: border-box; resize: vertical;"></textarea>
+                    <div style="display: flex; gap: 0.4rem; justify-content: flex-end;">
+                        <button type="button" class="btn-secondary" style="font-size: 0.78rem; padding: 0.35rem 0.7rem;" onclick="cancelCommentEdit()">Zrušit</button>
+                        <button type="button" class="btn-primary" style="font-size: 0.78rem; padding: 0.35rem 0.85rem;" onclick="saveCommentEdit()">Uložit změny</button>
+                    </div>
+                </div>
+
                 <div id="viewCommentPhotosBox" style="margin-top: 0.75rem; display: none;">
                     <label style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 0.35rem; display: block;">Fotografie závady:</label>
                     <div id="viewCommentPhotosContainer" class="accordion-photo-box"></div>
@@ -6815,6 +6911,7 @@
         <div class="modal-body">
             <div class="form-group"><label>Pozice:</label>
                 <div class="autocomplete-wrapper"><input type="text" id="fullEditPositionInput" class="position-input" autocomplete="off" oninput="onPositionInput(this)" autocapitalization="sentences" autocapitalize="sentences"><div id="fullEditPositionInputDropdown" class="autocomplete-dropdown"></div></div>
+                <div id="fullEditPrevPosHint" style="display: none; font-size: 0.78rem; color: var(--text-muted); margin-top: 0.35rem; padding: 0.25rem 0.45rem; background: var(--row-hover); border-radius: 4px;"></div>
             </div>
             <div class="form-group"><label>Stav formy:</label>
                 <select id="fullEditStatusSelect" onchange="onStatusSelectChange(this)">
@@ -6826,7 +6923,6 @@
                     <option value="Na opravě pryč">Na opravě pryč</option>
                 </select>
             </div>
-            <div class="form-group" style="flex-direction: row; align-items: center; gap: 0.5rem;"><input type="checkbox" id="autoMeziskladCheckbox" style="width: 18px; height: 18px;"><label for="autoMeziskladCheckbox">Přesunout na Mezisklad</label></div>
         </div>
         <div class="modal-footer" style="display: flex; justify-content: space-between; align-items: center;">
             <button type="button" id="fullEditDeleteBtn" class="btn-danger" style="display: flex; align-items: center; gap: 0.35rem; padding: 0.45rem 0.8rem; font-size: 0.82rem;" onclick="deleteCurrentEditMold()">
@@ -6841,7 +6937,7 @@
 <div class="modal-overlay" id="commentModal">
     <div class="modal-card" style="max-width: 420px;">
         <div class="modal-header"><h3 id="commentModalTitle">Přidat poznámku</h3><button class="close-modal-btn" onclick="closeCommentModal()">✕</button></div>
-        <div class="modal-body"><div class="form-group"><label>Poznámka / Důležitá informace:</label><textarea id="commentText" rows="4" autocapitalization="sentences" autocapitalize="sentences"></textarea></div></div>
+        <div class="modal-body"><div class="form-group"><label>Poznámka / Důležitá informace:</label><textarea id="commentText" rows="4" spellcheck="false" autocorrect="off" autocapitalize="none" autocomplete="off" data-gramm="false" data-enable-grammarly="false"></textarea></div></div>
         <div class="modal-footer"><button class="btn-secondary" onclick="closeCommentModal()">Zrušit</button><button id="btnCommentSubmit" class="btn-primary" onclick="submitComment()">Přidat poznámku</button></div>
     </div>
 </div>
@@ -6856,7 +6952,7 @@
 
 <div class="modal-overlay" id="directProdModal">
     <div class="modal-card" style="max-width: 440px;">
-        <div class="modal-header"><h3>Forma po výrobě</h3><button class="close-modal-btn" onclick="closeDirectProdModal()">✕</button></div>
+        <div class="modal-header"><h3>Odeslat formu do nástrojárny</h3><button class="close-modal-btn" onclick="closeDirectProdModal()">✕</button></div>
         <div class="modal-body">
             <div class="form-group"><label>Číslo formy:</label><input type="text" id="directProdMoldId" autocomplete="off" autocapitalization="none" autocapitalize="none"></div>
             
@@ -6865,11 +6961,11 @@
                 <select id="directProdStatus">
                     <option value="Ve frontě na údržbu">Ve frontě na údržbu</option>
                     <option value="Ve frontě na opravu">Ve frontě na opravu</option>
-                    <option value="Na opravě pryč">Na opravě pryč (Mezisklad Externí)</option>
+                    <option value="Na opravě pryč">Na opravě pryč (Externí oprava)</option>
                 </select>
             </div>
 
-            <div class="form-group"><label>Poznámka / Problémy (nepovinné):</label><textarea id="directProdComment" rows="3" autocapitalization="sentences" autocapitalize="sentences" placeholder="Popište vzniklý problém..."></textarea></div>
+            <div class="form-group"><label>Poznámka / Problémy (nepovinné):</label><textarea id="directProdComment" rows="3" spellcheck="false" autocorrect="off" autocapitalize="none" autocomplete="off" data-gramm="false" data-enable-grammarly="false" placeholder="Popište vzniklý problém..."></textarea></div>
 
             <div class="form-group">
                 <label>Fotografie závady (max 2 fotky):</label>
@@ -6883,7 +6979,7 @@
                 </div>
             </div>
         </div>
-        <div class="modal-footer"><button class="btn-secondary" onclick="closeDirectProdModal()">Zrušit</button><button id="btnDirectSubmit" class="btn-primary" onclick="executeDirectProductionMove()">Odeslat do meziskladu</button></div>
+        <div class="modal-footer"><button class="btn-secondary" onclick="closeDirectProdModal()">Zrušit</button><button id="btnDirectSubmit" class="btn-primary" onclick="executeDirectProductionMove()">Odeslat do nástrojárny</button></div>
     </div>
 </div>
 
@@ -7322,7 +7418,7 @@
                     <div style="font-size: 0.78rem; font-weight: 700; color: var(--text-main);">
                         + Zapsat novou závadu nebo servisní poznámku:
                     </div>
-                    <textarea id="newIssueTextInput" placeholder="Popište zjištěnou závadu, únik oleje, teplotu, poškození..." rows="2" style="width: 100%; padding: 0.5rem; font-size: 0.84rem; border: 1px solid var(--border-color); border-radius: 6px; background: var(--input-bg); color: var(--text-main); resize: vertical; box-sizing: border-box;"></textarea>
+                    <textarea id="newIssueTextInput" placeholder="Popište zjištěnou závadu, únik oleje, teplotu, poškození..." rows="2" spellcheck="false" autocorrect="off" autocapitalize="none" autocomplete="off" data-gramm="false" data-enable-grammarly="false" style="width: 100%; padding: 0.5rem; font-size: 0.84rem; border: 1px solid var(--border-color); border-radius: 6px; background: var(--input-bg); color: var(--text-main); resize: vertical; box-sizing: border-box;"></textarea>
                     
                     <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.5rem;">
                         <div style="display: flex; align-items: center; gap: 0.75rem; font-size: 0.76rem; color: var(--text-muted);">
@@ -7514,13 +7610,28 @@
     }
 
     let toastTimer = null;
+    function clearToast() {
+        if (toastTimer) {
+            clearTimeout(toastTimer);
+            toastTimer = null;
+        }
+        const toast = document.getElementById('toastNotification');
+        if (toast) {
+            toast.classList.remove('show');
+            toast.classList.remove('toast-error');
+        }
+    }
+
     function showToast(message, isError = false) {
         let toast = document.getElementById('toastNotification');
         if (!toast) {
             toast = document.createElement('div');
             toast.id = 'toastNotification';
             toast.className = 'toast-notification';
+            toast.onclick = () => clearToast();
             document.body.appendChild(toast);
+        } else {
+            toast.onclick = () => clearToast();
         }
 
         toast.textContent = message;
@@ -7539,8 +7650,8 @@
         });
 
         toastTimer = setTimeout(() => {
-            toast.classList.remove('show');
-        }, 2600);
+            clearToast();
+        }, 3200);
     }
 
     async function resetAppToHomeState() {
@@ -8021,6 +8132,27 @@
             console.error("Chyba při načítání relací:", e);
             container.innerHTML = '<div style="font-size: 0.78rem; color: var(--error-badge);">Chyba načítání dat.</div>';
         }
+    }
+
+    function normalizeMoldId(id) {
+        if (!id && id !== 0) return '';
+        const s = String(id).trim();
+        const stripped = s.replace(/^0+([0-9]+)$/, '$1');
+        return stripped || s;
+    }
+
+    function findMoldInDatabase(inputVal) {
+        if (!inputVal && inputVal !== 0) return null;
+        const raw = String(inputVal).trim();
+        if (!raw) return null;
+        let found = rawDatabase.find(i => String(i[0]).trim() === raw);
+        if (found) return found;
+        found = rawDatabase.find(i => String(i[0]).trim().toLowerCase() === raw.toLowerCase());
+        if (found) return found;
+        const normInput = normalizeMoldId(raw);
+        found = rawDatabase.find(i => normalizeMoldId(i[0]) === normInput);
+        if (found) return found;
+        return null;
     }
 
     let currentUserActivityData = [];
@@ -9141,13 +9273,24 @@
         window.addEventListener('resize', updateTabIndicator);
 
         setInterval(pingUserPresence, 2 * 60 * 1000);
+        window.addEventListener('unhandledrejection', (event) => {
+            if (event && event.reason) {
+                console.warn('Background network promise event handled:', event.reason);
+            }
+            event.preventDefault();
+        });
+
         document.addEventListener('visibilitychange', () => {
+            clearToast();
             if (document.visibilityState === 'visible') {
                 pingUserPresence();
                 updateOnlineBadge();
                 refreshUserSessionActivity();
             }
         });
+
+        window.addEventListener('pageshow', () => { clearToast(); });
+        window.addEventListener('focus', () => { clearToast(); });
 
         // ----------------------------------------------------------------------------------
         // ZERO-JANK TIME-SLICED BACKGROUND HYDRATION (120 FPS FLIGHT + INSTANT UI READY):
@@ -9357,7 +9500,10 @@
         if (label) label.textContent = `Forma č. ${moldId} (stávající: ${currentCustomer}):`;
         const select = document.getElementById('modalCustomerSelect');
         if (select) {
-            select.innerHTML = customersList.map(c => `<option value="${escapeHtml(c.name)}" ${c.name === currentCustomer ? 'selected' : ''}>${escapeHtml(c.name)}</option>`).join('');
+            select.innerHTML = customersList.map(c => {
+                const isSelected = String(c.name || '').trim().toLowerCase() === String(currentCustomer || '').trim().toLowerCase();
+                return `<option value="${escapeHtml(c.name)}" ${isSelected ? 'selected' : ''}>${escapeHtml(c.name)}</option>`;
+            }).join('');
         }
         showModalAnimated('customerModal');
     }
@@ -9373,21 +9519,33 @@
         const newCustomer = document.getElementById('modalCustomerSelect').value;
         if (!activeCustomerChangeMoldId) return;
 
+        const targetMoldStr = String(activeCustomerChangeMoldId || '').trim();
+        const normId = normalizeMoldId(targetMoldStr);
+
         isSubmittingAction = true;
         closeCustomerModal();
 
-        const itemIdx = rawDatabase.findIndex(i => String(i[0]) === String(activeCustomerChangeMoldId));
+        let itemIdx = rawDatabase.findIndex(i => String(i[0]).trim() === targetMoldStr);
+        if (itemIdx === -1 && normId) {
+            itemIdx = rawDatabase.findIndex(i => normalizeMoldId(i[0]) === normId);
+        }
+
+        let dbMoldId = targetMoldStr;
         let oldCust = 'Neznámý';
         if (itemIdx !== -1) {
-            oldCust = rawDatabase[itemIdx][2];
+            dbMoldId = String(rawDatabase[itemIdx][0]);
+            oldCust = rawDatabase[itemIdx][2] || 'Neznámý';
             rawDatabase[itemIdx][2] = newCustomer;
             refreshUI();
+        } else {
+            refreshUI();
         }
+
         showToast(`Zákazník změněn na ${newCustomer}`);
 
         try {
-            await Promise.all([
-                fetch(`${API_URL}/rest/v1/molds?id=eq.${activeCustomerChangeMoldId}`, {
+            const patchPromises = [
+                fetch(`${API_URL}/rest/v1/molds?id=eq.${encodeURIComponent(dbMoldId)}`, {
                     method: 'PATCH',
                     headers: { 'apikey': API_KEY, 'Authorization': `Bearer ${API_KEY}`, 'Content-Type': 'application/json', 'Prefer': 'return=minimal' },
                     body: JSON.stringify({ customer: newCustomer })
@@ -9395,9 +9553,21 @@
                 fetch(`${API_URL}/rest/v1/mold_logs`, {
                     method: 'POST',
                     headers: { 'apikey': API_KEY, 'Authorization': `Bearer ${API_KEY}`, 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ mold_id: activeCustomerChangeMoldId, old_position: `Zákazník: ${oldCust}`, new_position: `Zákazník: ${newCustomer}`, user_name: currentUser })
+                    body: JSON.stringify({ mold_id: dbMoldId, old_position: `Zákazník: ${oldCust}`, new_position: `Zákazník: ${newCustomer}`, user_name: currentUser })
                 })
-            ]);
+            ];
+
+            if (targetMoldStr !== dbMoldId) {
+                patchPromises.push(
+                    fetch(`${API_URL}/rest/v1/molds?id=eq.${encodeURIComponent(targetMoldStr)}`, {
+                        method: 'PATCH',
+                        headers: { 'apikey': API_KEY, 'Authorization': `Bearer ${API_KEY}`, 'Content-Type': 'application/json', 'Prefer': 'return=minimal' },
+                        body: JSON.stringify({ customer: newCustomer })
+                    })
+                );
+            }
+
+            await Promise.all(patchPromises);
         } catch (e) { console.error(e); }
         finally { setTimeout(() => { isSubmittingAction = false; }, 800); }
     }
@@ -10390,6 +10560,22 @@
         finally { isSubmittingAction = false; }
     }
 
+    function isMoldInNastrojarna(status) {
+        if (!status) return false;
+        const s = String(status).trim().toLowerCase();
+        if (s.includes('po údržbě') || s.includes('po udrzbe')) return false;
+        return s.includes('frontě na údržbu') || s.includes('fronte na udrzbe') ||
+               s.includes('frontě na opravu') || s.includes('fronte na opravu') ||
+               s.includes('na údržbě') || s.includes('na udrzbe') ||
+               s.includes('na opravě') || s.includes('na oprave') ||
+               s.includes('nástrojárn') || s.includes('nastrojarn');
+    }
+
+    function renderNastrojarnaTag(status) {
+        if (!isMoldInNastrojarna(status)) return '';
+        return '<span class="tag-nastrojarna" title="Forma je fyzicky v nástrojárně"><span class="pulse-dot-red"></span>V Nástrojárně</span>';
+    }
+
     function getPositionBadgeClass(pos) {
         const p = String(pos || "").trim().toLowerCase();
         if (p.includes("externí") || p.includes("externi")) return 'badge-position pos-externi';
@@ -10460,6 +10646,8 @@
                 if (typeof isFullDatabaseRendered !== 'undefined' && !isFullDatabaseRendered) {
                     renderFullDatabase(true);
                 }
+            } else if (tabName === 'dashboard') {
+                renderDashboard();
             }
             setTimeout(() => { isTabTransitioning = false; }, 220);
         }
@@ -13454,16 +13642,18 @@ Return strictly valid JSON only without markdown formatting with this schema:
         if (listContainer) {
             listContainer.innerHTML = molds.map(m => {
                 const [num, pos, cust, status, isDel, pName, photos, navodka, prevPos] = m;
-                const badgeClass = getPositionBadgeClass(pos);
-                const displayPos = formatPositionDisplay(pos);
+                const inNastrojarna = isMoldInNastrojarna(status);
+                const posBadgeHtml = inNastrojarna 
+                    ? `<span class="badge-position pos-nastrojarna" style="margin: 0; font-size: 0.74rem;"><span class="pulse-dot-red"></span>V Nástrojárně</span>`
+                    : `<span class="${getPositionBadgeClass(pos)}" style="margin: 0; font-size: 0.78rem;">${escapeHtml(formatPositionDisplay(pos))}</span>`;
                 return `
                     <div class="scanner-multi-item" onclick="scannerOpenSpecificMold('${escapeHtml(num)}')">
                         <div class="scanner-multi-item-left">
                             <span class="scanner-multi-mold-num">#${escapeHtml(num)}</span>
                             <span class="scanner-multi-cust">${escapeHtml(cust || 'Bez zákazníka')}</span>
                         </div>
-                        <div class="scanner-multi-item-right">
-                            <span class="${badgeClass}" style="margin: 0; font-size: 0.78rem;">${escapeHtml(displayPos)}</span>
+                        <div class="scanner-multi-item-right" style="display: flex; align-items: center; gap: 0.4rem;">
+                            ${posBadgeHtml}
                             <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="#94a3b8" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
                                 <polyline points="9 18 15 12 9 6"></polyline>
                             </svg>
@@ -13586,8 +13776,10 @@ Return strictly valid JSON only without markdown formatting with this schema:
             const [num, pos, cust, status, isDel, pName] = m;
             const idStr = String(num);
             const isSelected = scannerSelectedBatchMoldIds.has(idStr);
-            const badgeClass = getPositionBadgeClass(pos);
-            const displayPos = formatPositionDisplay(pos);
+            const inNastrojarna = isMoldInNastrojarna(status);
+            const posBadgeHtml = inNastrojarna 
+                ? `<span class="badge-position pos-nastrojarna" style="margin: 0; font-size: 0.72rem;"><span class="pulse-dot-red"></span>V Nástrojárně</span>`
+                : `<span class="${getPositionBadgeClass(pos)}" style="margin: 0; font-size: 0.74rem;">${escapeHtml(formatPositionDisplay(pos))}</span>`;
             const machineNum = m._machine ? String(m._machine) : '';
 
             return `
@@ -13597,7 +13789,7 @@ Return strictly valid JSON only without markdown formatting with this schema:
                         <div>
                             <div style="display: flex; align-items: center; gap: 0.4rem; flex-wrap: wrap;">
                                 <span style="font-weight: 800; font-size: 0.96rem; color: #f8fafc; font-family: monospace;">#${escapeHtml(idStr)}</span>
-                                <span class="${badgeClass}" style="margin: 0; font-size: 0.74rem;">${escapeHtml(displayPos)}</span>
+                                ${posBadgeHtml}
                                 ${machineNum ? `<span style="background: #0f172a; color: #38bdf8; font-weight: 700; font-size: 0.7rem; padding: 0.12rem 0.45rem; border-radius: 4px; font-family: monospace; border: 1px solid #334155;">STROJ ${escapeHtml(machineNum)}</span>` : ''}
                             </div>
                             <div style="font-size: 0.78rem; color: #94a3b8; margin-top: 2px;">
@@ -13868,11 +14060,85 @@ Return strictly valid JSON only without markdown formatting with this schema:
         }
     }
 
+    function startCommentEdit() {
+        if (!activeViewCommentId) return;
+        const commentObj = allComments.find(c => String(c.id) === String(activeViewCommentId));
+        if (!commentObj) return;
+
+        const displayEl = document.getElementById('viewCommentDisplay');
+        const editBox = document.getElementById('viewCommentEditBox');
+        const editText = document.getElementById('viewCommentEditText');
+        const editBtn = document.getElementById('viewCommentEditBtn');
+
+        if (displayEl) displayEl.style.display = 'none';
+        if (editBox) editBox.style.display = 'flex';
+        if (editText) {
+            editText.value = commentObj.comment || '';
+            editText.focus();
+        }
+        if (editBtn) editBtn.style.display = 'none';
+    }
+
+    function cancelCommentEdit() {
+        const displayEl = document.getElementById('viewCommentDisplay');
+        const editBox = document.getElementById('viewCommentEditBox');
+        const editBtn = document.getElementById('viewCommentEditBtn');
+
+        if (displayEl) displayEl.style.display = 'block';
+        if (editBox) editBox.style.display = 'none';
+        if (editBtn) editBtn.style.display = 'inline-flex';
+    }
+
+    async function saveCommentEdit() {
+        if (!checkAuthOrPrompt() || !activeViewCommentId || isSubmittingAction) return;
+        const editText = document.getElementById('viewCommentEditText');
+        if (!editText) return;
+        const newText = editText.value.trim();
+        if (!newText) {
+            alert("Poznámka nemůže být prázdná!");
+            return;
+        }
+
+        const commentObj = allComments.find(c => String(c.id) === String(activeViewCommentId));
+        if (!commentObj) return;
+
+        isSubmittingAction = true;
+        try {
+            const { error } = await supabaseClient
+                .from('mold_comments')
+                .update({ comment: newText })
+                .eq('id', activeViewCommentId);
+
+            if (error) {
+                await fetch(`${API_URL}/rest/v1/mold_comments?id=eq.${encodeURIComponent(activeViewCommentId)}`, {
+                    method: 'PATCH',
+                    headers: { 'apikey': API_KEY, 'Authorization': `Bearer ${API_KEY}`, 'Content-Type': 'application/json', 'Prefer': 'return=minimal' },
+                    body: JSON.stringify({ comment: newText })
+                });
+            }
+
+            commentObj.comment = newText;
+            const displayEl = document.getElementById('viewCommentDisplay');
+            if (displayEl) displayEl.textContent = newText;
+            cancelCommentEdit();
+            refreshUI();
+            showToast("Poznámka byla upravena");
+        } catch (e) {
+            console.error("Chyba při ukládání poznámky:", e);
+            showToast("Chyba při ukládání poznámky", true);
+        } finally {
+            isSubmittingAction = false;
+        }
+    }
+
     function openViewCommentModal(commentId) {
         const commentObj = allComments.find(c => String(c.id) === String(commentId));
         if (!commentObj) return;
 
         activeViewCommentId = commentId;
+        cancelCommentEdit();
+        const editBtn = document.getElementById('viewCommentEditBtn');
+        if (editBtn) editBtn.innerHTML = `${ACCORDION_EDIT_ICON_HTML} <span>Upravit</span>`;
         document.getElementById('viewCommentTitle').textContent = `Detail poznámky ${commentObj.mold_id}`;
         document.getElementById('viewCommentMeta').textContent = `Autor: ${commentObj.user_name || 'Neznámý'} | ${new Date(commentObj.created_at).toLocaleString('cs-CZ')}`;
         document.getElementById('viewCommentDisplay').textContent = commentObj.comment || '';
@@ -13902,6 +14168,7 @@ Return strictly valid JSON only without markdown formatting with this schema:
     }
 
     function closeViewCommentModal() {
+        cancelCommentEdit();
         hideModalAnimated('viewCommentModal');
         activeViewCommentId = null;
     }
@@ -13911,13 +14178,20 @@ Return strictly valid JSON only without markdown formatting with this schema:
         activeEditMoldId = moldId;
         activeEditOldPos = currentPos;
         
+        const itm = rawDatabase.find(i => String(i[0]) === String(moldId));
         let fallbackPos = currentPos;
-        if (currentPos.toLowerCase().includes('mezisklad')) {
-            const itm = rawDatabase.find(i => String(i[0]) === String(moldId));
-            fallbackPos = (itm && itm[8]) ? itm[8] : '';
+        const prevPos = (itm && itm[8]) ? itm[8] : '';
+        if (currentPos.toLowerCase().includes('mezisklad') && prevPos) {
+            fallbackPos = prevPos;
+        } else if (prevPos && isMoldInNastrojarna(itm ? itm[3] : '')) {
+            fallbackPos = prevPos;
         }
 
-        document.getElementById('positionModalLabel').textContent = `Forma č. ${moldId} (stávající: ${currentPos}):`;
+        const isNastrojarna = itm && isMoldInNastrojarna(itm[3]);
+        const displayLabel = isNastrojarna 
+            ? `Forma č. ${moldId} (V Nástrojárně${prevPos ? ` — původně: ${prevPos}` : ''}):` 
+            : `Forma č. ${moldId} (stávající: ${currentPos}):`;
+        document.getElementById('positionModalLabel').textContent = displayLabel;
         const inputEl = document.getElementById('modalPositionInput');
         inputEl.value = fallbackPos;
         
@@ -13938,7 +14212,10 @@ Return strictly valid JSON only without markdown formatting with this schema:
         if (isSubmittingAction) return;
         const newPos = autoDotPosition(document.getElementById('modalPositionInput').value);
         if (!newPos) { alert("Zadejte pozici!"); return; }
-        if (newPos === activeEditOldPos) { closePositionModal(); return; }
+        if (newPos === activeEditOldPos && !isMoldInNastrojarna(rawDatabase.find(i => String(i[0]) === String(activeEditMoldId))?.[3])) { 
+            closePositionModal(); 
+            return; 
+        }
 
         isSubmittingAction = true;
         closePositionModal();
@@ -13956,7 +14233,16 @@ Return strictly valid JSON only without markdown formatting with this schema:
             }
             rawDatabase[itemIdx][1] = newPos;
             rawDatabase[itemIdx][8] = prevPosToSave;
-            updateBody = { position: newPos, previous_position: prevPosToSave };
+            
+            // If the mold was in tool shop and toolmaker returns it to a rack position, also set status to Po údržbě!
+            let newStatus = rawDatabase[itemIdx][3];
+            if (isMoldInNastrojarna(newStatus) && !newPos.toLowerCase().includes('mezisklad')) {
+                newStatus = 'Po údržbě';
+                rawDatabase[itemIdx][3] = newStatus;
+                updateBody.status = newStatus;
+            }
+            updateBody.position = newPos;
+            updateBody.previous_position = prevPosToSave;
             refreshUI();
         }
         showToast(`Pozice změněna na ${newPos}`);
@@ -14035,7 +14321,7 @@ Return strictly valid JSON only without markdown formatting with this schema:
             if (!file._previewUrl) file._previewUrl = URL.createObjectURL(file);
             return `
                 <div class="accordion-thumb-wrapper" style="border-color: #3b82f6;">
-                    <img src="${file._previewUrl}" class="accordion-thumb">
+                    <img src="${file._previewUrl}" class="accordion-thumb" onerror="this.style.display='none'">
                     <button type="button" class="accordion-thumb-remove" onclick="removeDirectProdFile(${idx})">&times;</button>
                 </div>
             `;
@@ -14050,46 +14336,54 @@ Return strictly valid JSON only without markdown formatting with this schema:
             document.activeElement.blur();
         }
         if (isSubmittingAction) return;
-        const moldId = document.getElementById('directProdMoldId').value.trim();
+        const rawMoldInput = document.getElementById('directProdMoldId').value.trim();
         const selectedStatus = document.getElementById('directProdStatus').value;
         const commentText = document.getElementById('directProdComment').value.trim();
 
-        if (!moldId) { alert("Zadejte číslo formy!"); return; }
+        if (!rawMoldInput) { alert("Zadejte číslo formy!"); return; }
 
-        isSubmittingAction = true;
-        const existing = rawDatabase.find(i => String(i[0]) === moldId);
-        const oldPos = existing ? existing[1] : 'Neznámá';
-        closeDirectProdModal();
-
-        let targetPosition = 'Mezisklad';
-        if (selectedStatus === 'Na opravě pryč') targetPosition = 'Mezisklad Externí';
-
-        let prevPosToSave = existing ? existing[8] : '';
-        if (oldPos && !oldPos.toLowerCase().includes('mezisklad')) prevPosToSave = oldPos;
-
-        if (existing) {
-            existing[1] = targetPosition; 
-            existing[3] = selectedStatus;
-            existing[8] = prevPosToSave;
+        const existing = findMoldInDatabase(rawMoldInput);
+        if (!existing) {
+            alert(`Forma "${rawMoldInput}" nebyla nalezena v databázi! Zkontrolujte zadané číslo.`);
+            return;
         }
 
-        showToast(`Forma ${moldId} přesunuta na ${targetPosition}`);
+        const canonicalMoldId = String(existing[0]).trim();
+        const oldPos = existing[1] || 'Neznámá';
+
+        // Capture pending files before closing modal so they are not wiped!
+        const filesToUpload = [...directProdPendingFiles];
+        directProdPendingFiles = [];
+        hideModalAnimated('directProdModal');
+
+        let targetPosition = oldPos;
+        let prevPosToSave = existing[8] || '';
+        if (oldPos && !oldPos.toLowerCase().includes('mezisklad')) prevPosToSave = oldPos;
+
+        existing[1] = targetPosition; 
+        existing[3] = selectedStatus;
+        existing[8] = prevPosToSave;
+
+        showToast(`Forma #${canonicalMoldId} odeslána do nástrojárny (${selectedStatus})`);
 
         let uploadedPhotoUrls = [];
-        for (let file of directProdPendingFiles) {
+        for (let file of filesToUpload) {
             const cleanOrigName = sanitizeFileName(file.name || "photo.jpg");
-            const fileName = `defect_${moldId}_${Date.now()}_${cleanOrigName}`;
-            const { error } = await supabaseClient.storage.from('mold-photos').upload(fileName, file, { upsert: true });
-            if (!error) {
+            const fileName = `defect_${canonicalMoldId}_${Date.now()}_${cleanOrigName}`;
+            const { data: uploadData, error: uploadErr } = await supabaseClient.storage.from('mold-photos').upload(fileName, file, { upsert: true });
+            if (!uploadErr) {
                 const { data } = supabaseClient.storage.from('mold-photos').getPublicUrl(fileName);
-                uploadedPhotoUrls.push(data.publicUrl);
+                if (data && data.publicUrl) {
+                    uploadedPhotoUrls.push(data.publicUrl);
+                }
+            } else {
+                console.error("Chyba při nahrávání fotografie vady:", uploadErr);
             }
             if (file._previewUrl) URL.revokeObjectURL(file._previewUrl);
         }
-        directProdPendingFiles = [];
 
         try {
-            await fetch(`${API_URL}/rest/v1/molds?id=eq.${moldId}`, {
+            await fetch(`${API_URL}/rest/v1/molds?id=eq.${encodeURIComponent(canonicalMoldId)}`, {
                 method: 'PATCH',
                 headers: { 'apikey': API_KEY, 'Authorization': `Bearer ${API_KEY}`, 'Content-Type': 'application/json', 'Prefer': 'return=minimal' },
                 body: JSON.stringify({ position: targetPosition, status: selectedStatus, previous_position: prevPosToSave })
@@ -14098,7 +14392,7 @@ Return strictly valid JSON only without markdown formatting with this schema:
             await fetch(`${API_URL}/rest/v1/mold_logs`, {
                 method: 'POST',
                 headers: { 'apikey': API_KEY, 'Authorization': `Bearer ${API_KEY}`, 'Content-Type': 'application/json' },
-                body: JSON.stringify({ mold_id: moldId, old_position: `Pozice: ${oldPos}`, new_position: `Pozice: ${targetPosition}, Stav: ${selectedStatus}`, user_name: currentUser })
+                body: JSON.stringify({ mold_id: canonicalMoldId, old_position: `Pozice: ${oldPos}`, new_position: `Pozice: ${targetPosition}, Stav: ${selectedStatus} (V Nástrojárně)`, user_name: currentUser })
             });
 
             if (commentText || uploadedPhotoUrls.length > 0) {
@@ -14111,9 +14405,9 @@ Return strictly valid JSON only without markdown formatting with this schema:
                         'Prefer': 'return=representation' 
                     },
                     body: JSON.stringify({ 
-                        mold_id: moldId, 
+                        mold_id: canonicalMoldId, 
                         user_name: currentUser, 
-                        comment: commentText || 'Odesláno z výroby', 
+                        comment: commentText || 'Odesláno z výroby do nástrojárny', 
                         photo_urls: JSON.stringify(uploadedPhotoUrls)
                     })
                 });
@@ -14124,6 +14418,7 @@ Return strictly valid JSON only without markdown formatting with this schema:
                         const newC = inserted[0];
                         newC.photo_urls = uploadedPhotoUrls;
                         allComments.unshift(newC);
+                        try { localStorage.setItem('adis_cached_comments_v1', JSON.stringify(allComments)); } catch (e) {}
                     }
                 }
             }
@@ -14135,7 +14430,17 @@ Return strictly valid JSON only without markdown formatting with this schema:
     }
 
     function onStatusSelectChange(selectElem) {
-        document.getElementById('autoMeziskladCheckbox').checked = ['Ve frontě na údržbu', 'Ve frontě na opravu', 'Na údržbě / Na opravě', 'Na opravě pryč'].includes(selectElem.value);
+        const val = selectElem.value;
+        const itm = rawDatabase.find(i => String(i[0]) === String(activeEditMoldId));
+        const prevPos = (itm && itm[8]) ? itm[8] : '';
+        const posInput = document.getElementById('fullEditPositionInput');
+        
+        // If returning from maintenance/repair into completed or no status, auto-restore original position if available
+        if ((!val || val === 'Po údržbě') && prevPos && posInput) {
+            if (!posInput.value || posInput.value.toLowerCase().includes('mezisklad')) {
+                posInput.value = prevPos;
+            }
+        }
     }
 
     function openFullEdit(moldId, currentPos, currentStatus, currentProductName) {
@@ -14143,15 +14448,29 @@ Return strictly valid JSON only without markdown formatting with this schema:
         activeEditMoldId = moldId;
         activeEditOldPos = currentPos;
 
+        const itm = rawDatabase.find(i => String(i[0]) === String(moldId));
         let fallbackPos = currentPos;
-        if (currentPos.toLowerCase().includes('mezisklad')) {
-            const itm = rawDatabase.find(i => String(i[0]) === String(moldId));
-            fallbackPos = (itm && itm[8]) ? itm[8] : '';
+        const prevPos = (itm && itm[8]) ? itm[8] : '';
+
+        if (currentPos.toLowerCase().includes('mezisklad') && prevPos) {
+            fallbackPos = prevPos;
         }
 
-        document.getElementById('fullEditPositionInput').value = fallbackPos;
-        document.getElementById('fullEditStatusSelect').value = currentStatus || '';
-        document.getElementById('autoMeziskladCheckbox').checked = ['Ve frontě na údržbu', 'Ve frontě na opravu', 'Na údržbě / Na opravě', 'Na opravě pryč'].includes(currentStatus);
+        const posInput = document.getElementById('fullEditPositionInput');
+        if (posInput) posInput.value = fallbackPos;
+
+        const statusSelect = document.getElementById('fullEditStatusSelect');
+        if (statusSelect) statusSelect.value = currentStatus || '';
+        
+        const hintEl = document.getElementById('fullEditPrevPosHint');
+        if (hintEl) {
+            if (prevPos && prevPos !== fallbackPos) {
+                hintEl.innerHTML = `Původní pozice před nástrojárnou: <strong style="cursor:pointer; color: var(--accent-color); text-decoration: underline;" onclick="document.getElementById('fullEditPositionInput').value='${escapeHtml(prevPos)}'">${escapeHtml(prevPos)} (obnovit)</strong>`;
+                hintEl.style.display = 'block';
+            } else {
+                hintEl.style.display = 'none';
+            }
+        }
         
         const deleteBtn = document.getElementById('fullEditDeleteBtn');
         if (deleteBtn) {
@@ -14179,37 +14498,65 @@ Return strictly valid JSON only without markdown formatting with this schema:
         
         let newPos = autoDotPosition(document.getElementById('fullEditPositionInput').value);
         const newStatus = document.getElementById('fullEditStatusSelect').value;
-        const autoMezisklad = document.getElementById('autoMeziskladCheckbox').checked;
 
         const itemIdx = rawDatabase.findIndex(i => String(i[0]) === String(activeEditMoldId));
         if (itemIdx === -1) return;
         
         const item = rawDatabase[itemIdx];
-        let prevPosToSave = item[8];
+        let prevPosToSave = item[8] || '';
 
-        const isRepairStatus = ['Ve frontě na údržbu', 'Ve frontě na opravu', 'Na údržbě / Na opravě', 'Na opravě pryč'].includes(newStatus);
+        const isRepairStatus = isMoldInNastrojarna(newStatus);
         
-        if (!isRepairStatus && !autoMezisklad) {
+        if (!isRepairStatus) {
             if (item[8] && item[8].trim() !== "") {
-                newPos = item[8];
+                if (!newPos || newPos.trim() === "" || newPos.toLowerCase().includes('mezisklad')) {
+                    newPos = item[8];
+                }
                 prevPosToSave = '';
             }
 
-            const hasComments = allComments.some(c => String(c.mold_id) === String(activeEditMoldId));
-            if (hasComments) {
-                showCustomConfirm("Smazat poznámky?", "Chcete smazat staré poznámky a problémy k této formě?", "Smazat", async () => {
-                    await fetch(`${API_URL}/rest/v1/mold_comments?mold_id=eq.${activeEditMoldId}`, {
-                        method: 'DELETE',
-                        headers: { 'apikey': API_KEY, 'Authorization': `Bearer ${API_KEY}`, 'Prefer': 'return=minimal' }
+            const normEditId = normalizeMoldId(activeEditMoldId);
+            const targetComments = allComments.filter(c => {
+                const cId = String(c.mold_id || '').trim();
+                return cId === String(activeEditMoldId) || (normEditId && normalizeMoldId(cId) === normEditId);
+            });
+            if (targetComments.length > 0) {
+                showCustomConfirm("Smazat poznámky?", "Chcete smazat staré poznámky, fotografie a problémy k této formě?", "Smazat", async () => {
+                    let filesToRemove = [];
+                    targetComments.forEach(c => {
+                        let photoUrls = [];
+                        if (Array.isArray(c.photo_urls)) photoUrls = c.photo_urls;
+                        else if (typeof c.photo_urls === 'string') {
+                            try {
+                                const parsed = JSON.parse(c.photo_urls);
+                                photoUrls = Array.isArray(parsed) ? parsed : [c.photo_urls];
+                            } catch { photoUrls = [c.photo_urls]; }
+                        }
+                        photoUrls.forEach(url => {
+                            const parts = String(url).split('/mold-photos/');
+                            if (parts.length > 1) filesToRemove.push(parts[1]);
+                        });
                     });
-                    allComments = allComments.filter(c => String(c.mold_id) !== String(activeEditMoldId));
-                    showToast("Poznámky byly smazány");
+                    if (filesToRemove.length > 0) {
+                        try { await supabaseClient.storage.from('mold-photos').remove(filesToRemove); } catch (err) {}
+                    }
+
+                    for (let c of targetComments) {
+                        await fetch(`${API_URL}/rest/v1/mold_comments?id=eq.${encodeURIComponent(c.id)}`, {
+                            method: 'DELETE',
+                            headers: { 'apikey': API_KEY, 'Authorization': `Bearer ${API_KEY}`, 'Prefer': 'return=minimal' }
+                        });
+                    }
+                    allComments = allComments.filter(c => !targetComments.some(tc => String(tc.id) === String(c.id)));
+                    refreshUI();
+                    showToast("Poznámky a fotografie byly smazány");
                 });
             }
-        } else if (autoMezisklad) {
-            if (item[1] && !item[1].toLowerCase().includes('mezisklad')) prevPosToSave = item[1];
-            if (newStatus === 'Na opravě pryč') newPos = 'Mezisklad Externí';
-            else newPos = 'Mezisklad';
+        } else {
+            // In maintenance / tool shop: preserve original position in item[8] if known
+            if (item[1] && !item[1].toLowerCase().includes('mezisklad') && !prevPosToSave) {
+                prevPosToSave = item[1];
+            }
         }
 
         isSubmittingAction = true;
@@ -15125,15 +15472,17 @@ Return strictly valid JSON only without markdown formatting with this schema:
                 const newPos = String(log.new_position || '').trim();
                 const combined = (oldPos + ' ' + newPos).toLowerCase();
 
-                // Exclude system logs, searches, raw scans, detail open, navigation, filters, exports, photo/pdf views
-                if (moldIdStr === 'HLEDÁNÍ' || moldIdStr === 'SKENER' || moldIdStr === 'SYSTEM' || moldIdStr === 'PLÁN' || moldIdStr === 'NÁVODKA') return;
-                if (oldPos === 'Vyhledávání' || oldPos === 'Skenování' || oldPos === 'Detail formy' || oldPos === 'Navigace' || oldPos === 'Filtr' || oldPos === 'Export') return;
-                if (combined.includes('hledal:') || combined.includes('forma rozpoznána') || combined.includes('rozpoznána forma') || combined.includes('naskenován') || newPos === 'Otevřen detail formy' || combined.includes('zobrazena fot') || combined.includes('zobrazena návodk') || combined.includes('přepnutí na záložku') || combined.includes('filtr zákazníka') || combined.includes('filtr stavu') || combined.includes('export dat')) return;
+                // In personal cabinet history: strictly include only items checked off and completed from the shift plan
+                if (oldPos !== 'Plán na směnu') return;
+                if (moldIdStr === 'PLÁN' || moldIdStr === 'SYSTEM' || moldIdStr === 'HLEDÁNÍ' || moldIdStr === 'SKENER') return;
+                if (combined.includes('přidána forma') || combined.includes('odebráno z plánu') || combined.includes('vyčištěno')) return;
 
-                const isShiftPlanCompletion = oldPos === 'Plán na směnu' && (combined.includes('odebráno z regálu') || combined.includes('splněn úkol') || combined.includes('splněno в plánu') || combined.includes('splněno v plánu'));
-                const isMainAction = isSignificantAuditLog(log, false);
+                const isShiftPlanCompletion = combined.includes('odebráno z regálu') || 
+                                              combined.includes('splněn úkol') || 
+                                              combined.includes('splněno в plánu') || 
+                                              combined.includes('splněno v plánu');
 
-                if (!isShiftPlanCompletion && !isMainAction) return;
+                if (!isShiftPlanCompletion) return;
 
                 const logDate = new Date(log.created_at);
                 const logShift = getShiftInfo(logDate);
@@ -15185,23 +15534,30 @@ Return strictly valid JSON only without markdown formatting with this schema:
             if (weekStatEl) weekStatEl.textContent = weekCount;
             if (monthStatEl) monthStatEl.textContent = monthCount;
 
+            const daysWrapper = chipsBar.closest('.cabinet-days-wrapper');
+            const summaryEl = document.getElementById('cabinetSelectedDaySummary');
+
             if (cabinetDaysData.size === 0) {
-                chipsBar.innerHTML = `<span style="font-size: 0.8rem; color: var(--text-muted); padding: 0.2rem 0;">Zatím žádná historie aktivit</span>`;
+                if (daysWrapper) daysWrapper.style.display = 'none';
+                chipsBar.innerHTML = '';
+                if (summaryEl) summaryEl.textContent = '0 forem';
                 drilldownContainer.innerHTML = `
-                    <div class="empty-state-card" style="padding: 1.5rem 1rem; border-color: var(--border-color); box-shadow: none;">
-                        <div class="empty-state-icon-box">
+                    <div class="empty-state-card" style="padding: 1.25rem 1rem; border-color: var(--border-color); box-shadow: none; margin: 0.35rem 0 0.25rem 0;">
+                        <div class="empty-state-icon-box" style="margin-bottom: 0.5rem;">
                             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
                                 <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path>
                                 <rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect>
                                 <path d="m9 14 2 2 4-4"></path>
                             </svg>
                         </div>
-                        <div class="empty-state-title" style="font-size: 0.95rem;">Žádné zpracované formy</div>
-                        <div class="empty-state-desc" style="font-size: 0.8rem;">Zde se zobrazuje přehled forem zpracovaných během vaší směny.</div>
+                        <div class="empty-state-title" style="font-size: 0.95rem; margin-bottom: 0.25rem;">Žádné zpracované formy</div>
+                        <div class="empty-state-desc" style="font-size: 0.8rem; max-width: 290px; margin: 0 auto;">Zde se zobrazuje přehled forem zpracovaných během vaší směny.</div>
                     </div>
                 `;
                 return;
             }
+
+            if (daysWrapper) daysWrapper.style.display = '';
 
             // Sort days descending
             const sortedDays = Array.from(cabinetDaysData.entries()).sort((a, b) => b[0].localeCompare(a[0]));
@@ -15579,12 +15935,31 @@ Return strictly valid JSON only without markdown formatting with this schema:
     }
 
     function renderPositionCellHtml(num, pos, status, productName, prevPos = '') {
+        const inNastrojarna = isMoldInNastrojarna(status);
+        const origPos = prevPos || pos;
+
+        if (inNastrojarna) {
+            const sub = origPos ? `<span class="prev-position-sub" style="cursor: pointer;" onclick="editPosition('${escapeHtml(num)}', '${escapeHtml(pos)}')">(Původně: ${escapeHtml(origPos)})</span>` : '';
+            return `
+                <div class="position-cell">
+                    <div class="position-wrapper" style="display: flex; flex-direction: column; align-items: flex-end; gap: 0.15rem;">
+                        <span class="badge-position pos-nastrojarna" tabindex="0" onclick="editPosition('${escapeHtml(num)}', '${escapeHtml(pos)}')" title="Forma je v nástrojárně. Klikněte pro vrácení na pozici."><span class="pulse-dot-red"></span>V Nástrojárně</span>
+                        ${sub}
+                    </div>
+                    <div class="action-buttons-group">
+                        <button class="comment-btn" onclick="openCommentModal('${escapeHtml(num)}')">${COMMENT_ICON_HTML}</button>
+                        <button class="edit-btn" onclick="openFullEdit('${escapeHtml(num)}', '${escapeHtml(pos)}', '${escapeHtml(status || '')}', '${escapeHtml(productName || '')}')">${GEAR_ICON_HTML}</button>
+                    </div>
+                </div>
+            `;
+        }
+
         const badgeClass = getPositionBadgeClass(pos);
         const displayPos = formatPositionDisplay(pos);
-        const sub = pos.toLowerCase().includes('mezisklad') && prevPos ? `<span class="prev-position-sub">(Původně: ${escapeHtml(prevPos)})</span>` : '';
+        const sub = pos.toLowerCase().includes('mezisklad') && prevPos && prevPos !== pos ? `<span class="prev-position-sub">(Původně: ${escapeHtml(prevPos)})</span>` : '';
         return `
             <div class="position-cell">
-                <div class="position-wrapper">
+                <div class="position-wrapper" style="display: flex; flex-direction: column; align-items: flex-end; gap: 0.15rem;">
                     <span class="${badgeClass}" tabindex="0" onclick="editPosition('${escapeHtml(num)}', '${escapeHtml(pos)}')">${escapeHtml(displayPos)}</span>
                     ${sub}
                 </div>
@@ -15727,26 +16102,44 @@ Return strictly valid JSON only without markdown formatting with this schema:
     }
 
     function renderCommentsHtml(moldId) {
-        const moldComms = allComments.filter(c => String(c.mold_id) === String(moldId));
+        const rawId = String(moldId || '').trim();
+        const normId = normalizeMoldId(rawId);
+        const moldComms = allComments.filter(c => {
+            const cId = String(c.mold_id || '').trim();
+            return cId === rawId || (normId && normalizeMoldId(cId) === normId);
+        });
         if (moldComms.length === 0) return '';
 
         return `
             <div class="comments-section">
-                ${moldComms.map(c => `
+                ${moldComms.map(c => {
+                    let photoUrls = [];
+                    if (c.photo_urls) {
+                        if (Array.isArray(c.photo_urls)) photoUrls = c.photo_urls;
+                        else if (typeof c.photo_urls === 'string') {
+                            try {
+                                const parsed = JSON.parse(c.photo_urls);
+                                photoUrls = Array.isArray(parsed) ? parsed : [c.photo_urls];
+                            } catch { photoUrls = c.photo_urls.trim() ? [c.photo_urls] : []; }
+                        }
+                    }
+                    const hasPhotos = photoUrls.length > 0;
+                    return `
                     <div class="comment-item" onclick="openViewCommentModal('${c.id}')" oncontextmenu="handleCommentRightClick(event, '${c.id}')">
                         <div class="comment-header-row">
                             <div class="comment-meta">
                                 <span>👤 ${escapeHtml(c.user_name || 'Neznámý')}</span>
                                 <span>•</span>
                                 <span>${new Date(c.created_at).toLocaleString('cs-CZ')}</span>
+                                ${hasPhotos ? `<span style="display: inline-flex; align-items: center; gap: 3px; font-weight: 600; color: #2563eb; background: rgba(37,99,235,0.08); padding: 1px 6px; border-radius: 4px; font-size: 0.7rem;">📷 ${photoUrls.length} ${photoUrls.length === 1 ? 'foto' : 'fotky'}</span>` : ''}
                             </div>
-                            <span class="comment-expand-hint" title="Zobrazit detail">
+                            <span class="comment-expand-hint" title="Zobrazit poznámku">
                                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
                             </span>
                         </div>
                         <div class="comment-text-faded">${escapeHtml(c.comment)}</div>
                     </div>
-                `).join('')}
+                `}).join('')}
             </div>
         `;
     }
