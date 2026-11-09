@@ -4005,19 +4005,66 @@
         .cabinet-user-role-badge {
             display: inline-flex;
             align-items: center;
-            font-size: 0.68rem;
-            font-weight: 600;
-            padding: 0.08rem 0.4rem;
+            font-size: 0.70rem;
+            font-weight: 700;
+            padding: 0.12rem 0.52rem;
             border-radius: 4px;
-            background: transparent;
-            border: 1px solid var(--border-color);
-            color: var(--text-muted);
-            letter-spacing: 0.01em;
+            letter-spacing: 0.02em;
+            transition: all 0.2s ease;
+        }
+        .cabinet-user-role-badge.role-mistr {
+            background: rgba(37, 99, 235, 0.12);
+            color: #1d4ed8;
+            border: 1px solid rgba(37, 99, 235, 0.32);
+        }
+        .cabinet-user-role-badge.role-serizovac {
+            background: rgba(16, 185, 129, 0.12);
+            color: #047857;
+            border: 1px solid rgba(16, 185, 129, 0.32);
+        }
+        .cabinet-user-role-badge.role-nastrojar {
+            background: rgba(217, 119, 6, 0.12);
+            color: #b45309;
+            border: 1px solid rgba(217, 119, 6, 0.32);
         }
         .cabinet-user-role-badge.is-super {
-            border-color: #d97706;
-            color: #b45309;
-            background: rgba(245, 158, 11, 0.05);
+            border-color: #ef4444 !important;
+            color: #dc2626 !important;
+            background: rgba(239, 68, 68, 0.12) !important;
+        }
+        .login-role-selector {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 0.35rem;
+            background: var(--row-hover);
+            padding: 3px;
+            border-radius: 7px;
+            border: 1px solid var(--border-color);
+        }
+        .login-role-btn {
+            background: transparent;
+            border: 1px solid transparent;
+            padding: 0.4rem 0.2rem;
+            font-size: 0.78rem;
+            font-weight: 600;
+            color: var(--text-muted);
+            border-radius: 5px;
+            cursor: pointer;
+            text-align: center;
+            transition: all 0.16s ease;
+            user-select: none;
+            -webkit-user-select: none;
+        }
+        .login-role-btn:hover {
+            color: var(--text-main);
+            background: rgba(255, 255, 255, 0.6);
+        }
+        .login-role-btn.active {
+            background: var(--card-bg);
+            color: #0f172a;
+            font-weight: 700;
+            border-color: var(--border-color);
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
         }
         .cabinet-stats-grid {
             display: grid;
@@ -5456,8 +5503,8 @@
         .mach-standby-reason-label {
             display: inline-flex;
             align-items: center;
-            justify-content: center;
-            font-size: 0.65rem;
+            justify-content: flex-start;
+            font-size: 0.64rem;
             font-weight: 700;
             color: #475569;
             white-space: nowrap;
@@ -5469,7 +5516,51 @@
             height: 16px;
             line-height: 14px;
             box-sizing: border-box;
-            border: 1px solid rgba(100, 116, 139, 0.28);
+            width: 100%;
+            min-width: 0;
+            letter-spacing: -0.01em;
+            border: 1px solid rgba(100, 116, 139, 0.35);
+        }
+
+        .mach-problem-desc-row {
+            display: flex;
+            align-items: center;
+            justify-content: flex-start;
+            width: 100%;
+            min-width: 0;
+            height: 100%;
+            line-height: 1;
+        }
+
+        .mach-problem-desc-label {
+            display: inline-flex;
+            align-items: center;
+            justify-content: flex-start;
+            font-size: 0.64rem;
+            font-weight: 700;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            border-radius: 3px;
+            padding: 0 5px;
+            height: 16px;
+            line-height: 14px;
+            box-sizing: border-box;
+            width: 100%;
+            min-width: 0;
+            letter-spacing: -0.01em;
+        }
+
+        .mach-problem-desc-label.status-warning {
+            color: #c2410c;
+            background: rgba(249, 115, 22, 0.12);
+            border: 1px solid rgba(249, 115, 22, 0.35);
+        }
+
+        .mach-problem-desc-label.status-error {
+            color: #b91c1c;
+            background: rgba(220, 38, 38, 0.12);
+            border: 1px solid rgba(220, 38, 38, 0.35);
         }
 
         /* Našeptávač forem podle názvu výrobku i čísla formy */
@@ -5946,9 +6037,21 @@
                 height: 11px;
                 line-height: 9px;
                 border-radius: 2px;
-                max-width: 100%;
+                width: 100%;
+                min-width: 0;
                 box-sizing: border-box;
-                border: 1px solid rgba(100, 116, 139, 0.28);
+                border: 1px solid rgba(100, 116, 139, 0.35);
+            }
+
+            .mach-problem-desc-label {
+                font-size: 0.48rem;
+                padding: 0 4px;
+                height: 11px;
+                line-height: 9px;
+                border-radius: 2px;
+                width: 100%;
+                min-width: 0;
+                box-sizing: border-box;
             }
 
             .mach-stack {
@@ -6598,8 +6701,16 @@
         </div>
         <div class="modal-body">
             <div class="form-group">
-                <label>Vaše jméno nebo směnu:</label>
+                <label>Vaše jméno nebo směna:</label>
                 <input type="text" id="loginUsername" autocomplete="username" autocapitalization="sentences" autocapitalize="sentences" onkeydown="if(event.key==='Enter') executeLogin()">
+            </div>
+            <div class="form-group">
+                <label>Pozice / Role:</label>
+                <div class="login-role-selector">
+                    <button type="button" class="login-role-btn" data-role="Mistr" onclick="selectLoginRole('Mistr')">Mistr</button>
+                    <button type="button" class="login-role-btn active" data-role="Seřizovač" onclick="selectLoginRole('Seřizovač')">Seřizovač</button>
+                    <button type="button" class="login-role-btn" data-role="Nástrojař" onclick="selectLoginRole('Nástrojař')">Nástrojař</button>
+                </div>
             </div>
             <div class="form-group">
                 <label>Heslo:</label>
@@ -7861,6 +7972,24 @@
                         </svg>
                         <span>Není obsluha (operátor)</span>
                     </button>
+                    <button type="button" class="standby-reason-chip" onclick="setMachineStandbyReason('Přestávka')" data-reason="Přestávka" title="Přestávka ve výrobě (pauza / střídání směn)">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M18 8h1a4 4 0 0 1 0 8h-1"></path>
+                            <path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z"></path>
+                            <line x1="6" y1="1" x2="6" y2="4"></line>
+                            <line x1="10" y1="1" x2="10" y2="4"></line>
+                            <line x1="14" y1="1" x2="14" y2="4"></line>
+                        </svg>
+                        <span>Přestávka</span>
+                    </button>
+                    <button type="button" class="standby-reason-chip" onclick="setMachineStandbyReason('Problém s výrobou')" data-reason="Problém s výrobou" title="Problém s výrobou (vady výlisků / technologický problém)">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path>
+                            <line x1="12" y1="8" x2="12" y2="12"></line>
+                            <line x1="12" y1="16" x2="12.01" y2="16"></line>
+                        </svg>
+                        <span>Problém s výrobou</span>
+                    </button>
                 </div>
             </div>
 
@@ -8359,14 +8488,19 @@
     let activeCustomerChangeMoldId = null;
     
     let currentUser = getCookie('adis_user_name') || localStorage.getItem('adis_user_name') || null;
+    let currentUserRole = getCookie('adis_user_role') || localStorage.getItem('adis_user_role') || 'Seřizovač';
     let isSuperUser = getCookie('adis_is_superuser') === 'true' || localStorage.getItem('adis_is_superuser') === 'true';
 
     if (currentUser) {
-        setCookie('adis_user_name', currentUser);
+        setCookie('adis_user_name', currentUser, 365);
         localStorage.setItem('adis_user_name', currentUser);
     }
+    if (currentUserRole) {
+        setCookie('adis_user_role', currentUserRole, 365);
+        localStorage.setItem('adis_user_role', currentUserRole);
+    }
     if (isSuperUser) {
-        setCookie('adis_is_superuser', 'true');
+        setCookie('adis_is_superuser', 'true', 365);
         localStorage.setItem('adis_is_superuser', 'true');
     }
 
@@ -10038,7 +10172,7 @@
         const onlineBtn = document.getElementById('onlineUsersToggleBtn');
 
         if (currentUser) {
-            authBtn.title = `Přihlášen jako: ${currentUser} (Otevřít profil seřizovače)`;
+            authBtn.title = `Přihlášen jako: ${currentUser} (${currentUserRole || 'Seřizovač'}) • Otevřít profil`;
             authBtn.classList.add('logged-in');
 
             if (isSuperUser) {
@@ -10068,10 +10202,24 @@
         }
     }
 
+    let selectedLoginRole = 'Seřizovač';
+    function selectLoginRole(role) {
+        selectedLoginRole = role || 'Seřizovač';
+        document.querySelectorAll('.login-role-btn').forEach(btn => {
+            if (btn.getAttribute('data-role') === selectedLoginRole) {
+                btn.classList.add('active');
+            } else {
+                btn.classList.remove('active');
+            }
+        });
+        triggerHapticFeedback([10]);
+    }
+
     function openLoginModal() {
         triggerHapticFeedback([12]);
         document.getElementById('loginUsername').value = '';
         document.getElementById('loginPassword').value = '';
+        selectLoginRole(currentUserRole || 'Seřizovač');
         showModalAnimated('loginModal');
     }
 
@@ -10089,11 +10237,14 @@
         if (password !== MASTER_PASSWORD && password !== SUPER_ADMIN_PASSWORD) { showToast("Nesprávné heslo!", true); return; }
 
         currentUser = username;
+        currentUserRole = selectedLoginRole || 'Seřizovač';
         isSuperUser = (password === SUPER_ADMIN_PASSWORD);
 
         localStorage.setItem('adis_user_name', username);
+        localStorage.setItem('adis_user_role', currentUserRole);
         localStorage.setItem('adis_is_superuser', isSuperUser ? 'true' : 'false');
         setCookie('adis_user_name', username, 365);
+        setCookie('adis_user_role', currentUserRole, 365);
         setCookie('adis_is_superuser', isSuperUser ? 'true' : 'false', 365);
         
         closeLoginModal();
@@ -15721,15 +15872,18 @@ Return strictly valid JSON only without markdown formatting with this schema:
         showCustomConfirm("Odhlášení", `Chcete se odhlásit z účtu ${currentUser}?`, "Odhlásit", () => {
             closeUserCabinetModal();
             currentUser = null;
+            currentUserRole = 'Seřizovač';
             isSuperUser = false;
             localStorage.removeItem('adis_user_name');
+            localStorage.removeItem('adis_user_role');
             localStorage.removeItem('adis_is_superuser');
             eraseCookie('adis_user_name');
+            eraseCookie('adis_user_role');
             eraseCookie('adis_is_superuser');
             loadShiftPlan();
             updateAuthUI();
             refreshUI();
-            showToast("Byli jste odhlášen");
+            showToast("Byli jste odhlášeni");
         });
     }
 
@@ -15752,12 +15906,22 @@ Return strictly valid JSON only without markdown formatting with this schema:
             avatarEl.textContent = clean.length >= 2 ? clean.slice(0, 2).toUpperCase() : clean.toUpperCase();
         }
         if (badgeEl && roleTextEl) {
+            badgeEl.className = 'cabinet-user-role-badge';
+            const roleNorm = (currentUserRole || 'Seřizovač').toLowerCase();
+            const roleLabel = currentUserRole || 'Seřizovač';
+            if (roleNorm.includes('mistr')) {
+                badgeEl.classList.add('role-mistr');
+            } else if (roleNorm.includes('nástrojař') || roleNorm.includes('nastrojar')) {
+                badgeEl.classList.add('role-nastrojar');
+            } else {
+                badgeEl.classList.add('role-serizovac');
+            }
+
             if (isSuperUser) {
                 badgeEl.classList.add('is-super');
-                roleTextEl.textContent = 'Seřizovač • Superuser';
+                roleTextEl.textContent = `${roleLabel} • Superuser`;
             } else {
-                badgeEl.classList.remove('is-super');
-                roleTextEl.textContent = 'Seřizovač';
+                roleTextEl.textContent = roleLabel;
             }
         }
     }
@@ -17530,8 +17694,26 @@ Return strictly valid JSON only without markdown formatting with this schema:
         `;
 
         let bottomTierHtml = '';
-        if (effectiveStatus === 'standby' && m.standbyReason) {
-            const reason = m.standbyReason;
+        const activeIssue = unresolvedIssues[0];
+        const issueDescription = activeIssue ? String(activeIssue.text || '').trim() : '';
+        const problemFallback = (effectiveStatus === 'warning') ? 'S problémy' : ((effectiveStatus === 'error') ? 'Odstaveno' : '');
+        const displayProblemText = issueDescription || (!prodName ? problemFallback : '');
+
+        if ((effectiveStatus === 'warning' || effectiveStatus === 'error') && displayProblemText) {
+            const isErr = (effectiveStatus === 'error');
+            const labelTitle = isErr 
+                ? `Odstaveno${issueDescription ? `: ${escapeHtml(issueDescription)}` : ''}` 
+                : `V chodu s problémy${issueDescription ? `: ${escapeHtml(issueDescription)}` : ''}`;
+            const labelClass = isErr ? 'mach-problem-desc-label status-error' : 'mach-problem-desc-label status-warning';
+            bottomTierHtml = `
+                <div class="mach-tier-bottom" title="${labelTitle}">
+                    <div class="mach-problem-desc-row">
+                        <span class="${labelClass}">${escapeHtml(displayProblemText)}</span>
+                    </div>
+                </div>
+            `;
+        } else if (effectiveStatus === 'standby') {
+            const reason = m.standbyReason || 'Stojí';
             bottomTierHtml = `
                 <div class="mach-tier-bottom" title="Důvod odstávky lisu: ${escapeHtml(reason)}">
                     <div class="mach-standby-reason-row">
