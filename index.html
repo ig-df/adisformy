@@ -29,7 +29,7 @@
     <meta property="og:description" content="Systém pro evidenci a správu forem skladu závodu s vyhledáváním, sledováním údržby a exportem do Heliosu.">
     
     <!-- Preload critical isolated splash animation asset for instant launch -->
-    <link rel="preload" href="splash-orbit.svg" as="fetch" crossorigin="anonymous">
+    <link rel="preload" href="./splash-orbit.svg" as="fetch" crossorigin="anonymous">
     
     <!-- Favicon & Mobile App Integration (GitHub Pages & Netlify compatible) -->
     <link rel="manifest" href="manifest.json">
@@ -415,14 +415,18 @@
 (function() {
     var stage = document.getElementById("splashLogoStage");
     if (!stage) return;
-    fetch("splash-orbit.svg")
-        .then(function(r) { return r.text(); })
+    fetch("./splash-orbit.svg")
+        .then(function(r) { return r.ok ? r.text() : Promise.reject(); })
         .then(function(svgText) {
             if (stage && !stage.firstElementChild) {
                 stage.innerHTML = svgText;
             }
         })
-        .catch(function(e) {});
+        .catch(function() {
+            if (stage && !stage.firstElementChild) {
+                stage.innerHTML = '<img src="./af-base.png" alt="Adis Formy" style="width:100%;height:100%;object-fit:contain;">';
+            }
+        });
 })();
 </script>
 
@@ -6356,14 +6360,12 @@
             </button>
         </div>
 
-        <img alt="Adis Logo" id="siteLogo" tabindex="0" onclick="reloadApp()" title="Aktualizovat">
+        <img src="./logo.png" alt="Adis Logo" id="siteLogo" tabindex="0" onclick="reloadApp()" title="Aktualizovat" onerror="this.onerror=null;this.src='./af-base.png';">
         <script>
           (function() {
             var img = document.getElementById('siteLogo');
-            if (img) {
-              var path = window.location.pathname;
-              var dir = path.substring(0, path.lastIndexOf('/') + 1);
-              img.src = window.location.origin + dir + 'logo.png';
+            if (img && (!img.getAttribute('src') || img.src === '')) {
+              img.src = './logo.png';
             }
           })();
         </script>
